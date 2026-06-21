@@ -1,3 +1,5 @@
+using Sgpa.Domain.Metadata;
+
 namespace Sgpa.Data.Crud;
 
 /// <summary>Orden por una columna (nombre físico o de propiedad).</summary>
@@ -40,3 +42,22 @@ public sealed record FilterGroup(bool And, IReadOnlyList<FilterNode> Nodes) : Fi
 
 /// <summary>Negación.</summary>
 public sealed record FilterNot(FilterNode Inner) : FilterNode;
+
+/// <summary>
+/// EXISTS sobre una tabla hija 1-N (filtro tipo "el afiliado tiene algún empleo/certificación/... que cumple X").
+/// Genera: [NOT] EXISTS (SELECT 1 FROM &lt;Child&gt; AS x WHERE x.[ChildFkColumn] = &lt;tablaPadre&gt;.[ParentKeyColumn]
+/// [AND &lt;Inner&gt; con columnas de la hija]). <paramref name="Child"/> aporta tabla y metadata para validar/quotear
+/// las columnas hijas (anti-inyección). <paramref name="Inner"/> es la subcondición sobre la hija (puede ser null).
+/// </summary>
+public sealed record FilterExists(
+    EntityMetadata Child, string ChildFkColumn, string ParentKeyColumn, FilterNode? Inner, bool Negate = false) : FilterNode;
+
+/// <summary>
+/// Comparación contra un agregado de una tabla hija ("Certificaciones.Count() &gt; 1", "Imponibles.Sum(Importe) &gt;= X").
+/// Genera: (SELECT &lt;agg&gt; FROM &lt;Child&gt; AS x WHERE x.[ChildFkColumn] = &lt;padre&gt;.[ParentKeyColumn] [AND &lt;Inner&gt;]) &lt;Op&gt; &lt;Value&gt;.
+/// <paramref name="AggColumn"/> es la columna agregada (null para Count = COUNT(*)). <paramref name="Inner"/> es la
+/// condición opcional sobre la hija (ej. contar sólo certificaciones efectivas).
+/// </summary>
+public sealed record FilterAggregate(
+    EntityMetadata Child, string ChildFkColumn, string ParentKeyColumn,
+    AggKind Kind, string? AggColumn, FilterNode? Inner, FilterOp Op, object? Value) : FilterNode;

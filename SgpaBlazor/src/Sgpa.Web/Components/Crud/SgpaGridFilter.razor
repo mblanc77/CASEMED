@@ -33,6 +33,38 @@
                 {
                     <DxFilterBuilderField FieldName="@col.Name" Caption="@col.Caption" Type="col.UnderlyingType" />
                 }
+                @* Relaciones a otras tablas como campos JERÁRQUICOS (no ensucian el root):
+                   - 1-N (colección): IsCollection=true → el builder arma un Exists; subcampos con FieldName RELATIVO.
+                   - N-1 (referencia/FK): nodo de navegación; subcampos con FieldName de PATH COMPLETO ("Banco.Nombre").
+                   En ambos casos el traductor + DapperCrudService lo resuelven como un EXISTS sobre la tabla destino. *@
+                @foreach (var rel in EntityRelations.For(Meta.EntityType))
+                {
+                    @if (rel.IsCollection)
+                    {
+                        <DxFilterBuilderField FieldName="@rel.FieldPrefix" Caption="@rel.Label" IsCollection="true">
+                            <Fields>
+                                @foreach (var col in rel.Child.ListColumns)
+                                {
+                                    <DxFilterBuilderField FieldName="@col.Name" Caption="@col.Caption" Type="col.UnderlyingType" />
+                                }
+                            </Fields>
+                        </DxFilterBuilderField>
+                    }
+                    else
+                    {
+                        <DxFilterBuilderField FieldName="@rel.FieldPrefix" Caption="@rel.Label">
+                            <Fields>
+                                @foreach (var col in rel.Child.ListColumns)
+                                {
+                                    <DxFilterBuilderField FieldName="@($"{rel.FieldPrefix}.{col.Name}")"
+                                                          Caption="@col.Caption"
+                                                          CaptionFullPath="@($"{rel.Label}.{col.Caption}")"
+                                                          Type="col.UnderlyingType" />
+                                }
+                            </Fields>
+                        </DxFilterBuilderField>
+                    }
+                }
             </Fields>
         </DxFilterBuilder>
         <div class="d-flex gap-2 mt-3">

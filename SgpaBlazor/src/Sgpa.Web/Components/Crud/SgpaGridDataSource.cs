@@ -15,7 +15,7 @@ namespace Sgpa.Web.Components.Crud;
 public sealed class SgpaGridDataSource<T> : GridCustomDataSource where T : class
 {
     // Tope para export/"traer todo" cuando el grid pide Count no acotado.
-    private const int FetchAllCap = 50000;
+    public const int FetchAllCap = 50000;
 
     private readonly ISgpaCrudService<T> _service;
     private readonly string? _filterColumn;
@@ -115,6 +115,16 @@ public sealed class SgpaGridDataSource<T> : GridCustomDataSource where T : class
         return values.Where(v => v is not null).Cast<object>().ToList();
     }
 
+    /// <summary>Total de filas que matchean el filtro activo de la grilla (último visto) + el filtro base.
+    /// Sirve para avisar antes de exportar si el conjunto supera <see cref="FetchAllCap"/> (export truncado).</summary>
+    public async Task<int> GetFilteredCountAsync(CancellationToken cancellationToken)
+    {
+        if (_blocked) return 0;
+        var page = await _service.GetPageAsync(BuildQuery(0, 1, null, _lastGridFilter), cancellationToken)
+            .ConfigureAwait(false);
+        return page.TotalCount;
+    }
+
     public override async Task<int> GetItemCountAsync(
         GridCustomDataSourceCountOptions options, CancellationToken cancellationToken)
     {
@@ -155,7 +165,7 @@ public sealed class SgpaGridDataSource<T> : GridCustomDataSource where T : class
     private FilterNode? CombineFilter(CriteriaOperator? gridFilter,
         IReadOnlyList<GridCustomDataSourceGroupCriterion>? parentGroups)
     {
-        var node = SgpaCriteriaTranslator.Translate(gridFilter);
+        var node = SgpaCriteriaTranslator.Translate(gridFilter, prefix => EntityRelations.ByPrefix(typeof(T), prefix));
 
         var nodes = new List<FilterNode>();
         if (node is not null) nodes.Add(node);

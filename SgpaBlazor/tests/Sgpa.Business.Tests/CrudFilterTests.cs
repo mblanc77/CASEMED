@@ -47,4 +47,92 @@ public class CrudFilterTests
         await Assert.ThrowsAsync<System.ArgumentException>(
             () => Svc<Trabaja>().GetByColumnAsync("NoExiste", Ci));
     }
+
+    // Filtro EXISTS sobre la relación 1-N Afiliado→Empleos (Trabaja): "afiliados con algún empleo en la empresa X".
+    [Fact]
+    public async Task FilterExists_afiliados_con_empleo_en_empresa()
+    {
+        var empleos = await Svc<Trabaja>().GetByColumnAsync("CI", Ci);
+        Assert.NotEmpty(empleos);
+        var emp = empleos[0].CodEmpresa;
+
+        var trabaja = Sgpa.Domain.Metadata.EntityMetadata.For<Trabaja>();
+
+        // Afiliado Ci AND EXISTS(empleo con CodEmpresa = emp) → lo encuentra (1).
+        var conEmpresa = new FilterGroup(true, new FilterNode[]
+        {
+            new FilterCompare("CI", FilterOp.Equal, Ci),
+            new FilterExists(trabaja, "CI", "CI", new FilterCompare("CodEmpresa", FilterOp.Equal, emp)),
+        });
+        Assert.Equal(1, (await Svc<Afiliado>().GetPageAsync(new PageQuery(0, 1, Filter: conEmpresa))).TotalCount);
+
+        // Mismo afiliado AND EXISTS(empleo con CodEmpresa imposible) → 0.
+        var sinEmpresa = new FilterGroup(true, new FilterNode[]
+        {
+            new FilterCompare("CI", FilterOp.Equal, Ci),
+            new FilterExists(trabaja, "CI", "CI", new FilterCompare("CodEmpresa", FilterOp.Equal, -999999)),
+        });
+        Assert.Equal(0, (await Svc<Afiliado>().GetPageAsync(new PageQuery(0, 1, Filter: sinEmpresa))).TotalCount);
+
+        // NOT EXISTS: el afiliado NO tiene empleo en esa empresa imposible → lo encuentra (1).
+        var negate = new FilterGroup(true, new FilterNode[]
+        {
+            new FilterCompare("CI", FilterOp.Equal, Ci),
+            new FilterExists(trabaja, "CI", "CI", new FilterCompare("CodEmpresa", FilterOp.Equal, -999999), Negate: true),
+        });
+        Assert.Equal(1, (await Svc<Afiliado>().GetPageAsync(new PageQuery(0, 1, Filter: negate))).TotalCount);
+    }
+
+    // Filtro EXISTS sobre una relación N-1 (referencia/FK): "afiliados cuyo Banco se llama …".
+    // N-1 se modela igual que 1-N: hija.PK (Banco.CodBanco) = padre.FK (Afiliado.CodBanco).
+    [Fact]
+    public async Task FilterExists_afiliados_por_descripcion_de_banco()
+    {
+        // Un afiliado con banco asignado y la descripción de ese banco.
+        var afi = (await Svc<Afiliado>().GetPageAsync(new PageQuery(0, 200))).Items.FirstOrDefault(a => a.CodBanco != null);
+        Assert.NotNull(afi);
+        var banco = (await Svc<Banco>().GetByColumnAsync("CodBanco", afi!.CodBanco)).Single();
+
+        var bancoMeta = Sgpa.Domain.Metadata.EntityMetadata.For<Banco>();
+
+        // EXISTS(Banco.CodBanco = Afiliado.CodBanco AND Banco.Descripcion = <la del banco>) → al menos ese afiliado.
+        var conBanco = new FilterExists(bancoMeta, "CodBanco", "CodBanco",
+            new FilterCompare("Descripcion", FilterOp.Equal, banco.Descripcion));
+        Assert.True((await Svc<Afiliado>().GetPageAsync(new PageQuery(0, 1, Filter: conBanco))).TotalCount >= 1);
+
+        // Descripción imposible → 0.
+        var bogus = new FilterExists(bancoMeta, "CodBanco", "CodBanco",
+            new FilterCompare("Descripcion", FilterOp.Equal, "___NO_EXISTE_BANCO___"));
+        Assert.Equal(0, (await Svc<Afiliado>().GetPageAsync(new PageQuery(0, 1, Filter: bogus))).TotalCount);
+    }
+
+    // Filtro de AGREGADO sobre colección: "afiliados con N certificaciones" (Certificaciones.Count()).
+    [Fact]
+    public async Task FilterAggregate_afiliados_por_cantidad_de_certificaciones()
+    {
+        var cert = Sgpa.Domain.Metadata.EntityMetadata.For<Certificacion>();
+
+        // Hay afiliados con más de una certificación.
+        var masDeUna = new FilterAggregate(cert, "CI", "CI", AggKind.Count, null, null, FilterOp.Greater, 1);
+        Assert.True((await Svc<Afiliado>().GetPageAsync(new PageQuery(0, 1, Filter: masDeUna))).TotalCount > 0);
+
+        // Conteo exacto del afiliado conocido: Count >= n → lo encuentra; Count > n → no.
+        var n = (await Svc<Certificacion>().GetByColumnAsync("CI", Ci)).Count;
+        if (n > 0)
+        {
+            var alMenosN = new FilterGroup(true, new FilterNode[]
+            {
+                new FilterCompare("CI", FilterOp.Equal, Ci),
+                new FilterAggregate(cert, "CI", "CI", AggKind.Count, null, null, FilterOp.GreaterOrEqual, n),
+            });
+            Assert.Equal(1, (await Svc<Afiliado>().GetPageAsync(new PageQuery(0, 1, Filter: alMenosN))).TotalCount);
+
+            var masDeN = new FilterGroup(true, new FilterNode[]
+            {
+                new FilterCompare("CI", FilterOp.Equal, Ci),
+                new FilterAggregate(cert, "CI", "CI", AggKind.Count, null, null, FilterOp.Greater, n),
+            });
+            Assert.Equal(0, (await Svc<Afiliado>().GetPageAsync(new PageQuery(0, 1, Filter: masDeN))).TotalCount);
+        }
+    }
 }

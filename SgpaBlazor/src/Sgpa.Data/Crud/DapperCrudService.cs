@@ -120,7 +120,21 @@ public class DapperCrudService<TEntity> : ISgpaCrudService<TEntity> where TEntit
 
     // Traduce el árbol de filtro neutral a SQL parametrizado. Los nombres de columna se validan
     // contra la metadata (ResolveColumn) → no hay inyección por el FieldName del grid.
+    // Ámbito de resolución de columnas: cómo validar el nombre (contra la metadata que corresponda) y con qué
+    // prefijo (alias) renderizarlo. Outer = entidad actual sin prefijo; dentro de un EXISTS = hija con alias.
+    private readonly record struct ColScope(Func<string, ColumnMetadata> Resolve, string Prefix);
+    private static readonly ColScope OuterScope = new(ResolveColumn, "");
+
+    private static ColumnMetadata ResolveColumnIn(EntityMetadata meta, string columnName) =>
+        meta.Columns.FirstOrDefault(c =>
+            c.Name.Equals(columnName, StringComparison.OrdinalIgnoreCase)
+            || c.Property.Name.Equals(columnName, StringComparison.OrdinalIgnoreCase))
+        ?? throw new ArgumentException($"{meta.Table} no tiene la columna '{columnName}'.");
+
     private static string TranslateFilter(FilterNode node, DynamicParameters p, ref int n)
+        => TranslateFilter(node, p, ref n, OuterScope);
+
+    private static string TranslateFilter(FilterNode node, DynamicParameters p, ref int n, ColScope scope)
     {
         switch (node)
         {
@@ -130,7 +144,7 @@ public class DapperCrudService<TEntity> : ISgpaCrudService<TEntity> where TEntit
                 var parts = new List<string>();
                 foreach (var child in g.Nodes)
                 {
-                    var s = TranslateFilter(child, p, ref n);
+                    var s = TranslateFilter(child, p, ref n, scope);
                     if (!string.IsNullOrEmpty(s)) parts.Add(s);
                 }
                 if (parts.Count == 0) return string.Empty;
@@ -138,17 +152,17 @@ public class DapperCrudService<TEntity> : ISgpaCrudService<TEntity> where TEntit
             }
             case FilterNot not:
             {
-                var s = TranslateFilter(not.Inner, p, ref n);
+                var s = TranslateFilter(not.Inner, p, ref n, scope);
                 return string.IsNullOrEmpty(s) ? string.Empty : $"NOT ({s})";
             }
             case FilterNull fn:
             {
-                var col = ResolveColumn(fn.Column).Name;
-                return $"[{col}] IS {(fn.IsNull ? "NULL" : "NOT NULL")}";
+                var col = scope.Resolve(fn.Column).Name;
+                return $"{scope.Prefix}[{col}] IS {(fn.IsNull ? "NULL" : "NOT NULL")}";
             }
             case FilterIn fin:
             {
-                var col = ResolveColumn(fin.Column).Name;
+                var col = scope.Resolve(fin.Column).Name;
                 if (fin.Values.Count == 0) return "1=0";
                 var names = new List<string>();
                 foreach (var v in fin.Values)
@@ -157,11 +171,11 @@ public class DapperCrudService<TEntity> : ISgpaCrudService<TEntity> where TEntit
                     p.Add(pn, v);
                     names.Add(pn);
                 }
-                return $"[{col}] IN ({string.Join(",", names)})";
+                return $"{scope.Prefix}[{col}] IN ({string.Join(",", names)})";
             }
             case FilterText ft:
             {
-                var col = ResolveColumn(ft.Column).Name;
+                var col = scope.Resolve(ft.Column).Name;
                 var pn = "@f" + n++;
                 var pattern = ft.Func switch
                 {
@@ -170,13 +184,13 @@ public class DapperCrudService<TEntity> : ISgpaCrudService<TEntity> where TEntit
                     _ => "%" + ft.Value + "%"
                 };
                 p.Add(pn, pattern);
-                return $"CAST([{col}] AS nvarchar(4000)) LIKE {pn}";
+                return $"CAST({scope.Prefix}[{col}] AS nvarchar(4000)) LIKE {pn}";
             }
             case FilterCompare fc:
             {
-                var col = ResolveColumn(fc.Column).Name;
+                var col = scope.Resolve(fc.Column).Name;
                 if (fc.Value is null)
-                    return fc.Op == FilterOp.NotEqual ? $"[{col}] IS NOT NULL" : $"[{col}] IS NULL";
+                    return fc.Op == FilterOp.NotEqual ? $"{scope.Prefix}[{col}] IS NOT NULL" : $"{scope.Prefix}[{col}] IS NULL";
                 var pn = "@f" + n++;
                 p.Add(pn, fc.Value);
                 var op = fc.Op switch
@@ -190,7 +204,56 @@ public class DapperCrudService<TEntity> : ISgpaCrudService<TEntity> where TEntit
                     FilterOp.Like => "LIKE",
                     _ => "="
                 };
-                return $"[{col}] {op} {pn}";
+                return $"{scope.Prefix}[{col}] {op} {pn}";
+            }
+            case FilterExists fe:
+            {
+                var alias = "ex" + n++;
+                var fk = ResolveColumnIn(fe.Child, fe.ChildFkColumn).Name;          // FK en la hija
+                var pk = scope.Resolve(fe.ParentKeyColumn).Name;                    // clave en el padre (scope actual)
+                // Correlación: hija.fk = padre.pk. El padre se referencia por su tabla (sin alias) o por el alias
+                // del scope si este EXISTS está anidado dentro de otro.
+                var parentRef = scope.Prefix.Length == 0 ? $"{Meta.QualifiedTable}.[{pk}]" : $"{scope.Prefix}[{pk}]";
+                var childScope = new ColScope(c => ResolveColumnIn(fe.Child, c), alias + ".");
+                var inner = fe.Inner is null ? string.Empty : TranslateFilter(fe.Inner, p, ref n, childScope);
+                var corr = $"{alias}.[{fk}] = {parentRef}";
+                var body = string.IsNullOrEmpty(inner) ? corr : $"{corr} AND {inner}";
+                return $"{(fe.Negate ? "NOT " : "")}EXISTS (SELECT 1 FROM {fe.Child.QualifiedTable} AS {alias} WHERE {body})";
+            }
+            case FilterAggregate fa:
+            {
+                var alias = "ag" + n++;
+                var fkc = ResolveColumnIn(fa.Child, fa.ChildFkColumn).Name;
+                var pk = scope.Resolve(fa.ParentKeyColumn).Name;
+                var parentRef = scope.Prefix.Length == 0 ? $"{Meta.QualifiedTable}.[{pk}]" : $"{scope.Prefix}[{pk}]";
+                var childScope = new ColScope(c => ResolveColumnIn(fa.Child, c), alias + ".");
+                var inner = fa.Inner is null ? string.Empty : TranslateFilter(fa.Inner, p, ref n, childScope);
+                var corr = $"{alias}.[{fkc}] = {parentRef}";
+                var whereSub = string.IsNullOrEmpty(inner) ? corr : $"{corr} AND {inner}";
+                var aggExpr = fa.Kind switch
+                {
+                    AggKind.Count => "COUNT(*)",
+                    AggKind.Sum => $"SUM({alias}.[{ResolveColumnIn(fa.Child, fa.AggColumn!).Name}])",
+                    AggKind.Min => $"MIN({alias}.[{ResolveColumnIn(fa.Child, fa.AggColumn!).Name}])",
+                    AggKind.Max => $"MAX({alias}.[{ResolveColumnIn(fa.Child, fa.AggColumn!).Name}])",
+                    AggKind.Avg => $"AVG({alias}.[{ResolveColumnIn(fa.Child, fa.AggColumn!).Name}])",
+                    _ => "COUNT(*)"
+                };
+                var pn = "@f" + n++;
+                p.Add(pn, fa.Value);
+                var op = fa.Op switch
+                {
+                    FilterOp.Equal => "=",
+                    FilterOp.NotEqual => "<>",
+                    FilterOp.Greater => ">",
+                    FilterOp.Less => "<",
+                    FilterOp.GreaterOrEqual => ">=",
+                    FilterOp.LessOrEqual => "<=",
+                    _ => "="
+                };
+                var aggSql = $"(SELECT {aggExpr} FROM {fa.Child.QualifiedTable} AS {alias} WHERE {whereSub})";
+                if (fa.Kind == AggKind.Count) aggSql = $"ISNULL({aggSql}, 0)";   // sin filas → Count = 0
+                return $"{aggSql} {op} {pn}";
             }
             default:
                 throw new NotSupportedException($"Nodo de filtro no soportado: {node.GetType().Name}");
