@@ -3,6 +3,7 @@
 @using Sgpa.Data.Crud
 @inject ISavedFilterService Filters
 @inject WebCurrentUser CurrentUser
+@inject IToastNotificationService Toasts
 
 @*
     Filtrado interactivo del ListView con DxFilterBuilder (FilterControl de DevExpress) + filtros
@@ -74,14 +75,70 @@
     </BodyContentTemplate>
 </DxPopup>
 
-@* ---- Popup: guardar filtro actual ---- *@
-<DxPopup @bind-Visible="_saveVisible" HeaderText="Guardar filtro" Width="420px" CloseOnEscape="true">
+@* ---- Popup: guardar filtro actual (+ parametrizar valores) ---- *@
+<DxPopup @bind-Visible="_saveVisible" HeaderText="Guardar filtro" Width="560px" CloseOnEscape="true">
     <BodyContentTemplate>
         @if (_error is not null) { <div class="alert alert-danger py-2">@_error</div> }
         <p class="text-muted small mb-2">Se guarda el filtro activo del listado con el nombre indicado.</p>
-        <div class="d-flex gap-2 align-items-center">
+        <div class="d-flex gap-2 align-items-center mb-3">
             <DxTextBox @bind-Text="_newName" NullText="Nombre del filtro…" />
             <DxButton Text="Guardar" IconCssClass="fa-solid fa-floppy-disk" RenderStyle="ButtonRenderStyle.Primary" Click="SaveCurrentAsync" />
+        </div>
+        @if (_saveLeaves.Count > 0)
+        {
+            <p class="text-muted small mb-1"><i class="fa-solid fa-circle-question me-1"></i>
+                Marcá los valores que el sistema debe <strong>pedir cada vez que se ejecute</strong> el filtro
+                (los no marcados quedan fijos):</p>
+            <ul class="list-group">
+                @foreach (var lf in _saveLeaves)
+                {
+                    <li class="list-group-item d-flex align-items-center gap-2 py-1">
+                        <DxCheckBox @bind-Checked="_leafCheckedRef[lf.Indice]" />
+                        <span class="flex-grow-1">@lf.Caption
+                            <span class="text-muted">= @(lf.ValorActual ?? "—")</span></span>
+                        @if (_leafCheckedRef[lf.Indice])
+                        {
+                            <DxTextBox Text="@(_leafNames.TryGetValue(lf.Indice, out var nm) ? nm : lf.Caption)"
+                                       TextChanged="@(v => _leafNames[lf.Indice] = v)"
+                                       NullText="etiqueta a mostrar" Width="200px" />
+                        }
+                    </li>
+                }
+            </ul>
+        }
+    </BodyContentTemplate>
+</DxPopup>
+
+@* ---- Popup: pedir parámetros al ejecutar (estilo Request Parameters de XtraReports) ---- *@
+<DxPopup @bind-Visible="_promptVisible" HeaderText="@($"Parámetros — {_promptFilter?.Nombre}")" Width="480px" CloseOnEscape="true">
+    <BodyContentTemplate>
+        @if (_error is not null) { <div class="alert alert-danger py-2">@_error</div> }
+        <div class="d-flex flex-column gap-2">
+            @foreach (var pv in _promptVals)
+            {
+                <div class="d-flex align-items-center gap-2">
+                    <label class="mb-0" style="min-width:180px">@pv.Def.Prompt@(pv.Def.Requerido ? " *" : "")</label>
+                    @switch (pv.Categoria)
+                    {
+                        case Cat.Fecha:
+                            <DxDateEdit @bind-Date="pv.Fecha" />
+                            break;
+                        case Cat.Numero:
+                            <DxSpinEdit @bind-Value="pv.Numero" />
+                            break;
+                        case Cat.Bool:
+                            <DxCheckBox @bind-Checked="pv.Booleano" />
+                            break;
+                        default:
+                            <DxTextBox @bind-Text="pv.Texto" />
+                            break;
+                    }
+                </div>
+            }
+        </div>
+        <div class="d-flex gap-2 mt-3 justify-content-end">
+            <DxButton Text="Cancelar" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => _promptVisible = false)" />
+            <DxButton Text="Aplicar" IconCssClass="fa-solid fa-check" RenderStyle="ButtonRenderStyle.Primary" Click="AplicarParametrosAsync" />
         </div>
     </BodyContentTemplate>
 </DxPopup>
@@ -127,6 +184,19 @@
     private string _newName = string.Empty;
     private string? _error;
 
+    // Autoría: criterio que se está guardando + hojas parametrizables (check + nombre por hoja).
+    private CriteriaOperator? _saveCrit;
+    private IReadOnlyList<FiltroLeaf> _saveLeaves = Array.Empty<FiltroLeaf>();
+    private readonly Dictionary<int, bool> _leafCheckedRef = new();
+    private readonly Dictionary<int, string> _leafNames = new();
+
+    // Ejecución: prompt de parámetros + últimos valores usados por filtro (recordar dentro de la sesión).
+    private bool _promptVisible;
+    private SavedFilter? _promptFilter;
+    private CriteriaOperator? _promptCrit;
+    private List<PromptVal> _promptVals = new();
+    private readonly Dictionary<int, Dictionary<string, object?>> _ultimosValores = new();
+
     protected override async Task OnInitializedAsync() => await ReloadSavedAsync();
 
     private async Task ReloadSavedAsync()
@@ -153,17 +223,37 @@
     {
         try
         {
-            Grid?.SetFilterCriteria(CriteriaOperator.Parse(f.Criteria));
+            _error = null;
+            var crit = CriteriaOperator.Parse(f.Criteria);
+            var defs = FiltroParametros.DeserializarDefs(f.Parametros);
+            if (defs.Count > 0)
+            {
+                // El filtro tiene parámetros: pedirlos antes de aplicar (no se aplica todavía).
+                _promptFilter = f;
+                _promptCrit = crit;
+                _promptVals = BuildPromptVals(f, defs);
+                _manageVisible = false;
+                _promptVisible = true;
+                return;
+            }
+            Grid?.SetFilterCriteria(crit);
             _manageVisible = false;
             await OnChanged.InvokeAsync();
         }
-        catch (Exception ex) { _error = $"No se pudo aplicar el filtro: {ex.Message}"; }
+        catch (Exception ex) { Toasts.Error($"No se pudo aplicar el filtro: {ex.Message}"); }
     }
 
     private Task OpenSaveAsync()
     {
         _error = null;
         _newName = string.Empty;
+        _saveCrit = Grid?.GetFilterCriteria();
+        _leafCheckedRef.Clear();
+        _leafNames.Clear();
+        _saveLeaves = ReferenceEquals(_saveCrit, null)
+            ? Array.Empty<FiltroLeaf>()
+            : FiltroParametros.Enumerar(_saveCrit, Meta.EntityType);
+        foreach (var lf in _saveLeaves) { _leafCheckedRef[lf.Indice] = false; _leafNames[lf.Indice] = lf.Caption; }
         _saveVisible = true;
         return Task.CompletedTask;
     }
@@ -172,13 +262,108 @@
     {
         _error = null;
         if (string.IsNullOrWhiteSpace(_newName)) { _error = "Indicá un nombre."; return; }
-        var crit = Grid?.GetFilterCriteria();
-        var critText = crit is null ? null : crit.ToString();
-        if (string.IsNullOrWhiteSpace(critText)) { _error = "No hay filtro activo para guardar."; return; }
+        var crit = _saveCrit;
+        if (ReferenceEquals(crit, null) || string.IsNullOrWhiteSpace(crit.ToString())) { _error = "No hay filtro activo para guardar."; return; }
 
-        await Filters.SaveAsync(Meta.Table, _newName.Trim(), critText, CurrentUser.UserName);
+        var chosen = new Dictionary<int, string>();
+        foreach (var lf in _saveLeaves)
+            if (_leafCheckedRef.TryGetValue(lf.Indice, out var ck) && ck)
+            {
+                var nm = (_leafNames.TryGetValue(lf.Indice, out var n) ? n : lf.SugerenciaNombre)?.Trim();
+                if (string.IsNullOrWhiteSpace(nm)) { _error = $"Falta el nombre del parámetro para «{lf.Caption}»."; return; }
+                chosen[lf.Indice] = nm;
+            }
+
+        string critText;
+        string? paramsJson = null;
+        if (chosen.Count > 0)
+        {
+            var (pc, defs) = FiltroParametros.Parametrizar(crit, Meta.EntityType, chosen);
+            critText = pc!.ToString();
+            paramsJson = FiltroParametros.SerializarDefs(defs);
+        }
+        else critText = crit.ToString();
+
+        await Filters.SaveAsync(Meta.Table, _newName.Trim(), critText, CurrentUser.UserName, paramsJson);
         _saveVisible = false;
         await ReloadSavedAsync();
+    }
+
+    // Aplica el filtro parametrizado tras pedir los valores: valida requeridos, sustituye y setea el criterio.
+    private async Task AplicarParametrosAsync()
+    {
+        _error = null;
+        var vals = new Dictionary<string, object?>();
+        foreach (var pv in _promptVals)
+        {
+            var v = pv.Resolver();
+            if (pv.Def.Requerido && (v is null || (v is string s && string.IsNullOrWhiteSpace(s))))
+            { _error = $"Falta el valor de «{pv.Def.Prompt}»."; return; }
+            vals[pv.Def.Nombre] = v;
+        }
+        if (_promptFilter is not null) _ultimosValores[_promptFilter.Id] = new Dictionary<string, object?>(vals);
+        Grid?.SetFilterCriteria(FiltroParametros.Sustituir(_promptCrit, vals));
+        _promptVisible = false;
+        await OnChanged.InvokeAsync();
+    }
+
+    private List<PromptVal> BuildPromptVals(SavedFilter f, IReadOnlyList<FiltroParametroDef> defs)
+    {
+        _ultimosValores.TryGetValue(f.Id, out var last);
+        var res = new List<PromptVal>();
+        foreach (var d in defs)
+        {
+            var t = Type.GetType(d.ClrType) ?? typeof(string);
+            var pv = new PromptVal { Def = d, Categoria = Categorizar(t) };
+            object? init = last is not null && last.TryGetValue(d.Nombre, out var lv) ? lv
+                : (d.DefaultJson is null ? null : SafeDeserialize(d.DefaultJson, t));
+            pv.Set(init);
+            res.Add(pv);
+        }
+        return res;
+    }
+
+    private static Cat Categorizar(Type t) =>
+        t == typeof(DateTime) ? Cat.Fecha :
+        t == typeof(bool) ? Cat.Bool :
+        (t == typeof(int) || t == typeof(long) || t == typeof(short) || t == typeof(byte)
+            || t == typeof(decimal) || t == typeof(double) || t == typeof(float)) ? Cat.Numero :
+        Cat.Texto;
+
+    private static object? SafeDeserialize(string json, Type t)
+    {
+        try { return System.Text.Json.JsonSerializer.Deserialize(json, t); } catch { return null; }
+    }
+
+    private enum Cat { Fecha, Numero, Bool, Texto }
+
+    private sealed class PromptVal
+    {
+        public FiltroParametroDef Def = default!;
+        public Cat Categoria;
+        public DateTime? Fecha;
+        public decimal? Numero;
+        public bool Booleano;
+        public string? Texto;
+
+        public void Set(object? v)
+        {
+            switch (Categoria)
+            {
+                case Cat.Fecha: Fecha = v is DateTime dt ? dt : (DateTime?)null; break;
+                case Cat.Numero: Numero = v is null ? null : System.Convert.ToDecimal(v); break;
+                case Cat.Bool: Booleano = v is bool b && b; break;
+                default: Texto = v?.ToString(); break;
+            }
+        }
+
+        public object? Resolver() => Categoria switch
+        {
+            Cat.Fecha => Fecha,
+            Cat.Numero => Numero,
+            Cat.Bool => Booleano,
+            _ => Texto
+        };
     }
 
     private async Task OpenManageAsync()

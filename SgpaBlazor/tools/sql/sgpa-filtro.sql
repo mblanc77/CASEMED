@@ -13,3 +13,8 @@ BEGIN
     );
     CREATE INDEX IX_SgpaFiltro_Entity ON dbo.SgpaFiltro(Entity);
 END
+
+-- Parámetros del filtro (JSON): definición de los valores que se piden al ejecutar (XtraReports-style).
+-- NULL/'' = filtro sin parámetros (se aplica directo).
+IF COL_LENGTH('dbo.SgpaFiltro', 'Parametros') IS NULL
+    ALTER TABLE dbo.SgpaFiltro ADD Parametros nvarchar(max) NULL;
