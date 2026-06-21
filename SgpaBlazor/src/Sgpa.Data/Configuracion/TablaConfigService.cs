@@ -36,8 +36,35 @@ public sealed class TablaConfigService : ITablaConfigService
     public string DisplayName(string tabla)
     {
         var alias = Get(tabla).Alias;
-        if (!string.IsNullOrWhiteSpace(alias)) return alias;
-        return tabla.StartsWith("SP_", StringComparison.OrdinalIgnoreCase) ? tabla[3..] : tabla;
+        if (!string.IsNullOrWhiteSpace(alias)) return alias!;
+        var t = tabla.StartsWith("SP_", StringComparison.OrdinalIgnoreCase) ? tabla[3..] : tabla;
+        return Humanizar(t);
+    }
+
+    /// <summary>
+    /// Nombre amigable por defecto a partir del nombre físico: separa PascalCase/camelCase y guiones bajos en
+    /// palabras (sin partir siglas en mayúsculas). Ej. "SituacionMutual" → "Situacion Mutual",
+    /// "SubsidioItemCod_Afiliado" → "Subsidio Item Cod Afiliado". El alias del admin tiene prioridad sobre esto.
+    /// </summary>
+    public static string Humanizar(string s)
+    {
+        if (string.IsNullOrEmpty(s)) return s;
+        var sb = new System.Text.StringBuilder(s.Length + 8);
+        for (var i = 0; i < s.Length; i++)
+        {
+            var c = s[i];
+            if (c == '_') { sb.Append(' '); continue; }
+            if (i > 0 && char.IsUpper(c))
+            {
+                var prev = s[i - 1];
+                var nextLower = i + 1 < s.Length && char.IsLower(s[i + 1]);
+                // límite camel/Pascal: minúscula/dígito → Mayúscula, o fin de sigla (MAYÚS seguida de Mayús+minús).
+                if (char.IsLower(prev) || char.IsDigit(prev) || (char.IsUpper(prev) && nextLower))
+                    sb.Append(' ');
+            }
+            sb.Append(c);
+        }
+        return string.Join(' ', sb.ToString().Split(' ', StringSplitOptions.RemoveEmptyEntries));
     }
 
     public bool DisponibleReportes(string tabla)

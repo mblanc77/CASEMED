@@ -1,10 +1,12 @@
 @using DevExpress.Data.Filtering
 @using Sgpa.Domain.Metadata
 @using Sgpa.Data.Crud
+@using Sgpa.Data.Configuracion
 @inject ISavedFilterService Filters
 @inject WebCurrentUser CurrentUser
 @inject IToastNotificationService Toasts
 @inject ISgpaLookupService Lookups
+@inject ITablaConfigService TablaConfig
 
 @*
     Filtrado interactivo del ListView con DxFilterBuilder (FilterControl de DevExpress) + filtros
@@ -57,7 +59,7 @@
                 {
                     @if (rel.IsCollection)
                     {
-                        <DxFilterBuilderField FieldName="@rel.FieldPrefix" Caption="@rel.Label" IsCollection="true">
+                        <DxFilterBuilderField FieldName="@rel.FieldPrefix" Caption="@RelLabel(rel)" IsCollection="true">
                             <Fields>
                                 @foreach (var col in rel.Child.ListColumns)
                                 {
@@ -70,13 +72,13 @@
                     {
                         @* Nodo de referencia N-1: sólo agrupa; NO es columna real → no seleccionable en sí.
                            Se elige una columna hija (ej. Mutualista · Descripción), que filtra vía EXISTS. *@
-                        <DxFilterBuilderField FieldName="@rel.FieldPrefix" Caption="@rel.Label" AllowSelection="false">
+                        <DxFilterBuilderField FieldName="@rel.FieldPrefix" Caption="@RelLabel(rel)" AllowSelection="false">
                             <Fields>
                                 @foreach (var col in rel.Child.ListColumns)
                                 {
                                     <DxFilterBuilderField FieldName="@($"{rel.FieldPrefix}.{col.Name}")"
                                                           Caption="@col.Caption"
-                                                          CaptionFullPath="@($"{rel.Label}.{col.Caption}")"
+                                                          CaptionFullPath="@($"{RelLabel(rel)}.{col.Caption}")"
                                                           Type="col.UnderlyingType" />
                                 }
                             </Fields>
@@ -226,8 +228,20 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await TablaConfig.EnsureLoadedAsync();
         await ReloadSavedAsync();
         await CargarLookupsFkAsync();
+    }
+
+    // Nombre amigable del nodo de relación: alias del admin (Configuración de tablas) si existe; si no, la
+    // etiqueta curada (Empleos/…) o el DisplayName de la tabla. Misma idea que el Caption de los campos.
+    private string RelLabel(ExistsRelation rel)
+    {
+        // Sin alias del admin pero con etiqueta curada (Empleos/…): usar la curada; si no, DisplayName (alias ?? tabla).
+        var alias = TablaConfig.Get(rel.Child.Table).Alias;
+        if (string.IsNullOrWhiteSpace(alias) && !rel.Label.Equals(rel.Child.Table, StringComparison.Ordinal))
+            return rel.Label;
+        return TablaConfig.DisplayName(rel.Child.Table);
     }
 
     private async Task CargarLookupsFkAsync()

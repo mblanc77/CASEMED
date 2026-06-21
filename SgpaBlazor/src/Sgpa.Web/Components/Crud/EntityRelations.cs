@@ -55,7 +55,8 @@ public static class EntityRelations
                     if (col.IsAudit || col.IsKey) continue;
                     var target = EntityCatalog.LookupTargetFor(col, owner);
                     if (target is null || target.Keys.Count != 1 || target.EntityType == owner.EntityType) continue;
-                    if (!usados.Add(target.Table)) continue;   // un solo nodo por tabla destino
+                    if (!ReportableTables.IsDefault(target)) continue;   // descarta tablas basura (tmp/import/linked/…)
+                    if (!usados.Add(target.Table)) continue;             // un solo nodo por tabla destino
                     list.Add(new ExistsRelation(target.Table, target.Table, target,
                         ChildFkColumn: target.Key.Name, ParentKeyColumn: col.Name, IsCollection: false));
                 }
@@ -67,6 +68,7 @@ public static class EntityRelations
                     foreach (var child in EntityCatalog.All)
                     {
                         if (child.EntityType == owner.EntityType) continue;
+                        if (!ReportableTables.IsDefault(child)) continue;   // descarta tablas basura como hijas
                         foreach (var col in child.Columns)
                         {
                             if (col.IsAudit || col.IsKey) continue;
