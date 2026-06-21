@@ -362,7 +362,7 @@ class Program
     // Idempotente. Hoy: PreferenciaVista (personalización de pantallas por usuario, estilo XAF).
     static async Task CreateInfrastructureTablesAsync(MigrationDbContext db)
     {
-        Console.Write("Creating infrastructure tables (PreferenciaVista, TablaConfig)... ");
+        Console.Write("Creating infrastructure tables (PreferenciaVista, TablaConfig, AuditCambio, SgpaFiltro + alias)... ");
         await db.Database.ExecuteSqlRawAsync(
             """
             IF OBJECT_ID('dbo.PreferenciaVista','U') IS NULL
@@ -411,6 +411,69 @@ class Program
                 CREATE INDEX IX_AuditCambio_Tabla_Clave ON dbo.AuditCambio (Tabla, Clave);
                 CREATE INDEX IX_AuditCambio_Fecha ON dbo.AuditCambio (Fecha DESC);
             END
+            """);
+        // Columna DisponibleReportes (la usa la app; idempotente para TablaConfig recién creada).
+        await db.Database.ExecuteSqlRawAsync(
+            "IF COL_LENGTH('dbo.TablaConfig','DisponibleReportes') IS NULL ALTER TABLE dbo.TablaConfig ADD DisponibleReportes bit NULL;");
+        // Filtros guardados de los ListView (+ Parametros = JSON de parámetros pedidos al ejecutar). Idempotente.
+        await db.Database.ExecuteSqlRawAsync(
+            """
+            IF OBJECT_ID('dbo.SgpaFiltro','U') IS NULL
+            BEGIN
+                CREATE TABLE dbo.SgpaFiltro (
+                    Id        int IDENTITY(1,1) NOT NULL CONSTRAINT PK_SgpaFiltro PRIMARY KEY,
+                    Entity    nvarchar(128) NOT NULL,
+                    Nombre    nvarchar(128) NOT NULL,
+                    Criteria  nvarchar(max) NOT NULL,
+                    EsSistema bit NOT NULL CONSTRAINT DF_SgpaFiltro_Sys DEFAULT(0),
+                    Usr       nvarchar(16) NULL,
+                    Ts        datetime2 NULL,
+                    Parametros nvarchar(max) NULL
+                );
+                CREATE INDEX IX_SgpaFiltro_Entity ON dbo.SgpaFiltro(Entity);
+            END
+            IF COL_LENGTH('dbo.SgpaFiltro','Parametros') IS NULL ALTER TABLE dbo.SgpaFiltro ADD Parametros nvarchar(max) NULL;
+            """);
+        // Alias (nombres amigables) por tabla. Mantener en sintonía con SgpaBlazor/tools/sql/tabla-config-alias-seed.sql.
+        await db.Database.ExecuteSqlRawAsync(
+            """
+            MERGE dbo.TablaConfig AS t
+            USING (VALUES
+                (N'AdPreJub', N'Adelantos pre-jubilatorios'), (N'AdPreJubPago', N'Pagos de adelantos pre-jubilatorios'),
+                (N'AfeccionGrupo', N'Grupos de afección'), (N'AfeccionTipo', N'Tipos de afección'),
+                (N'Afiliado', N'Afiliados'), (N'AfiliadoApunte', N'Apuntes del afiliado'),
+                (N'AfiliadoEspecialidad', N'Especialidades del afiliado'), (N'AporteTipo', N'Tipos de aporte'),
+                (N'BajaMotivo', N'Motivos de baja'), (N'Banco', N'Bancos'), (N'Certificacion', N'Certificaciones'),
+                (N'CertificacionProrroga', N'Prórrogas de certificación'), (N'Certificador', N'Certificadores'),
+                (N'Departamento', N'Departamentos'), (N'Empresa', N'Empresas'), (N'EmpresaPago', N'Pagos de empresa'),
+                (N'ErrCargaAbitab', N'Errores de carga Abitab'), (N'Especialidad', N'Especialidades'),
+                (N'FormaPago', N'Formas de pago'), (N'FranjaIRPF', N'Franjas de IRPF'), (N'GrupoEtario', N'Grupos etarios'),
+                (N'Imponible', N'Imponibles'), (N'InformeEstadistico', N'Informes estadísticos'),
+                (N'MapeoAbitab', N'Mapeo de Abitab'), (N'Mutualista', N'Mutualistas'), (N'NoCargadoHL', N'No cargados (HL)'),
+                (N'Patologia', N'Patologías'), (N'Prestacion', N'Prestaciones'), (N'PrestacionTipo', N'Tipos de prestación'),
+                (N'PrimaFallecimiento', N'Primas por fallecimiento'), (N'Receta', N'Recetas'),
+                (N'RecetaDistancia', N'Distancias de receta'), (N'RegimenAporte', N'Regímenes de aporte'),
+                (N'RegimenJubilatorio', N'Regímenes jubilatorios'), (N'ReintegroMutual', N'Reintegros mutuales'),
+                (N'Reporte', N'Reportes'), (N'SalidaTipo', N'Tipos de salida'), (N'SituacionMutual', N'Situaciones mutuales'),
+                (N'SituacionPago', N'Situaciones de pago'), (N'SP_AfiliadoComentario', N'Comentarios del afiliado'),
+                (N'SP_CtrlPrestamoEstado', N'Control de estados de préstamo'), (N'SP_CuadroAmortizacion', N'Cuadros de amortización'),
+                (N'SP_Cuota', N'Cuotas'), (N'SP_CuotaEstado', N'Estados de cuota'), (N'SP_Factura', N'Facturas'),
+                (N'SP_FacturaDetalle', N'Detalle de facturas'), (N'SP_FacturaEstado', N'Estados de factura'),
+                (N'SP_FacturaTipo', N'Tipos de factura'), (N'SP_ImpLiquido', N'Importes líquidos'), (N'SP_Moneda', N'Monedas'),
+                (N'SP_Pago', N'Pagos'), (N'SP_PagoError', N'Errores de pago'), (N'SP_PagoOrigen', N'Orígenes de pago'),
+                (N'SP_PagoParcial', N'Pagos parciales'), (N'SP_Prestamo', N'Préstamos'), (N'SP_PrestamoEstado', N'Estados de préstamo'),
+                (N'SP_PrestamoTipo', N'Tipos de préstamo'), (N'SP_Retencion', N'Retenciones'),
+                (N'SP_RetencionAviso', N'Avisos de retención'), (N'SP_RetencionItem', N'Ítems de retención'),
+                (N'SP_RetencionItemCod', N'Códigos de ítem de retención'), (N'SP_RetencionPago', N'Pagos de retención'),
+                (N'SP_RetencionPrestamo', N'Retenciones de préstamos'), (N'SubsidioCabezal', N'Cabezales de subsidio'),
+                (N'SubsidioCabezal_BPS', N'Cabezales de subsidio (BPS)'), (N'SubsidioCabezalEmpresa', N'Cabezales de subsidio por empresa'),
+                (N'SubsidioEnfermedad', N'Subsidios por enfermedad'), (N'SubsidioItem', N'Ítems de subsidio'),
+                (N'SubsidioItemCod', N'Códigos de ítem de subsidio'), (N'SubsidioItemCod_Afiliado', N'Códigos de ítem de subsidio por afiliado'),
+                (N'SubsidioItemEmpresa', N'Ítems de subsidio por empresa'), (N'Trabaja', N'Empleos')
+            ) AS s(Tabla, Alias)
+            ON t.Tabla = s.Tabla
+            WHEN MATCHED THEN UPDATE SET Alias = s.Alias
+            WHEN NOT MATCHED THEN INSERT (Tabla, Alias) VALUES (s.Tabla, s.Alias);
             """);
         Console.WriteLine("OK");
     }
