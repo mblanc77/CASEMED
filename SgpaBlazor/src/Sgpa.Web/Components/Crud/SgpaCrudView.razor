@@ -67,6 +67,7 @@ else
         SelectionMode="@(_multiSelect ? GridSelectionMode.Multiple : GridSelectionMode.Single)"
         SelectAllCheckboxMode="GridSelectAllCheckboxMode.AllPages"
         AllowSelectRowByClick="true"
+        RowClick="OnRowClickAsync"
         SelectedDataItems="_selectedItems"
         SelectedDataItemsChanged="OnSelectionChanged"
         EditMode="@EffectiveEditMode"
@@ -227,6 +228,23 @@ else
     </DetailRowTemplate>
 </DxGrid>
 
+@* Popup de SOLO VER (doble-click en grilla sin permiso de escritura): detalle con campos no editables y
+   únicamente botón Cerrar (no se usa el popup de edición del grid para no mostrar Guardar). *@
+<DxPopup @bind-Visible="_viewVisible" HeaderText="@(string.IsNullOrEmpty(Title) ? "Detalle" : $"Ver — {Title}")"
+         Width="640px" CloseOnEscape="true">
+    <BodyContentTemplate>
+        @if (_viewItem is not null)
+        {
+            <SgpaDetailForm Model="_viewItem" Meta="Meta" IsNew="false" HiddenColumns="_hiddenColumns"
+                            FieldEditable="@((object _, ColumnMetadata _, bool _) => false)" />
+        }
+        <div class="d-flex justify-content-end mt-3">
+            <DxButton Text="Cerrar" IconCssClass="fa-solid fa-xmark" RenderStyle="ButtonRenderStyle.Secondary"
+                      Click="@(() => _viewVisible = false)" />
+        </div>
+    </BodyContentTemplate>
+</DxPopup>
+
 @* Confirmación de borrado en español (reemplaza al diálogo nativo de DevExpress, que está en inglés). *@
 <DxPopup @bind-Visible="_confirmDelete" HeaderText="Eliminar registro" Width="440px" CloseOnEscape="true">
     <BodyContentTemplate Context="popup">
@@ -347,7 +365,8 @@ else
     [Parameter] public Func<TEntity, string, bool, bool>? FieldEditable { get; set; }
 
     private Func<object, ColumnMetadata, bool, bool>? FieldEditableAdapter
-        => FieldEditable is null ? null : (m, c, isNew) => FieldEditable((TEntity)m, c.Name, isNew);
+        => !CanWrite ? (_, _, _) => false   // grilla solo-lectura: el detalle se abre en modo VER (campos no editables)
+         : FieldEditable is null ? null : (m, c, isNew) => FieldEditable((TEntity)m, c.Name, isNew);
 
     /// <summary>Validación de negocio opcional previa al guardado: devuelve un mensaje de error (aborta) o null.</summary>
     [Parameter] public Func<TEntity, Task<string?>>? ValidateAsync { get; set; }
@@ -653,6 +672,36 @@ else
             _error = ex.Message;
         }
     }
+
+    // Doble-click en una fila => abre el detalle (igual que el botón ✎ Editar). No aplica cuando la fila ya
+    // tiene su vista asociada vía DetailTemplate (ej. Empleos→Imponibles): ahí la interacción ya está resuelta.
+    // GridRowClickEventArgs no expone el conteo de clics, así que se detecta el doble-click por tiempo+fila.
+    private int _lastClickIndex = -1;
+    private DateTime _lastClickUtc = DateTime.MinValue;
+
+    private async Task OnRowClickAsync(GridRowClickEventArgs e)
+    {
+        // Abre el detalle también en grillas solo-lectura (queda en modo VER: campos no editables, guardado
+        // bloqueado por permisos). Sólo se omite donde la fila ya tiene su vista asociada (DetailTemplate).
+        if (_grid is null || DetailTemplate is not null) return;
+        var now = DateTime.UtcNow;
+        var esDoble = e.VisibleIndex == _lastClickIndex && (now - _lastClickUtc).TotalMilliseconds <= 400;
+        _lastClickIndex = e.VisibleIndex;
+        _lastClickUtc = now;
+        if (!esDoble) return;
+        var item = _grid.GetDataItem(e.VisibleIndex);
+        if (item is null) return;
+        if (CanWrite)
+            await _grid.StartEditDataItemAsync(item);     // editable: popup con Guardar/Cancelar del grid
+        else
+        {
+            _viewItem = (TEntity)item;                    // solo-lectura: popup propio de VER (sólo Cerrar)
+            _viewVisible = true;
+        }
+    }
+
+    private TEntity? _viewItem;
+    private bool _viewVisible;
 
     private void OnCustomizeEditModel(GridCustomizeEditModelEventArgs e)
     {
@@ -1028,6 +1077,13 @@ else
     private async Task ExportAsync(string fmt)
     {
         if (_grid is null) return;
+        // En server-side el export se acota a FetchAllCap; si el filtro lo supera, avisar que sale truncado.
+        if (_serverMode && _dataSource is not null)
+        {
+            var total = await _dataSource.GetFilteredCountAsync(CancellationToken.None);
+            if (total > SgpaGridDataSource<TEntity>.FetchAllCap)
+                Toasts.Aviso($"La exportación incluye los primeros {SgpaGridDataSource<TEntity>.FetchAllCap:N0} de {total:N0} registros. Aplique filtros para acotar el resultado.");
+        }
         var name = string.IsNullOrWhiteSpace(Title) ? Meta.Table : Title;
         switch (fmt)
         {

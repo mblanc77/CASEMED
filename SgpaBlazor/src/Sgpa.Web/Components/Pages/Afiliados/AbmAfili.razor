@@ -45,6 +45,10 @@
                 </SgpaCrudView>
             </div>
         </DxTabPage>
+        <DxTabPage Text="Certificaciones" TabIconCssClass="fa-solid fa-file-medical">
+            <div class="p-2"><SgpaCrudView TEntity="Certificacion" Title="Certificaciones" FilterColumn="CI" FilterValue="a.CI"
+                                           ColumnOrder="_ordenCertificacion" /></div>
+        </DxTabPage>
         <DxTabPage Text="Especialidades" TabIconCssClass="fa-solid fa-stethoscope">
             <div class="p-2"><SgpaCrudView TEntity="AfiliadoEspecialidad" Title="Especialidades" FilterColumn="CI" FilterValue="a.CI" /></div>
         </DxTabPage>
@@ -87,5 +91,12 @@
     private static readonly string[] _ordenImponible =
     [
         nameof(Imponible.CodEmpresa), nameof(Imponible.Anio), nameof(Imponible.Mes), nameof(Imponible.Concepto), nameof(Imponible.Importe)
+    ];
+
+    // Orden de columnas de la grilla de certificaciones (izq→der).
+    private static readonly string[] _ordenCertificacion =
+    [
+        nameof(Certificacion.FechaCertificacion), nameof(Certificacion.FechaIni), nameof(Certificacion.FechaFin),
+        nameof(Certificacion.CodAfeccionTipo), nameof(Certificacion.CodCertificador), nameof(Certificacion.Efectiva)
     ];
 }

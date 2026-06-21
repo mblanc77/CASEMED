@@ -18,6 +18,7 @@
 @inject Sgpa.Web.Reporting.Predefinidos.IReportesPredefinidos ReportesPredef
 @inject ISgpaCrudService<TMaster> Service
 @inject NavigationManager Nav
+@inject Microsoft.JSInterop.IJSRuntime JS
 @inject WebCurrentUser CurrentUser
 @inject IErrorLog ErrorLog
 @inject IPreferenciaVistaStore VistaStore
@@ -305,7 +306,7 @@ else
                           Click="@(() => { _confirmText = string.Empty; _confirmDelete = true; })" />
             }
             <DxButton Text="Volver" IconCssClass="fa-solid fa-arrow-left" RenderStyle="ButtonRenderStyle.Secondary"
-                      Click="@(() => Nav.NavigateTo(_baseTrim))" />
+                      Click="@(async () => await JS.InvokeVoidAsync("sgpaGoBack", _baseTrim))" />
         </div>
     </div>
 
@@ -921,6 +922,13 @@ else
     private async Task ExportAsync(string fmt)
     {
         if (_grid is null) return;
+        // El export se acota a FetchAllCap; si el filtro lo supera, avisar que sale truncado.
+        if (_dataSource is not null)
+        {
+            var total = await _dataSource.GetFilteredCountAsync(CancellationToken.None);
+            if (total > SgpaGridDataSource<TMaster>.FetchAllCap)
+                Toasts.Aviso($"La exportación incluye los primeros {SgpaGridDataSource<TMaster>.FetchAllCap:N0} de {total:N0} registros. Aplique filtros para acotar el resultado.");
+        }
         switch (fmt)
         {
             case "pdf": await _grid.ExportToPdfAsync(TitlePlural); break;

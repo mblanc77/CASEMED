@@ -22,6 +22,12 @@
     <Routes />
     <script src="_framework/blazor.web.js"></script>
     <script>
+        // "Volver" inteligente: si hay historial de navegación, vuelve a la página ANTERIOR (no a una ruta fija);
+        // si no hay (deep-link / primera carga), navega a la ruta de fallback. Reemplaza los NavigateTo fijos.
+        window.sgpaGoBack = (fallbackUrl) => {
+            if (window.history.length > 1) { window.history.back(); }
+            else if (fallbackUrl) { window.location.assign(fallbackUrl); }
+        };
         window.sgpaDownloadText = (fileName, content) => {
             const blob = new Blob([content], { type: 'text/plain' });
             const url = URL.createObjectURL(blob);

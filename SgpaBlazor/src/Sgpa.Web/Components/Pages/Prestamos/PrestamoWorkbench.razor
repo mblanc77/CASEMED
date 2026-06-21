@@ -12,6 +12,7 @@
 @inject PrestamoAccionesService Acciones
 @inject RefinanciacionService Refi
 @inject NavigationManager Nav
+@inject Microsoft.JSInterop.IJSRuntime JS
 
 @*
     Workbench de préstamos (port de frmPrestamo.frm, app SP).
@@ -30,7 +31,7 @@
 <div class="d-flex align-items-center justify-content-between mb-2">
     <h3 class="mb-0">@(_editMode ? $"Editar préstamo Nº {IDPrestamo:00000}" : "Nuevo préstamo")</h3>
     <DxButton Text="Volver" IconCssClass="fa-solid fa-arrow-left" RenderStyle="ButtonRenderStyle.Secondary"
-              Click="@(() => Nav.NavigateTo("/prestamos"))" />
+              Click="@(async () => await JS.InvokeVoidAsync("sgpaGoBack", "/prestamos"))" />
 </div>
 
 @* --- Toolbar de acciones (port de la toolbar de frmPrestamo) --- *@
