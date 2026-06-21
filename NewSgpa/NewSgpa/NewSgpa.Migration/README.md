@@ -22,6 +22,22 @@ Nada está hardcodeado: se resuelve con precedencia **argumento `--clave=valor` 
 
 Al arrancar imprime la config resuelta (con el password enmascarado).
 
+### Password de las bases Access (`CASEMED_MDB_PWD`)
+
+El password de los `.mdb` **no se versiona** (se quitó del repo por seguridad). Los scripts de
+comparación/lectura Access↔SQL (`SgpaBlazor/tools/**/*.ps1`) lo leen de la variable de entorno
+**`CASEMED_MDB_PWD`**; hay que setearla antes de correrlos:
+
+```powershell
+$env:CASEMED_MDB_PWD = "rdjcfm"      # clave del .mdb (sólo en tu sesión)
+# o persistente para el usuario:
+setx CASEMED_MDB_PWD "rdjcfm"
+```
+
+La herramienta de migración en sí abre los backends `*serv2k3.mdb` con ACE **sin password** (no están
+protegidos) → no la necesita. Si algún día apuntás a un `.mdb` **protegido**, hay que agregar
+`Jet OLEDB:Database Password=…` a la cadena OLEDB de `OleDbConn` (hoy no lo incluye).
+
 ### Flags de modo (ya existían)
 - `--generate-access-sql-only` — sólo (re)genera los `.sql` de `Generated/AccessSql/` y termina.
 - `--skip-sgpa` / `--skip-sp` — preserva la base (no dropea) y omite ese origen.
