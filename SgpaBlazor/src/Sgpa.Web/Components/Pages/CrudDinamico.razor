@@ -1,0 +1,44 @@
+@page "/crud/{Entity}"
+@rendermode InteractiveServer
+@using Sgpa.Domain.Metadata
+@using Sgpa.Data.Configuracion
+@inject ITablaConfigService TablaConfig
+
+<PageTitle>@(_meta is null ? "CRUD" : TablaConfig.DisplayName(_meta.Table))</PageTitle>
+
+@if (_meta is null)
+{
+    <div class="alert alert-warning mt-3">La entidad <strong>@Entity</strong> no existe en el catálogo.</div>
+}
+else if (_meta.Keys.Count == 0)
+{
+    <div class="alert alert-info mt-3">
+        La tabla <strong>@_meta.Table</strong> no tiene clave primaria: es de sólo consulta y no admite edición.
+    </div>
+}
+else if (_crudType is not null)
+{
+    <DynamicComponent Type="_crudType" Parameters="_params" @key="_meta.EntityType" />
+}
+
+@code {
+    [Parameter] public string Entity { get; set; } = string.Empty;
+
+    private EntityMetadata? _meta;
+    private Type? _crudType;
+    private Dictionary<string, object> _params = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _meta = EntityCatalog.TryGet(Entity);
+        if (_meta is null || _meta.Keys.Count == 0)
+        {
+            _crudType = null;
+            return;
+        }
+        // Fijar el tipo antes de cualquier await: si se renderiza durante el await, _crudType ya es válido.
+        _crudType = typeof(SgpaCrudView<>).MakeGenericType(_meta.EntityType);
+        await TablaConfig.EnsureLoadedAsync();
+        _params = new Dictionary<string, object> { ["Title"] = TablaConfig.DisplayName(_meta.Table) };
+    }
+}

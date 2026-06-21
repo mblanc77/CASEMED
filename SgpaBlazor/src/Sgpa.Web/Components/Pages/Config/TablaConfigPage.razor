@@ -1,0 +1,94 @@
+@page "/config/tablas"
+@rendermode InteractiveServer
+@using Sgpa.Domain.Metadata
+@using Sgpa.Data.Configuracion
+@inject ITablaConfigService Config
+@inject WebCurrentUser CurrentUser
+
+<PageTitle>Configuración de tablas</PageTitle>
+
+<h3 class="mb-2">Configuración por tabla</h3>
+<p class="text-muted">
+    Settings dinámicos por tabla: <strong>edición inline</strong> (catálogos editables en la grilla),
+    <strong>confirmación de borrado</strong> (exige tipear ELIMINAR) y <strong>auditoría</strong> de cambios por campo.
+</p>
+
+@if (!CurrentUser.IsAdmin)
+{
+    <div class="alert alert-warning">Esta configuración es sólo para administradores.</div>
+}
+else
+{
+    <DxGrid Data="_items" PageSize="25" ShowFilterRow="true" ShowSearchBox="true">
+        <Columns>
+            <DxGridDataColumn FieldName="Tabla" Caption="Tabla" Width="190px" />
+            <DxGridDataColumn Caption="Alias (nombre amigable)" MinWidth="200">
+                <CellDisplayTemplate Context="c">
+                    @{ var vm = (Vm)c.DataItem; }
+                    <DxTextBox Text="@vm.Alias" NullText="@vm.Tabla" SizeMode="SizeMode.Small"
+                               TextChanged="@((string v) => { vm.Alias = v; return SaveAsync(vm); })" />
+                </CellDisplayTemplate>
+            </DxGridDataColumn>
+            <DxGridDataColumn Caption="Edición inline" Width="150px" TextAlignment="GridTextAlignment.Center">
+                <CellDisplayTemplate Context="c">
+                    @{ var vm = (Vm)c.DataItem; }
+                    <DxCheckBox Checked="vm.Inline" CheckedChanged="@((bool v) => { vm.Inline = v; return SaveAsync(vm); })" />
+                </CellDisplayTemplate>
+            </DxGridDataColumn>
+            <DxGridDataColumn Caption="Confirmar borrado" Width="170px" TextAlignment="GridTextAlignment.Center">
+                <CellDisplayTemplate Context="c">
+                    @{ var vm = (Vm)c.DataItem; }
+                    <DxCheckBox Checked="vm.Confirmar" CheckedChanged="@((bool v) => { vm.Confirmar = v; return SaveAsync(vm); })" />
+                </CellDisplayTemplate>
+            </DxGridDataColumn>
+            <DxGridDataColumn Caption="Auditar" Width="120px" TextAlignment="GridTextAlignment.Center">
+                <CellDisplayTemplate Context="c">
+                    @{ var vm = (Vm)c.DataItem; }
+                    <DxCheckBox Checked="vm.Auditar" CheckedChanged="@((bool v) => { vm.Auditar = v; return SaveAsync(vm); })" />
+                </CellDisplayTemplate>
+            </DxGridDataColumn>
+            <DxGridDataColumn Caption="Disponible p/ reportes" Width="170px" TextAlignment="GridTextAlignment.Center">
+                <CellDisplayTemplate Context="c">
+                    @{ var vm = (Vm)c.DataItem; }
+                    <DxCheckBox Checked="vm.Disponible" CheckedChanged="@((bool v) => { vm.Disponible = v; return SaveAsync(vm); })" />
+                </CellDisplayTemplate>
+            </DxGridDataColumn>
+        </Columns>
+    </DxGrid>
+}
+
+@code {
+    private List<Vm> _items = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CurrentUser.EnsureLoadedAsync();
+        if (!CurrentUser.IsAdmin) return;
+
+        await Config.EnsureLoadedAsync();
+        _items = EntityCatalog.CrudCapable
+            .Select(m => m.Table)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(t => t, StringComparer.OrdinalIgnoreCase)
+            .Select(t =>
+            {
+                var c = Config.Get(t);
+                return new Vm { Tabla = t, Alias = c.Alias, Inline = c.EdicionInline, Confirmar = c.ConfirmarBorrado, Auditar = c.Auditar, Disponible = Config.DisponibleReportes(t) };
+            })
+            .ToList();
+    }
+
+    private Task SaveAsync(Vm vm)
+        => Config.SetAsync(vm.Tabla, new TablaConfig(vm.Inline, vm.Confirmar, vm.Auditar,
+            string.IsNullOrWhiteSpace(vm.Alias) ? null : vm.Alias.Trim(), vm.Disponible));
+
+    public sealed class Vm
+    {
+        public string Tabla { get; set; } = string.Empty;
+        public string? Alias { get; set; }
+        public bool Inline { get; set; }
+        public bool Confirmar { get; set; }
+        public bool Auditar { get; set; }
+        public bool Disponible { get; set; }
+    }
+}

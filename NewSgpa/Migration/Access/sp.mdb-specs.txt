@@ -1,0 +1,1461 @@
+=== TABLES ===
+TABLE: CargaLiquidos
+  vlbidn | Double(8) | Required=Falso
+  apellido | Text(255) | Required=Falso
+  nombre | Text(255) | Required=Falso
+  cedula | Double(8) | Required=Falso
+  chkdig | Double(8) | Required=Falso
+  dd_egre | Double(8) | Required=Falso
+  mm_egre | Double(8) | Required=Falso
+  aa_egre | Double(8) | Required=Falso
+  imphaberes | Double(8) | Required=Falso
+  impdescuen | Double(8) | Required=Falso
+  liquido | Double(8) | Required=Falso
+  cargo | Double(8) | Required=Falso
+  cantmov | Double(8) | Required=Falso
+
+TABLE: ENERO
+  Nro# | Double(8) | Required=Falso
+  C#I# | Double(8) | Required=Falso
+  Nombres | Text(255) | Required=Falso
+  Apellido1 | Text(255) | Required=Falso
+  importe | Double(8) | Required=Falso
+  F6 | Double(8) | Required=Falso
+  F7 | Text(255) | Required=Falso
+  F8 | Text(255) | Required=Falso
+
+TABLE: ErrCargaAbitab
+  Fecha | Date(8) | Required=Falso
+  NroReng | Long(4) | Required=Falso
+  Descrip | Text(100) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: FEBRERO
+  Nro# | Double(8) | Required=Falso
+  C#I# | Double(8) | Required=Falso
+  Nombres | Text(255) | Required=Falso
+  Apellido1 | Text(255) | Required=Falso
+  IMPORTE | Double(8) | Required=Falso
+  F6 | Text(255) | Required=Falso
+  F7 | Double(8) | Required=Falso
+
+TABLE: Grupo_Usuario
+
+TABLE: InteresDiciembre
+
+TABLE: MapeoAbitab
+  Inicio | Long(4) | Required=Falso
+  Largo | Long(4) | Required=Falso
+  Campo | Text(50) | Required=Falso
+  CodigoBarra | Boolean(1) | Required=Falso
+
+TABLE: rptCheque_Tmp
+  IDPrestamo | Long(4) | Required=Falso
+  CI | Long(4) | Required=Falso
+  Nombre | Text(255) | Required=Falso
+  Fecha | Date(8) | Required=Falso
+  Importe | Single(4) | Required=Falso
+  Letras | Text(255) | Required=Falso
+
+TABLE: rptPlanes_Tmp
+  Cuotas | Integer(2) | Required=Falso
+  ValorCuota | Single(4) | Required=Falso
+  Monto | Single(4) | Required=Falso
+
+TABLE: rptTIR_Tmp
+  IDPrestamo | Long(4) | Required=Falso
+  Mes | Long(4) | Required=Falso
+  Importe | Single(4) | Required=Falso
+
+TABLE: rptVale_Tmp
+  CI | Long(4) | Required=Falso
+  Nombres | Text(255) | Required=Falso
+  Apellido1 | Text(50) | Required=Falso
+  Apellido2 | Text(50) | Required=Falso
+  Direccion | Text(255) | Required=Falso
+  ImporteTotal | Single(4) | Required=Falso
+  LetraImporte | Text(255) | Required=Falso
+  DescMoneda | Text(50) | Required=Falso
+  DescMonedaLargo | Text(50) | Required=Falso
+  Cuotas | Integer(2) | Required=Falso
+  ImporteCuota | Single(4) | Required=Falso
+  FechaVencimiento | Date(8) | Required=Falso
+  Tasa | Single(4) | Required=Falso
+
+TABLE: Seleccion
+  Id | Long(4) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Form | Text(255) | Required=Falso
+  Nombre | Text(255) | Required=Falso
+  Txt | Memo(0) | Required=Falso
+  System | Boolean(1) | Required=Falso
+
+TABLE: SP_Afiliado
+  CI | Long(4) | Required=Verdadero
+  Nombres | Text(50) | Required=Falso
+  Apellido1 | Text(30) | Required=Falso
+  Apellido2 | Text(30) | Required=Falso
+  FechaNacimiento | Date(8) | Required=Falso
+  Sexo | Text(1) | Required=Falso
+  Direccion | Text(100) | Required=Falso
+  Telefono | Text(25) | Required=Falso
+  EMail | Text(100) | Required=Falso
+  CodMutualista | Integer(2) | Required=Falso
+  FechaIngMutualista | Date(8) | Required=Falso
+  FechaBajaMutualista | Date(8) | Required=Falso
+  NroSocioMutualista | Text(12) | Required=Falso
+  CodRegimenJubilatorio | Byte(1) | Required=Falso
+  CodDepartamento | Text(3) | Required=Falso
+  PagaMutualista | Boolean(1) | Required=Falso
+  CodSituacionMutual | Text(2) | Required=Falso
+  CodBanco | Long(4) | Required=Falso
+  NroCuenta | Text(50) | Required=Falso
+  NroFunCuenta | Text(50) | Required=Falso
+  Movil | Text(50) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SP_AfiliadoComentario
+  CI | Long(4) | Required=Falso
+  Fecha | Date(8) | Required=Falso
+  Observaciones | Memo(0) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SP_CtrlPrestamoEstado
+  PrestamoEstadoAnt | Text(3) | Required=Falso
+  PrestamoEstadoSig | Text(3) | Required=Falso
+
+TABLE: SP_CuadroAmortizacion
+  IDPrestamo | Long(4) | Required=Falso
+  NroCuota | Integer(2) | Required=Falso
+  Monto | Single(4) | Required=Falso
+  ImporteCuota | Single(4) | Required=Falso
+  Interes | Single(4) | Required=Falso
+  Amortizacion | Single(4) | Required=Falso
+  Saldo | Single(4) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SP_CuadroAmortizacion_Tmp
+  NroCuota | Integer(2) | Required=Falso
+  Monto | Single(4) | Required=Falso
+  ImporteCuota | Single(4) | Required=Falso
+  Interes | Single(4) | Required=Falso
+  Amortizacion | Single(4) | Required=Falso
+  Saldo | Single(4) | Required=Falso
+
+TABLE: SP_Cuota
+  IDPrestamo | Long(4) | Required=Falso
+  Nro | Integer(2) | Required=Falso
+  FechaVencimiento | Date(8) | Required=Falso
+  FechaPago | Date(8) | Required=Falso
+  CodItemPago | Text(3) | Required=Falso
+  Importe | Single(4) | Required=Falso
+  CodMoneda | Text(3) | Required=Falso
+  CodCuotaEstado | Text(3) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SP_CuotaEstado
+  CodCuotaEstado | Text(3) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+
+TABLE: SP_Empresa
+  CodEmpresa | Integer(2) | Required=Falso
+  Nombre | Text(50) | Required=Falso
+  Direccion | Text(50) | Required=Falso
+  Telefono | Text(25) | Required=Falso
+  Fax | Text(25) | Required=Falso
+  EMail | Text(25) | Required=Falso
+  AporteCasemed | Single(4) | Required=Falso
+  AporteAguinaldo | Long(4) | Required=Falso
+  PersonaContacto | Text(50) | Required=Falso
+  Autoridades | Text(255) | Required=Falso
+  CodRegimenAporte | Integer(2) | Required=Falso
+  CodSituacionPago | Integer(2) | Required=Falso
+  Liquidar | Boolean(1) | Required=Falso
+  Ficticia | Boolean(1) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SP_Factura
+  IDFactura | Long(4) | Required=Falso
+  NroFactura | Long(4) | Required=Falso
+  NroEmpresa | Text(2) | Required=Falso
+  IdPrestamo | Long(4) | Required=Falso
+  FechaEmitida | Date(8) | Required=Falso
+  FechaVencimiento | Date(8) | Required=Falso
+  FechaPago | Date(8) | Required=Falso
+  CodMoneda | Text(3) | Required=Falso
+  Importe | Single(4) | Required=Falso
+  CodFacturaEstado | Text(3) | Required=Falso
+  TasaCambio | Single(4) | Required=Falso
+  CodigoBarra | Text(50) | Required=Falso
+  Impresiones | Integer(2) | Required=Falso
+  ImpAmortizable | Single(4) | Required=Falso
+  ImpInteres | Single(4) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+  CodFacturaTipo | Text(50) | Required=Falso
+
+TABLE: SP_FacturaDetalle
+  IdFactura | Long(4) | Required=Falso
+  NroReng | Integer(2) | Required=Falso
+  CodItemPago | Text(3) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  NroCuota | Integer(2) | Required=Falso
+  Importe | Single(4) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SP_FacturaEstado
+  CodFacturaEstado | Text(3) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  Anulada | Boolean(1) | Required=Falso
+
+TABLE: SP_FacturaTipo
+  CodFacturaTipo | Text(50) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+
+TABLE: SP_ImpLiquido
+  CI | Long(4) | Required=Falso
+  CodEmpresa | Integer(2) | Required=Falso
+  Fechaingreso | Date(8) | Required=Falso
+  Mes | Byte(1) | Required=Falso
+  Anio | Integer(2) | Required=Falso
+  IdTrabaja | Long(4) | Required=Falso
+  Importe | Double(8) | Required=Falso
+  AnioMes | Long(4) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SP_ItemPago
+  CodItemPago | Text(3) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SP_Moneda
+  CodMoneda | Text(3) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  Tasa | Single(4) | Required=Falso
+  TasaMora | Single(4) | Required=Falso
+  TasaCambio | Single(4) | Required=Falso
+  CodAbitab | Text(2) | Required=Falso
+  DescripLarga | Text(255) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SP_Pago
+  IDFactura | Long(4) | Required=Falso
+  Fecha | Date(8) | Required=Falso
+  Importe | Single(4) | Required=Falso
+  CodSucursal | Text(50) | Required=Falso
+  TasaCambio | Single(4) | Required=Falso
+  CodPagoOrigen | Text(3) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SP_Pago_ItemPago
+  IDFactura | Long(4) | Required=Falso
+  CodItemPago | Text(3) | Required=Falso
+  NroCuota | Integer(2) | Required=Falso
+  Importe | Single(4) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SP_PagoError
+  IDFactura | Long(4) | Required=Falso
+  Fecha | Date(8) | Required=Falso
+  Importe | Single(4) | Required=Falso
+  CodSucursal | Text(50) | Required=Falso
+  TasaCambio | Single(4) | Required=Falso
+  CodFacturaEstado | Text(3) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SP_PagoOrigen
+  CodPagoOrigen | Text(3) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SP_PagoParcial
+  IDPrestamo | Long(4) | Required=Falso
+  Fecha | Date(8) | Required=Falso
+  Importe | Single(4) | Required=Falso
+  TasaCambio | Single(4) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SP_Parametro
+  NroEmpresa | Text(2) | Required=Falso
+  UR | Single(4) | Required=Falso
+  Dolar | Single(4) | Required=Falso
+  Redondeo | Byte(1) | Required=Falso
+  TopeUR | Single(4) | Required=Falso
+  PctPrestamo | Single(4) | Required=Falso
+  MesesCalculo | Integer(2) | Required=Falso
+  MaxCuotas | Integer(2) | Required=Falso
+  DiasTolerancia | Integer(2) | Required=Falso
+  TopeSueldos | Double(8) | Required=Falso
+
+TABLE: SP_Prestamo
+  IDPrestamo | Long(4) | Required=Falso
+  CI | Long(4) | Required=Falso
+  Fecha | Date(8) | Required=Falso
+  NroCta | Text(50) | Required=Falso
+  Banco | Text(50) | Required=Falso
+  Sucursal | Text(50) | Required=Falso
+  CodMoneda | Text(3) | Required=Falso
+  Importe | Single(4) | Required=Falso
+  Cuotas | Integer(2) | Required=Falso
+  Tasa | Single(4) | Required=Falso
+  ImporteCuota | Single(4) | Required=Falso
+  CuotasPagas | Integer(2) | Required=Falso
+  Saldo | Single(4) | Required=Falso
+  CodPrestamoEstado | Text(3) | Required=Falso
+  FechaCobro | Date(8) | Required=Falso
+  NroSerieCheque | Long(4) | Required=Falso
+  NroCheque | Long(4) | Required=Falso
+  TasaCambio | Single(4) | Required=Falso
+  Promedio | Single(4) | Required=Falso
+  IDPrestamoRef | Long(4) | Required=Falso
+  Observaciones | Memo(0) | Required=Falso
+  CodPrestamoTipo | Text(3) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SP_PrestamoEstado
+  CodPrestamoEstado | Text(3) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  Fin | Boolean(1) | Required=Falso
+
+TABLE: SP_PrestamoTipo
+  CodPrestamoTipo | Text(3) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  TopeaImporte | Boolean(1) | Required=Falso
+
+TABLE: SP_Retencion
+  IDPrestamo | Long(4) | Required=Falso
+  Fecha | Date(8) | Required=Falso
+  TipoCambio | Single(4) | Required=Falso
+  Importe | Single(4) | Required=Falso
+  Observaciones | Memo(0) | Required=Falso
+  Directa | Boolean(1) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SP_RetencionAviso
+  IDPrestamo | Long(4) | Required=Falso
+  Fecha | Date(8) | Required=Falso
+  Comentario | Memo(0) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SP_RetencionItem
+  IDPrestamo | Long(4) | Required=Falso
+  Fecha | Date(8) | Required=Falso
+  IDFactura | Long(4) | Required=Falso
+  CodRetencionItemCod | Text(3) | Required=Falso
+  Importe | Single(4) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SP_RetencionItemCod
+  CodRetencionItemCod | Text(3) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SP_RetencionPago
+  IDPrestamo | Long(4) | Required=Falso
+  Fecha | Date(8) | Required=Falso
+  Mes | Integer(2) | Required=Falso
+  Anio | Integer(2) | Required=Falso
+  Importe | Single(4) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SP_RetencionPrestamo
+  IDPrestamo | Long(4) | Required=Falso
+  CI | Long(4) | Required=Falso
+  Fecha | Date(8) | Required=Falso
+  CodEmpresa | Long(4) | Required=Falso
+  CodMoneda | Text(3) | Required=Falso
+  Importe | Single(4) | Required=Falso
+  Saldo | Single(4) | Required=Falso
+  ImpPago | Single(4) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SP_Trabaja
+  CI | Long(4) | Required=Falso
+  CodEmpresa | Integer(2) | Required=Falso
+  FechaIngreso | Date(8) | Required=Falso
+  FechaBaja | Date(8) | Required=Falso
+  CodBajaMotivo | Long(4) | Required=Falso
+  NroFichaEmpresa | Text(20) | Required=Falso
+  IdTrabaja | Long(4) | Required=Falso
+  FechaIngCasemed | Date(8) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SubsidioCabezal
+  IdSubsidio | Long(4) | Required=Falso
+  Mes | Byte(1) | Required=Falso
+  Anio | Integer(2) | Required=Falso
+  CI | Long(4) | Required=Falso
+  Liquidar | Boolean(1) | Required=Falso
+  ValorJornal | Single(4) | Required=Falso
+  Dias | Integer(2) | Required=Falso
+  ImpNominal | Double(8) | Required=Falso
+  ImpAguinaldo | Double(8) | Required=Falso
+  ImpLiquido | Double(8) | Required=Falso
+  NroRecibo | Long(4) | Required=Falso
+  FechaPago | Date(8) | Required=Falso
+  CodBanco | Long(4) | Required=Falso
+  NroCuenta | Text(50) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: tmp_Anticipados
+  IDPrestamo | Long(4) | Required=Falso
+
+TABLE: tmp_FacturasAnticipadas
+  IdPrestamo | Long(4) | Required=Falso
+  IDFactura | Long(4) | Required=Falso
+
+TABLE: xUsrParam
+  login | Text(8) | Required=Falso
+  clave | Text(100) | Required=Falso
+  orden | Integer(2) | Required=Falso
+  value1 | Text(255) | Required=Falso
+  value2 | Text(255) | Required=Falso
+  value3 | Text(255) | Required=Falso
+  value4 | Text(255) | Required=Falso
+  value5 | Text(255) | Required=Falso
+
+=== QUERIES ===
+QUERY: 1000_AfiladoCI2Nombre
+  SQL: PARAMETERS pCI Long;
+SELECT SP_Afiliado.CI AS CI, [SP_Afiliado].[Nombres] & " " & [SP_Afiliado].[Apellido1] & IIf([SP_Afiliado].[Apellido2] & ""<>""," " ,"") & [SP_Afiliado].[Apellido2] AS DescAfiliado, SP_Afiliado.Direccion, SP_Afiliado.Telefono
+FROM SP_Afiliado
+WHERE (((SP_Afiliado.CI)=[pCI]));
+
+
+QUERY: 1000_AfiliadoImpLiquidoxMes
+  SQL: SELECT SP_ImpLiquido.CI, SP_ImpLiquido.Anio, SP_ImpLiquido.Mes, Sum(SP_ImpLiquido.Importe) AS Importe, First(SP_ImpLiquido.AnioMes) AS AnioMes
+FROM SP_ImpLiquido INNER JOIN SP_Trabaja ON (SP_ImpLiquido.Fechaingreso = SP_Trabaja.FechaIngreso) AND (SP_ImpLiquido.CodEmpresa = SP_Trabaja.CodEmpresa) AND (SP_ImpLiquido.CI = SP_Trabaja.CI)
+WHERE (((SP_Trabaja.FechaBaja) Is Null Or (SP_Trabaja.FechaBaja)>Date()) AND ((SP_Trabaja.FechaIngreso)<=Date()))
+GROUP BY SP_ImpLiquido.CI, SP_ImpLiquido.Anio, SP_ImpLiquido.Mes;
+
+
+QUERY: 1000_AfiliadoPromedioMeses
+  SQL: PARAMETERS pCI Long, pAnioMesIni Long, pAnioMesFin Long, pMeses Short;
+SELECT Sum([1000_AfiliadoImpLiquidoxMes].Importe)/[pMeses] AS Importe
+FROM 1000_AfiliadoImpLiquidoxMes
+WHERE ((([1000_AfiliadoImpLiquidoxMes].CI)=[pCI]) AND (([1000_AfiliadoImpLiquidoxMes].AnioMes) Between [pAnioMesIni] And [pAnioMesFin]));
+
+
+QUERY: 1000_Borrar_CuadroAmortizacion_Tmp
+  SQL: DELETE SP_CuadroAmortizacion_Tmp.*
+FROM SP_CuadroAmortizacion_Tmp;
+
+
+QUERY: 1000_PrestamoxIDPrestamo
+  SQL: PARAMETERS pIdPrestamo Long;
+SELECT SP_Prestamo.*
+FROM SP_Prestamo
+WHERE (((SP_Prestamo.IdPrestamo)=[pIdPrestamo]));
+
+
+QUERY: 1001_AfiliadoImpLiquidoxCI
+  SQL: PARAMETERS pCI Long;
+SELECT SP_ImpLiquido.CI, SP_ImpLiquido.CodEmpresa, SP_Empresa.Nombre AS DescEmpresa, SP_ImpLiquido.Anio, SP_ImpLiquido.Mes, SP_ImpLiquido.Importe, SP_ImpLiquido.AnioMes
+FROM (SP_Empresa INNER JOIN SP_ImpLiquido ON SP_Empresa.CodEmpresa = SP_ImpLiquido.CodEmpresa) INNER JOIN SP_Trabaja ON (SP_ImpLiquido.Fechaingreso = SP_Trabaja.FechaIngreso) AND (SP_ImpLiquido.CI = SP_Trabaja.CI) AND (SP_ImpLiquido.CodEmpresa = SP_Trabaja.CodEmpresa)
+WHERE (((SP_ImpLiquido.CI)=[pCI]) AND ((SP_Trabaja.FechaBaja) Is Null Or (SP_Trabaja.FechaBaja)>Date()))
+ORDER BY SP_ImpLiquido.CodEmpresa, SP_ImpLiquido.Anio DESC , SP_ImpLiquido.Mes DESC;
+
+
+QUERY: 1001_FacturaIdMax
+  SQL: SELECT Max(SP_Factura.IdFactura) AS Max
+FROM SP_Factura;
+
+
+QUERY: 1001_FacturaMax
+  SQL: SELECT Max(SP_Factura.NroFactura) AS Max
+FROM SP_Factura;
+
+
+QUERY: 1001_PrestamoMax
+  SQL: SELECT Max(SP_Prestamo.IdPrestamo) AS Max
+FROM SP_Prestamo;
+
+
+QUERY: 1002_ActualizarPrestamoEstado
+  SQL: PARAMETERS pIdPrestamo Long, pCodPrestamoEstado Text, pUsr Text;
+UPDATE SP_Prestamo SET SP_Prestamo.CodPrestamoEstado = [pCodPrestamoEstado], SP_Prestamo.Usr = [pUsr], SP_Prestamo.Ts = Now()
+WHERE (((SP_Prestamo.IDPrestamo)=[pIdPrestamo]));
+
+
+QUERY: 1002_ActualizarPrestamoxCuota
+  SQL: PARAMETERS pIdPrestamo Long, pImporte IEEESingle;
+UPDATE SP_Prestamo SET SP_Prestamo.CuotasPagas = SP_Prestamo.CuotasPagas + 1, SP_Prestamo.Saldo = SP_Prestamo.Saldo - [pImporte]
+WHERE (((SP_Prestamo.IdPrestamo)=[pIdPrestamo]));
+
+
+QUERY: 1002_ActualizarTasaCambio
+  SQL: PARAMETERS pCodMoneda Text, pTasaCambio IEEESingle;
+UPDATE SP_Moneda SET SP_Moneda.TasaCambio = [pTasaCambio]
+WHERE (((SP_Moneda.CodMoneda)=[pCodMoneda]));
+
+
+QUERY: 1002_CuadroAmortizacionxIDPrestamo
+  SQL: PARAMETERS pIDPrestamo Long;
+SELECT SP_CuadroAmortizacion.*
+FROM SP_CuadroAmortizacion
+WHERE (((SP_CuadroAmortizacion.IdPrestamo)=[pIDPrestamo]));
+
+
+QUERY: 1002_CuadroAmortizacionxIDPrestamoNroCuota
+  SQL: PARAMETERS pIdPrestamo Long, pNroCuota Short;
+SELECT SP_CuadroAmortizacion.IDPrestamo, SP_CuadroAmortizacion.NroCuota, SP_CuadroAmortizacion.Monto, SP_CuadroAmortizacion.ImporteCuota, SP_CuadroAmortizacion.Interes, SP_CuadroAmortizacion.Amortizacion, SP_CuadroAmortizacion.Saldo, SP_CuadroAmortizacion.Usr, SP_CuadroAmortizacion.Ts
+FROM SP_CuadroAmortizacion
+WHERE (((SP_CuadroAmortizacion.IDPrestamo)=[pIdPrestamo]) AND ((SP_CuadroAmortizacion.NroCuota)=[pNroCuota]));
+
+
+QUERY: 1002_CuotasxIDPrestamo
+  SQL: PARAMETERS [pIdPrestamo] Long;
+SELECT SP_Cuota.IdPrestamo, SP_Cuota.Nro, SP_Cuota.FechaVencimiento, SP_Cuota.FechaPago, SP_Cuota.CodItemPago, SP_Cuota.Importe, SP_Cuota.CodMoneda, SP_Cuota.CodCuotaEstado, SP_CuotaEstado.Descrip AS DescCuotaEstado, SP_Cuota.Usr, SP_Cuota.Ts
+FROM SP_Cuota INNER JOIN SP_CuotaEstado ON SP_Cuota.CodCuotaEstado = SP_CuotaEstado.CodCuotaEstado
+WHERE (((SP_Cuota.IdPrestamo)=[pIdPrestamo]));
+
+
+QUERY: 1002_CuotasxIDPrestamoCuotaEstado
+  SQL: PARAMETERS pIdPrestamo Long, pCodCuotaEstado Text;
+SELECT SP_Cuota.*
+FROM SP_Cuota
+WHERE (((SP_Cuota.IdPrestamo)=[pIdPrestamo]) AND ((SP_Cuota.CodCuotaEstado)=[pCodCuotaEstado]));
+
+
+QUERY: 1002_CuotaxIDPrestamoNro
+  SQL: PARAMETERS pIdPrestamo Long, pNro Short;
+SELECT SP_Cuota.*
+FROM SP_Cuota
+WHERE (((SP_Cuota.IdPrestamo)=[pIdPrestamo]) AND ((SP_Cuota.Nro)=[pNro]));
+
+
+QUERY: 1002_FacturaDetallexIDFactura
+  SQL: PARAMETERS pIdFactura Long;
+SELECT SP_FacturaDetalle.*
+FROM SP_FacturaDetalle
+WHERE (((SP_FacturaDetalle.IdFactura)=[pIdFactura]));
+
+
+QUERY: 1002_FacturaDetallexIDFacturaCodItemPago
+  SQL: PARAMETERS pIdFactura Long, pCodItemPago Text;
+SELECT SP_FacturaDetalle.*, SP_FacturaDetalle.CodItemPago
+FROM SP_FacturaDetalle
+WHERE (((SP_FacturaDetalle.IdFactura)=[pIdFactura]) AND ((SP_FacturaDetalle.CodItemPago)=[pCodItemPago]));
+
+
+QUERY: 1002_FacturasEmitidasXIDPrestamo
+  SQL: PARAMETERS pIDPrestamo Long;
+SELECT SP_Factura.IDFactura, SP_Factura.NroFactura, SP_Factura.NroEmpresa, SP_Factura.IdPrestamo, SP_Factura.FechaEmitida, SP_Factura.FechaVencimiento, SP_Factura.FechaPago, SP_Factura.CodMoneda, SP_Factura.Importe, SP_Factura.CodFacturaEstado, SP_FacturaEstado.Descrip AS DescFacturaEstado, SP_Factura.TasaCambio, SP_Factura.CodigoBarra, SP_Factura.ImpAmortizable, SP_Factura.ImpInteres, SP_Factura.Usr, SP_Factura.Ts
+FROM SP_Factura INNER JOIN SP_FacturaEstado ON SP_Factura.CodFacturaEstado = SP_FacturaEstado.CodFacturaEstado
+WHERE (((SP_Factura.IdPrestamo)=[pIDPrestamo]) AND ((SP_Factura.CodFacturaEstado)="emi"));
+
+
+QUERY: 1002_FacturasxIDPrestamo
+  SQL: PARAMETERS pIDPrestamo Long;
+SELECT SP_Factura.IDFactura, SP_Factura.NroFactura, SP_Factura.NroEmpresa, SP_Factura.IdPrestamo, SP_Factura.FechaEmitida, SP_Factura.FechaVencimiento, SP_Factura.FechaPago, SP_Factura.CodMoneda, SP_Factura.Importe, SP_Factura.CodFacturaEstado, SP_FacturaEstado.Descrip AS DescFacturaEstado, SP_Factura.TasaCambio, SP_Factura.CodigoBarra, SP_Factura.ImpAmortizable, SP_Factura.ImpInteres, SP_Factura.Usr, SP_Factura.Ts, SP_Factura.CodFacturaTipo
+FROM SP_Factura INNER JOIN SP_FacturaEstado ON SP_Factura.CodFacturaEstado = SP_FacturaEstado.CodFacturaEstado
+WHERE (((SP_Factura.IdPrestamo)=[pIDPrestamo]))
+ORDER BY SP_Factura.IDFactura;
+
+
+QUERY: 1002_FacturaxIDFactura
+  SQL: PARAMETERS pIDFactura Long;
+SELECT SP_Factura.*
+FROM SP_Factura INNER JOIN SP_FacturaEstado ON SP_Factura.CodFacturaEstado = SP_FacturaEstado.CodFacturaEstado
+WHERE (((SP_Factura.IDFactura)=[pIDFactura]));
+
+
+QUERY: 1002_FacturaxNroFactura
+  SQL: PARAMETERS pNroFactura Long;
+SELECT SP_Factura.IDFactura, SP_Factura.NroFactura, SP_Factura.NroEmpresa, SP_Factura.IdPrestamo, SP_Factura.FechaEmitida, SP_Factura.FechaVencimiento, SP_Factura.FechaPago, SP_Factura.CodMoneda, SP_Factura.Importe, SP_Factura.CodFacturaEstado, SP_FacturaEstado.Descrip AS DescFacturaEstado, SP_Factura.TasaCambio, SP_Factura.CodigoBarra, SP_Factura.Usr, SP_Factura.Ts
+FROM SP_Factura INNER JOIN SP_FacturaEstado ON SP_Factura.CodFacturaEstado = SP_FacturaEstado.CodFacturaEstado
+WHERE (((SP_Factura.NroFactura)=[pNroFactura]));
+
+
+QUERY: 1002_LiquidoAnioMesxCI
+  SQL: PARAMETERS pCI Long, pMesIni Long, pMesFin Long;
+SELECT DISTINCT SP_ImpLiquido.AnioMes AS AnioMes
+FROM SP_ImpLiquido INNER JOIN SP_Trabaja ON (SP_ImpLiquido.Fechaingreso = SP_Trabaja.FechaIngreso) AND (SP_ImpLiquido.CodEmpresa = SP_Trabaja.CodEmpresa) AND (SP_ImpLiquido.CI = SP_Trabaja.CI)
+WHERE (((SP_ImpLiquido.CI)=[pCI]) AND ((SP_Trabaja.FechaBaja) Is Null) AND ((SP_ImpLiquido.AnioMes) Between [pMesIni] And [pMesFin]));
+
+
+QUERY: 1002_PagoItemPagoxIDFactura
+  SQL: PARAMETERS pIdFactura Long;
+SELECT SP_Pago_ItemPago.*
+FROM SP_Pago_ItemPago
+WHERE (((SP_Pago_ItemPago.IdFactura)=[pIdFactura]));
+
+
+QUERY: 1002_PagoxIDFactura
+  SQL: PARAMETERS pIdFactura Long;
+SELECT SP_Pago.*
+FROM SP_Pago
+WHERE (((SP_Pago.IdFactura)=[pIdFactura]));
+
+
+QUERY: 1002_PrestamoAbiertoxCI
+  SQL: PARAMETERS pCI Long, pCodPrestamoTipo Text;
+SELECT SP_Prestamo.*
+FROM SP_Prestamo
+WHERE (((SP_Prestamo.CI)=[pCI]) AND ((SP_Prestamo.CodPrestamoEstado) Not In ("anu","can","car")) AND ((SP_Prestamo.CodPrestamoTipo)=[pCodPrestamoTipo]));
+
+
+QUERY: 1002_PrestamoxIDPrestamo
+  SQL: PARAMETERS pIdPrestamo Long;
+SELECT SP_Prestamo.*
+FROM SP_Prestamo
+WHERE (((SP_Prestamo.IdPrestamo)=[pIdPrestamo]));
+
+
+QUERY: 1002_TasasxCodMoneda
+  SQL: PARAMETERS pCodMoneda Text;
+SELECT SP_Moneda.TasaCambio, SP_Moneda.TasaMora, SP_Moneda.Tasa, SP_Moneda.CodAbitab
+FROM SP_Moneda
+WHERE (((SP_Moneda.CodMoneda)=[pCodMoneda]));
+
+
+QUERY: 1003_CuotasPendientes
+  SQL: PARAMETERS pIdPrestamo Long, pCodCuotaEstado Text;
+SELECT SP_Cuota.IDPrestamo, SP_Cuota.Nro, SP_Cuota.FechaVencimiento, SP_Cuota.FechaPago, SP_Cuota.CodItemPago, SP_Cuota.Importe, SP_Cuota.CodMoneda, SP_Cuota.CodCuotaEstado, SP_CuotaEstado.Descrip AS DescCuotaEstado, SP_Cuota.Usr, SP_Cuota.Ts
+FROM SP_Cuota INNER JOIN SP_CuotaEstado ON SP_Cuota.CodCuotaEstado = SP_CuotaEstado.CodCuotaEstado
+WHERE (((SP_Cuota.IDPrestamo)=[pIdPrestamo]) AND ((SP_Cuota.FechaVencimiento)<Date()) AND ((SP_Cuota.CodCuotaEstado)=[pCodCuotaEstado]));
+
+
+QUERY: 1003_CuotaxIDPrestamoNro
+  SQL: PARAMETERS pIDPrestamo Long, pNro Short;
+SELECT SP_Cuota.IDPrestamo, SP_Cuota.Nro, SP_Cuota.FechaVencimiento, SP_Cuota.FechaPago, SP_Cuota.CodItemPago, SP_Cuota.Importe, SP_Cuota.CodMoneda, SP_Cuota.CodCuotaEstado, SP_Cuota.Usr, SP_Cuota.Ts
+FROM SP_Cuota
+WHERE (((SP_Cuota.IDPrestamo)=[pIDPrestamo]) AND ((SP_Cuota.Nro)=[pNro]));
+
+
+QUERY: 1003_CuotaxNroFactura
+  SQL: PARAMETERS pNroFactura Long;
+SELECT SP_Cuota.Importe, SP_Cuota.CodCuotaEstado, SP_Cuota.FechaPago, SP_Cuota.IDPrestamo, SP_Cuota.Nro
+FROM (SP_FacturaDetalle INNER JOIN SP_Factura ON SP_FacturaDetalle.IdFactura = SP_Factura.IDFactura) INNER JOIN SP_Cuota ON (SP_FacturaDetalle.NroCuota = SP_Cuota.Nro) AND (SP_Factura.IdPrestamo = SP_Cuota.IDPrestamo)
+WHERE (((SP_Factura.NroFactura)=[pNroFactura]));
+
+
+QUERY: 1003_FacturasxIDPrestamo
+  SQL: PARAMETERS pIDPrestamo Long;
+SELECT SP_Factura.NroFactura, SP_Factura.FechaEmitida, SP_Factura.FechaVencimiento, SP_Factura.CodMoneda, SP_Moneda.Descrip AS Moneda, SP_Factura.Importe, SP_Factura.IDFactura, SP_Factura.CodFacturaEstado, SP_FacturaEstado.Descrip AS DescFacturaEstado, SP_Factura.ImpAmortizable, SP_Factura.ImpInteres, SP_Factura.FechaPago
+FROM (SP_Factura INNER JOIN SP_Moneda ON SP_Factura.CodMoneda = SP_Moneda.CodMoneda) INNER JOIN SP_FacturaEstado ON SP_Factura.CodFacturaEstado = SP_FacturaEstado.CodFacturaEstado
+WHERE (((SP_Factura.IdPrestamo)=[pIDPrestamo]))
+ORDER BY SP_Factura.NroFactura;
+
+
+QUERY: 1003_FacturasxIDPrestamoEstado
+  SQL: PARAMETERS pIDPrestamo Long, pCodFacturaEstado Text;
+SELECT SP_Factura.IDFactura, SP_Factura.NroFactura, SP_Factura.NroEmpresa, SP_Factura.IdPrestamo, SP_Factura.FechaEmitida, SP_Factura.FechaVencimiento, SP_Factura.FechaPago, SP_Factura.CodMoneda, SP_Moneda.Descrip AS DescMoneda, SP_Factura.Importe, SP_Factura.CodFacturaEstado, SP_Factura.TasaCambio, SP_Factura.CodigoBarra, SP_Factura.ImpAmortizable, SP_Factura.ImpInteres, SP_Factura.Usr, SP_Factura.Ts, SP_Factura.CodFacturaTipo
+FROM SP_Factura INNER JOIN SP_Moneda ON SP_Factura.CodMoneda = SP_Moneda.CodMoneda
+WHERE (((SP_Factura.IdPrestamo)=[pIDPrestamo]) AND ((SP_Factura.CodFacturaEstado)=[pCodfacturaEstado]));
+
+
+QUERY: 1003_PagosSingleXIDPrestamo
+  SQL: PARAMETERS pIdPrestamo Long;
+SELECT SP_Pago.*
+FROM SP_Pago
+WHERE IdFactura in (select IdFactura from SP_Factura where IdPrestamo=[pIdPrestamo]);
+
+
+QUERY: 1003_PagosxIDPrestamo
+  SQL: PARAMETERS pIDPrestamo Long;
+SELECT SP_Factura.IDFactura, SP_Factura.NroFactura, SP_Pago.Fecha, SP_Pago.Importe, SP_PagoOrigen.CodPagoOrigen, SP_PagoOrigen.Descrip AS DescPagoOrigen, SP_Factura.Usr, SP_Factura.Ts
+FROM (SP_Pago INNER JOIN SP_Factura ON SP_Pago.IDFactura = SP_Factura.IDFactura) INNER JOIN SP_PagoOrigen ON SP_Pago.CodPagoOrigen = SP_PagoOrigen.CodPagoOrigen
+WHERE (((SP_Factura.IdPrestamo)=[pIDPrestamo]));
+
+
+QUERY: 1003_PagoxNroFactura
+  SQL: PARAMETERS pNroFactura Long;
+SELECT SP_Pago.*
+FROM SP_Pago INNER JOIN SP_Factura ON SP_Pago.IdFactura = SP_Factura.IdFactura
+WHERE (((SP_Factura.NroFactura)=[pNroFactura]));
+
+
+QUERY: 1003_SaldoxNroFactura
+  SQL: PARAMETERS pNroFactura Long;
+SELECT SP_CuadroAmortizacion.Saldo
+FROM (SP_FacturaDetalle INNER JOIN SP_Factura ON SP_FacturaDetalle.IdFactura = SP_Factura.IdFactura) INNER JOIN SP_CuadroAmortizacion ON (SP_Factura.IdPrestamo = SP_CuadroAmortizacion.IdPrestamo) AND (SP_FacturaDetalle.NroCuota = SP_CuadroAmortizacion.NroCuota)
+WHERE (((SP_Factura.NroFactura)=[pNroFactura]));
+
+
+QUERY: 1004_ActualizarCuotaEstadoxIDPrestamo
+  SQL: PARAMETERS pIDPrestamo Long, pCodCuotaEstado Text;
+UPDATE SP_Cuota SET SP_Cuota.CodCuotaEstado = [pCodCuotaEstado]
+WHERE (((SP_Cuota.IDPrestamo)=[pIDPrestamo]));
+
+
+QUERY: 1004_ActualizarFacturaEstadoxIDFactura
+  SQL: PARAMETERS pIDFactura Long, pCodFacturaEstado Text;
+UPDATE SP_Factura SET SP_Factura.CodFacturaEstado = [pCodFacturaEstado]
+WHERE (((SP_Factura.IDFactura)=[pIDFactura]));
+
+
+QUERY: 1004_ActualizarFacturaEstadoxIDPrestamo
+  SQL: PARAMETERS pIDPrestamo Long, pCodFacturaEstado Text;
+UPDATE SP_Factura SET SP_Factura.CodFacturaEstado = [pCodFacturaEstado]
+WHERE (((SP_Factura.IdPrestamo)=[pIDPrestamo]));
+
+
+QUERY: 1004_ActualizarPrestamoEstadoxIDPrestamo
+  SQL: PARAMETERS pIDPrestamo Long, pCodPrestamoEstado Text;
+UPDATE SP_Prestamo SET SP_Prestamo.CodPrestamoEstado = [pCodPrestamoEstado]
+WHERE (((SP_Prestamo.IdPrestamo)=[pIDPrestamo]));
+
+
+QUERY: 1005_ActualizarFacturaCancelarxIDPrestamo
+  SQL: PARAMETERS pIDPrestamo Long, pCodFacturaEstadoActual Text, pCodFacturaEstadoNuevo Text, pUsr Text;
+UPDATE SP_Factura SET SP_Factura.CodFacturaEstado = [pCodFacturaEstadoNuevo], SP_Factura.Usr = [pUsr], SP_Factura.FechaPago = Now()
+WHERE (((SP_Factura.CodFacturaEstado)=[pCodFacturaEstadoActual]) AND ((SP_Factura.IdPrestamo)=[pIDPrestamo]));
+
+
+QUERY: 1006_Borrar_rptPlanes_Tmp
+  SQL: DELETE *
+FROM rptPlanes_Tmp;
+
+
+QUERY: 1007_Borrar_ImpLiquido
+  SQL: PARAMETERS pCI Long, pCodEmpresa Short, pMes Short, pAnio Short;
+DELETE SP_ImpLiquido.*, SP_Trabaja.FechaBaja, SP_ImpLiquido.CI, SP_ImpLiquido.CodEmpresa, SP_ImpLiquido.Mes, SP_ImpLiquido.Anio
+FROM SP_ImpLiquido INNER JOIN SP_Trabaja ON (SP_ImpLiquido.Fechaingreso = SP_Trabaja.FechaIngreso) AND (SP_ImpLiquido.CodEmpresa = SP_Trabaja.CodEmpresa) AND (SP_ImpLiquido.CI = SP_Trabaja.CI)
+WHERE (((SP_Trabaja.FechaBaja) Is Null) AND ((SP_ImpLiquido.CI)=[pCI]) AND ((SP_ImpLiquido.CodEmpresa)=[pCodEmpresa]) AND ((SP_ImpLiquido.Mes)=[pMes]) AND ((SP_ImpLiquido.Anio)=[pAnio]));
+
+
+QUERY: 1007_ImpLiquidoxCICodEmpresa
+  SQL: PARAMETERS pCI Long, pCodEmpresa Short;
+SELECT SP_ImpLiquido.CI, SP_ImpLiquido.CodEmpresa, SP_ImpLiquido.Anio, SP_ImpLiquido.Mes, SP_ImpLiquido.Importe
+FROM SP_ImpLiquido
+WHERE (((SP_ImpLiquido.CI)=[pCI]) AND ((SP_ImpLiquido.CodEmpresa)=[pCodEmpresa]))
+ORDER BY SP_ImpLiquido.Anio DESC , SP_ImpLiquido.Mes DESC;
+
+
+QUERY: 1007_Insert_ImpLiquido
+  SQL: PARAMETERS pCI Long, pCodEmpresa Short, pMes Short, pAnio Short, pImporte IEEESingle, pUsr Text;
+INSERT INTO SP_ImpLiquido ( CI, CodEmpresa, Fechaingreso, IdTrabaja, Mes, Anio, AnioMes, Importe, Usr, Ts )
+SELECT SP_Trabaja.CI, SP_Trabaja.CodEmpresa, SP_Trabaja.FechaIngreso, SP_Trabaja.IdTrabaja, [pMes] AS Expr1, [pAnio] AS Expr2, Val(Format([pAnio]) & Format([pMes],"00")) AS Expr3, [pImporte] AS Expr6, [pUsr] AS Expr4, Now() AS Expr5
+FROM SP_Trabaja
+WHERE (((SP_Trabaja.CI)=[pCI]) AND ((SP_Trabaja.CodEmpresa)=[pCodEmpresa]));
+
+
+QUERY: 1007_TrabajaxCI
+  SQL: PARAMETERS pCI Long;
+SELECT SP_Trabaja.CI, SP_Trabaja.CodEmpresa, SP_Trabaja.FechaIngreso, SP_Trabaja.IdTrabaja, SP_Empresa.Nombre AS DescEmpresa
+FROM SP_Trabaja INNER JOIN SP_Empresa ON SP_Trabaja.CodEmpresa = SP_Empresa.CodEmpresa
+WHERE (((SP_Trabaja.CI)=[pCI]) AND ((SP_Trabaja.FechaBaja) Is Null));
+
+
+QUERY: 1008_Borrar_rptCheque_Tmp
+  SQL: DELETE *
+FROM rptCheque_Tmp;
+
+
+QUERY: 1009_Borrar_rptVale_Tmp
+  SQL: DELETE rptVale_Tmp.*
+FROM rptVale_Tmp;
+
+
+QUERY: 1009_MinFechaVencimiento
+  SQL: SELECT SP_Cuota.IDPrestamo, Min(SP_Cuota.FechaVencimiento) AS FechaVencimiento
+FROM SP_Cuota
+GROUP BY SP_Cuota.IDPrestamo;
+
+
+QUERY: 1009_PrestamoCesion
+  SQL: PARAMETERS pIDPrestamo Long;
+SELECT SP_Prestamo.IDPrestamo, SP_Prestamo.CI, SP_Afiliado.Nombres, SP_Afiliado.Apellido1, SP_Afiliado.Apellido2, SP_Afiliado.Direccion, SP_Moneda.Descrip AS DescMoneda, SP_Moneda.DescripLarga AS DescMonedaLarga, SP_Prestamo.Cuotas, SP_Prestamo.ImporteCuota, SP_Prestamo.Tasa, SP_Prestamo.Importe
+FROM (SP_Prestamo INNER JOIN SP_Moneda ON SP_Prestamo.CodMoneda = SP_Moneda.CodMoneda) INNER JOIN SP_Afiliado ON SP_Prestamo.CI = SP_Afiliado.CI
+WHERE (((SP_Prestamo.IDPrestamo)=[pIDPrestamo]));
+
+
+QUERY: 1009_PrestamoVale
+  SQL: PARAMETERS pIDPrestamo Long;
+SELECT SP_Prestamo.IDPrestamo, SP_Prestamo.CI, SP_Afiliado.Nombres, SP_Afiliado.Apellido1, SP_Afiliado.Apellido2, SP_Afiliado.Direccion, SP_Moneda.Descrip AS DescMoneda, SP_Moneda.DescripLarga AS DescMonedaLarga, SP_Prestamo.Cuotas, SP_Prestamo.ImporteCuota, [1009_MinFechaVencimiento].FechaVencimiento, SP_Prestamo.Tasa, SP_Prestamo.Importe
+FROM ((SP_Prestamo INNER JOIN SP_Moneda ON SP_Prestamo.CodMoneda = SP_Moneda.CodMoneda) INNER JOIN SP_Afiliado ON SP_Prestamo.CI = SP_Afiliado.CI) INNER JOIN 1009_MinFechaVencimiento ON SP_Prestamo.IDPrestamo = [1009_MinFechaVencimiento].IDPrestamo
+WHERE (((SP_Prestamo.IDPrestamo)=[pIDPrestamo]));
+
+
+QUERY: 1010_CtrlPrestamoEstado
+  SQL: PARAMETERS pCodPrestamoEstadoSig Text, pCodPrestamoEstadoAnt Text;
+SELECT SP_CtrlPrestamoEstado.PrestamoEstadoSig, SP_CtrlPrestamoEstado.PrestamoEstadoAnt
+FROM SP_CtrlPrestamoEstado
+WHERE (((SP_CtrlPrestamoEstado.PrestamoEstadoSig)=[pCodPrestamoestadoSig]) AND ((SP_CtrlPrestamoEstado.PrestamoEstadoAnt)=[pCodPrestamoestadoAnt]));
+
+
+QUERY: 1011_Prestamo_MinFechaVencimiento
+  SQL: SELECT SP_Cuota.IDPrestamo, Min(SP_Cuota.FechaVencimiento) AS FechaVencimiento
+FROM SP_Cuota
+WHERE (((SP_Cuota.CodCuotaEstado)<>"anu"))
+GROUP BY SP_Cuota.IDPrestamo;
+
+
+QUERY: 1015_Borrar_ImpLiquidoxEmpresaAnioMes
+  SQL: PARAMETERS pCodEmpresa Long, pMes Short, pAnio Short;
+DELETE SP_ImpLiquido.*, SP_ImpLiquido.CodEmpresa, SP_ImpLiquido.Mes, SP_ImpLiquido.Anio
+FROM SP_ImpLiquido
+WHERE (((SP_ImpLiquido.CodEmpresa)=[pCodEmpresa]) AND ((SP_ImpLiquido.Mes)=[pMes]) AND ((SP_ImpLiquido.Anio)=[pAnio]));
+
+
+QUERY: 1015_CargaLiquidos
+  SQL: SELECT CargaLiquidos.cedula*10+ CargaLiquidos.chkdig AS CI, CargaLiquidos.imphaberes- CargaLiquidos.impdescuen AS Importe
+FROM CargaLiquidos;
+
+
+QUERY: 1015_ImpLiquidoxEmpresaAnioMes
+  SQL: PARAMETERS pCodEmpresa Long, pMes Short, pAnio Short;
+SELECT SP_ImpLiquido.*
+FROM SP_ImpLiquido
+WHERE (((SP_ImpLiquido.CodEmpresa)=[pCodEmpresa]) AND ((SP_ImpLiquido.Mes)=[pMes]) AND ((SP_ImpLiquido.Anio)=[pAnio]));
+
+
+QUERY: 1015_Insert_Liquidos
+  SQL: PARAMETERS pCodEmpresa Short, pMes Short, pAnio Short, pUsr Text;
+INSERT INTO SP_ImpLiquido ( CodEmpresa, Fechaingreso, CI, Importe, IdTrabaja, Mes, Anio, AnioMes, Usr, Ts )
+SELECT SP_Trabaja.CodEmpresa, SP_Trabaja.FechaIngreso, [1015_CargaLiquidos].CI, [1015_CargaLiquidos].Importe, SP_Trabaja.IdTrabaja, [pMes] AS Expr1, [pAnio] AS Expr2, Val([pAnio] & Format([pMes],"00")) AS Expr5, [pUsr] AS Expr3, Now() AS Expr4
+FROM SP_Trabaja INNER JOIN 1015_CargaLiquidos ON SP_Trabaja.CI = [1015_CargaLiquidos].CI
+WHERE SP_Trabaja.CodEmpresa=[pCodEmpresa] 
+AND (SP_Trabaja.FechaBaja Is Null Or Val(Format(SP_Trabaja.FechaBaja, "yyyymm"))>Val([pAnio] & Format([pMes],"00"))) AND Val(Format([SP_Trabaja].[FechaIngreso],"yyyymm"))<=Val([pAnio] & Format([pMes],"00"));
+
+
+QUERY: 1015_TrabajaxMes
+  SQL: PARAMETERS pCI Long, pCodEmpresa Short, pAnio Short, pMes Short;
+SELECT SP_Trabaja.FechaIngreso, SP_Trabaja.IdTrabaja, SP_Trabaja.CodEmpresa
+FROM SP_Trabaja
+WHERE Val(Format([SP_Trabaja].[FechaIngreso],"yyyymm")) <= Val([pAnio] & Format([pMes],"00")) AND (SP_Trabaja.FechaBaja Is Null OR Val(Format([SP_Trabaja].[FechaBaja],"yyyymm")) > Val([pAnio] & Format([pMes],"00"))) AND SP_Trabaja.CI = [pCI] 
+AND Val(Format([SP_Trabaja].[FechaIngreso],"yyyymm")) <= Val([pAnio] & Format([pMes],"00")) 
+AND SP_Trabaja.CodEmpresa = [pCodEmpresa];
+
+
+QUERY: 1016_AfiliadoCINombre
+  SQL: SELECT SP_Afiliado.CI, SP_Afiliado.Nombres, SP_Afiliado.Apellido1, SP_Afiliado.Apellido2
+FROM SP_Afiliado;
+
+
+QUERY: 1017_Insert_Liquidos_Casemed
+  SQL: PARAMETERS pMes Short, pAnio Short, pUsr Text, pCodEmpresa Short;
+INSERT INTO SP_ImpLiquido ( CI, Mes, Anio, CodEmpresa, Fechaingreso, IdTrabaja, Importe, AnioMes, Usr, Ts )
+SELECT [1017_LiquidoSubsidioxMesAnio].CI, [1017_LiquidoSubsidioxMesAnio].Mes, [1017_LiquidoSubsidioxMesAnio].Anio, SP_Trabaja.CodEmpresa, SP_Trabaja.FechaIngreso, SP_Trabaja.IdTrabaja, [1017_LiquidoSubsidioxMesAnio].ImpLiquido, Val([pAnio] & Format([pMes],"00")) AS Expr5, [pUsr] AS Expr1, Now() AS Expr2
+FROM 1017_LiquidoSubsidioxMesAnio INNER JOIN SP_Trabaja ON [1017_LiquidoSubsidioxMesAnio].CI = SP_Trabaja.CI
+WHERE ((([1017_LiquidoSubsidioxMesAnio].Mes)=[pMes]) AND (([1017_LiquidoSubsidioxMesAnio].Anio)=[pAnio]) AND ((SP_Trabaja.CodEmpresa)=[pCodEmpresa]) AND ((SP_Trabaja.FechaBaja) Is Null) AND ((Val(Format([SP_Trabaja].[FechaIngreso],"yyyymm")))<=Val([pAnio] & Format([pMes],"00")))) OR ((([1017_LiquidoSubsidioxMesAnio].Mes)=[pMes]) AND (([1017_LiquidoSubsidioxMesAnio].Anio)=[pAnio]) AND ((SP_Trabaja.CodEmpresa)=[pCodEmpresa]) AND ((Val(Format([SP_Trabaja].[FechaIngreso],"yyyymm")))<=Val([pAnio] & Format([pMes],"00"))) AND ((Val(Format([SP_Trabaja].[FechaBaja],"yyyymm")))>Val([pAnio] & Format([pMes],"00"))));
+
+
+QUERY: 1017_LiquidoSubsidioxMesAnio
+  SQL: PARAMETERS pMes Short, pAnio Short;
+SELECT SubsidioCabezal.CI, SubsidioCabezal.Mes, SubsidioCabezal.Anio, Sum(SubsidioCabezal.ImpLiquido) AS ImpLiquido
+FROM SubsidioCabezal
+WHERE (((SubsidioCabezal.Liquidar)=True))
+GROUP BY SubsidioCabezal.CI, SubsidioCabezal.Mes, SubsidioCabezal.Anio
+HAVING (((SubsidioCabezal.Mes)=[pMes]) AND ((SubsidioCabezal.Anio)=[pAnio]));
+
+
+QUERY: 1018_ActualizarFacturaImpresaxIDPrestamo
+  SQL: PARAMETERS pIDPrestamo Long, pUsr Text;
+UPDATE SP_Factura SET SP_Factura.Impresiones = Val([SP_Factura].[Impresiones] & "") + 1, SP_Factura.Usr = [pUsr], SP_Factura.Ts = Now()
+WHERE (((SP_Factura.IdPrestamo)=[pIDPrestamo]));
+
+
+QUERY: 1018_ActualizarFacturaImpresaxNroFactura
+  SQL: PARAMETERS pNroFactura Long, pUsr Text;
+UPDATE SP_Factura SET SP_Factura.Impresiones = Val([SP_Factura].[Impresiones] & "") + 1, SP_Factura.Usr = [pUsr], SP_Factura.Ts = Now()
+WHERE (((SP_Factura.NroFactura)=[pNroFactura]));
+
+
+QUERY: 1019_BorrarCuotasxIDPrestamo
+  SQL: PARAMETERS pIDPrestamo Long;
+DELETE SP_Cuota.*, SP_Cuota.IDPrestamo
+FROM SP_Cuota
+WHERE (((SP_Cuota.IDPrestamo)=[pIDPrestamo]));
+
+
+QUERY: 1019_BorrarFacturasxIDPrestamo
+  SQL: PARAMETERS pIDPrestamo Long;
+DELETE SP_Factura.*, SP_Factura.IdPrestamo
+FROM SP_Factura
+WHERE (((SP_Factura.IdPrestamo)=[pIDPrestamo]));
+
+
+QUERY: 1019_CargarLiquidosxMes
+  SQL: SELECT C.CEDULA AS CI, Sum(C.IMPORTE) AS Importe
+FROM CargaLiquidos AS C
+GROUP BY C.CEDULA;
+
+
+QUERY: 1019_Insert_ImpLiquido
+  SQL: PARAMETERS pCI Long, pCodEmpresa Long, pAnioMes Long, pImporte IEEESingle, pUsr Text;
+INSERT INTO SP_ImpLiquido ( CI, CodEmpresa, Fechaingreso, Mes, Anio, Usr, Ts, IdTrabaja, Importe, AnioMes )
+SELECT SP_Trabaja.CI, SP_Trabaja.CodEmpresa, SP_Trabaja.FechaIngreso, Val(Mid(CStr([pAnioMes]),5)) AS Expr1, Val(Mid(CStr([pAnioMes]),1,4)) AS Expr2, [pUsr] AS Expr3, Now() AS Expr4, SP_Trabaja.IdTrabaja, [pImporte] AS Expr5, [pAnioMes] AS Expr6
+FROM SP_Trabaja
+WHERE (((SP_Trabaja.CI)=[pCI]) AND ((SP_Trabaja.CodEmpresa)=[pCodEmpresa]) AND ((SP_Trabaja.FechaBaja) Is Null) AND ((Val(Format([SP_Trabaja].[FechaIngreso],"yyyymm")))<=[pAnioMes])) OR (((SP_Trabaja.CI)=[pCI]) AND ((SP_Trabaja.CodEmpresa)=[pCodEmpresa]) AND ((Val(Format([SP_Trabaja].[FechaIngreso],"yyyymm")))<=[pAnioMes]) AND ((Val(Format([SP_Trabaja].[FechaBaja],"yyyymm")))>[pAnioMes]));
+
+
+QUERY: 1019_UItVtoCuotaxIDPrestamoEstado
+  SQL: PARAMETERS pIDPrestamo Long, pCodCuotaEstado Text;
+SELECT Max(SP_Cuota.FechaVencimiento) AS FechaVencimiento
+FROM SP_Cuota
+WHERE (((SP_Cuota.IDPrestamo)=[pIDPrestamo]) AND ((SP_Cuota.CodCuotaEstado)=[pCodCuotaEstado]));
+
+
+QUERY: 1019_UltVtoCuotaNoPendienteXIDPrestamo
+  SQL: PARAMETERS pIDPrestamo Long;
+SELECT Max(SP_Cuota.FechaVencimiento) AS FechaVencimiento
+FROM SP_Cuota
+WHERE (((SP_Cuota.IDPrestamo)=[pIDPrestamo]) AND ((SP_Cuota.CodCuotaEstado)<>"pen"));
+
+
+QUERY: 1020_BorrarCargaxFechaNroReng
+  SQL: PARAMETERS pFecha DateTime, pNroReng Long;
+DELETE ErrCargaAbitab.Fecha, ErrCargaAbitab.NroReng, ErrCargaAbitab.*
+FROM ErrCargaAbitab
+WHERE (((ErrCargaAbitab.Fecha)=[pFecha]) AND ((ErrCargaAbitab.NroReng)=[pNroReng]));
+
+
+QUERY: 1022_ImporteCuotaPrestamoActivoXCI
+  SQL: PARAMETERS pCI Long;
+SELECT TOP 1 SP_Cuota.Importe, Rs_PrestamoActivo.CodMoneda
+FROM (Rs_PrestamoActivo INNER JOIN SP_Cuota ON Rs_PrestamoActivo.IDPrestamo = SP_Cuota.IDPrestamo) INNER JOIN SP_PrestamoTipo ON Rs_PrestamoActivo.CodPrestamoTipo = SP_PrestamoTipo.CodPrestamoTipo
+WHERE (((Rs_PrestamoActivo.CI)=[pCI]) AND ((SP_PrestamoTipo.TopeaImporte)=True))
+ORDER BY SP_Cuota.Nro;
+
+
+QUERY: 1022_PrestamoActivoXCI
+  SQL: PARAMETERS pCI Long;
+SELECT Rs_PrestamoActivo.*
+FROM Rs_PrestamoActivo INNER JOIN SP_PrestamoTipo ON Rs_PrestamoActivo.CodPrestamoTipo = SP_PrestamoTipo.CodPrestamoTipo
+WHERE (((Rs_PrestamoActivo.CI)=[pCI]) AND ((SP_PrestamoTipo.TopeaImporte)=True));
+
+
+QUERY: 1025_PagoParcialFromPrestamo
+  SQL: PARAMETERS pIDPrestamo Long;
+SELECT SP_PagoParcial.*
+FROM SP_PagoParcial
+WHERE (((SP_PagoParcial.IDPrestamo)=[pIDPrestamo]));
+
+
+QUERY: 1025_TotalPagoParcialPorPrestamo
+  SQL: SELECT Sum([1025_PagoParcialFromPrestamo].Importe) AS Importe
+FROM 1025_PagoParcialFromPrestamo;
+
+
+QUERY: 1026_PagosYFacturasXIDPrestamo
+  SQL: PARAMETERS pIDPrestamo Long;
+SELECT SP_Factura.IDFactura, SP_Factura.NroFactura, SP_Pago.Fecha, SP_Pago.Importe, SP_Factura.Importe AS ImporteFactura, SP_PagoOrigen.CodPagoOrigen, SP_PagoOrigen.Descrip AS DescPagoOrigen, SP_Factura.Usr, SP_Factura.Ts
+FROM (SP_Pago INNER JOIN SP_Factura ON SP_Pago.IDFactura = SP_Factura.IDFactura) INNER JOIN SP_PagoOrigen ON SP_Pago.CodPagoOrigen = SP_PagoOrigen.CodPagoOrigen
+WHERE (((SP_Factura.IdPrestamo)=[pIDPrestamo]));
+
+
+QUERY: 1030_Borrar_rptTIR
+  SQL: DELETE rptTIR_Tmp.*
+FROM rptTIR_Tmp;
+
+
+QUERY: 1030_FacturaFlujo
+  SQL: SELECT SP_Factura.IdPrestamo, Val(Format(SP_Factura.FechaVencimiento,"yyyymm")) AS Mes, SP_Factura.Importe
+FROM SP_Factura
+WHERE (((SP_Factura.CodFacturaEstado)<>"anu"));
+
+
+QUERY: 1030_FlujoTIR
+  SQL: SELECT * FROM 1030_PrestamoFlujo
+UNION ALL SELECT * FROM 1030_FacturaFlujo;
+
+
+QUERY: 1030_Insert_rptTIR
+  SQL: INSERT INTO rptTIR_Tmp ( IDPrestamo, Mes, Importe )
+SELECT [1030_FlujoTIR].IDPrestamo, [1030_FlujoTIR].Mes, Sum([1030_FlujoTIR].Importe) AS SumaDeImporte
+FROM 1030_FlujoTIR
+GROUP BY [1030_FlujoTIR].IDPrestamo, [1030_FlujoTIR].Mes;
+
+
+QUERY: 1030_PrestamoFlujo
+  SQL: SELECT SP_Prestamo.IDPrestamo, Val(Format(SP_Prestamo.FechaCobro,"yyyymm")) AS Mes, -SP_Prestamo.Importe AS Importe
+FROM SP_Prestamo
+WHERE (((SP_Prestamo.CodPrestamoEstado)<>"anu") AND ((SP_Prestamo.FechaCobro) Is Not Null));
+
+
+QUERY: 1050_CuadroAmortizacionFromID
+  SQL: PARAMETERS pIDPrestamo Long;
+SELECT SP_CuadroAmortizacion.*
+FROM SP_CuadroAmortizacion
+WHERE (((SP_CuadroAmortizacion.IDPrestamo)=[pIDPrestamo]))
+ORDER BY SP_CuadroAmortizacion.NroCuota;
+
+
+QUERY: 1100_AfiliadoNombreXCI
+  SQL: PARAMETERS pCI Long;
+SELECT SP_Afiliado.CI, [SP_Afiliado].[Apellido1] & IIf([SP_Afiliado].[Apellido2] & ""<>""," " & [SP_Afiliado].[Apellido2],"") & ", " & [SP_Afiliado].[Nombres] AS DescAfiliado
+FROM SP_Afiliado
+WHERE (((SP_Afiliado.CI)=[pCI]));
+
+
+QUERY: 1100_FacturaRetenidaXNroFactura
+  SQL: PARAMETERS pNroFactura Long;
+SELECT SP_RetencionItem.IDFactura, SP_RetencionItem.CodRetencionItemCod
+FROM SP_RetencionItem INNER JOIN SP_Factura ON SP_RetencionItem.IDFactura = SP_Factura.IDFactura
+WHERE (((SP_RetencionItem.CodRetencionItemCod)="fac") AND ((SP_Factura.NroFactura)=[pNroFactura]));
+
+
+QUERY: 1100_PagoErrorXIDFactura
+  SQL: PARAMETERS pIDFactura Long;
+SELECT SP_PagoError.*
+FROM SP_PagoError
+WHERE (((SP_PagoError.IDFactura)=[pIdFactura]));
+
+
+QUERY: 1100_RetencionAvisoXIDPrestamo
+  SQL: PARAMETERS pIDPrestamo Long;
+SELECT SP_RetencionAviso.IDPrestamo, SP_RetencionAviso.Fecha, SP_RetencionAviso.Comentario, SP_RetencionAviso.Usr, SP_RetencionAviso.Ts
+FROM SP_RetencionAviso
+WHERE (((SP_RetencionAviso.IDPrestamo)=[pIDPrestamo]));
+
+
+QUERY: 1100_RetencionesXIDPrestamo
+  SQL: PARAMETERS pIDPrestamo Long;
+SELECT SP_Retencion.IDPrestamo, SP_Retencion.Fecha, SP_Retencion.TipoCambio, SP_Retencion.Importe AS Total, SP_RetencionItemCod.Descrip AS DescRetencionItemCod, SP_RetencionItem.IDFactura, SP_RetencionItem.Importe, SP_Retencion.Observaciones
+FROM SP_Retencion INNER JOIN (SP_RetencionItem INNER JOIN SP_RetencionItemCod ON SP_RetencionItem.CodRetencionItemCod = SP_RetencionItemCod.CodRetencionItemCod) ON (SP_Retencion.IDPrestamo = SP_RetencionItem.IDPrestamo) AND (SP_Retencion.Fecha = SP_RetencionItem.Fecha)
+WHERE (((SP_Retencion.IDPrestamo)=[pIDPrestamo]));
+
+
+QUERY: 1100_RetencionItemFacturaXIDPrestamoFecha
+  SQL: PARAMETERS pIDPrestamo Long, pFecha DateTime;
+SELECT SP_RetencionItem.*
+FROM SP_RetencionItem
+WHERE (((SP_RetencionItem.IDPrestamo)=[pIDPrestamo]) AND ((SP_RetencionItem.Fecha)=[pFecha]) AND ((SP_RetencionItem.CodRetencionItemCod)="fac"));
+
+
+QUERY: 1100_RetencionItemXIDPrestamo
+  SQL: PARAMETERS pIDPrestamo Long;
+SELECT SP_RetencionItem.*
+FROM SP_RetencionItem
+WHERE (((SP_RetencionItem.IDPrestamo)=[pIDPrestamo]));
+
+
+QUERY: 1100_RetencionPagoXClave
+  SQL: PARAMETERS pIDPrestamo Long, pFecha DateTime, pMes Short, pAnio Short;
+SELECT SP_RetencionPago.*
+FROM SP_RetencionPago
+WHERE (((SP_RetencionPago.IDPrestamo)=[pIDPrestamo]) AND ((SP_RetencionPago.Fecha)=[pFecha]) AND ((SP_RetencionPago.Mes)=[pMes]) AND ((SP_RetencionPago.Anio)=[pAnio]));
+
+
+QUERY: 1100_RetencionPagoXIDPrestamo
+  SQL: PARAMETERS pIDPrestamo Long;
+SELECT SP_RetencionPago.*
+FROM SP_RetencionPago
+WHERE (((SP_RetencionPago.IDPrestamo)=[pIDPrestamo]));
+
+
+QUERY: 1100_RetencionPrestamoXIDPrestamo
+  SQL: PARAMETERS pIDPrestamo Long;
+SELECT SP_RetencionPrestamo.*
+FROM SP_RetencionPrestamo
+WHERE (((SP_RetencionPrestamo.IDPrestamo)=[pIDPrestamo]));
+
+
+QUERY: 1100_RetencionxIDPrestamo
+  SQL: PARAMETERS pIDPrestamo Long;
+SELECT SP_Retencion.*
+FROM SP_Retencion
+WHERE (((SP_Retencion.IDPrestamo)=[pIDPrestamo]));
+
+
+QUERY: 1100_RetencionXIDPrestamoFecha
+  SQL: PARAMETERS pIDPrestamo Long, pFecha DateTime;
+SELECT SP_Retencion.*
+FROM SP_Retencion
+WHERE (((SP_Retencion.IDPrestamo)=[pIDPrestamo]) AND ((SP_Retencion.Fecha)=[pFecha]));
+
+
+QUERY: 1110_EmpresaPromedioXCI
+  SQL: PARAMETERS pCI Long;
+SELECT SP_ImpLiquido.CodEmpresa, First(SP_Empresa.Nombre) & " - " & Format(Avg(SP_ImpLiquido.Importe),"0.00") AS Descrip
+FROM (SP_ImpLiquido INNER JOIN SP_Trabaja ON (SP_ImpLiquido.Fechaingreso = SP_Trabaja.FechaIngreso) AND (SP_ImpLiquido.CodEmpresa = SP_Trabaja.CodEmpresa) AND (SP_ImpLiquido.CI = SP_Trabaja.CI)) INNER JOIN SP_Empresa ON SP_ImpLiquido.CodEmpresa = SP_Empresa.CodEmpresa
+WHERE (((SP_ImpLiquido.AnioMes) Between Val(Format(DateAdd("m",-5,Date()),"yyyymm")) And Val(Format(DateAdd("m",-2,Date()),"yyyymm"))) AND ((SP_ImpLiquido.CI)=[pCI]) AND ((SP_Trabaja.FechaBaja) Is Null))
+GROUP BY SP_ImpLiquido.CodEmpresa
+ORDER BY Avg(SP_ImpLiquido.Importe) DESC;
+
+
+QUERY: 1110_FacturasVenciasxIDPrestamoFecha
+  SQL: PARAMETERS pIDPrestamo Long, pFecha DateTime;
+SELECT SP_Factura.NroFactura, SP_Factura.FechaVencimiento, SP_Factura.Importe
+FROM SP_Factura
+WHERE (((SP_Factura.FechaVencimiento)<[pFecha]) AND ((SP_Factura.FechaPago) Is Null) AND ((SP_Factura.IdPrestamo)=[pIDPrestamo]) AND ((SP_Factura.CodFacturaEstado)<>"anu"));
+
+
+QUERY: 1115_PrestamosAnterioresxCI
+  SQL: PARAMETERS pCI Long, pIDPrestamo Long;
+SELECT Rs_PrestamoPctRetenciones.*
+FROM Rs_PrestamoPctRetenciones
+WHERE (((Rs_PrestamoPctRetenciones.IDPrestamo)<IIf([pIDPrestamo]>0, [pIDPrestamo], 999999999)) AND ((Rs_PrestamoPctRetenciones.CI)=[pCI]));
+
+
+QUERY: 1116_AfiliadoComentarioXCI
+  SQL: PARAMETERS pCI Long;
+SELECT Rs_AfiliadoComentario.*
+FROM Rs_AfiliadoComentario
+WHERE (((Rs_AfiliadoComentario.CI)=[pCI]));
+
+
+QUERY: 1120_Retencion_Amort
+  SQL: SELECT SP_RetencionItem.IDPrestamo, SP_RetencionItem.Fecha, Sum(SP_Factura.Importe*SP_Retencion.TipoCambio) AS Importe, Sum(SP_Factura.ImpAmortizable*SP_Retencion.TipoCambio) AS ImpAmortizable, Sum(SP_Factura.ImpInteres*SP_Retencion.TipoCambio) AS ImpInteres, Sum(SP_Pago.Importe*SP_Retencion.TipoCambio)-Sum(SP_Factura.Importe*SP_Retencion.TipoCambio) AS ImpMora
+FROM (SP_Retencion INNER JOIN ((SP_Pago INNER JOIN SP_Factura ON SP_Pago.IDFactura = SP_Factura.IDFactura) INNER JOIN SP_RetencionItem ON SP_Pago.IDFactura = SP_RetencionItem.IDFactura) ON (SP_Retencion.IDPrestamo = SP_RetencionItem.IDPrestamo) AND (SP_Retencion.Fecha = SP_RetencionItem.Fecha)) INNER JOIN SP_RetencionPrestamo ON SP_Retencion.IDPrestamo = SP_RetencionPrestamo.IDPrestamo
+GROUP BY SP_RetencionItem.IDPrestamo, SP_RetencionItem.Fecha;
+
+
+QUERY: 1120_Retencion_Amort111
+  SQL: SELECT SP_Retencion.IDPrestamo, SP_RetencionPrestamo.CodEmpresa, SP_Empresa.Nombre AS DescEmpresa, SP_RetencionPrestamo.CI, SP_Retencion.Fecha, SP_Retencion.TipoCambio, SP_Retencion.Importe, SP_Retencion.Observaciones, SP_Retencion.Usr, SP_Retencion.Ts
+FROM (SP_Retencion INNER JOIN SP_RetencionPrestamo ON SP_Retencion.IDPrestamo = SP_RetencionPrestamo.IDPrestamo) INNER JOIN SP_Empresa ON SP_RetencionPrestamo.CodEmpresa = SP_Empresa.CodEmpresa;
+
+
+QUERY: 1120_Retencion_Tel
+  SQL: SELECT SP_RetencionItem.IDPrestamo, SP_RetencionItem.Fecha, Sum(SP_RetencionItem.Importe) AS Importe
+FROM SP_RetencionItem
+WHERE (((SP_RetencionItem.CodRetencionItemCod)="tel"))
+GROUP BY SP_RetencionItem.IDPrestamo, SP_RetencionItem.Fecha;
+
+
+QUERY: 1130_CuadroFacturaInteres
+  SQL: TRANSFORM Sum([1130_FacturaInteresMes].ImpInteres) AS [El Valor]
+SELECT [1130_FacturaInteresMes].Mes, Sum([1130_FacturaInteresMes].ImpInteres) AS [Total de ImpInteres]
+FROM 1130_FacturaInteresMes
+GROUP BY [1130_FacturaInteresMes].Mes
+PIVOT [1130_FacturaInteresMes].IdPrestamo;
+
+
+QUERY: 1130_CuadroFacturaInteres2
+  SQL: TRANSFORM Sum([1130_FacturaInteresMes].ImpInteres) AS [El Valor]
+SELECT [1130_FacturaInteresMes].IdPrestamo AS [Nro Prestamo], Sum([1130_FacturaInteresMes].ImpInteres) AS [Total de ImpInteres]
+FROM 1130_FacturaInteresMes
+GROUP BY [1130_FacturaInteresMes].IdPrestamo
+PIVOT [1130_FacturaInteresMes].Mes;
+
+
+QUERY: 1130_FacturaInteresMes
+  SQL: PARAMETERS pCodMoneda Text;
+SELECT IdPrestamo, CDate("01/" & Format(FechaVencimiento,"mm/yy")) AS Mes, ImpInteres
+FROM 500_Tmp_Rpt_Factura
+WHERE (((CodFacturaEstado)<>"anu") AND ((CodMoneda)=[pCodMoneda]));
+
+
+QUERY: 1130_FacturaInteresMes_Orig
+  SQL: PARAMETERS pCodMoneda Text;
+SELECT SP_Factura.IdPrestamo, CDate("01/" & Format(SP_Factura.FechaVencimiento,"mm/yy")) AS Mes, SP_Factura.ImpInteres
+FROM SP_Factura
+WHERE (((SP_Factura.CodFacturaEstado)<>"anu") AND ((SP_Factura.CodMoneda)=[pCodMoneda]));
+
+
+QUERY: 1140_FacturaDetallexIDPrestamoCodItemPago
+  SQL: PARAMETERS pIDPrestamo Long, pCodItemPago Text;
+SELECT SP_Factura.IdPrestamo, SP_FacturaDetalle.CodItemPago
+FROM SP_Factura INNER JOIN SP_FacturaDetalle ON SP_Factura.IDFactura = SP_FacturaDetalle.IdFactura
+WHERE (((SP_Factura.IdPrestamo)=[pIDPrestamo]) AND ((SP_FacturaDetalle.CodItemPago)=[pCodItemPago]));
+
+
+QUERY: 1150_AfiliadoCometarioXCI
+  SQL: PARAMETERS pCI Long;
+SELECT SP_AfiliadoComentario.*
+FROM SP_AfiliadoComentario
+WHERE (((SP_AfiliadoComentario.CI)=[pCI]))
+ORDER BY SP_AfiliadoComentario.Fecha;
+
+
+QUERY: 1200_CuotasPendientesXIDPrestamo
+  SQL: SELECT SP_Cuota.IDPrestamo, SP_Cuota.Nro, SP_Cuota.FechaVencimiento, SP_Cuota.FechaPago, SP_Cuota.CodItemPago, SP_Cuota.Importe, SP_Cuota.CodMoneda, SP_Cuota.CodCuotaEstado, SP_Cuota.Usr, SP_Cuota.Ts
+FROM SP_Cuota
+WHERE (((SP_Cuota.IDPrestamo)=[pIDPrestamo]) AND ((SP_Cuota.CodCuotaEstado)="pen"));
+
+
+QUERY: 1200_FacturasPendientesXIDPrestamo
+  SQL: PARAMETERS pIDPrestamo Long;
+SELECT SP_Factura.IdPrestamo, SP_Factura.IDFactura, SP_Factura.NroFactura, SP_Factura.NroEmpresa, SP_Factura.FechaEmitida, SP_Factura.FechaVencimiento, SP_Factura.FechaPago, SP_Factura.CodMoneda, SP_Factura.Importe, SP_Factura.CodFacturaEstado, SP_Factura.TasaCambio, SP_Factura.CodigoBarra, SP_Factura.Impresiones, SP_Factura.ImpAmortizable, SP_Factura.ImpInteres, SP_Factura.Usr, SP_Factura.Ts
+FROM SP_Factura
+WHERE (((SP_Factura.IdPrestamo)=[pIDPrestamo]) AND ((SP_Factura.CodFacturaEstado)="emi"));
+
+
+QUERY: 1234_PagoParcialPorID
+  SQL: PARAMETERS pIDPrestamo Long, pFecha DateTime;
+SELECT SP_PagoParcial.*
+FROM SP_PagoParcial
+WHERE (((SP_PagoParcial.IDPrestamo)=[pIDPrestamo]) AND ((SP_PagoParcial.Fecha)=[pFecha]));
+
+
+QUERY: 1234_PagosParcialesXIDPrestamo
+  SQL: PARAMETERS pIDPrestamo Long;
+SELECT SP_PagoParcial.*
+FROM SP_PagoParcial
+WHERE (((SP_PagoParcial.IDPrestamo)=[pIDPrestamo]));
+
+
+QUERY: 2000_Rpt_AfiliadoxCI
+  SQL: PARAMETERS pCI Long;
+SELECT SP_Afiliado.CI, SP_Afiliado.Nombres, SP_Afiliado.Apellido1, SP_Afiliado.Apellido2, SP_Afiliado.Direccion, SP_Afiliado.Telefono
+FROM SP_Afiliado
+WHERE (((SP_Afiliado.CI)=[pCI]));
+
+
+QUERY: 2000_Rpt_AutorizacionxIDPrestamo
+  SQL: PARAMETERS pIDPrestamo Long;
+SELECT SP_Prestamo.IDPrestamo, SP_Afiliado.CI, SP_Afiliado.Nombres, SP_Afiliado.Apellido1, SP_Afiliado.Apellido2
+FROM SP_Afiliado INNER JOIN SP_Prestamo ON SP_Afiliado.CI = SP_Prestamo.CI
+WHERE (((SP_Prestamo.IDPrestamo)=[pIDPrestamo]));
+
+
+QUERY: 2000_Rpt_FacturaxIDPrestamo
+  SQL: PARAMETERS pIDPrestamo Long;
+SELECT Rpt_Factura.IDPrestamo, Rpt_Factura.CI, Rpt_Factura.Nombres, Rpt_Factura.Apellido1, Rpt_Factura.Apellido2, Rpt_Factura.Direccion, Rpt_Factura.NroFactura, Rpt_Factura.FechaEmitida, Rpt_Factura.FechaVencimiento, Rpt_Factura.Tasa, Rpt_Factura.CodMoneda, Rpt_Factura.DescMoneda, Rpt_Factura.Descrip, Rpt_Factura.SP_FacturaDetalle.Importe, Rpt_Factura.NroCuota, Rpt_Factura.SP_Factura.Importe, Rpt_Factura.CodigoBarra, Rpt_Factura.Impresiones
+FROM Rpt_Factura
+WHERE (((Rpt_Factura.IDPrestamo)=[pIDPrestamo]) AND ((Rpt_Factura.CodFacturaEstado)<>"anu" And (Rpt_Factura.CodFacturaEstado)<>"can"));
+
+
+QUERY: 2000_Rpt_FacturaxIDPrestamoEstado
+  SQL: PARAMETERS pIDPrestamo Long, pCodFacturaEstado Text;
+SELECT Rpt_Factura.IDPrestamo, Rpt_Factura.CI, Rpt_Factura.Nombres, Rpt_Factura.Apellido1, Rpt_Factura.Apellido2, Rpt_Factura.Direccion, Rpt_Factura.NroFactura, Rpt_Factura.FechaEmitida, Rpt_Factura.FechaVencimiento, Rpt_Factura.Tasa, Rpt_Factura.CodMoneda, Rpt_Factura.DescMoneda, Rpt_Factura.Descrip, Rpt_Factura.SP_FacturaDetalle.Importe, Rpt_Factura.NroCuota, Rpt_Factura.SP_Factura.Importe, Rpt_Factura.CodigoBarra, Rpt_Factura.CodFacturaEstado, Rpt_Factura.Impresiones
+FROM Rpt_Factura
+WHERE (((Rpt_Factura.IDPrestamo)=[pIDPrestamo]) AND ((Rpt_Factura.CodFacturaEstado)=[pCodFacturaEstado]));
+
+
+QUERY: 2000_Rpt_FacturaxNroFactura
+  SQL: PARAMETERS pNroFactura Long;
+SELECT Rpt_Factura.IDPrestamo, Rpt_Factura.CI, Rpt_Factura.Nombres, Rpt_Factura.Apellido1, Rpt_Factura.Apellido2, Rpt_Factura.Direccion, Rpt_Factura.NroFactura, Rpt_Factura.FechaEmitida, Rpt_Factura.FechaVencimiento, Rpt_Factura.Tasa, Rpt_Factura.CodMoneda, Rpt_Factura.DescMoneda, Rpt_Factura.Descrip, Rpt_Factura.SP_FacturaDetalle.Importe, Rpt_Factura.NroCuota, Rpt_Factura.SP_Factura.Importe, Rpt_Factura.CodigoBarra, Rpt_Factura.Impresiones
+FROM Rpt_Factura
+WHERE (((Rpt_Factura.NroFactura)=[pNroFactura]));
+
+
+QUERY: 2000_Rpt_PrestamoCuadroxIDPrestamo
+  SQL: PARAMETERS pIDPrestamo Long;
+SELECT Rpt_PrestamoCuadro.*
+FROM Rpt_PrestamoCuadro
+WHERE (((Rpt_PrestamoCuadro.IDPrestamo)=[pIDPrestamo]));
+
+
+QUERY: 500_Tmp_Rpt_Factura
+  SQL: SELECT *
+FROM Rpt_Factura_DBG
+WHERE ( [SP_Factura].[FechaEmitida] <= CDate('31/12/2007') and ([SP_Factura].[FechaPago] > CDate('31/12/2007') or [SP_Factura].[FechaPago] Is Null) and [SP_Factura].[CodFacturaEstado] <> 'anu' and [SP_Factura].[CodFacturaEstado] <> 'cle' );
+
+
+QUERY: 999_Parametros
+  SQL: PARAMETERS pLogin Text, pClave Text;
+SELECT xPar.login, xPar.Clave, xPar.orden, xPar.value1, xPar.value2, xPar.value3, xPar.value4, xPar.value5
+FROM xUsrParam AS xPar
+WHERE (((xPar.login)=[pLogin]) AND ((xPar.Clave)=[pClave]))
+ORDER BY xPar.orden;
+
+
+QUERY: 999_Parametros_Delete
+  SQL: PARAMETERS pLogin Text, pClave Text;
+DELETE *
+FROM xUsrParam AS xPar
+WHERE (((xPar.login)=[pLogin]) AND ((xPar.Clave)=[pClave]));
+
+
+QUERY: 999_Parametros_Insert
+  SQL: PARAMETERS pLogin Text, pClave Text, pOrden Long, pValue1 Text, pValue2 Text, pValue3 Text, pValue4 Text, pValue5 Text;
+INSERT INTO xUsrParam ( login, clave, orden, value1, value2, value3, value4, value5 )
+SELECT pLogin, pClave, pOrden, pValue1, pValue2, pValue3, pValue4, pValue5;
+
+
+QUERY: Buscar duplicados por 1030_FlujoTIR
+  SQL: SELECT DISTINCTROW [IDPrestamo], [Mes], [Importe]
+FROM 1030_FlujoTIR
+WHERE [IDPrestamo] In (SELECT [IDPrestamo] FROM [1030_FlujoTIR] As Tmp GROUP BY [IDPrestamo],[Mes] HAVING Count(*)>1  And [Mes] = [1030_FlujoTIR].[Mes])
+ORDER BY [IDPrestamo], [Mes];
+
+
+QUERY: Rpt_Factura
+  SQL: SELECT SP_Prestamo.IDPrestamo, SP_Afiliado.CI, SP_Afiliado.Nombres, SP_Afiliado.Apellido1, SP_Afiliado.Apellido2, SP_Afiliado.Direccion, SP_Factura.NroFactura, SP_Factura.FechaEmitida, SP_Factura.FechaVencimiento, SP_Prestamo.Tasa, SP_Factura.CodMoneda, SP_Moneda.Descrip AS DescMoneda, SP_FacturaDetalle.Descrip, SP_FacturaDetalle.Importe, SP_FacturaDetalle.NroCuota, SP_Factura.Importe, SP_Factura.CodigoBarra, SP_Factura.CodFacturaEstado, SP_Factura.Impresiones, SP_Factura.ImpAmortizable, SP_Factura.ImpInteres, SP_Factura.CodFacturaTipo, SP_FacturaTipo.Descrip AS DescFacturaTipo
+FROM ((((SP_Afiliado INNER JOIN SP_Prestamo ON SP_Afiliado.CI = SP_Prestamo.CI) INNER JOIN SP_Factura ON SP_Prestamo.IDPrestamo = SP_Factura.IdPrestamo) INNER JOIN SP_FacturaDetalle ON SP_Factura.IDFactura = SP_FacturaDetalle.IdFactura) INNER JOIN SP_Moneda ON SP_Factura.CodMoneda = SP_Moneda.CodMoneda) INNER JOIN SP_FacturaTipo ON SP_Factura.CodFacturaTipo = SP_FacturaTipo.CodFacturaTipo;
+
+
+QUERY: Rpt_Factura_DBG
+  SQL: SELECT SP_Prestamo.IDPrestamo, SP_Factura.NroFactura, SP_Factura.FechaEmitida, SP_Factura.FechaVencimiento, SP_Factura.FechaPago, SP_Prestamo.CI, SP_Afiliado.Nombres, SP_Afiliado.Apellido1, SP_Afiliado.Apellido2, SP_Afiliado.Direccion, SP_Afiliado.Telefono, SP_Afiliado.EMail, SP_Factura.CodMoneda, SP_Moneda.Descrip AS DescMoneda, SP_Factura.Importe, SP_Factura.CodFacturaEstado, SP_FacturaEstado.Descrip AS DescFacturaEstado, SP_Factura.Usr, SP_Factura.Ts, SP_Factura.ImpAmortizable, SP_Factura.ImpInteres, SP_Factura.CodFacturaTipo, SP_FacturaTipo.Descrip AS DescFacturaTipo
+FROM (((SP_Afiliado INNER JOIN (SP_Factura INNER JOIN SP_Prestamo ON SP_Factura.IdPrestamo = SP_Prestamo.IDPrestamo) ON SP_Afiliado.CI = SP_Prestamo.CI) INNER JOIN SP_Moneda ON SP_Factura.CodMoneda = SP_Moneda.CodMoneda) INNER JOIN SP_FacturaEstado ON SP_Factura.CodFacturaEstado = SP_FacturaEstado.CodFacturaEstado) INNER JOIN SP_FacturaTipo ON SP_Factura.CodFacturaTipo = SP_FacturaTipo.CodFacturaTipo;
+
+
+QUERY: Rpt_Pago
+  SQL: SELECT SP_Factura.NroFactura, SP_Prestamo.IDPrestamo, SP_Pago.Importe, SP_Factura.Importe AS ImpFactura, IIf([SP_Pago].[Importe]>[ImpFactura], [SP_Pago].[Importe]-[ImpFactura], 0) AS ImpInteresMora, SP_Afiliado.CI, SP_Afiliado.Nombres, SP_Afiliado.Apellido1, SP_Afiliado.Apellido2, SP_Factura.FechaVencimiento, SP_Pago.Fecha AS FechaPago, SP_Pago.CodSucursal, SP_Factura.CodMoneda, SP_Moneda.Descrip AS DescMoneda, SP_Factura.ImpAmortizable, SP_Factura.ImpInteres, SP_Pago.CodPagoOrigen, SP_PagoOrigen.Descrip AS DescPagoOrigen, SP_Pago.Usr, SP_Pago.Ts
+FROM ((((SP_Pago INNER JOIN SP_Factura ON SP_Pago.IDFactura = SP_Factura.IDFactura) INNER JOIN SP_Prestamo ON SP_Factura.IdPrestamo = SP_Prestamo.IDPrestamo) INNER JOIN SP_Afiliado ON SP_Prestamo.CI = SP_Afiliado.CI) INNER JOIN SP_Moneda ON SP_Factura.CodMoneda = SP_Moneda.CodMoneda) INNER JOIN SP_PagoOrigen ON SP_Pago.CodPagoOrigen = SP_PagoOrigen.CodPagoOrigen;
+
+
+QUERY: Rpt_PagoError
+  SQL: SELECT SP_PagoError.IDFactura, SP_PagoError.Fecha, SP_PagoError.Importe, SP_PagoError.CodSucursal, SP_PagoError.TasaCambio, SP_PagoError.CodFacturaEstado, SP_FacturaEstado.Descrip AS DescFacturaEstado, SP_PagoError.Usr, SP_PagoError.Ts
+FROM SP_PagoError INNER JOIN SP_FacturaEstado ON SP_PagoError.CodFacturaEstado = SP_FacturaEstado.CodFacturaEstado;
+
+
+QUERY: Rpt_Prestamo
+  SQL: SELECT SP_Prestamo.IDPrestamo, SP_Prestamo.CI, SP_Afiliado.Nombres, SP_Afiliado.Apellido1, SP_Afiliado.Apellido2, SP_Prestamo.Fecha, SP_Prestamo.FechaCobro, SP_Prestamo.CodMoneda, SP_Moneda.Descrip AS DescMoneda, SP_Prestamo.Importe, SP_Prestamo.Cuotas, SP_Prestamo.Tasa, SP_Prestamo.Saldo, SP_Prestamo.CodPrestamoEstado, SP_PrestamoEstado.Descrip AS DescPrestamoEstado, SP_Prestamo.IDPrestamoRef, SP_Prestamo.Usr, SP_Prestamo.Ts, SP_Prestamo.CodPrestamoTipo, SP_PrestamoTipo.Descrip AS DescPrestamoTipo, Rs_PrestamoInteresAmortizacion.Amortizacion, Rs_PrestamoInteresAmortizacion.Interes
+FROM ((((SP_Prestamo INNER JOIN SP_Afiliado ON SP_Prestamo.CI = SP_Afiliado.CI) INNER JOIN SP_Moneda ON SP_Prestamo.CodMoneda = SP_Moneda.CodMoneda) INNER JOIN SP_PrestamoEstado ON SP_Prestamo.CodPrestamoEstado = SP_PrestamoEstado.CodPrestamoEstado) INNER JOIN SP_PrestamoTipo ON SP_Prestamo.CodPrestamoTipo = SP_PrestamoTipo.CodPrestamoTipo) LEFT JOIN Rs_PrestamoInteresAmortizacion ON SP_Prestamo.IDPrestamo = Rs_PrestamoInteresAmortizacion.IDPrestamo;
+
+
+QUERY: Rpt_Prestamo_Crystal
+  SQL: SELECT SP_Prestamo.IDPrestamo, SP_Prestamo.CI, SP_Afiliado.Nombres, SP_Afiliado.Apellido1, SP_Afiliado.Apellido2, SP_Prestamo.Fecha, SP_Prestamo.FechaCobro, [1011_Prestamo_MinFechaVencimiento].FechaVencimiento, SP_Prestamo.CodMoneda, SP_Moneda.Descrip AS DescMoneda, SP_Prestamo.Importe, SP_Prestamo.Cuotas, SP_Prestamo.Tasa, SP_Prestamo.Saldo, SP_Prestamo.CodPrestamoEstado, SP_PrestamoEstado.Descrip AS DescPrestamoEstado, SP_Prestamo.Usr, SP_Prestamo.Ts, SP_Prestamo.CodPrestamoTipo, SP_PrestamoTipo.Descrip AS DescPrestamoTipo
+FROM ((((SP_Prestamo INNER JOIN SP_Afiliado ON SP_Prestamo.CI = SP_Afiliado.CI) INNER JOIN SP_Moneda ON SP_Prestamo.CodMoneda = SP_Moneda.CodMoneda) INNER JOIN SP_PrestamoEstado ON SP_Prestamo.CodPrestamoEstado = SP_PrestamoEstado.CodPrestamoEstado) LEFT JOIN 1011_Prestamo_MinFechaVencimiento ON SP_Prestamo.IDPrestamo = [1011_Prestamo_MinFechaVencimiento].IDPrestamo) INNER JOIN SP_PrestamoTipo ON SP_Prestamo.CodPrestamoTipo = SP_PrestamoTipo.CodPrestamoTipo;
+
+
+QUERY: Rpt_Prestamo2
+  SQL: SELECT SP_Prestamo.IDPrestamo, SP_Prestamo.CI, SP_Afiliado.Nombres, SP_Afiliado.Apellido1, SP_Afiliado.Apellido2, SP_Prestamo.Fecha, SP_Prestamo.FechaCobro, SP_Prestamo.CodMoneda, SP_Moneda.Descrip AS DescMoneda, SP_Prestamo.Importe, SP_Prestamo.Cuotas, SP_Prestamo.Tasa, SP_Prestamo.Saldo, SP_Prestamo.CodPrestamoEstado, SP_PrestamoEstado.Descrip AS DescPrestamoEstado, SP_Prestamo.IDPrestamoRef, SP_Prestamo.Usr, SP_Prestamo.Ts, SP_Prestamo.CodPrestamoTipo, SP_PrestamoTipo.Descrip AS DescPrestamoTipo, Rs_PrestamoInteresAmortizacion.Interes, Rs_PrestamoInteresAmortizacion.Amortizacion
+FROM ((((SP_Prestamo INNER JOIN SP_Afiliado ON SP_Prestamo.CI = SP_Afiliado.CI) INNER JOIN SP_Moneda ON SP_Prestamo.CodMoneda = SP_Moneda.CodMoneda) INNER JOIN SP_PrestamoEstado ON SP_Prestamo.CodPrestamoEstado = SP_PrestamoEstado.CodPrestamoEstado) INNER JOIN SP_PrestamoTipo ON SP_Prestamo.CodPrestamoTipo = SP_PrestamoTipo.CodPrestamoTipo) INNER JOIN Rs_PrestamoInteresAmortizacion ON SP_Prestamo.IDPrestamo = Rs_PrestamoInteresAmortizacion.IDPrestamo;
+
+
+QUERY: Rpt_PrestamoCuadro
+  SQL: SELECT SP_Prestamo.IDPrestamo, SP_Prestamo.CI, SP_Afiliado.Nombres, SP_Afiliado.Apellido1, SP_Afiliado.Apellido2, SP_Prestamo.Fecha, SP_Moneda.CodMoneda, SP_Moneda.Descrip AS DescMoneda, SP_Moneda.DescripLarga AS DescMonedaLarga, SP_Prestamo.Importe, SP_Prestamo.Cuotas, SP_Prestamo.Tasa, SP_CuadroAmortizacion.NroCuota, SP_CuadroAmortizacion.Monto, SP_CuadroAmortizacion.ImporteCuota, SP_CuadroAmortizacion.Interes, SP_CuadroAmortizacion.Amortizacion, SP_CuadroAmortizacion.Saldo, SP_Prestamo.Promedio, SP_Prestamo.CodPrestamoTipo, SP_PrestamoTipo.Descrip AS DescPrestamoTipo
+FROM (((SP_Prestamo INNER JOIN SP_Afiliado ON SP_Prestamo.CI = SP_Afiliado.CI) INNER JOIN SP_CuadroAmortizacion ON SP_Prestamo.IDPrestamo = SP_CuadroAmortizacion.IDPrestamo) INNER JOIN SP_Moneda ON SP_Prestamo.CodMoneda = SP_Moneda.CodMoneda) INNER JOIN SP_PrestamoTipo ON SP_Prestamo.CodPrestamoTipo = SP_PrestamoTipo.CodPrestamoTipo;
+
+
+QUERY: Rpt_Retencion
+  SQL: SELECT SP_Retencion.IDPrestamo, SP_RetencionPrestamo.CodEmpresa, SP_Empresa.Nombre AS DescEmpresa, SP_RetencionPrestamo.CI, SP_Retencion.Fecha, SP_Retencion.TipoCambio, SP_RetencionPrestamo.CodMoneda, [1120_Retencion_Amort].Importe, [1120_Retencion_Amort].ImpAmortizable, [1120_Retencion_Amort].ImpInteres, [1120_Retencion_Amort].ImpMora, [1120_Retencion_Tel].Importe AS ImpTel, SP_Retencion.Observaciones, SP_Retencion.Usr, SP_Retencion.Ts
+FROM (((SP_Retencion INNER JOIN SP_RetencionPrestamo ON SP_Retencion.IDPrestamo = SP_RetencionPrestamo.IDPrestamo) INNER JOIN SP_Empresa ON SP_RetencionPrestamo.CodEmpresa = SP_Empresa.CodEmpresa) INNER JOIN 1120_Retencion_Amort ON (SP_Retencion.Fecha = [1120_Retencion_Amort].Fecha) AND (SP_Retencion.IDPrestamo = [1120_Retencion_Amort].IDPrestamo)) LEFT JOIN 1120_Retencion_Tel ON (SP_Retencion.Fecha = [1120_Retencion_Tel].Fecha) AND (SP_Retencion.IDPrestamo = [1120_Retencion_Tel].IDPrestamo);
+
+
+QUERY: Rpt_RetencionItem_Cruz
+  SQL: TRANSFORM Sum([Importe]) AS [El Valor]
+SELECT [IDPrestamo], [Fecha], Sum([Importe]) AS [Total de Importe]
+FROM SP_RetencionItem
+GROUP BY [IDPrestamo], [Fecha]
+PIVOT [CodRetencionItemCod];
+
+
+QUERY: Rpt_RetencionPago
+  SQL: SELECT SP_RetencionPago.IDPrestamo, SP_RetencionPago.Fecha, SP_RetencionPrestamo.CodEmpresa, SP_Empresa.Nombre AS DescEmpresa, SP_RetencionPago.Mes, SP_RetencionPago.Anio, SP_RetencionPago.Importe, SP_RetencionPago.Usr, SP_RetencionPago.Ts
+FROM (SP_RetencionPago INNER JOIN SP_RetencionPrestamo ON SP_RetencionPago.IDPrestamo = SP_RetencionPrestamo.IDPrestamo) INNER JOIN SP_Empresa ON SP_RetencionPrestamo.CodEmpresa = SP_Empresa.CodEmpresa;
+
+
+QUERY: Rpt_RetencionPrestamo
+  SQL: SELECT SP_RetencionPrestamo.IDPrestamo, SP_RetencionPrestamo.CI, SP_RetencionPrestamo.Fecha, SP_RetencionPrestamo.CodEmpresa, SP_Empresa.Nombre AS DescEmpresa, SP_RetencionPrestamo.CodMoneda, SP_RetencionPrestamo.Importe, SP_RetencionPrestamo.Saldo, SP_RetencionPrestamo.ImpPago, SP_RetencionPrestamo.Usr, SP_RetencionPrestamo.Ts
+FROM SP_RetencionPrestamo INNER JOIN SP_Empresa ON SP_RetencionPrestamo.CodEmpresa = SP_Empresa.CodEmpresa;
+
+
+QUERY: Rs_AfiliadoComentario
+  SQL: SELECT SP_AfiliadoComentario.*
+FROM SP_AfiliadoComentario
+ORDER BY SP_AfiliadoComentario.CI, SP_AfiliadoComentario.Fecha DESC;
+
+
+QUERY: Rs_Empresa_Descrip
+  SQL: SELECT SP_Empresa.CodEmpresa, SP_Empresa.Nombre AS DescEmpresa
+FROM SP_Empresa
+WHERE (((SP_Empresa.Ficticia)=False))
+ORDER BY SP_Empresa.Nombre;
+
+
+QUERY: Rs_FacturaEstado_Descrip
+  SQL: SELECT SP_FacturaEstado.CodFacturaEstado, SP_FacturaEstado.Descrip
+FROM SP_FacturaEstado
+ORDER BY SP_FacturaEstado.Descrip;
+
+
+QUERY: Rs_FacturaTipo_Descrip
+  SQL: SELECT SP_FacturaTipo.CodFacturaTipo, SP_FacturaTipo.Descrip
+FROM SP_FacturaTipo
+ORDER BY SP_FacturaTipo.Descrip;
+
+
+QUERY: Rs_Moneda_Descrip
+  SQL: SELECT SP_Moneda.CodMoneda, SP_Moneda.Descrip, SP_Moneda.Tasa
+FROM SP_Moneda
+ORDER BY SP_Moneda.Descrip;
+
+
+QUERY: Rs_PagoOrigen_Descrip
+  SQL: SELECT SP_PagoOrigen.CodPagoOrigen, SP_PagoOrigen.Descrip
+FROM SP_PagoOrigen
+ORDER BY SP_PagoOrigen.Descrip;
+
+
+QUERY: Rs_PrestamoActivo
+  SQL: SELECT SP_Prestamo.*
+FROM SP_PrestamoEstado INNER JOIN SP_Prestamo ON SP_PrestamoEstado.CodPrestamoEstado = SP_Prestamo.CodPrestamoEstado
+WHERE (((SP_PrestamoEstado.Fin)=False));
+
+
+QUERY: Rs_PrestamoEstado_Descrip
+  SQL: SELECT SP_PrestamoEstado.CodPrestamoEstado, SP_PrestamoEstado.Descrip
+FROM SP_PrestamoEstado
+ORDER BY SP_PrestamoEstado.Descrip;
+
+
+QUERY: Rs_PrestamoInteresAmortizacion
+  SQL: SELECT SP_CuadroAmortizacion.IDPrestamo, Sum(SP_CuadroAmortizacion.Interes) AS Interes, Sum(SP_CuadroAmortizacion.Amortizacion) AS Amortizacion
+FROM SP_CuadroAmortizacion
+GROUP BY SP_CuadroAmortizacion.IDPrestamo;
+
+
+QUERY: Rs_PrestamoPctRetenciones
+  SQL: SELECT P.IDPrestamo, First(P.CI) AS CI, First(P.FechaCobro) AS Fecha, First(P.CodMoneda) AS CodMoneda, First(P.Importe) AS Importe, First(P.Tasa) AS Tasa, First(SP_PrestamoEstado.Descrip) AS DescPrestamoEstado, Count(*) AS Cant_Facturas, Sum(IIf(F.CodFacturaEstado="ret",1, 0)) AS Cant_Fac_Ret, (Cant_Fac_Ret)/Cant_Facturas AS Pct_Retenidas
+FROM (SP_Prestamo AS P INNER JOIN SP_Factura AS F ON P.IDPrestamo = F.IdPrestamo) INNER JOIN SP_PrestamoEstado ON P.CodPrestamoEstado = SP_PrestamoEstado.CodPrestamoEstado
+WHERE (((SP_PrestamoEstado.Fin)=True))
+GROUP BY P.IDPrestamo;
+
+
+QUERY: Rs_PrestamoTipo_Descrip
+  SQL: SELECT SP_PrestamoTipo.CodPrestamoTipo, SP_PrestamoTipo.Descrip
+FROM SP_PrestamoTipo
+ORDER BY SP_PrestamoTipo.Descrip;
+
+
+QUERY: wFactura
+  SQL: SELECT SP_Factura.*, SP_Prestamo_1.Fecha AS Fecha_Pre
+FROM ((SP_Factura INNER JOIN SP_Prestamo ON SP_Factura.IdPrestamo = SP_Prestamo.IDPrestamo) INNER JOIN SP_Prestamo AS SP_Prestamo_1 ON SP_Prestamo.IDPrestamoRef = SP_Prestamo_1.IDPrestamo) LEFT JOIN SP_Pago ON SP_Factura.IDFactura = SP_Pago.IDFactura
+WHERE (((SP_Factura.CodFacturaEstado)="car") AND ((SP_Pago.IDFactura) Is Null));
+
+
+QUERY: wRetencionDetalle
+  SQL: SELECT IDPrestamo, Fecha, -SP_RetencionPago.Importe AS Importe
+FROM SP_RetencionPago
+UNION ALL SELECT IDPrestamo, Fecha, Importe 
+FROM SP_Retencion;
+
+
+QUERY: wSaldoSum
+  SQL: SELECT wRetencionDetalle.IDPrestamo, CInt(Sum(wRetencionDetalle.Importe)) AS SumaDeImporte
+FROM wRetencionDetalle INNER JOIN SP_RetencionPrestamo ON wRetencionDetalle.IDPrestamo = SP_RetencionPrestamo.IDPrestamo
+WHERE (((wRetencionDetalle.Fecha)<#1/1/2006#))
+GROUP BY wRetencionDetalle.IDPrestamo;
+
+
+QUERY: xw_FacturasCantidadXPrestamo
+  SQL: SELECT SP_Factura.IdPrestamo, Count(SP_Factura.IDFactura) AS CuentaDeIDFactura
+FROM SP_Factura
+GROUP BY SP_Factura.IdPrestamo;
+
+
+QUERY: xw_FacturasDeCancelacionAnticipada
+  SQL: SELECT SP_Factura.IdPrestamo, Max(SP_Factura.IDFactura) AS IDFactura INTO tmp_FacturasAnticipadas
+FROM tmp_Anticipados AS fa INNER JOIN SP_Factura ON fa.IDPrestamo = SP_Factura.IdPrestamo
+GROUP BY SP_Factura.IdPrestamo;
+
+
+QUERY: xw_PrestamosAnticipados
+  SQL: SELECT SP_Prestamo.IDPrestamo INTO tmp_Anticipados
+FROM SP_Prestamo INNER JOIN xw_FacturasCantidadXPrestamo ON SP_Prestamo.IDPrestamo = xw_FacturasCantidadXPrestamo.IdPrestamo
+WHERE (((xw_FacturasCantidadXPrestamo.CuentaDeIDFactura)>[Cuotas]));
+
+
+QUERY: xw_UpdateAnticipados
+  SQL: UPDATE SP_Factura INNER JOIN tmp_Anticipados AS p ON SP_Factura.IdPrestamo = p.IDPrestamo SET SP_Factura.CodFacturaEstado = "ana"
+WHERE (((SP_Factura.CodFacturaEstado)="anu"));
+
+
+QUERY: xw_UpdateFacturasAnticipadas
+  SQL: UPDATE SP_Factura INNER JOIN tmp_FacturasAnticipadas AS fa ON SP_Factura.IDFactura = fa.IDFactura SET SP_Factura.CodFacturaTipo = "can";
+
+
+QUERY: xw_UpdateFActuraTipo
+  SQL: UPDATE SP_Factura SET SP_Factura.CodFacturaTipo = "com";
+
+

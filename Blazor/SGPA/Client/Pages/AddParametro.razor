@@ -1,0 +1,442 @@
+@page "/add-parametro"
+
+<PageTitle>Add Parametro</PageTitle>
+    <RadzenColumn SizeMD=12>
+        <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@errorVisible">Cannot save Parametro</RadzenAlert>
+        <RadzenTemplateForm TItem="SGPA.Server.Models.CMU.Parametro" Data="@parametro" Visible="@(parametro != null && canEdit)" Submit="@FormSubmit">
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Id" Component="Id" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@parametro.Id" Name="Id" />
+                    <RadzenRequiredValidator Component="Id" Text="Id is required" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="250" Component="__250" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@parametro.__250" Name="__250" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Servidor News Letters" Component="ServidorNewsLetters" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@parametro.ServidorNewsLetters" Name="ServidorNewsLetters" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Cuenta News Letters" Component="CuentaNewsLetters" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@parametro.CuentaNewsLetters" Name="CuentaNewsLetters" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Contraseña Cuenta News Letters" Component="ContraseñaCuentaNewsLetters" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@parametro.ContraseñaCuentaNewsLetters" Name="ContraseñaCuentaNewsLetters" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Cuenta News Letters Tipo" Component="CuentaNewsLettersTipo" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@parametro.CuentaNewsLettersTipo" Name="CuentaNewsLettersTipo" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Optimistic Lock Field" Component="OptimisticLockField" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@parametro.OptimisticLockField" Name="OptimisticLockField" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="G C Record" Component="GCRecord" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@parametro.GCRecord" Name="GCRecord" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Criteria Red Pagos05" Component="CriteriaRedPagos05" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@parametro.CriteriaRedPagos05" Name="CriteriaRedPagos05" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Saldo Red Pagos05" Component="SaldoRedPagos05" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@parametro.SaldoRedPagos05" Name="SaldoRedPagos05" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Criteria Colegiado05" Component="CriteriaColegiado05" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@parametro.CriteriaColegiado05" Name="CriteriaColegiado05" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Plantilla E Mail Cuenta Corriente" Component="PlantillaEMailCuentaCorriente" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@parametro.PlantillaEMailCuentaCorriente" Name="PlantillaEMailCuentaCorriente" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Titulo E Mail Cuenta Corriente" Component="TituloEMailCuentaCorriente" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@parametro.TituloEMailCuentaCorriente" Name="TituloEMailCuentaCorriente" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Nro Lote Abitab" Component="NroLoteAbitab" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@parametro.NroLoteAbitab" Name="NroLoteAbitab" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Filtro Envio" Component="FiltroEnvio" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@parametro.FiltroEnvio" Name="FiltroEnvio" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="S M N" Component="SMN" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@parametro.SMN" Name="SMN" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Monto S M N" Component="MontoSMN" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@parametro.MontoSMN" Name="MontoSMN" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Meses Paternidad" Component="MesesPaternidad" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@parametro.MesesPaternidad" Name="MesesPaternidad" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Cod Entidad Multi B R O U" Component="CodEntidadMultiBROU" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@parametro.CodEntidadMultiBROU" Name="CodEntidadMultiBROU" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Url Servicio Mail" Component="UrlServicioMail" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@parametro.UrlServicioMail" Name="UrlServicioMail" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Mensaje Registro Finalizado" Component="MensajeRegistroFinalizado" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@parametro.MensajeRegistroFinalizado" Name="MensajeRegistroFinalizado" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Mensaje Registro Rechazado" Component="MensajeRegistroRechazado" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@parametro.MensajeRegistroRechazado" Name="MensajeRegistroRechazado" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Mail Body Registro Finalizado" Component="MailBodyRegistroFinalizado" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@parametro.MailBodyRegistroFinalizado" Name="MailBodyRegistroFinalizado" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Mail Body Registro Rechazado" Component="MailBodyRegistroRechazado" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@parametro.MailBodyRegistroRechazado" Name="MailBodyRegistroRechazado" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Mail Body Registro Observado" Component="MailBodyRegistroObservado" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@parametro.MailBodyRegistroObservado" Name="MailBodyRegistroObservado" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Url Confirmacion Registro" Component="UrlConfirmacionRegistro" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@parametro.UrlConfirmacionRegistro" Name="UrlConfirmacionRegistro" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Destinatario Avisos Registros" Component="DestinatarioAvisosRegistros" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@parametro.DestinatarioAvisosRegistros" Name="DestinatarioAvisosRegistros" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Mail Body Registro Deuda A D M" Component="MailBodyRegistroDeudaADM" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@parametro.MailBodyRegistroDeudaADM" Name="MailBodyRegistroDeudaADM" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Mail Body Registro D J I" Component="MailBodyRegistroDJI" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@parametro.MailBodyRegistroDJI" Name="MailBodyRegistroDJI" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Mail Body Confirmacion D J I" Component="MailBodyConfirmacionDJI" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@parametro.MailBodyConfirmacionDJI" Name="MailBodyConfirmacionDJI" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Usuario D N N" Component="UsuarioDNN" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@parametro.UsuarioDNN" Name="UsuarioDNN" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Pass Word D N N" Component="PassWordDNN" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@parametro.PassWordDNN" Name="PassWordDNN" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Url D N N" Component="UrlDNN" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@parametro.UrlDNN" Name="UrlDNN" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Portal D N N" Component="PortalDNN" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@parametro.PortalDNN" Name="PortalDNN" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Mail Boody Registro Asistencia Sala" Component="MailBoodyRegistroAsistenciaSala" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@parametro.MailBoodyRegistroAsistenciaSala" Name="MailBoodyRegistroAsistenciaSala" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Mail Boody Ingreso Reserva Sala" Component="MailBoodyIngresoReservaSala" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@parametro.MailBoodyIngresoReservaSala" Name="MailBoodyIngresoReservaSala" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Mail Boody Alerta Registro Pendiente" Component="MailBoodyAlertaRegistroPendiente" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@parametro.MailBoodyAlertaRegistroPendiente" Name="MailBoodyAlertaRegistroPendiente" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Recurrencia Alerta Registro Pendiente" Component="RecurrenciaAlertaRegistroPendiente" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@parametro.RecurrenciaAlertaRegistroPendiente" Name="RecurrenciaAlertaRegistroPendiente" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Expiring Password Hours" Component="ExpiringPasswordHours" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@parametro.ExpiringPasswordHours" Name="ExpiringPasswordHours" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Mail Body Reset Password Request" Component="MailBodyResetPasswordRequest" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@parametro.MailBodyResetPasswordRequest" Name="MailBodyResetPasswordRequest" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Meses Planilla Nomina" Component="MesesPlanillaNomina" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@parametro.MesesPlanillaNomina" Name="MesesPlanillaNomina" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Agente Cobranza" Component="AgenteCobranza" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@agenteCobranzasForAgenteIMM" TextProperty="ParseClass" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose AgenteCobranza" style="display: block; width: 100%" @bind-Value="@parametro.AgenteIMM" Name="AgenteIMM"
+                        SelectedValue=@agenteCobranzasForAgenteIMMValue Count=@agenteCobranzasForAgenteIMMCount LoadData=@agenteCobranzasForAgenteIMMLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Agente Cobranza Debito" Component="AgenteCobranzaDebito" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@agenteCobranzaDebitosForAgenteVisaNET" TextProperty="CodigoComercio" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose AgenteCobranzaDebito" style="display: block; width: 100%" @bind-Value="@parametro.AgenteVisaNET" Name="AgenteVisaNET"
+                        SelectedValue=@agenteCobranzaDebitosForAgenteVisaNETValue Count=@agenteCobranzaDebitosForAgenteVisaNETCount LoadData=@agenteCobranzaDebitosForAgenteVisaNETLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Categoria Colegiado" Component="CategoriaColegiado" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@categoriaColegiadosForCategoriaColegiadoDefecto" TextProperty="Descripcion" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose CategoriaColegiado" style="display: block; width: 100%" @bind-Value="@parametro.CategoriaColegiadoDefecto" Name="CategoriaColegiadoDefecto"
+                        SelectedValue=@categoriaColegiadosForCategoriaColegiadoDefectoValue Count=@categoriaColegiadosForCategoriaColegiadoDefectoCount LoadData=@categoriaColegiadosForCategoriaColegiadoDefectoLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Categoria Colegiado1" Component="CategoriaColegiado1" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@categoriaColegiadosForCategoriaColegiadoMora" TextProperty="Descripcion" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose CategoriaColegiado1" style="display: block; width: 100%" @bind-Value="@parametro.CategoriaColegiadoMora" Name="CategoriaColegiadoMora"
+                        SelectedValue=@categoriaColegiadosForCategoriaColegiadoMoraValue Count=@categoriaColegiadosForCategoriaColegiadoMoraCount LoadData=@categoriaColegiadosForCategoriaColegiadoMoraLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Declaracion Jurada Tipo" Component="DeclaracionJuradaTipo" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@declaracionJuradaTiposForDeclaracionJuradaTipoPaternidad" TextProperty="Descripcion" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose DeclaracionJuradaTipo" style="display: block; width: 100%" @bind-Value="@parametro.DeclaracionJuradaTipoPaternidad" Name="DeclaracionJuradaTipoPaternidad"
+                        SelectedValue=@declaracionJuradaTiposForDeclaracionJuradaTipoPaternidadValue Count=@declaracionJuradaTiposForDeclaracionJuradaTipoPaternidadCount LoadData=@declaracionJuradaTiposForDeclaracionJuradaTipoPaternidadLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Declaracion Jurada Tipo1" Component="DeclaracionJuradaTipo1" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@declaracionJuradaTiposForDJ05" TextProperty="Descripcion" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose DeclaracionJuradaTipo1" style="display: block; width: 100%" @bind-Value="@parametro.DJ05" Name="DJ05"
+                        SelectedValue=@declaracionJuradaTiposForDJ05Value Count=@declaracionJuradaTiposForDJ05Count LoadData=@declaracionJuradaTiposForDJ05LoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Movimiento Tipo" Component="MovimientoTipo" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@movimientoTiposForMovimientoTipoCobroManual" TextProperty="Descripcion" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose MovimientoTipo" style="display: block; width: 100%" @bind-Value="@parametro.MovimientoTipoCobroManual" Name="MovimientoTipoCobroManual"
+                        SelectedValue=@movimientoTiposForMovimientoTipoCobroManualValue Count=@movimientoTiposForMovimientoTipoCobroManualCount LoadData=@movimientoTiposForMovimientoTipoCobroManualLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Movimiento Tipo1" Component="MovimientoTipo1" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@movimientoTiposForMovimientoTipoCuota" TextProperty="Descripcion" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose MovimientoTipo1" style="display: block; width: 100%" @bind-Value="@parametro.MovimientoTipoCuota" Name="MovimientoTipoCuota"
+                        SelectedValue=@movimientoTiposForMovimientoTipoCuotaValue Count=@movimientoTiposForMovimientoTipoCuotaCount LoadData=@movimientoTiposForMovimientoTipoCuotaLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Movimiento Tipo2" Component="MovimientoTipo2" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@movimientoTiposForMovimientoTipoDebito" TextProperty="Descripcion" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose MovimientoTipo2" style="display: block; width: 100%" @bind-Value="@parametro.MovimientoTipoDebito" Name="MovimientoTipoDebito"
+                        SelectedValue=@movimientoTiposForMovimientoTipoDebitoValue Count=@movimientoTiposForMovimientoTipoDebitoCount LoadData=@movimientoTiposForMovimientoTipoDebitoLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Movimiento Tipo3" Component="MovimientoTipo3" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@movimientoTiposForMovimientoTipoDeposito" TextProperty="Descripcion" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose MovimientoTipo3" style="display: block; width: 100%" @bind-Value="@parametro.MovimientoTipoDeposito" Name="MovimientoTipoDeposito"
+                        SelectedValue=@movimientoTiposForMovimientoTipoDepositoValue Count=@movimientoTiposForMovimientoTipoDepositoCount LoadData=@movimientoTiposForMovimientoTipoDepositoLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+          <RadzenStack  Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                    <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Submit" Icon="save" Text="Save" Variant="Variant.Flat" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Text="Cancel" Variant="Variant.Flat" Click="@CancelButtonClick"  />
+          </RadzenStack>
+        </RadzenTemplateForm>
+    </RadzenColumn>
+

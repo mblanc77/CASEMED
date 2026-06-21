@@ -1,0 +1,151 @@
+@page "/add-certificacion"
+@attribute [Authorize]
+
+<PageTitle>Add Certificacion</PageTitle>
+    <RadzenColumn SizeMD=12>
+        <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@errorVisible">Cannot save Certificacion</RadzenAlert>
+        <RadzenTemplateForm TItem="SgpaNew.Server.Models.Sgpa.Certificacion" Data="@certificacion" Visible="@(certificacion != null && canEdit)" Submit="@FormSubmit">
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Nro Llamado" Component="NroLlamado" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@certificacion.NroLlamado" Name="NroLlamado" />
+                    <RadzenRequiredValidator Component="NroLlamado" Text="NroLlamado is required" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Nro Recibo" Component="NroRecibo" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@certificacion.NroRecibo" Name="NroRecibo" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Fecha Recibido" Component="FechaRecibido" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDatePicker DateFormat="dd/MM/yyyy" style="display: block; width: 100%" @bind-Value="@certificacion.FechaRecibido" Name="FechaRecibido" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Fecha Certificacion" Component="FechaCertificacion" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDatePicker DateFormat="dd/MM/yyyy" style="display: block; width: 100%" @bind-Value="@certificacion.FechaCertificacion" Name="FechaCertificacion" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Fecha Ini" Component="FechaIni" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDatePicker DateFormat="dd/MM/yyyy" style="display: block; width: 100%" @bind-Value="@certificacion.FechaIni" Name="FechaIni" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Fecha Fin" Component="FechaFin" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDatePicker DateFormat="dd/MM/yyyy" style="display: block; width: 100%" @bind-Value="@certificacion.FechaFin" Name="FechaFin" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Efectiva" Component="Efectiva" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenCheckBox @bind-Value="@certificacion.Efectiva" Name="Efectiva" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Indicaciones" Component="Indicaciones" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@certificacion.Indicaciones" Name="Indicaciones" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Importe Deducible" Component="ImporteDeducible" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@certificacion.ImporteDeducible" Name="ImporteDeducible" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Trabaja" Component="Trabaja" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenCheckBox @bind-Value="@certificacion.Trabaja" Name="Trabaja" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Usr" Component="Usr" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@certificacion.Usr" Name="Usr" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Ts" Component="Ts" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDatePicker DateFormat="dd/MM/yyyy" style="display: block; width: 100%" @bind-Value="@certificacion.Ts" Name="Ts" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Afiliado" Component="Afiliado" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@afiliadosForCI" TextProperty="Nombres" ValueProperty="CI" AllowClear=true
+                         Placeholder="Choose Afiliado" style="display: block; width: 100%" @bind-Value="@certificacion.CI" Name="CI"
+                        SelectedValue=@afiliadosForCIValue Count=@afiliadosForCICount LoadData=@afiliadosForCILoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Afeccion Tipo" Component="AfeccionTipo" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@afeccionTiposForCodAfeccionTipo" TextProperty="Descrip" ValueProperty="CodAfeccionTipo" AllowClear=true
+                         Placeholder="Choose AfeccionTipo" style="display: block; width: 100%" @bind-Value="@certificacion.CodAfeccionTipo" Name="CodAfeccionTipo"
+                        SelectedValue=@afeccionTiposForCodAfeccionTipoValue Count=@afeccionTiposForCodAfeccionTipoCount LoadData=@afeccionTiposForCodAfeccionTipoLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Certificador" Component="Certificador" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@certificadorsForCodCertificador" TextProperty="Descrip" ValueProperty="CodCertificador" AllowClear=true
+                         Placeholder="Choose Certificador" style="display: block; width: 100%" @bind-Value="@certificacion.CodCertificador" Name="CodCertificador"
+                        SelectedValue=@certificadorsForCodCertificadorValue Count=@certificadorsForCodCertificadorCount LoadData=@certificadorsForCodCertificadorLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Salida Tipo" Component="SalidaTipo" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@salidaTiposForCodSalidaTipo" TextProperty="Descrip" ValueProperty="CodSalidaTipo" AllowClear=true
+                         Placeholder="Choose SalidaTipo" style="display: block; width: 100%" @bind-Value="@certificacion.CodSalidaTipo" Name="CodSalidaTipo"
+                        SelectedValue=@salidaTiposForCodSalidaTipoValue Count=@salidaTiposForCodSalidaTipoCount LoadData=@salidaTiposForCodSalidaTipoLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+          <RadzenStack  Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                    <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Submit" Icon="save" Text="Save" Variant="Variant.Flat" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Text="Cancel" Variant="Variant.Flat" Click="@CancelButtonClick"  />
+          </RadzenStack>
+        </RadzenTemplateForm>
+    </RadzenColumn>
+

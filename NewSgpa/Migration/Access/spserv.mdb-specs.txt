@@ -1,0 +1,331 @@
+=== TABLES ===
+TABLE: CtaCteRet
+  IDPrestamo | Long(4) | Required=Falso
+  Importe | Double(8) | Required=Falso
+  cobros | Double(8) | Required=Falso
+  saldo | Double(8) | Required=Falso
+
+TABLE: ErrCargaAbitab
+  Fecha | Date(8) | Required=Falso
+  NroReng | Long(4) | Required=Falso
+  Descrip | Text(100) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: Errores de pegado
+  Campo0 | Memo(0) | Required=Falso
+  Campo1 | Memo(0) | Required=Falso
+  Campo2 | Memo(0) | Required=Falso
+  Campo3 | Memo(0) | Required=Falso
+
+TABLE: Seleccion
+  Id | Long(4) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Form | Text(255) | Required=Falso
+  Nombre | Text(255) | Required=Falso
+  Txt | Memo(0) | Required=Falso
+  System | Boolean(1) | Required=Falso
+
+TABLE: SP_AfiliadoComentario
+  CI | Long(4) | Required=Falso
+  Fecha | Date(8) | Required=Falso
+  Observaciones | Memo(0) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SP_CtrlPrestamoEstado
+  PrestamoEstadoAnt | Text(3) | Required=Falso
+  PrestamoEstadoSig | Text(3) | Required=Falso
+
+TABLE: SP_CuadroAmortizacion
+  IDPrestamo | Long(4) | Required=Falso
+  NroCuota | Integer(2) | Required=Falso
+  Monto | Single(4) | Required=Falso
+  ImporteCuota | Single(4) | Required=Falso
+  Interes | Single(4) | Required=Falso
+  Amortizacion | Single(4) | Required=Falso
+  Saldo | Single(4) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SP_Cuota
+  IDPrestamo | Long(4) | Required=Falso
+  Nro | Integer(2) | Required=Falso
+  FechaVencimiento | Date(8) | Required=Falso
+  FechaPago | Date(8) | Required=Falso
+  CodItemPago | Text(3) | Required=Falso
+  Importe | Single(4) | Required=Falso
+  CodMoneda | Text(3) | Required=Falso
+  CodCuotaEstado | Text(3) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SP_CuotaEstado
+  CodCuotaEstado | Text(3) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+
+TABLE: SP_Factura
+  IDFactura | Long(4) | Required=Falso
+  NroFactura | Long(4) | Required=Falso
+  NroEmpresa | Text(2) | Required=Falso
+  IdPrestamo | Long(4) | Required=Falso
+  FechaEmitida | Date(8) | Required=Falso
+  FechaVencimiento | Date(8) | Required=Falso
+  FechaPago | Date(8) | Required=Falso
+  CodMoneda | Text(3) | Required=Falso
+  Importe | Single(4) | Required=Falso
+  CodFacturaEstado | Text(3) | Required=Falso
+  TasaCambio | Single(4) | Required=Falso
+  CodigoBarra | Text(50) | Required=Falso
+  Impresiones | Integer(2) | Required=Falso
+  ImpAmortizable | Single(4) | Required=Falso
+  ImpInteres | Single(4) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+  CodFacturaTipo | Text(50) | Required=Falso
+
+TABLE: SP_FacturaDetalle
+  IdFactura | Long(4) | Required=Falso
+  NroReng | Integer(2) | Required=Falso
+  CodItemPago | Text(3) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  NroCuota | Integer(2) | Required=Falso
+  Importe | Single(4) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SP_FacturaEstado
+  CodFacturaEstado | Text(3) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  Anulada | Boolean(1) | Required=Falso
+
+TABLE: SP_FacturaTipo
+  CodFacturaTipo | Text(50) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+
+TABLE: SP_ImpLiquido
+  CI | Long(4) | Required=Falso
+  CodEmpresa | Integer(2) | Required=Falso
+  Fechaingreso | Date(8) | Required=Falso
+  Mes | Byte(1) | Required=Falso
+  Anio | Integer(2) | Required=Falso
+  IdTrabaja | Long(4) | Required=Falso
+  Importe | Double(8) | Required=Falso
+  AnioMes | Long(4) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SP_ItemPago
+  CodItemPago | Text(3) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SP_Moneda
+  CodMoneda | Text(3) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  Tasa | Single(4) | Required=Falso
+  TasaMora | Single(4) | Required=Falso
+  TasaCambio | Single(4) | Required=Falso
+  CodAbitab | Text(2) | Required=Falso
+  DescripLarga | Text(255) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SP_Pago
+  IDFactura | Long(4) | Required=Falso
+  Fecha | Date(8) | Required=Falso
+  Importe | Single(4) | Required=Falso
+  CodSucursal | Text(50) | Required=Falso
+  TasaCambio | Single(4) | Required=Falso
+  CodPagoOrigen | Text(3) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SP_Pago_ItemPago
+  IDFactura | Long(4) | Required=Falso
+  CodItemPago | Text(3) | Required=Falso
+  NroCuota | Integer(2) | Required=Falso
+  Importe | Single(4) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SP_PagoError
+  IDFactura | Long(4) | Required=Falso
+  Fecha | Date(8) | Required=Falso
+  Importe | Single(4) | Required=Falso
+  CodSucursal | Text(50) | Required=Falso
+  TasaCambio | Single(4) | Required=Falso
+  CodFacturaEstado | Text(3) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SP_PagoOrigen
+  CodPagoOrigen | Text(3) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SP_PagoParcial
+  IDPrestamo | Long(4) | Required=Falso
+  Fecha | Date(8) | Required=Falso
+  Importe | Single(4) | Required=Falso
+  TasaCambio | Single(4) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SP_Parametro
+  NroEmpresa | Text(2) | Required=Falso
+  UR | Single(4) | Required=Falso
+  Dolar | Single(4) | Required=Falso
+  Redondeo | Byte(1) | Required=Falso
+  TopeUR | Single(4) | Required=Falso
+  PctPrestamo | Single(4) | Required=Falso
+  MesesCalculo | Integer(2) | Required=Falso
+  MaxCuotas | Integer(2) | Required=Falso
+  DiasTolerancia | Integer(2) | Required=Falso
+  TopeSueldos | Double(8) | Required=Falso
+
+TABLE: SP_Prestamo
+  IDPrestamo | Long(4) | Required=Falso
+  CI | Long(4) | Required=Falso
+  Fecha | Date(8) | Required=Falso
+  NroCta | Text(50) | Required=Falso
+  Banco | Text(50) | Required=Falso
+  Sucursal | Text(50) | Required=Falso
+  CodMoneda | Text(3) | Required=Falso
+  Importe | Single(4) | Required=Falso
+  Cuotas | Integer(2) | Required=Falso
+  Tasa | Single(4) | Required=Falso
+  ImporteCuota | Single(4) | Required=Falso
+  CuotasPagas | Integer(2) | Required=Falso
+  Saldo | Single(4) | Required=Falso
+  CodPrestamoEstado | Text(3) | Required=Falso
+  FechaCobro | Date(8) | Required=Falso
+  NroSerieCheque | Long(4) | Required=Falso
+  NroCheque | Long(4) | Required=Falso
+  TasaCambio | Single(4) | Required=Falso
+  Promedio | Single(4) | Required=Falso
+  IDPrestamoRef | Long(4) | Required=Falso
+  Observaciones | Memo(0) | Required=Falso
+  CodPrestamoTipo | Text(3) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SP_PrestamoEstado
+  CodPrestamoEstado | Text(3) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  Fin | Boolean(1) | Required=Falso
+
+TABLE: SP_PrestamoTipo
+  CodPrestamoTipo | Text(3) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  TopeaImporte | Boolean(1) | Required=Falso
+
+TABLE: SP_Retencion
+  IDPrestamo | Long(4) | Required=Falso
+  Fecha | Date(8) | Required=Falso
+  TipoCambio | Single(4) | Required=Falso
+  Importe | Single(4) | Required=Falso
+  Observaciones | Memo(0) | Required=Falso
+  Directa | Boolean(1) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SP_RetencionAviso
+  IDPrestamo | Long(4) | Required=Falso
+  Fecha | Date(8) | Required=Falso
+  Comentario | Memo(0) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SP_RetencionItem
+  IDPrestamo | Long(4) | Required=Falso
+  Fecha | Date(8) | Required=Falso
+  IDFactura | Long(4) | Required=Falso
+  CodRetencionItemCod | Text(3) | Required=Falso
+  Importe | Single(4) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SP_RetencionItemCod
+  CodRetencionItemCod | Text(3) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SP_RetencionPago
+  IDPrestamo | Long(4) | Required=Falso
+  Fecha | Date(8) | Required=Falso
+  Mes | Integer(2) | Required=Falso
+  Anio | Integer(2) | Required=Falso
+  Importe | Single(4) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SP_RetencionPrestamo
+  IDPrestamo | Long(4) | Required=Falso
+  CI | Long(4) | Required=Falso
+  Fecha | Date(8) | Required=Falso
+  CodEmpresa | Long(4) | Required=Falso
+  CodMoneda | Text(3) | Required=Falso
+  Importe | Single(4) | Required=Falso
+  Saldo | Single(4) | Required=Falso
+  ImpPago | Single(4) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: xUsrParam
+  login | Text(8) | Required=Falso
+  clave | Text(100) | Required=Falso
+  orden | Integer(2) | Required=Falso
+  value1 | Text(255) | Required=Falso
+  value2 | Text(255) | Required=Falso
+  value3 | Text(255) | Required=Falso
+  value4 | Text(255) | Required=Falso
+  value5 | Text(255) | Required=Falso
+
+=== QUERIES ===
+QUERY: Cobros
+  SQL: SELECT SP_RetencionPago.IDPrestamo, Sum(SP_RetencionPago.Importe) AS Importe
+FROM SP_RetencionPago
+GROUP BY SP_RetencionPago.IDPrestamo;
+
+
+QUERY: envios
+  SQL: SELECT SP_Retencion.IDPrestamo, Sum(SP_Retencion.Importe) AS Importe
+FROM SP_Retencion
+GROUP BY SP_Retencion.IDPrestamo;
+
+
+QUERY: Rs_PrestamoInteresAmortizacion
+  SQL: SELECT SP_CuadroAmortizacion.IDPrestamo, Sum(SP_CuadroAmortizacion.Interes) AS Interes, Sum(SP_CuadroAmortizacion.Amortizacion) AS Amortizacion
+FROM SP_CuadroAmortizacion
+GROUP BY SP_CuadroAmortizacion.IDPrestamo;
+
+
+QUERY: rsCtaCteRet
+  SQL: SELECT envios.IDPrestamo, envios.Importe, iif(isnull(Cobros.Importe), 0, Cobros.Importe) AS cobros, Iif(abs(envios.Importe-cobros)<1, 0, envios.Importe-cobros) AS saldo
+FROM envios LEFT JOIN Cobros ON envios.IDPrestamo = Cobros.IDPrestamo;
+
+
+QUERY: rsDatos
+  SQL: SELECT rsFacturaEstado.Mes, Count(*) AS Cantidad, rsFacturaEstado.CodMoneda, Sum(rsFacturaEstado.Importe) AS Importe
+FROM rsFacturaEstado
+GROUP BY rsFacturaEstado.Mes, rsFacturaEstado.CodMoneda;
+
+
+QUERY: rsDatos_Tabla de referencias cruzadas
+  SQL: TRANSFORM Sum([Cantidad]) AS [El Valor]
+SELECT [IdPrestamo], Sum([Cantidad]) AS [Total de Cantidad]
+FROM rsDatos
+GROUP BY [IdPrestamo]
+PIVOT [Mes];
+
+
+QUERY: rsFacturaEstado
+  SQL: SELECT SP_Factura.IdPrestamo, SP_Factura.IDFactura, Format(SP_Factura.FechaVencimiento,"yyyymm") AS Mes, SP_Prestamo.CodMoneda, SP_Prestamo.Importe
+FROM SP_PrestamoEstado INNER JOIN (SP_Prestamo INNER JOIN SP_Factura ON SP_Prestamo.IDPrestamo = SP_Factura.IdPrestamo) ON SP_PrestamoEstado.CodPrestamoEstado = SP_Prestamo.CodPrestamoEstado
+WHERE (((SP_Factura.CodFacturaEstado)<>"anu") AND ((SP_PrestamoEstado.Fin)=False) AND ((SP_PrestamoEstado.CodPrestamoEstado)<>"anu") AND ((SP_Factura.FechaVencimiento)>#11/30/2003#));
+
+

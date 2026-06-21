@@ -1,0 +1,24 @@
+@page "/reportes/disenar"
+@page "/reportes/disenar/{ReportName}"
+@rendermode InteractiveServer
+@using DevExpress.Blazor.Reporting
+@inject WebCurrentUser CurrentUser
+
+<PageTitle>Diseñar reporte</PageTitle>
+
+@if (!CurrentUser.IsAdmin)
+{
+    <div class="alert alert-warning m-3">El diseño de reportes es sólo para administradores.</div>
+}
+else
+{
+    <div style="height: calc(100vh - 130px);">
+        <DxReportDesigner ReportName="@ReportName" Height="100%" />
+    </div>
+}
+
+@code {
+    [Parameter] public string? ReportName { get; set; }
+
+    protected override Task OnInitializedAsync() => CurrentUser.EnsureLoadedAsync();
+}

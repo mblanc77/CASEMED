@@ -1,0 +1,89 @@
+@page "/mae-funs"
+@attribute [Authorize]
+
+<PageTitle>MaeFuns</PageTitle>
+<RadzenStack>
+    <RadzenRow AlignItems="AlignItems.Center">
+        <RadzenColumn Size="12" SizeMD="6">
+            <RadzenText Text="MaeFuns" TextStyle="TextStyle.H3" TagName="TagName.H1" style="margin: 0" />
+        </RadzenColumn>
+        <RadzenColumn Size="12" SizeMD="6">
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                <RadzenSplitButton Icon="get_app" Text="Export" Click="@ExportClick" Variant="Variant.Flat" Shade="Shade.Lighter">
+                    <RadzenSplitButtonItem Text="Excel" Value="xlsx" />
+                    <RadzenSplitButtonItem Text="CSV" Value="csv" />
+                </RadzenSplitButton>
+                <RadzenButton Icon="add_circle_outline" Text="Add" Click="@AddButtonClick" Variant="Variant.Flat" />
+            </RadzenStack>
+        </RadzenColumn>
+    </RadzenRow>
+    <RadzenRow>
+      <RadzenColumn SizeMD=12>
+        <RadzenDataGrid @ref="grid0" ColumnWidth="200px"  AllowFiltering="true" FilterMode="FilterMode.Advanced" AllowPaging="true" AllowSorting="true" ShowPagingSummary="true" PageSizeOptions=@(new int[]{5, 10, 20, 30})
+            Data="@maeFuns" Count=count LoadData=@Grid0LoadData  TItem="SgpaNew.Server.Models.Sgpa.MaeFun" RowDoubleClick="@EditRow" >
+            <Columns>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.MaeFun" Property="NroFun" Title="Nro Fun">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.MaeFun" Property="NroCuenta" Title="Nro Cuenta">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.MaeFun" Property="Apellido1" Title="Apellido1">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.MaeFun" Property="Apellido2" Title="Apellido2">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.MaeFun" Property="Nombre1" Title="Nombre1">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.MaeFun" Property="Nombre2" Title="Nombre2">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.MaeFun" Property="Cedula" Title="Cedula">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.MaeFun" Property="Nacionalidad" Title="Nacionalidad">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.MaeFun" Property="FecNac" Title="Fec Nac">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.MaeFun" Property="EstCivil" Title="Est Civil">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.MaeFun" Property="DirCalle" Title="Dir Calle">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.MaeFun" Property="DirPuerta" Title="Dir Puerta">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.MaeFun" Property="DirBis" Title="Dir Bis">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.MaeFun" Property="DirPiso" Title="Dir Piso">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.MaeFun" Property="DirApto" Title="Dir Apto">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.MaeFun" Property="DirBloque" Title="Dir Bloque">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.MaeFun" Property="DirLocal" Title="Dir Local">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.MaeFun" Property="CodCargo" Title="Cod Cargo">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.MaeFun" Property="DesCargo" Title="Des Cargo">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.MaeFun" Property="Telefono" Title="Telefono">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.MaeFun" Property="FecIngreso" Title="Fec Ingreso">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.MaeFun" Property="InfDbla" Title="Inf Dbla">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.MaeFun" Property="FecInfDbla" Title="Fec Inf Dbla">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.MaeFun" Property="AsigCuenta" Title="Asig Cuenta">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.MaeFun" Property="FecAsigCta" Title="Fec Asig Cta">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.MaeFun" Filterable="false" Sortable="false" Width="70px" TextAlign="TextAlign.Center">
+                    <Template Context="maeFun">
+
+                        <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Medium"
+                            Shade="Shade.Lighter" Variant="Variant.Flat"
+                            Click=@(args => GridDeleteButtonClick(args, maeFun)) @onclick:stopPropagation="true" />
+                    </Template>
+                </RadzenDataGridColumn>
+            </Columns>
+
+        </RadzenDataGrid>
+
+    </RadzenColumn>
+  </RadzenRow>
+</RadzenStack>

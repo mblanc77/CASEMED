@@ -1,0 +1,41 @@
+@page "/certificaciones"
+@page "/certificaciones/nuevo"
+@page "/certificaciones/{NroLlamado:int}"
+@rendermode InteractiveServer
+@using Sgpa.Domain.Entities
+@using Sgpa.Web.Components.Crud
+@using Sgpa.Business.Certificaciones
+@inject CertificacionService Certi
+
+<PageTitle>Certificaciones</PageTitle>
+
+<SgpaMasterDetailView TMaster="Certificacion" BaseRoute="/certificaciones"
+                      TitlePlural="Certificaciones" TitleSingular="la certificación" NewLabel="Nueva certificación"
+                      ReportesEntidad="Certificacion"
+                      ValidateAsync="@(c => Certi.ValidarAsync(c))"
+                      GetWarningsAsync="@(c => Certi.GetAvisosDiasAsync(c))"
+                      OnNewAsync="@(async c => c.NroLlamado = await Certi.ProximoNroLlamadoAsync())">
+    <ListColumns>
+        <DxGridDataColumn FieldName="NroLlamado" Caption="Nº llamado" Width="120px" />
+        <DxGridDataColumn FieldName="CI" Caption="Cédula" Width="130px" DisplayFormat="0" />
+        <DxGridDataColumn FieldName="FechaIni" Caption="Desde" DisplayFormat="d" Width="120px" />
+        <DxGridDataColumn FieldName="FechaFin" Caption="Hasta" DisplayFormat="d" Width="120px" />
+        <DxGridDataColumn FieldName="Efectiva" Caption="Efectiva" Width="100px" />
+    </ListColumns>
+    <DetailHeader Context="c">
+        Certificación Nº @c.NroLlamado — cédula @c.CI
+    </DetailHeader>
+    <ChildTabs Context="c">
+        <DxTabPage Text="Prórrogas" TabIconCssClass="fa-solid fa-calendar-plus">
+            <div class="p-2">
+                @* Las prórrogas son a nivel afiliado (clave CI+Fecha); se filtran por la cédula de la certificación. *@
+                <SgpaCrudView TEntity="CertificacionProrroga" Title="Prórrogas del afiliado"
+                              FilterColumn="CI" FilterValue="c.CI" />
+            </div>
+        </DxTabPage>
+    </ChildTabs>
+</SgpaMasterDetailView>
+
+@code {
+    [Parameter] public int NroLlamado { get; set; }
+}

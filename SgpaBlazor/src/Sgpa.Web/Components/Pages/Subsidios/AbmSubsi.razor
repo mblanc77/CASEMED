@@ -1,0 +1,136 @@
+@page "/subsidios"
+@page "/subsidios/{IdSubsidio:int}"
+@rendermode InteractiveServer
+@using Sgpa.Domain.Entities
+@using Sgpa.Web.Components.Crud
+@using Sgpa.Data
+@using Sgpa.Data.Crud
+@using Sgpa.Data.Preferencias
+@using System.Text.Json
+@inject IDbExecutor Db
+@inject IPreferenciaVistaStore Prefs
+@inject Sgpa.Web.Security.WebCurrentUser CurrentUser
+
+<PageTitle>Subsidios</PageTitle>
+
+@*
+    Subsidios se trabajan por mes/año. La grilla NO carga nada por defecto: el usuario elige primero un período
+    (combo de la barra, sólo períodos con datos, del más reciente al más viejo). Recién ahí se consultan los
+    subsidios de ese período (FiltroBase = Mes AND Año, vía SgpaMasterDetailView.RequiereFiltro/FiltroBase).
+*@
+<SgpaMasterDetailView TMaster="SubsidioCabezal" BaseRoute="/subsidios"
+                      TitlePlural="Subsidios" TitleSingular="el subsidio" NewLabel="Nuevo subsidio"
+                      AllowNew="false" RequiereFiltro="true" FiltroBase="_filtroBase"
+                      ReportesEntidad="Subsidio">
+    <ToolbarActions>
+        <span class="sgpa-periodo" style="min-width:200px">
+            <DxComboBox TData="Periodo" TValue="Periodo" Data="_periodos"
+                        Value="_periodo" ValueChanged="@((Periodo? p) => OnPeriodoChanged(p))"
+                        TextFieldName="@nameof(Periodo.Display)" NullText="Elegí un período…" CssClass="w-100"
+                        SearchMode="ListSearchMode.AutoSearch"
+                        SearchFilterCondition="ListSearchFilterCondition.Contains" />
+        </span>
+        <DxButton Text="Liquidar" IconCssClass="fa-solid fa-gears" RenderStyle="ButtonRenderStyle.Primary"
+                  Click="@(() => _liquidarVisible = true)" />
+    </ToolbarActions>
+    <ListColumns>
+        <DxGridDataColumn FieldName="IdSubsidio" Caption="Id" Width="100px" />
+        <DxGridDataColumn FieldName="CI" Caption="Cédula" Width="130px" DisplayFormat="0" />
+        <DxGridDataColumn FieldName="Anio" Caption="Año" Width="90px" />
+        <DxGridDataColumn FieldName="Mes" Caption="Mes" Width="80px" />
+        <DxGridDataColumn FieldName="ImpLiquido" Caption="Líquido" DisplayFormat="n2" />
+    </ListColumns>
+    <DetailHeader Context="s">
+        Subsidio #@s.IdSubsidio — cédula @s.CI (@s.Mes/@s.Anio)
+    </DetailHeader>
+    <ChildTabs Context="s">
+        <DxTabPage Text="Por empresa" TabIconCssClass="fa-solid fa-building">
+            <div class="p-2"><SgpaCrudView TEntity="SubsidioCabezalEmpresa" Title="Detalle por empresa" FilterColumn="IdSubsidio" FilterValue="s.IdSubsidio" /></div>
+        </DxTabPage>
+        <DxTabPage Text="Enfermedad" TabIconCssClass="fa-solid fa-notes-medical">
+            <div class="p-2"><SgpaCrudView TEntity="SubsidioEnfermedad" Title="Tramos de enfermedad" FilterColumn="IdSubsidio" FilterValue="s.IdSubsidio" /></div>
+        </DxTabPage>
+        <DxTabPage Text="Ítems" TabIconCssClass="fa-solid fa-list-ul">
+            <div class="p-2"><SgpaCrudView TEntity="SubsidioItem" Title="Ítems" FilterColumn="IdSubsidio" FilterValue="s.IdSubsidio" /></div>
+        </DxTabPage>
+        <DxTabPage Text="Ítems por empresa" TabIconCssClass="fa-solid fa-table-cells">
+            <div class="p-2"><SgpaCrudView TEntity="SubsidioItemEmpresa" Title="Ítems por empresa" FilterColumn="IdSubsidio" FilterValue="s.IdSubsidio" /></div>
+        </DxTabPage>
+        <DxTabPage Text="BPS" TabIconCssClass="fa-solid fa-landmark">
+            <div class="p-2"><SgpaCrudView TEntity="SubsidioCabezal_BPS" Title="BPS" FilterColumn="IdSubsidio" FilterValue="s.IdSubsidio" /></div>
+        </DxTabPage>
+    </ChildTabs>
+</SgpaMasterDetailView>
+
+<LiquidarSubsidioDialog @bind-Visible="_liquidarVisible" />
+
+@code {
+    [Parameter] public int IdSubsidio { get; set; }
+    private bool _liquidarVisible;
+
+    private static readonly System.Globalization.CultureInfo EsUy = System.Globalization.CultureInfo.GetCultureInfo("es-UY");
+
+    private IReadOnlyList<Periodo> _periodos = Array.Empty<Periodo>();
+    private Periodo? _periodo;
+    private FilterNode? _filtroBase;
+
+    // Un período de subsidio (mes/año con datos). Display = "Junio 2026".
+    public sealed class Periodo
+    {
+        public int Anio { get; set; }
+        public int Mes { get; set; }
+        public string Display
+        {
+            get
+            {
+                var nombre = new DateTime(Anio, Mes, 1).ToString("MMMM yyyy", EsUy);
+                return char.ToUpper(nombre[0], EsUy) + nombre.Substring(1);
+            }
+        }
+    }
+
+    private const string PrefKey = "subsidios:periodo";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CurrentUser.EnsureLoadedAsync();
+        _periodos = await Db.QueryAsync<Periodo>(
+            "SELECT DISTINCT Anio, Mes FROM dbo.SubsidioCabezal ORDER BY Anio DESC, Mes DESC");
+
+        // Recordar el último período elegido por el usuario (si todavía existe en los datos).
+        var json = await Prefs.GetAsync(CurrentUser.UserName, PrefKey);
+        if (json is not null)
+        {
+            try
+            {
+                var sel = JsonSerializer.Deserialize<Periodo>(json);
+                if (sel is not null)
+                {
+                    var match = _periodos.FirstOrDefault(p => p.Anio == sel.Anio && p.Mes == sel.Mes);
+                    if (match is not null) SetPeriodo(match);
+                }
+            }
+            catch { /* pref corrupta: se ignora */ }
+        }
+    }
+
+    private async Task OnPeriodoChanged(Periodo? p)
+    {
+        SetPeriodo(p);
+        // El cambio de _filtroBase se propaga a SgpaMasterDetailView (param FiltroBase) → recarga la lista.
+        if (p is null) await Prefs.ResetAsync(CurrentUser.UserName, PrefKey);
+        else await Prefs.SaveAsync(CurrentUser.UserName, PrefKey, JsonSerializer.Serialize(p));
+    }
+
+    private void SetPeriodo(Periodo? p)
+    {
+        _periodo = p;
+        _filtroBase = p is null
+            ? null
+            : new FilterGroup(true, new FilterNode[]
+            {
+                new FilterCompare("Mes", FilterOp.Equal, p.Mes),
+                new FilterCompare("Anio", FilterOp.Equal, p.Anio),
+            });
+    }
+}

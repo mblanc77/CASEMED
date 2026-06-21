@@ -1,0 +1,132 @@
+@page "/edit-audit-data-item-persistent"
+
+<PageTitle>Edit AuditDataItemPersistent</PageTitle>
+<RadzenRow>
+    <RadzenColumn SizeMD="9">
+    <RadzenLabel style="font-weight: bold" Text="Item no longer available." Visible="@(!canEdit)" />
+    </RadzenColumn>
+    <RadzenColumn SizeMD="3">
+    <RadzenButton ButtonStyle="ButtonStyle.Secondary" style="margin-bottom: 20px" Text="Close" Visible="@(!canEdit)" Click="@CancelButtonClick" />
+    </RadzenColumn>
+</RadzenRow>
+<RadzenRow>
+    <RadzenColumn SizeMD="9">
+    <RadzenLabel style="font-weight: bold" Text="Another user has made conflicting changes to one or more of the fields you have modified. Please reload." Visible="@hasChanges" />
+    </RadzenColumn>
+    <RadzenColumn SizeMD="3">
+    <RadzenButton ButtonStyle="ButtonStyle.Secondary" Icon="autorenew" style="margin-bottom: 20px" Text="Reload" Visible="@hasChanges" Click="@ReloadButtonClick" />
+    </RadzenColumn>
+</RadzenRow>
+
+    <RadzenColumn SizeMD=12>
+        <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@errorVisible">Cannot save AuditDataItemPersistent</RadzenAlert>
+        <RadzenTemplateForm TItem="SGPA.Server.Models.CMU.AuditDataItemPersistent" Data="@auditDataItemPersistent" Visible="@(auditDataItemPersistent != null && canEdit)" Submit="@FormSubmit">
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="User Name" Component="UserName" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@auditDataItemPersistent.UserName" Name="UserName" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Modified On" Component="ModifiedOn" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDatePicker DateFormat="MM/dd/yyyy" style="display: block; width: 100%" @bind-Value="@auditDataItemPersistent.ModifiedOn" Name="ModifiedOn" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Operation Type" Component="OperationType" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@auditDataItemPersistent.OperationType" Name="OperationType" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Description" Component="Description" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@auditDataItemPersistent.Description" Name="Description" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Old Value" Component="OldValue" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@auditDataItemPersistent.OldValue" Name="OldValue" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="New Value" Component="NewValue" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@auditDataItemPersistent.NewValue" Name="NewValue" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Property Name" Component="PropertyName" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@auditDataItemPersistent.PropertyName" Name="PropertyName" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Optimistic Lock Field" Component="OptimisticLockField" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@auditDataItemPersistent.OptimisticLockField" Name="OptimisticLockField" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="G C Record" Component="GCRecord" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@auditDataItemPersistent.GCRecord" Name="GCRecord" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Audited Object Weak Reference" Component="AuditedObjectWeakReference" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@auditedObjectWeakReferencesForAuditedObject" TextProperty="DisplayName" ValueProperty="Oid" AllowClear=true
+                         Placeholder="Choose AuditedObjectWeakReference" style="display: block; width: 100%" @bind-Value="@auditDataItemPersistent.AuditedObject" Name="AuditedObject"
+                        SelectedValue=@auditedObjectWeakReferencesForAuditedObjectValue Count=@auditedObjectWeakReferencesForAuditedObjectCount LoadData=@auditedObjectWeakReferencesForAuditedObjectLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Xpweak Reference" Component="XpweakReference" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@xpWeakReferencesForNewObject" TextProperty="TargetKey" ValueProperty="Oid" AllowClear=true
+                         Placeholder="Choose XpweakReference" style="display: block; width: 100%" @bind-Value="@auditDataItemPersistent.NewObject" Name="NewObject"
+                        SelectedValue=@xpWeakReferencesForNewObjectValue Count=@xpWeakReferencesForNewObjectCount LoadData=@xpWeakReferencesForNewObjectLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Xpweak Reference1" Component="XpweakReference1" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@xpWeakReferencesForOldObject" TextProperty="TargetKey" ValueProperty="Oid" AllowClear=true
+                         Placeholder="Choose XpweakReference1" style="display: block; width: 100%" @bind-Value="@auditDataItemPersistent.OldObject" Name="OldObject"
+                        SelectedValue=@xpWeakReferencesForOldObjectValue Count=@xpWeakReferencesForOldObjectCount LoadData=@xpWeakReferencesForOldObjectLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+          <RadzenStack  Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                    <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Submit" Icon="save" Text="Save" Variant="Variant.Flat" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Text="Cancel" Variant="Variant.Flat" Click="@CancelButtonClick"  />
+          </RadzenStack>
+        </RadzenTemplateForm>
+    </RadzenColumn>
+

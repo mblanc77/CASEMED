@@ -1,0 +1,144 @@
+@page "/edit-xpo-state-appearance"
+
+<PageTitle>Edit XpoStateAppearance</PageTitle>
+<RadzenRow>
+    <RadzenColumn SizeMD="9">
+    <RadzenLabel style="font-weight: bold" Text="Item no longer available." Visible="@(!canEdit)" />
+    </RadzenColumn>
+    <RadzenColumn SizeMD="3">
+    <RadzenButton ButtonStyle="ButtonStyle.Secondary" style="margin-bottom: 20px" Text="Close" Visible="@(!canEdit)" Click="@CancelButtonClick" />
+    </RadzenColumn>
+</RadzenRow>
+<RadzenRow>
+    <RadzenColumn SizeMD="9">
+    <RadzenLabel style="font-weight: bold" Text="Another user has made conflicting changes to one or more of the fields you have modified. Please reload." Visible="@hasChanges" />
+    </RadzenColumn>
+    <RadzenColumn SizeMD="3">
+    <RadzenButton ButtonStyle="ButtonStyle.Secondary" Icon="autorenew" style="margin-bottom: 20px" Text="Reload" Visible="@hasChanges" Click="@ReloadButtonClick" />
+    </RadzenColumn>
+</RadzenRow>
+
+    <RadzenColumn SizeMD=12>
+        <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@errorVisible">Cannot save XpoStateAppearance</RadzenAlert>
+        <RadzenTemplateForm TItem="SGPA.Server.Models.CMU.XpoStateAppearance" Data="@xpoStateAppearance" Visible="@(xpoStateAppearance != null && canEdit)" Submit="@FormSubmit">
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Appearance Item Type" Component="AppearanceItemType" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@xpoStateAppearance.AppearanceItemType" Name="AppearanceItemType" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Context" Component="Context" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@xpoStateAppearance.Context" Name="Context" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Criteria" Component="Criteria" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@xpoStateAppearance.Criteria" Name="Criteria" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Method" Component="Method" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@xpoStateAppearance.Method" Name="Method" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Target Items" Component="TargetItems" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@xpoStateAppearance.TargetItems" Name="TargetItems" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Priority" Component="Priority" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@xpoStateAppearance.Priority" Name="Priority" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Font Color" Component="FontColor" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@xpoStateAppearance.FontColor" Name="FontColor" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Back Color" Component="BackColor" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@xpoStateAppearance.BackColor" Name="BackColor" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Font Style" Component="FontStyle" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@xpoStateAppearance.FontStyle" Name="FontStyle" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Enabled" Component="Enabled" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenCheckBox @bind-Value="@xpoStateAppearance.Enabled" Name="Enabled" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Visibility" Component="Visibility" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@xpoStateAppearance.Visibility" Name="Visibility" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Optimistic Lock Field" Component="OptimisticLockField" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@xpoStateAppearance.OptimisticLockField" Name="OptimisticLockField" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="G C Record" Component="GCRecord" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@xpoStateAppearance.GCRecord" Name="GCRecord" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Xpo State" Component="XpoState" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@xpoStatesForState" TextProperty="Caption" ValueProperty="Oid" AllowClear=true
+                         Placeholder="Choose XpoState" style="display: block; width: 100%" @bind-Value="@xpoStateAppearance.State" Name="State"
+                        SelectedValue=@xpoStatesForStateValue Count=@xpoStatesForStateCount LoadData=@xpoStatesForStateLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+          <RadzenStack  Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                    <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Submit" Icon="save" Text="Save" Variant="Variant.Flat" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Text="Cancel" Variant="Variant.Flat" Click="@CancelButtonClick"  />
+          </RadzenStack>
+        </RadzenTemplateForm>
+    </RadzenColumn>
+

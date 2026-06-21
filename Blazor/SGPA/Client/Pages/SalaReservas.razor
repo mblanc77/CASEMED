@@ -1,0 +1,78 @@
+@page "/sala-reservas"
+
+<PageTitle>SalaReservas</PageTitle>
+<RadzenStack>
+    <RadzenRow AlignItems="AlignItems.Center">
+        <RadzenColumn Size="12" SizeMD="6">
+            <RadzenText Text="SalaReservas" TextStyle="TextStyle.H3" TagName="TagName.H1" style="margin: 0" />
+        </RadzenColumn>
+        <RadzenColumn Size="12" SizeMD="6">
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                <RadzenSplitButton Icon="get_app" Text="Export" Click="@ExportClick" Variant="Variant.Flat" Shade="Shade.Lighter">
+                    <RadzenSplitButtonItem Text="Excel" Value="xlsx" />
+                    <RadzenSplitButtonItem Text="CSV" Value="csv" />
+                </RadzenSplitButton>
+                <RadzenButton Icon="add_circle_outline" Text="Add" Click="@AddButtonClick" Variant="Variant.Flat" />
+            </RadzenStack>
+        </RadzenColumn>
+    </RadzenRow>
+    <RadzenRow>
+      <RadzenColumn SizeMD=12>
+        <RadzenDataGrid @ref="grid0" ColumnWidth="200px"  AllowFiltering="true" FilterMode="FilterMode.Advanced" AllowPaging="true" AllowSorting="true" ShowPagingSummary="true" PageSizeOptions=@(new int[]{5, 10, 20, 30})
+            Data="@salaReservas" Count=count LoadData=@Grid0LoadData  TItem="SGPA.Server.Models.CMU.SalaReserva" RowDoubleClick="@EditRow" >
+            <Columns>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.SalaReserva" Property="Id" Title="Id">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.SalaReserva" Property="NombreEvento" Title="Nombre Evento">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.SalaReserva" Property="NombreResponsable" Title="Nombre Responsable">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.SalaReserva" Property="Disponibilidad" Title="Disponibilidad">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.SalaReserva" Property="NroActa" Title="Nro Acta">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.SalaReserva" Property="Fecha" Title="Fecha">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.SalaReserva" Property="HoraDesde" Title="Hora Desde">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.SalaReserva" Property="HoraHasta" Title="Hora Hasta">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.SalaReserva" Property="EMailNotificacion" Title="E Mail Notificacion">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.SalaReserva" Property="Guid" Title="Guid">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.SalaReserva" Property="Direccion" Title="Direccion">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.SalaReserva" Property="Telefono" Title="Telefono">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.SalaReserva" Property="Detalle" Title="Detalle">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.SalaReserva" Property="HorasPreviasRegistro" Title="Horas Previas Registro">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.SalaReserva" Property="FechaEnvioEMailConfirmacion" Title="Fecha Envio E Mail Confirmacion">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.SalaReserva" Property="OptimisticLockField" Title="Optimistic Lock Field">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.SalaReserva" Property="GCRecord" Title="G C Record">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.SalaReserva" Property="MyFileDatum.FileName" Title="My File Datum">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.SalaReserva" Property="SalaOrganizador.Nombre" Title="Sala Organizador">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.SalaReserva" Property="SalaCmu.Nombre" Title="Sala Cmu">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.SalaReserva" Filterable="false" Sortable="false" Width="70px" TextAlign="TextAlign.Center">
+                    <Template Context="salaReserva">
+
+                        <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Medium"
+                            Shade="Shade.Lighter" Variant="Variant.Flat"
+                            Click=@(args => GridDeleteButtonClick(args, salaReserva)) @onclick:stopPropagation="true" />
+                    </Template>
+                </RadzenDataGridColumn>
+            </Columns>
+
+        </RadzenDataGrid>
+
+    </RadzenColumn>
+  </RadzenRow>
+</RadzenStack>

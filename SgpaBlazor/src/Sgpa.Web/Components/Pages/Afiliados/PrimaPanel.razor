@@ -1,0 +1,145 @@
+@using FluentValidation
+@using Sgpa.Business.Afiliados
+@using Sgpa.Domain.Entities
+@inject PrimaService Prima
+@inject IValidator<PrimaFallecimiento> Validator
+
+@*
+    Prima por fallecimiento del afiliado (port del cluster Prima de AbmAfili.frm): cargar el registro
+    del afiliado, liquidar (sugerir el importe = min(TopePrima·UR, imponibles de 6 meses)), grabar y borrar.
+*@
+
+<div class="card">
+    <div class="card-header"><i class="fa-solid fa-hand-holding-dollar me-1"></i> Prima por fallecimiento</div>
+    <div class="card-body">
+        <DxFormLayout>
+            <DxFormLayoutItem Caption="Fecha de firma" ColSpanMd="6" CssClass="@(_fechasError is not null ? "sgpa-field--invalid" : null)">
+                <DxDateEdit @bind-Date="_p.FechaFirma" NullText="(sin fecha)"
+                            ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="Fecha de fallecimiento" ColSpanMd="6" CssClass="@(_fechasError is not null ? "sgpa-field--invalid" : null)">
+                <DxDateEdit @bind-Date="_p.FechaFallecimiento" NullText="(sin fecha)"
+                            ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto" />
+                @if (_fechasError is not null)
+                {
+                    <div class="sgpa-field__error">@_fechasError</div>
+                }
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="Importe" ColSpanMd="6">
+                <DxSpinEdit @bind-Value="_importe" DisplayFormat="N2" MinValue="0" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="Fecha de pago" ColSpanMd="6">
+                <DxDateEdit @bind-Date="_p.FechaPago" NullText="(sin fecha)"
+                            ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="Observaciones" ColSpanMd="12">
+                <DxTextBox @bind-Text="_p.Observaciones" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem ColSpanMd="12" BeginRow="true">
+                <DxButton Text="Liquidar (sugerir importe)" IconCssClass="fa-solid fa-calculator"
+                          RenderStyle="ButtonRenderStyle.Secondary" Click="LiquidarAsync" Enabled="@(!_busy)" />
+                <DxButton Text="Grabar" IconCssClass="fa-solid fa-floppy-disk" CssClass="ms-2"
+                          RenderStyle="ButtonRenderStyle.Primary" Click="GrabarAsync" Enabled="@(!_busy)" />
+                <DxButton Text="Borrar" IconCssClass="fa-solid fa-trash" CssClass="ms-2"
+                          RenderStyle="ButtonRenderStyle.Danger" Click="@(() => _confirmDelete = true)" Enabled="@(!_busy && _existe)" />
+            </DxFormLayoutItem>
+        </DxFormLayout>
+        @if (_msg is not null) { <div class="alert alert-success mt-2 mb-0">@_msg</div> }
+        @if (_error is not null) { <div class="alert alert-danger mt-2 mb-0">@_error</div> }
+    </div>
+</div>
+
+<DxPopup @bind-Visible="_confirmDelete" HeaderText="Borrar prima" Width="420px" CloseOnEscape="true">
+    <BodyContentTemplate Context="popup">
+        <p>¿Seguro que querés borrar la prima por fallecimiento de este afiliado?</p>
+        <div class="d-flex justify-content-end gap-2">
+            <DxButton Text="No" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => _confirmDelete = false)" Enabled="@(!_busy)" />
+            <DxButton Text="Sí, borrar" RenderStyle="ButtonRenderStyle.Danger" Click="BorrarAsync" Enabled="@(!_busy)" />
+        </div>
+    </BodyContentTemplate>
+</DxPopup>
+
+@code {
+    [Parameter] public long CI { get; set; }
+
+    private PrimaFallecimiento _p = new();
+    private double _importe;
+    private bool _busy, _existe, _confirmDelete;
+    private string? _msg, _error, _fechasError;
+    private long _loadedCI = -1;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (CI != _loadedCI)
+        {
+            _loadedCI = CI;
+            await CargarAsync();
+        }
+    }
+
+    private async Task CargarAsync()
+    {
+        _msg = _error = _fechasError = null;
+        var existing = await Prima.GetAsync(CI);
+        _existe = existing is not null;
+        _p = existing ?? new PrimaFallecimiento();
+        _p.CI = CI;
+        _importe = _p.Importe ?? 0d;
+    }
+
+    private async Task LiquidarAsync()
+    {
+        _msg = _error = null;
+        if (_p.FechaFallecimiento is null) { _error = "Ingresá la fecha de fallecimiento para liquidar."; return; }
+        _busy = true;
+        try
+        {
+            _importe = await Prima.LiquidarAsync(CI, _p.FechaFallecimiento.Value);
+            _msg = $"Importe sugerido: {_importe:N2}.";
+        }
+        catch (Exception ex) { _error = ex.Message; }
+        finally { _busy = false; }
+    }
+
+    private async Task GrabarAsync()
+    {
+        _msg = _error = _fechasError = null;
+        _p.CI = CI;
+        _p.Importe = _importe;
+
+        var result = await Validator.ValidateAsync(_p);
+        if (!result.IsValid)
+        {
+            _fechasError = result.Errors.FirstOrDefault()?.ErrorMessage;
+            _error = string.Join(" ", result.Errors.Select(e => e.ErrorMessage));
+            return;
+        }
+
+        _busy = true;
+        try
+        {
+            await Prima.GrabarAsync(_p);
+            _existe = true;
+            _msg = "Prima guardada.";
+        }
+        catch (Exception ex) { _error = ex.Message; }
+        finally { _busy = false; }
+    }
+
+    private async Task BorrarAsync()
+    {
+        _msg = _error = _fechasError = null;
+        _confirmDelete = false;
+        _busy = true;
+        try
+        {
+            await Prima.BorrarAsync(CI);
+            _existe = false;
+            _p = new PrimaFallecimiento { CI = CI };
+            _importe = 0;
+            _msg = "Prima borrada.";
+        }
+        catch (Exception ex) { _error = ex.Message; }
+        finally { _busy = false; }
+    }
+}

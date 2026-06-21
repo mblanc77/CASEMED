@@ -1,0 +1,15 @@
+Pendientes an Casmed
+- Hacer liquidaciones por separado cuando las certificaciones no son "corridas".
+- Tomar 30 días en la liquidación cuando lo imponibles son 0.
+- Mostrar en pantalla de certifiación la cantidad de días certificados para ese afiliado y tipo de afección (2 últimos años).
+- Listado con días certificados por afiliado y tipo de afección.
+- Revisar que no tome 31 días en la liquidación de subsidios.
+- Agregar tabla para guardar los afiliados no cargados de HL, es decir los que vienen en el diskette de HL pero no estan en Casemed (tomar como no cargados los que tienen fecha de baja en Casmed para esa empresa).
+- Sacar el aguinaldo por separado en resumen de aportes.
+- Agregar campo aporte Casemed aguinaldo para calcular en el resumen de aportes.
+- I.E.: De los que no llegan a los imponibles (< 1.25 SMN),  Sacar los de los imponibles 0 por un lado y los que son mayores que 0 por otro.
+- I.E.: Nros. de afiliados con y sin derecho por IAMC empleadora.
+- I.E.: Afiliados por puesto de trabajo.
+- I.E.: Gráfico de tipos de afección por persona.
+- I.E.: Idem para certificaciones por especialidad.
+- I.E.: Gráfico por especialidad (tomar todos los afiliados).

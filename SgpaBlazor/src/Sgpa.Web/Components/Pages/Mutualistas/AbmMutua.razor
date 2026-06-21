@@ -1,0 +1,41 @@
+@page "/mutualistas"
+@page "/mutualistas/nuevo"
+@page "/mutualistas/{CodMutualista:int}"
+@rendermode InteractiveServer
+@using Sgpa.Domain.Entities
+@using Sgpa.Web.Components.Crud
+@using Sgpa.Business.Mutualistas
+@inject MutualistaService Mutualista
+
+<PageTitle>Mutualistas</PageTitle>
+
+@*
+    ABM de mutualistas (port de AbmMutua.frm): master sin tablas hijas. Lógica de negocio: auto-numeración
+    del CodMutualista (001_Mutualista_Max). GenData del VB6 es generación de reporte (fuera de alcance).
+*@
+<SgpaMasterDetailView TMaster="Mutualista" BaseRoute="/mutualistas"
+                      TitlePlural="Mutualistas" TitleSingular="la mutualista" NewLabel="Nueva mutualista"
+                      OnNewAsync="@(async m => m.CodMutualista = await Mutualista.ProximoCodMutualistaAsync())">
+    <ListColumns>
+        <DxGridDataColumn FieldName="CodMutualista" Caption="Código" Width="110px" />
+        <DxGridDataColumn FieldName="Descrip" Caption="Nombre" />
+        <DxGridDataColumn FieldName="Telefono" Caption="Teléfono" Width="140px" />
+        <DxGridDataColumn FieldName="Cuota" Caption="Cuota" DisplayFormat="n2" Width="120px" />
+    </ListColumns>
+    <DetailHeader Context="m">
+        Mutualista @m.CodMutualista — @m.Descrip
+    </DetailHeader>
+    <ToolbarActions>
+        <DxButton Text="Reportes" IconCssClass="fa-solid fa-print" RenderStyle="ButtonRenderStyle.Success"
+                  Click="@(() => _reportesDialog?.Open("Mutualista", 0))" />
+    </ToolbarActions>
+</SgpaMasterDetailView>
+
+<Sgpa.Web.Components.Reportes.SgpaReportesPredefDialog @ref="_reportesDialog" />
+
+@code {
+    [Parameter] public int CodMutualista { get; set; }
+
+    // Diálogo de reportes predefinidos de mutualistas (botón "Reportes" en la barra de la lista; listado-catálogo).
+    private Sgpa.Web.Components.Reportes.SgpaReportesPredefDialog? _reportesDialog;
+}

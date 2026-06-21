@@ -1,0 +1,41 @@
+@page "/add-movimiento-cuenta-cuotum"
+
+<PageTitle>Add MovimientoCuentaCuotum</PageTitle>
+    <RadzenColumn SizeMD=12>
+        <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@errorVisible">Cannot save MovimientoCuentaCuotum</RadzenAlert>
+        <RadzenTemplateForm TItem="SGPA.Server.Models.CMU.MovimientoCuentaCuotum" Data="@movimientoCuentaCuotum" Visible="@(movimientoCuentaCuotum != null && canEdit)" Submit="@FormSubmit">
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Fecha Pago" Component="FechaPago" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDatePicker DateFormat="MM/dd/yyyy" style="display: block; width: 100%" @bind-Value="@movimientoCuentaCuotum.FechaPago" Name="FechaPago" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Categoria Colegiado" Component="CategoriaColegiado" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@categoriaColegiadosForCategoria" TextProperty="Descripcion" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose CategoriaColegiado" style="display: block; width: 100%" @bind-Value="@movimientoCuentaCuotum.Categoria" Name="Categoria"
+                        SelectedValue=@categoriaColegiadosForCategoriaValue Count=@categoriaColegiadosForCategoriaCount LoadData=@categoriaColegiadosForCategoriaLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Movimiento Cuentum" Component="MovimientoCuentum" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@movimientoCuentaForId" TextProperty="Referencia" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose MovimientoCuentum" style="display: block; width: 100%" @bind-Value="@movimientoCuentaCuotum.Id" Name="Id"
+                        SelectedValue=@movimientoCuentaForIdValue Count=@movimientoCuentaForIdCount LoadData=@movimientoCuentaForIdLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+          <RadzenStack  Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                    <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Submit" Icon="save" Text="Save" Variant="Variant.Flat" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Text="Cancel" Variant="Variant.Flat" Click="@CancelButtonClick"  />
+          </RadzenStack>
+        </RadzenTemplateForm>
+    </RadzenColumn>
+

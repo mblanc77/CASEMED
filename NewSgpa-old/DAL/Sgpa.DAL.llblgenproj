@@ -1,0 +1,2733 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--LLBLGen Pro v5.10 project file. Do not manually edit this file. Incorrect references could lead to an unloadable project file.-->
+<Project Version="5.10" TargetFrameworkName="Entity Framework Core v6" UseLegacyDefaults="false">
+  <Properties>
+    <Abbreviations />
+    <Property Name="AdditionalTaskPerformerFolder" Value="" />
+    <Property Name="AdditionalTasksFolder" Value="" />
+    <Property Name="AdditionalTemplatesFolder" Value="" />
+    <Property Name="AdditionalTypeConverterFolder" Value="" />
+    <Property Name="AddNewElementsAfterRefresh_v5" Value="false" />
+    <Property Name="AddNewElementsAfterRelationalModelDataSync_v5" Value="false" />
+    <Property Name="AddNewFieldsAfterRefresh_v5" Value="true" />
+    <Property Name="AddNewFieldsAfterRelationalModelDataSync_v5" Value="true" />
+    <Property Name="AddNewViewsAsEntitiesAfterRefresh_v5" Value="false" />
+    <Property Name="AddNewViewsAsEntitiesAfterRelationalModelDataSync_v5" Value="false" />
+    <Property Name="AutoAddManyToManyRelationships" Value="false" />
+    <Property Name="AutoAssignSequencesToIntegerPks" Value="true" />
+    <Property Name="AutoAssignTypeConverterToFieldMapping" Value="true" />
+    <Property Name="AutomaticallyGenerateSourceCodeOnProjectSave" Value="true" />
+    <Property Name="ConnectionStringKeyNamePattern" Value="ConnectionString.{$ProviderName}" />
+    <Property Name="DefaultDDLSQLScriptDestinationFolder" Value=".\DDLSQLScripts" />
+    <Property Name="DefaultDeleteRuleAction" Value="1" />
+    <Property Name="DefaultSourceCodeDestinationFolder" Value=".\Code" />
+    <Property Name="DefaultUpdateRuleAction" Value="0" />
+    <Property Name="DeleteObsoleteFiles" Value="true" />
+    <Property Name="ElementNamePrefixPattern" Value="{$SchemaName}" />
+    <Property Name="ElementNamePrefixPatternIsAppliedWhen" Value="1" />
+    <Property Name="EncodingToUse" Value="0" />
+    <Property Name="EntityActionCombinationDefaultForTable" Value="0" />
+    <Property Name="EntityActionCombinationDefaultForView" Value="4" />
+    <Property Name="EntityFieldNameStripPattern" Value="{}{}" />
+    <Property Name="EntityNameStripPattern" Value="{tbl_}{}" />
+    <Property Name="ExcludableOrphanedElementDetectedAction" Value="3" />
+    <Property Name="FailCodeGenerationOnWriteError" Value="false" />
+    <Property Name="FieldMappedOntoRelatedFieldPattern" Value="{$RelatedFieldName}" />
+    <Property Name="FkFieldsAreNamedAfterTargetField" Value="true" />
+    <Property Name="ForeignKeyConstraintPattern" Value="FK_{$Guid}" />
+    <Property Name="ForeignKeyFieldPattern" Value="{$NavigatorName}{$RelatedFieldName}" />
+    <Property Name="GroupUsage" Value="0" />
+    <Property Name="IdentifyingFieldsFollowDBPrimaryKeyConstraints_v5" Value="true" />
+    <Property Name="InsertUnderscoreAtWordBreakCaseInsensitiveDBs" Value="false" />
+    <Property Name="InsertUnderscoreAtWordBreakCaseSensitiveDBs" Value="false" />
+    <Property Name="LengthPrecisionScaleFollowDBLengthPrecisionScale_v5" Value="true" />
+    <Property Name="MakeElementNamePascalCasing" Value="true" />
+    <Property Name="NavigatorMappedOntoManyToManyPattern" Value="{$EndEntityName}CollectionVia{$IntermediateEntityName$S}" />
+    <Property Name="NavigatorMappedOntoOneManyToOnePattern" Value="{$EndEntityName$S}" />
+    <Property Name="NavigatorMappedOntoOneToManyPattern" Value="{$EndEntityName$P}" />
+    <Property Name="NonExcludableOrphanedElementDetectedAction" Value="3" />
+    <Property Name="PreferDecimalOverCurrencyTypes" Value="true" />
+    <Property Name="PreferNaturalCharacterTypes" Value="true" />
+    <Property Name="PreferSystemSequencesOverSchemaSequencesIfApplicable" Value="true" />
+    <Property Name="PreferVariableLengthTypes" Value="true" />
+    <Property Name="PrimaryKeyConstraintPattern" Value="PK_{$Guid}" />
+    <Property Name="ProjectCreator" Value="Me" />
+    <Property Name="ProjectName" Value="Sgpa.DAL" />
+    <Property Name="ReflectNullabilityOfElementFieldInTargetField_v5" Value="false" />
+    <Property Name="ReflectTypeOfElementFieldInTargetField_v5" Value="true" />
+    <Property Name="RelationalModelDataElementNameCasingCaseInsensitiveDBs" Value="3" />
+    <Property Name="RelationalModelDataElementNameCasingCaseSensitiveDBs" Value="3" />
+    <Property Name="RelationshipsFollowDBForeignKeyConstraints_v5" Value="true" />
+    <Property Name="RemoveUnderscoresFromElementName" Value="true" />
+    <Property Name="RemoveUnmappedElementsAfterRefresh_v5" Value="false" />
+    <Property Name="RemoveUnmappedElementsAfterRelationalModelDataSync_v5" Value="false" />
+    <Property Name="ResetFieldOrderBasedOnTargetOrderAtRefresh" Value="false" />
+    <Property Name="ResetFieldOrderBasedOnTargetOrderAtRelationalModelDataSync" Value="false" />
+    <Property Name="RetrieveDBCustomProperties" Value="false" />
+    <Property Name="RootNamespace" Value="" />
+    <Property Name="SequenceNameMatchingPattern" Value="SEQ_{$TableName}" />
+    <Property Name="SequencePattern" Value="SEQ_{$EntityName}" />
+    <Property Name="SetGroupNameAfterSchemaName" Value="true" />
+    <Property Name="SetSchemaNameAfterGroupName" Value="true" />
+    <Property Name="SingularizeElementNames" Value="true" />
+    <Property Name="StoredProcNameStripPattern" Value="{pr_, sp_}{}" />
+    <Property Name="StoreTimeLastGeneratedIntoProject" Value="false" />
+    <Property Name="StoreTimeLastSyncIntoProject" Value="true" />
+    <Property Name="SyncCustomFieldOrderingWithTableFieldIndex" Value="false" />
+    <Property Name="SyncMappedElementNamesAfterRefresh_v5" Value="false" />
+    <Property Name="SyncMappedElementNamesAfterRelationalModelDataSync_v5" Value="false" />
+    <Property Name="SyncRelationalModelDataElementNameWithModelElementName_v5" Value="false" />
+    <Property Name="SyncRenamedMappedElementNamesAfterRefresh_v5" Value="false" />
+    <Property Name="SyncRenamedMappedElementNamesAfterRelationalModelDataSync_v5" Value="false" />
+    <Property Name="TableValuedFunctionNameStripPattern" Value="{fn_, pr_, sp_}{}" />
+    <Property Name="TargetPerEntityEdgesRequireBackingFkConstraint" Value="true" />
+    <Property Name="TypedViewFieldNameStripPattern" Value="{}{}" />
+    <Property Name="TypedViewMappedOnResultsetPattern" Value="{$ProcFunctionName}{$ResultsetName}Result" />
+    <Property Name="TypedViewNameStripPattern" Value="{vw_}{}" />
+    <Property Name="UniqueConstraintPattern" Value="UC_{$Guid}" />
+    <Property Name="UniqueConstraintsFollowDBUniqueConstraints_v5" Value="true" />
+    <Property Name="UpdateCustomPropertiesAfterRefresh_v5" Value="false" />
+    <Property Name="UpdateCustomPropertiesAfterRelationalModelDataSync_v5" Value="false" />
+    <Property Name="UseCustomFieldOrderingOnNewElements" Value="false" />
+  </Properties>
+  <TypeShortcuts />
+  <IgnoredWarnings />
+  <SavedSearchQueries />
+  <CodeGenerationCyclePreferences>
+    <OutputType Value="3">
+      <LastUsedPreferences>
+        <DestinationRootFolder Value=".\Code" />
+        <FrameworkName Value="Entity Framework Core v6" />
+        <LanguageName Value="C#" />
+        <PlatformName Value=".NET 6" />
+        <PresetName Value="SD.EntityFramework.Core v6" />
+        <RootNamespace Value="Sgpa.DAL" />
+        <TemplateGroup Value="General" />
+        <TemplateBindings>
+          <Binding Name="SD.EntityFramework.Core.v6.Firebird" />
+          <Binding Name="SD.EntityFramework.Core.v6.Oracle" />
+          <Binding Name="SD.EntityFramework.Core.v6.PostgreSql" />
+          <Binding Name="SD.EntityFramework.Core.v6.SqlServer" />
+          <Binding Name="SD.EntityFramework.Core v6" />
+          <Binding Name="SD.EntityFramework.NET6" />
+          <Binding Name="SD.EntityFramework.Shared" />
+          <Binding Name="SD.TemplateBindings.General" />
+        </TemplateBindings>
+        <AdhocTemplateSets />
+      </LastUsedPreferences>
+    </OutputType>
+  </CodeGenerationCyclePreferences>
+  <CodeGenerationMetaDataDefaults />
+  <EntityModel>
+    <ValueTypeDefinitions />
+    <EntityDefinitions>
+      <EntityDefinition Name="AdPreJub" ObjectID="09ce1c54-59e6-4799-b46e-343b478f8da9">
+        <Fields>
+          <Field Name="Ci" Type="int" Precision="10" IsPrimaryKey="true" />
+          <Field Name="FechaJubilacion" Type="datetime" IsOptional="true" />
+          <Field Name="FechaPresentacion" Type="datetime" IsOptional="true" />
+          <Field Name="ImporteMensual" Type="short" IsOptional="true" Precision="5" />
+          <Field Name="Observaciones" Type="string" IsOptional="true" MaxLength="536870911" />
+          <Field Name="Ts" Type="datetime" IsOptional="true" />
+          <Field Name="Usr" Type="string" IsOptional="true" MaxLength="8" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="AdPreJubPago" ObjectID="045d2869-481a-4a53-b0c7-076873fca481">
+        <Fields>
+          <Field Name="Anio" Type="short" Precision="5" IsPrimaryKey="true" />
+          <Field Name="Ci" Type="int" Precision="10" IsPrimaryKey="true" />
+          <Field Name="Fecha" Type="datetime" IsOptional="true" />
+          <Field Name="Importe" Type="single" IsOptional="true" Precision="7" />
+          <Field Name="Mes" Type="short" Precision="5" IsPrimaryKey="true" />
+          <Field Name="Observaciones" Type="string" IsOptional="true" MaxLength="536870911" />
+          <Field Name="Ts" Type="datetime" IsOptional="true" />
+          <Field Name="Usr" Type="string" IsOptional="true" MaxLength="8" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="AfeccionGrupo" ObjectID="6ca871a3-edc3-4683-b757-72700cb2b1c4">
+        <Fields>
+          <Field Name="CodAfeccionGrupo" Type="int" Precision="10" IsPrimaryKey="true" />
+          <Field Name="CodPatologia" Type="int" IsOptional="true" Precision="10" />
+          <Field Name="Descrip" Type="string" IsOptional="true" MaxLength="50" />
+          <Field Name="Ts" Type="datetime" IsOptional="true" />
+          <Field Name="Usr" Type="string" IsOptional="true" MaxLength="8" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="AfeccionTipo" ObjectID="912ff3c4-101f-4cf3-b73f-9479cdb857c4">
+        <Fields>
+          <Field Name="CodAfeccionGrupo" Type="int" IsOptional="true" Precision="10" />
+          <Field Name="CodAfeccionTipo" Type="short" Precision="5" IsPrimaryKey="true" />
+          <Field Name="CodDiameg" Type="int" IsOptional="true" Precision="10" />
+          <Field Name="Descrip" Type="string" IsOptional="true" MaxLength="200" />
+          <Field Name="Ts" Type="datetime" IsOptional="true" />
+          <Field Name="Usr" Type="string" IsOptional="true" MaxLength="8" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="Afiliado" ObjectID="ea306529-4207-4f60-81b5-30d7296760cc">
+        <Fields>
+          <Field Name="Apellido1" Type="string" IsOptional="true" MaxLength="30" />
+          <Field Name="Apellido2" Type="string" IsOptional="true" MaxLength="30" />
+          <Field Name="Ci" Type="int" Precision="10" IsPrimaryKey="true" />
+          <Field Name="CodBanco" Type="int" IsOptional="true" Precision="10" />
+          <Field Name="CodDepartamento" Type="string" IsOptional="true" MaxLength="3" />
+          <Field Name="CodMutualista" Type="short" IsOptional="true" Precision="5" />
+          <Field Name="CodRegimenJubilatorio" Type="byte" IsOptional="true" Precision="3" />
+          <Field Name="CodSituacionMutual" Type="string" IsOptional="true" MaxLength="2" />
+          <Field Name="Direccion" Type="string" IsOptional="true" MaxLength="100" />
+          <Field Name="Email" Type="string" IsOptional="true" MaxLength="100" />
+          <Field Name="FechaBajaMutualista" Type="datetime" IsOptional="true" />
+          <Field Name="FechaIngMutualista" Type="datetime" IsOptional="true" />
+          <Field Name="FechaNacimiento" Type="datetime" IsOptional="true" />
+          <Field Name="Movil" Type="string" IsOptional="true" MaxLength="50" />
+          <Field Name="Nombres" Type="string" IsOptional="true" MaxLength="50" />
+          <Field Name="NroCuenta" Type="string" IsOptional="true" MaxLength="50" />
+          <Field Name="NroFunCuenta" Type="string" IsOptional="true" MaxLength="50" />
+          <Field Name="NroSocioMutualista" Type="string" IsOptional="true" MaxLength="12" />
+          <Field Name="PagaMutualista" Type="bool" MaxLength="2" />
+          <Field Name="Sexo" Type="string" IsOptional="true" MaxLength="1" />
+          <Field Name="Telefono" Type="string" IsOptional="true" MaxLength="25" />
+          <Field Name="Ts" Type="datetime" IsOptional="true" />
+          <Field Name="Usr" Type="string" IsOptional="true" MaxLength="8" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="AfiliadoApunte" ObjectID="5ea312a3-f3ac-4748-b591-cb9b07cfef10">
+        <Fields>
+          <Field Name="Ci" Type="int" Precision="10" IsPrimaryKey="true" />
+          <Field Name="Descrip" Type="string" IsOptional="true" MaxLength="536870911" />
+          <Field Name="Fecha" Type="datetime" IsPrimaryKey="true" />
+          <Field Name="Ts" Type="datetime" IsOptional="true" />
+          <Field Name="Usr" Type="string" IsOptional="true" MaxLength="8" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="AfiliadoEspecialidad" ObjectID="8f324e31-95b0-4980-afd7-175e918183b6">
+        <Fields>
+          <Field Name="Ci" Type="int" Precision="10" IsPrimaryKey="true" />
+          <Field Name="CodEspecialidad" Type="int" Precision="10" IsPrimaryKey="true" />
+          <Field Name="Ts" Type="datetime" IsOptional="true" />
+          <Field Name="Usr" Type="string" IsOptional="true" MaxLength="8" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="AporteTipo" ObjectID="efb15223-51ac-4e3a-9d33-d694fb444291">
+        <Fields>
+          <Field Name="CodAporteTipo" Type="string" MaxLength="3" IsPrimaryKey="true" />
+          <Field Name="Descrip" Type="string" IsOptional="true" MaxLength="50" />
+          <Field Name="Ts" Type="datetime" IsOptional="true" />
+          <Field Name="Usr" Type="string" IsOptional="true" MaxLength="8" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="BajaMotivo" ObjectID="78caed96-5927-48f3-934b-b47c962400ec">
+        <Fields>
+          <Field Name="CodBajaMotivo" Type="int" Precision="10" IsPrimaryKey="true" />
+          <Field Name="Descrip" Type="string" IsOptional="true" MaxLength="50" />
+          <Field Name="Ts" Type="datetime" IsOptional="true" />
+          <Field Name="Usr" Type="string" IsOptional="true" MaxLength="8" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="Banco" ObjectID="1ee77d90-b6d1-489c-ac04-cc13f2ab9e82">
+        <Fields>
+          <Field Name="CodBanco" Type="int" Precision="10" IsPrimaryKey="true" />
+          <Field Name="Descripcion" Type="string" IsOptional="true" MaxLength="50" />
+          <Field Name="Ts" Type="datetime" IsOptional="true" />
+          <Field Name="Usr" Type="string" IsOptional="true" MaxLength="8" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="Certificacion" ObjectID="5bed14be-aaad-4e59-9754-ff8cebe51e30">
+        <Fields>
+          <Field Name="Ci" Type="int" IsOptional="true" Precision="10" />
+          <Field Name="CodAfeccionTipo" Type="short" IsOptional="true" Precision="5" />
+          <Field Name="CodCertificador" Type="short" IsOptional="true" Precision="5" />
+          <Field Name="CodSalidaTipo" Type="short" IsOptional="true" Precision="5" />
+          <Field Name="Efectiva" Type="bool" MaxLength="2" />
+          <Field Name="FechaCertificacion" Type="datetime" IsOptional="true" />
+          <Field Name="FechaFin" Type="datetime" IsOptional="true" />
+          <Field Name="FechaIni" Type="datetime" IsOptional="true" />
+          <Field Name="FechaRecibido" Type="datetime" IsOptional="true" />
+          <Field Name="ImporteDeducible" Type="double" IsOptional="true" Precision="15" />
+          <Field Name="Indicaciones" Type="string" IsOptional="true" MaxLength="536870911" />
+          <Field Name="NroLlamado" Type="int" Precision="10" IsPrimaryKey="true" />
+          <Field Name="NroRecibo" Type="int" IsOptional="true" Precision="10" />
+          <Field Name="Trabaja" Type="bool" MaxLength="2" />
+          <Field Name="Ts" Type="datetime" IsOptional="true" />
+          <Field Name="Usr" Type="string" IsOptional="true" MaxLength="8" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="CertificacionProrroga" ObjectID="c7f0e78e-d743-4d28-b7ae-ce10fabeb742">
+        <Fields>
+          <Field Name="Ci" Type="int" Precision="10" IsPrimaryKey="true" />
+          <Field Name="Dias" Type="int" IsOptional="true" Precision="10" />
+          <Field Name="Fecha" Type="datetime" IsPrimaryKey="true" />
+          <Field Name="Observaciones" Type="string" IsOptional="true" MaxLength="536870911" />
+          <Field Name="Ts" Type="datetime" IsOptional="true" />
+          <Field Name="Usr" Type="string" IsOptional="true" MaxLength="8" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="Certificador" ObjectID="4daa1f8e-dd3b-4e04-a6e2-e39297c17a5d">
+        <Fields>
+          <Field Name="Bip" Type="string" IsOptional="true" MaxLength="25" />
+          <Field Name="CobraLlamado" Type="bool" MaxLength="2" />
+          <Field Name="CodCertificador" Type="short" Precision="5" IsPrimaryKey="true" />
+          <Field Name="Descrip" Type="string" IsOptional="true" MaxLength="50" />
+          <Field Name="Direccion" Type="string" IsOptional="true" MaxLength="50" />
+          <Field Name="Fax" Type="string" IsOptional="true" MaxLength="25" />
+          <Field Name="Telefono" Type="string" IsOptional="true" MaxLength="25" />
+          <Field Name="Ts" Type="datetime" IsOptional="true" />
+          <Field Name="Usr" Type="string" IsOptional="true" MaxLength="8" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="Cuentum" ObjectID="83d231b0-cb50-40a9-818b-fb6c4c621102">
+        <Fields>
+          <Field Name="Ci" Type="int" IsOptional="true" Precision="10" />
+          <Field Name="CodBanco" Type="int" IsOptional="true" Precision="10" />
+          <Field Name="NroCuenta" Type="string" IsOptional="true" MaxLength="50" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="Departamento" ObjectID="67c82f45-6814-452f-b6cb-5e6f05f0f81c">
+        <Fields>
+          <Field Name="CodDepartamento" Type="string" MaxLength="3" IsPrimaryKey="true" />
+          <Field Name="Descrip" Type="string" IsOptional="true" MaxLength="50" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="Empresa" ObjectID="8bbe5ed2-b140-4d26-9d40-b75762672e72">
+        <Fields>
+          <Field Name="AporteAguinaldo" Type="int" IsOptional="true" Precision="10" />
+          <Field Name="AporteCasemed" Type="single" IsOptional="true" Precision="7" />
+          <Field Name="Autoridades" Type="string" IsOptional="true" MaxLength="255" />
+          <Field Name="CodEmpresa" Type="short" Precision="5" IsPrimaryKey="true" />
+          <Field Name="CodRegimenAporte" Type="short" IsOptional="true" Precision="5" />
+          <Field Name="CodSituacionPago" Type="short" IsOptional="true" Precision="5" />
+          <Field Name="Direccion" Type="string" IsOptional="true" MaxLength="50" />
+          <Field Name="Email" Type="string" IsOptional="true" MaxLength="25" />
+          <Field Name="Fax" Type="string" IsOptional="true" MaxLength="25" />
+          <Field Name="Ficticia" Type="bool" MaxLength="2" />
+          <Field Name="Liquidar" Type="bool" MaxLength="2" />
+          <Field Name="Nombre" Type="string" IsOptional="true" MaxLength="50" />
+          <Field Name="PersonaContacto" Type="string" IsOptional="true" MaxLength="50" />
+          <Field Name="Telefono" Type="string" IsOptional="true" MaxLength="25" />
+          <Field Name="Ts" Type="datetime" IsOptional="true" />
+          <Field Name="Usr" Type="string" IsOptional="true" MaxLength="8" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="EmpresaPago" ObjectID="d38cc76b-6368-4957-a275-99d24e8f6212">
+        <Fields>
+          <Field Name="Anio" Type="int" Precision="10" IsPrimaryKey="true" />
+          <Field Name="CodEmpresa" Type="short" Precision="5" IsPrimaryKey="true" />
+          <Field Name="Importe" Type="int" IsOptional="true" Precision="10" />
+          <Field Name="Mes" Type="short" Precision="5" IsPrimaryKey="true" />
+          <Field Name="Ts" Type="datetime" IsOptional="true" />
+          <Field Name="Usr" Type="string" IsOptional="true" MaxLength="8" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="Especialidad" ObjectID="c350be7a-81d1-4498-af08-0cdd3cc98d44">
+        <Fields>
+          <Field Name="CodEspecialidad" Type="int" Precision="10" IsPrimaryKey="true" />
+          <Field Name="Descrip" Type="string" IsOptional="true" MaxLength="50" />
+          <Field Name="Ts" Type="datetime" IsOptional="true" />
+          <Field Name="Usr" Type="string" IsOptional="true" MaxLength="8" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="FormaPago" ObjectID="a6fb65d1-1164-47f2-bf99-6592e312b5bc">
+        <Fields>
+          <Field Name="CodFormaPago" Type="short" Precision="5" IsPrimaryKey="true" />
+          <Field Name="Descrip" Type="string" IsOptional="true" MaxLength="50" />
+          <Field Name="Ts" Type="datetime" IsOptional="true" />
+          <Field Name="Usr" Type="string" IsOptional="true" MaxLength="8" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="FranjaIrpf" ObjectID="18570ca3-f0e6-4bb6-8c91-9518d80341fb">
+        <Fields>
+          <Field Name="Desde" Type="double" Precision="15" IsPrimaryKey="true" />
+          <Field Name="Hasta" Type="double" IsOptional="true" Precision="15" />
+          <Field Name="Porcentaje" Type="double" IsOptional="true" Precision="15" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="Im" ObjectID="14e95c10-11a5-442d-9210-34441bfed5e5">
+        <Fields>
+          <Field Name="Anio" Type="short" Precision="5" IsPrimaryKey="true" />
+          <Field Name="AnioMes" Type="int" IsOptional="true" Precision="10" />
+          <Field Name="Importe" Type="single" IsOptional="true" Precision="7" />
+          <Field Name="Mes" Type="short" Precision="5" IsPrimaryKey="true" />
+          <Field Name="Ts" Type="datetime" IsOptional="true" />
+          <Field Name="Usr" Type="string" IsOptional="true" MaxLength="8" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="Imp" ObjectID="dbae14c8-91ff-4f54-a24e-3b5f2c0d388a">
+        <Fields>
+          <Field Name="Ci" Type="int" IsOptional="true" Precision="10" />
+          <Field Name="Importe" Type="double" IsOptional="true" Precision="15" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="Imponible" ObjectID="07de9bff-8c66-46c9-8ea0-fed2a2d29ed3">
+        <Fields>
+          <Field Name="Anio" Type="short" Precision="5" IsPrimaryKey="true" />
+          <Field Name="AnioMes" Type="int" IsOptional="true" Precision="10" />
+          <Field Name="Ci" Type="int" Precision="10" IsPrimaryKey="true" />
+          <Field Name="CodEmpresa" Type="short" Precision="5" IsPrimaryKey="true" />
+          <Field Name="Concepto" Type="string" MaxLength="3" IsPrimaryKey="true" />
+          <Field Name="DiasTrabajados" Type="short" IsOptional="true" Precision="5" />
+          <Field Name="Fechaingreso" Type="datetime" IsPrimaryKey="true" />
+          <Field Name="IdTrabaja" Type="int" IsOptional="true" Precision="10" />
+          <Field Name="Importe" Type="double" IsOptional="true" Precision="15" />
+          <Field Name="Mes" Type="byte" Precision="3" IsPrimaryKey="true" />
+          <Field Name="Ts" Type="datetime" IsOptional="true" />
+          <Field Name="Usr" Type="string" IsOptional="true" MaxLength="8" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="InformeEstadistico" ObjectID="6ef0def8-5387-4ffd-9dec-c7b1b61dc63a">
+        <Fields>
+          <Field Name="Comentario" Type="string" IsOptional="true" MaxLength="536870911" />
+          <Field Name="Empresa" Type="bool" MaxLength="2" />
+          <Field Name="Fecha" Type="bool" MaxLength="2" />
+          <Field Name="Grupo" Type="string" IsOptional="true" MaxLength="50" />
+          <Field Name="GrupoEtario" Type="bool" MaxLength="2" />
+          <Field Name="IdRpt" Type="int" Precision="10" IsPrimaryKey="true" />
+          <Field Name="MesAnio" Type="bool" MaxLength="2" />
+          <Field Name="Orden" Type="int" IsOptional="true" Precision="10" />
+          <Field Name="Patologia" Type="bool" MaxLength="2" />
+          <Field Name="Periodo" Type="bool" MaxLength="2" />
+          <Field Name="TituloPantalla" Type="string" IsOptional="true" MaxLength="255" />
+          <Field Name="TituloRpt" Type="string" IsOptional="true" MaxLength="255" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="LiquidacionBp" ObjectID="b7e1d361-09e7-4d23-a037-6c02f24b4b20">
+        <Fields>
+          <Field Name="Anio" Type="short" IsOptional="true" Precision="5" />
+          <Field Name="Apellido" Type="string" IsOptional="true" MaxLength="255" />
+          <Field Name="Ci" Type="double" Precision="15" />
+          <Field Name="FechaDeEntrega" Type="datetime" IsOptional="true" />
+          <Field Name="FechaPerDesde" Type="datetime" IsOptional="true" />
+          <Field Name="FechaPerHasta" Type="datetime" IsOptional="true" />
+          <Field Name="Id" Type="int" IsReadOnly="true" Precision="10" IsPrimaryKey="true" />
+          <Field Name="Liquido" Type="double" IsOptional="true" Precision="15" />
+          <Field Name="Mes" Type="short" IsOptional="true" Precision="5" />
+          <Field Name="MesDeCargo" Type="int" Precision="10" />
+          <Field Name="MontoTotal" Type="double" IsOptional="true" Precision="15" />
+          <Field Name="NEntrega" Type="int" IsOptional="true" Precision="10" />
+          <Field Name="Nombre" Type="string" IsOptional="true" MaxLength="255" />
+          <Field Name="NomEmpresa" Type="string" IsOptional="true" MaxLength="255" />
+          <Field Name="PctPorEmpresa" Type="double" Precision="15" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="MaeFun" ObjectID="e23ab33a-e5ed-4c66-aebd-6a4fd05ef11a">
+        <Fields>
+          <Field Name="Apellido1" Type="string" MaxLength="15" />
+          <Field Name="Apellido2" Type="string" IsOptional="true" MaxLength="15" />
+          <Field Name="AsigCuenta" Type="short" IsOptional="true" Precision="5" />
+          <Field Name="Cedula" Type="int" IsOptional="true" Precision="10" />
+          <Field Name="CodCargo" Type="int" IsOptional="true" Precision="10" />
+          <Field Name="DesCargo" Type="string" IsOptional="true" MaxLength="25" />
+          <Field Name="DirApto" Type="string" IsOptional="true" MaxLength="4" />
+          <Field Name="DirBis" Type="string" IsOptional="true" MaxLength="2" />
+          <Field Name="DirBloque" Type="string" IsOptional="true" MaxLength="2" />
+          <Field Name="DirCalle" Type="string" IsOptional="true" MaxLength="20" />
+          <Field Name="DirLocal" Type="string" IsOptional="true" MaxLength="30" />
+          <Field Name="DirPiso" Type="string" IsOptional="true" MaxLength="2" />
+          <Field Name="DirPuerta" Type="string" IsOptional="true" MaxLength="4" />
+          <Field Name="EstCivil" Type="short" IsOptional="true" Precision="5" />
+          <Field Name="FecAsigCta" Type="datetime" IsOptional="true" />
+          <Field Name="FecInfDbla" Type="datetime" IsOptional="true" />
+          <Field Name="FecIngreso" Type="datetime" IsOptional="true" />
+          <Field Name="FecNac" Type="datetime" IsOptional="true" />
+          <Field Name="InfDbla" Type="bool" MaxLength="2" />
+          <Field Name="Nacionalidad" Type="short" IsOptional="true" Precision="5" />
+          <Field Name="Nombre1" Type="string" MaxLength="15" />
+          <Field Name="Nombre2" Type="string" IsOptional="true" MaxLength="15" />
+          <Field Name="NroCuenta" Type="int" IsOptional="true" Precision="10" />
+          <Field Name="NroFun" Type="int" Precision="10" IsPrimaryKey="true" />
+          <Field Name="Telefono" Type="string" IsOptional="true" MaxLength="8" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="Moneda" ObjectID="3612b972-d71f-4168-b5da-8c8a53031c35">
+        <Fields>
+          <Field Name="Simbolo" Type="string" MaxLength="3" IsPrimaryKey="true" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="Mutualistum" ObjectID="563fa460-e214-46a7-aa42-3ff7dc573612">
+        <Fields>
+          <Field Name="CodFormaPago" Type="short" IsOptional="true" Precision="5" />
+          <Field Name="CodMutualista" Type="short" Precision="5" IsPrimaryKey="true" />
+          <Field Name="Cuota" Type="double" IsOptional="true" Precision="15" />
+          <Field Name="DiaPago" Type="byte" IsOptional="true" Precision="3" />
+          <Field Name="Direccion" Type="string" IsOptional="true" MaxLength="50" />
+          <Field Name="Email" Type="string" IsOptional="true" MaxLength="25" />
+          <Field Name="Fax" Type="string" IsOptional="true" MaxLength="25" />
+          <Field Name="Ficticia" Type="bool" MaxLength="2" />
+          <Field Name="Nombre" Type="string" IsOptional="true" MaxLength="50" />
+          <Field Name="PersonaContacto" Type="string" IsOptional="true" MaxLength="50" />
+          <Field Name="Telefono" Type="string" IsOptional="true" MaxLength="50" />
+          <Field Name="Ts" Type="datetime" IsOptional="true" />
+          <Field Name="Usr" Type="string" IsOptional="true" MaxLength="8" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="NoCargadoHl" ObjectID="7ec736b6-e5e2-461a-ac94-b6199e5ccf6d">
+        <Fields>
+          <Field Name="Anio" Type="int" Precision="10" IsPrimaryKey="true" />
+          <Field Name="Apellido1" Type="string" IsOptional="true" MaxLength="50" />
+          <Field Name="Apellido2" Type="string" IsOptional="true" MaxLength="50" />
+          <Field Name="Ci" Type="int" Precision="10" IsPrimaryKey="true" />
+          <Field Name="CodEmpresa" Type="int" Precision="10" IsPrimaryKey="true" />
+          <Field Name="Mes" Type="int" Precision="10" IsPrimaryKey="true" />
+          <Field Name="Nombres" Type="string" IsOptional="true" MaxLength="50" />
+          <Field Name="Ts" Type="datetime" IsOptional="true" />
+          <Field Name="Usr" Type="string" IsOptional="true" MaxLength="8" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="Parametro" ObjectID="3597683c-3ee9-4fbf-8e3c-d1201a5dae13">
+        <Fields>
+          <Field Name="Bcp" Type="double" IsOptional="true" Precision="15" />
+          <Field Name="PctAdPreJub" Type="single" IsOptional="true" Precision="7" />
+          <Field Name="PctBps" Type="double" IsOptional="true" Precision="15" />
+          <Field Name="Smn" Type="double" IsOptional="true" Precision="15" />
+          <Field Name="TopeJubilatorio" Type="single" IsOptional="true" Precision="7" />
+          <Field Name="TopeLiquidoBps" Type="double" IsOptional="true" Precision="15" />
+          <Field Name="TopePrima" Type="single" IsOptional="true" Precision="7" />
+          <Field Name="Ur" Type="single" IsOptional="true" Precision="7" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="Patologium" ObjectID="3a4abf20-156d-423d-8d4a-51b2f00d0aa2">
+        <Fields>
+          <Field Name="CodPatologia" Type="int" Precision="10" IsPrimaryKey="true" />
+          <Field Name="Descrip" Type="string" IsOptional="true" MaxLength="50" />
+          <Field Name="Ts" Type="datetime" IsOptional="true" />
+          <Field Name="Usr" Type="string" IsOptional="true" MaxLength="8" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="Prestacion" ObjectID="90aeed81-f698-40d8-9e18-9630aadae0ff">
+        <Fields>
+          <Field Name="Boleta" Type="bool" MaxLength="2" />
+          <Field Name="Ci" Type="int" Precision="10" IsPrimaryKey="true" />
+          <Field Name="CodPrestacionTipo" Type="short" Precision="5" IsPrimaryKey="true" />
+          <Field Name="Fecha" Type="datetime" IsPrimaryKey="true" />
+          <Field Name="Importe" Type="double" IsOptional="true" Precision="15" />
+          <Field Name="Moneda" Type="string" IsOptional="true" MaxLength="3" />
+          <Field Name="Observaciones" Type="string" IsOptional="true" MaxLength="536870911" />
+          <Field Name="Ts" Type="datetime" IsOptional="true" />
+          <Field Name="Usr" Type="string" IsOptional="true" MaxLength="8" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="PrestacionTipo" ObjectID="30614364-96b8-4c3c-9500-0aa2d8d4c939">
+        <Fields>
+          <Field Name="CodPrestacionTipo" Type="short" Precision="5" IsPrimaryKey="true" />
+          <Field Name="Descrip" Type="string" IsOptional="true" MaxLength="50" />
+          <Field Name="FechaVigencia" Type="datetime" IsOptional="true" />
+          <Field Name="ImporteTopeCasemed" Type="double" IsOptional="true" Precision="15" />
+          <Field Name="ImporteTopeDisse" Type="double" IsOptional="true" Precision="15" />
+          <Field Name="Obs" Type="string" IsOptional="true" MaxLength="536870911" />
+          <Field Name="PeriodoRenovacion" Type="short" IsOptional="true" Precision="5" />
+          <Field Name="Receta" Type="bool" MaxLength="2" />
+          <Field Name="Ts" Type="datetime" IsOptional="true" />
+          <Field Name="Usr" Type="string" IsOptional="true" MaxLength="8" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="PrimaFallecimiento" ObjectID="977eb3e9-541c-4718-84a0-ec9a7835cfc4">
+        <Fields>
+          <Field Name="Ci" Type="int" Precision="10" IsPrimaryKey="true" />
+          <Field Name="FechaFallecimiento" Type="datetime" IsOptional="true" />
+          <Field Name="FechaFirma" Type="datetime" IsOptional="true" />
+          <Field Name="FechaPago" Type="datetime" IsOptional="true" />
+          <Field Name="Importe" Type="double" IsOptional="true" Precision="15" />
+          <Field Name="Observaciones" Type="string" IsOptional="true" MaxLength="536870911" />
+          <Field Name="Ts" Type="datetime" IsOptional="true" />
+          <Field Name="Usr" Type="string" IsOptional="true" MaxLength="8" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="RecetaDistancium" ObjectID="7d3f0ae6-332e-47cb-9db4-74d1486765e7">
+        <Fields>
+          <Field Name="CodRecetaDistancia" Type="string" MaxLength="3" IsPrimaryKey="true" />
+          <Field Name="Descrip" Type="string" IsOptional="true" MaxLength="50" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="Recetum" ObjectID="d6e5d847-31d9-42fe-b547-f083e03503cd">
+        <Fields>
+          <Field Name="Ci" Type="int" Precision="10" IsPrimaryKey="true" />
+          <Field Name="CilD" Type="single" IsOptional="true" Precision="7" />
+          <Field Name="CilI" Type="single" IsOptional="true" Precision="7" />
+          <Field Name="CodPrestacionTipo" Type="short" Precision="5" IsPrimaryKey="true" />
+          <Field Name="CodRecetaDistancia" Type="string" MaxLength="3" IsPrimaryKey="true" />
+          <Field Name="EsfD" Type="single" IsOptional="true" Precision="7" />
+          <Field Name="EsfI" Type="single" IsOptional="true" Precision="7" />
+          <Field Name="Fecha" Type="datetime" IsPrimaryKey="true" />
+          <Field Name="Ts" Type="datetime" IsOptional="true" />
+          <Field Name="Usr" Type="string" IsOptional="true" MaxLength="8" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="RegimenAporte" ObjectID="9801b98a-5442-4afe-82f1-f1148e019f13">
+        <Fields>
+          <Field Name="CodRegimenAporte" Type="short" Precision="5" IsPrimaryKey="true" />
+          <Field Name="Descrip" Type="string" IsOptional="true" MaxLength="50" />
+          <Field Name="Porcentaje" Type="short" IsOptional="true" Precision="5" />
+          <Field Name="Ts" Type="datetime" IsOptional="true" />
+          <Field Name="Usr" Type="string" IsOptional="true" MaxLength="8" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="RegimenJubilatorio" ObjectID="ca76b027-76fd-41b2-a870-868f944dd6f3">
+        <Fields>
+          <Field Name="CodRegimenJubilatorio" Type="byte" Precision="3" IsPrimaryKey="true" />
+          <Field Name="Descrip" Type="string" IsOptional="true" MaxLength="50" />
+          <Field Name="Ts" Type="datetime" IsOptional="true" />
+          <Field Name="Usr" Type="string" IsOptional="true" MaxLength="8" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="ReintegroMutual" ObjectID="65ac7190-992d-4ee6-acad-13a2c0a11c94">
+        <Fields>
+          <Field Name="Anio" Type="short" Precision="5" IsPrimaryKey="true" />
+          <Field Name="Ci" Type="int" Precision="10" IsPrimaryKey="true" />
+          <Field Name="CodMutualista" Type="short" IsOptional="true" Precision="5" />
+          <Field Name="Fecha" Type="datetime" IsOptional="true" />
+          <Field Name="Importe" Type="single" IsOptional="true" Precision="7" />
+          <Field Name="Mes" Type="short" Precision="5" IsPrimaryKey="true" />
+          <Field Name="Observaciones" Type="string" IsOptional="true" MaxLength="536870911" />
+          <Field Name="Ts" Type="datetime" IsOptional="true" />
+          <Field Name="Usr" Type="string" IsOptional="true" MaxLength="8" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="SalidaTipo" ObjectID="5ea806d0-e909-467e-ab87-6c4754280e6a">
+        <Fields>
+          <Field Name="CodSalidaTipo" Type="short" Precision="5" IsPrimaryKey="true" />
+          <Field Name="Descrip" Type="string" IsOptional="true" MaxLength="50" />
+          <Field Name="Ts" Type="datetime" IsOptional="true" />
+          <Field Name="Usr" Type="string" IsOptional="true" MaxLength="8" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="Seleccion" ObjectID="a8dd416e-bafa-40e2-9b94-808b2ac45189">
+        <Fields>
+          <Field Name="Form" Type="string" IsOptional="true" MaxLength="255" />
+          <Field Name="Id" Type="int" IsReadOnly="true" Precision="10" IsPrimaryKey="true" />
+          <Field Name="Nombre" Type="string" IsOptional="true" MaxLength="255" />
+          <Field Name="System" Type="bool" MaxLength="2" />
+          <Field Name="Txt" Type="string" IsOptional="true" MaxLength="536870911" />
+          <Field Name="Usr" Type="string" IsOptional="true" MaxLength="8" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="SituacionMutual" ObjectID="af58ef7d-5e1e-4f5f-9806-835de58bed34">
+        <Fields>
+          <Field Name="CodSituacionMutual" Type="string" MaxLength="2" IsPrimaryKey="true" />
+          <Field Name="Descrip" Type="string" IsOptional="true" MaxLength="50" />
+          <Field Name="Pagar" Type="bool" MaxLength="2" />
+          <Field Name="Ts" Type="datetime" IsOptional="true" />
+          <Field Name="Usr" Type="string" IsOptional="true" MaxLength="8" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="SituacionPago" ObjectID="d4107b8b-d523-4f33-8f96-93728db17b17">
+        <Fields>
+          <Field Name="CodSituacionPago" Type="short" Precision="5" IsPrimaryKey="true" />
+          <Field Name="Descrip" Type="string" IsOptional="true" MaxLength="50" />
+          <Field Name="Ts" Type="datetime" IsOptional="true" />
+          <Field Name="Usr" Type="string" IsOptional="true" MaxLength="8" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="SubsidioCabezal" ObjectID="48b03a45-2bff-4bf2-949b-816a5408cefb">
+        <Fields>
+          <Field Name="Anio" Type="short" IsOptional="true" Precision="5" />
+          <Field Name="Ci" Type="int" IsOptional="true" Precision="10" />
+          <Field Name="CodBanco" Type="int" IsOptional="true" Precision="10" />
+          <Field Name="Dias" Type="short" IsOptional="true" Precision="5" />
+          <Field Name="FechaPago" Type="datetime" IsOptional="true" />
+          <Field Name="IdSubsidio" Type="int" IsReadOnly="true" Precision="10" IsPrimaryKey="true" />
+          <Field Name="ImpAguinaldo" Type="double" IsOptional="true" Precision="15" />
+          <Field Name="ImpLiquido" Type="double" IsOptional="true" Precision="15" />
+          <Field Name="ImpNominal" Type="double" IsOptional="true" Precision="15" />
+          <Field Name="Liquidar" Type="bool" MaxLength="2" />
+          <Field Name="Mes" Type="byte" IsOptional="true" Precision="3" />
+          <Field Name="NroCuenta" Type="string" IsOptional="true" MaxLength="50" />
+          <Field Name="NroRecibo" Type="int" IsOptional="true" Precision="10" />
+          <Field Name="Ts" Type="datetime" IsOptional="true" />
+          <Field Name="Usr" Type="string" IsOptional="true" MaxLength="8" />
+          <Field Name="ValorJornal" Type="single" IsOptional="true" Precision="7" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="SubsidioCabezalBp" ObjectID="f206328e-0a00-40de-b1e9-fd82d1d731d9">
+        <Fields>
+          <Field Name="AguinaldoBps" Type="double" IsOptional="true" Precision="15" />
+          <Field Name="DiasBps" Type="int" IsOptional="true" Precision="10" />
+          <Field Name="IdSubsidio" Type="int" Precision="10" IsPrimaryKey="true" />
+          <Field Name="LiquidoBps" Type="double" IsOptional="true" Precision="15" />
+          <Field Name="LiquidoPagar" Type="double" IsOptional="true" Precision="15" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="SubsidioCabezalEmpresa" ObjectID="98b628f5-f09b-4476-8b85-9a7ef634ee44">
+        <Fields>
+          <Field Name="CodEmpresa" Type="short" Precision="5" IsPrimaryKey="true" />
+          <Field Name="Dias" Type="short" IsOptional="true" Precision="5" />
+          <Field Name="IdSubsidio" Type="int" Precision="10" IsPrimaryKey="true" />
+          <Field Name="ImpAguinaldo" Type="double" IsOptional="true" Precision="15" />
+          <Field Name="ImpLiquido" Type="double" IsOptional="true" Precision="15" />
+          <Field Name="ImpNominal" Type="double" IsOptional="true" Precision="15" />
+          <Field Name="Ts" Type="datetime" IsOptional="true" />
+          <Field Name="Usr" Type="string" IsOptional="true" MaxLength="8" />
+          <Field Name="ValorJornal" Type="single" IsOptional="true" Precision="7" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="SubsidioEnfermedad" ObjectID="b99353cd-7cc1-478e-83f9-153cea6c5e4a">
+        <Fields>
+          <Field Name="Dias" Type="byte" IsOptional="true" Precision="3" />
+          <Field Name="FechaFin" Type="datetime" IsOptional="true" />
+          <Field Name="FechaFinSubsidio" Type="datetime" IsOptional="true" />
+          <Field Name="FechaIni" Type="datetime" IsPrimaryKey="true" />
+          <Field Name="FechaIniSubsidio" Type="datetime" IsOptional="true" />
+          <Field Name="IdSubsidio" Type="int" Precision="10" IsPrimaryKey="true" />
+          <Field Name="Importe" Type="double" IsOptional="true" Precision="15" />
+          <Field Name="NroLlamado" Type="int" IsOptional="true" Precision="10" />
+          <Field Name="Ts" Type="datetime" IsOptional="true" />
+          <Field Name="Usr" Type="string" IsOptional="true" MaxLength="8" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="SubsidioImponible" ObjectID="3afe66c1-1594-47f1-b6a6-a10dfed5cbc6">
+        <Fields>
+          <Field Name="Anio" Type="short" IsOptional="true" Precision="5" />
+          <Field Name="CodEmpresa" Type="short" IsOptional="true" Precision="5" />
+          <Field Name="Dias" Type="short" IsOptional="true" Precision="5" />
+          <Field Name="IdSubsidio" Type="int" IsOptional="true" Precision="10" />
+          <Field Name="Importe" Type="double" IsOptional="true" Precision="15" />
+          <Field Name="Mes" Type="byte" IsOptional="true" Precision="3" />
+          <Field Name="Ts" Type="datetime" IsOptional="true" />
+          <Field Name="Usr" Type="string" IsOptional="true" MaxLength="8" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="SubsidioItem" ObjectID="c48fb107-98a4-48c2-8a6c-a58ec404c136">
+        <Fields>
+          <Field Name="AbiEmp" Type="bool" MaxLength="2" />
+          <Field Name="CodSubsidioItemCod" Type="short" Precision="5" IsPrimaryKey="true" />
+          <Field Name="IdSubsidio" Type="int" Precision="10" IsPrimaryKey="true" />
+          <Field Name="Importe" Type="double" IsOptional="true" Precision="15" />
+          <Field Name="Ts" Type="datetime" IsOptional="true" />
+          <Field Name="Usr" Type="string" IsOptional="true" MaxLength="8" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="SubsidioItemCod" ObjectID="e9810c68-fbac-4cf7-b3d6-ecbe70fff0fd">
+        <Fields>
+          <Field Name="AperturaXempresa" Type="bool" MaxLength="2" />
+          <Field Name="CodSubsidioItemCod" Type="short" Precision="5" IsPrimaryKey="true" />
+          <Field Name="Comparar" Type="bool" MaxLength="2" />
+          <Field Name="CompararContra" Type="byte" IsOptional="true" Precision="3" />
+          <Field Name="Descrip" Type="string" IsOptional="true" MaxLength="50" />
+          <Field Name="FechaBaja" Type="datetime" IsOptional="true" />
+          <Field Name="FechaVigencia" Type="datetime" IsOptional="true" />
+          <Field Name="ModificaNominal" Type="bool" MaxLength="2" />
+          <Field Name="Operador" Type="string" IsOptional="true" MaxLength="5" />
+          <Field Name="Procesar" Type="bool" MaxLength="2" />
+          <Field Name="Signo" Type="byte" IsOptional="true" Precision="3" />
+          <Field Name="Tipo" Type="string" IsOptional="true" MaxLength="1" />
+          <Field Name="TipoComp" Type="string" IsOptional="true" MaxLength="1" />
+          <Field Name="Valor" Type="double" IsOptional="true" Precision="15" />
+          <Field Name="ValorMax" Type="double" IsOptional="true" Precision="15" />
+          <Field Name="ValorMin" Type="double" IsOptional="true" Precision="15" />
+          <Field Name="ValorTipo" Type="string" IsOptional="true" MaxLength="50" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="SubsidioItemCodAfiliado" ObjectID="24eaec0b-603a-4ccc-aed3-ba570af68b5e">
+        <Fields>
+          <Field Name="Ci" Type="int" IsOptional="true" Precision="10" />
+          <Field Name="CodSubsidioItemCod" Type="short" IsOptional="true" Precision="5" />
+          <Field Name="SubItmCodAfiId" Type="int" IsReadOnly="true" Precision="10" IsPrimaryKey="true" />
+          <Field Name="Ts" Type="datetime" IsOptional="true" />
+          <Field Name="Usr" Type="string" IsOptional="true" MaxLength="8" />
+          <Field Name="Valor" Type="double" IsOptional="true" Precision="15" />
+          <Field Name="Vigencia" Type="datetime" IsOptional="true" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="SubsidioItemEmpresa" ObjectID="2901a68e-36b5-42b7-ac0e-fc96ce48337a">
+        <Fields>
+          <Field Name="CodEmpresa" Type="short" Precision="5" IsPrimaryKey="true" />
+          <Field Name="CodSubsidioItemCod" Type="short" Precision="5" IsPrimaryKey="true" />
+          <Field Name="IdSubsidio" Type="int" Precision="10" IsPrimaryKey="true" />
+          <Field Name="Importe" Type="single" IsOptional="true" Precision="7" />
+          <Field Name="Ts" Type="datetime" IsOptional="true" />
+          <Field Name="Usr" Type="string" IsOptional="true" MaxLength="8" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="TmpCorreccione" ObjectID="69cdc64b-0aa4-45ad-a86b-9a5350335167">
+        <Fields>
+          <Field Name="Ci" Type="double" Precision="15" IsPrimaryKey="true" />
+          <Field Name="FechaFin" Type="datetime" IsOptional="true" />
+          <Field Name="FechaInicio" Type="datetime" IsOptional="true" />
+          <Field Name="Nombre" Type="string" IsOptional="true" MaxLength="255" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="TmpRectificativa" ObjectID="52db9313-57db-4ea6-b6ec-6f7f3d2c781d">
+        <Fields>
+          <Field Name="Ci" Type="double" IsOptional="true" Precision="15" />
+          <Field Name="Concepto" Type="double" IsOptional="true" Precision="15" />
+          <Field Name="Empresa" Type="double" IsOptional="true" Precision="15" />
+          <Field Name="Id" Type="int" IsReadOnly="true" Precision="10" IsPrimaryKey="true" />
+          <Field Name="Importe" Type="double" IsOptional="true" Precision="15" />
+        </Fields>
+      </EntityDefinition>
+      <EntityDefinition Name="Trabaja" ObjectID="dbfd5d3f-5d61-4aa5-a160-94fe6c43cec1">
+        <Fields>
+          <Field Name="Ci" Type="int" Precision="10" IsPrimaryKey="true" />
+          <Field Name="CodBajaMotivo" Type="int" IsOptional="true" Precision="10" />
+          <Field Name="CodEmpresa" Type="short" Precision="5" IsPrimaryKey="true" />
+          <Field Name="FechaBaja" Type="datetime" IsOptional="true" />
+          <Field Name="FechaIngCasemed" Type="datetime" IsOptional="true" />
+          <Field Name="FechaIngreso" Type="datetime" IsPrimaryKey="true" />
+          <Field Name="IdTrabaja" Type="int" IsReadOnly="true" Precision="10" />
+          <Field Name="NroFichaEmpresa" Type="string" IsOptional="true" MaxLength="20" />
+          <Field Name="Ts" Type="datetime" IsOptional="true" />
+          <Field Name="Usr" Type="string" IsOptional="true" MaxLength="8" />
+        </Fields>
+        <UniqueConstraints>
+          <UniqueConstraint Name="IdTrabaja">
+            <Field Name="IdTrabaja" />
+          </UniqueConstraint>
+        </UniqueConstraints>
+      </EntityDefinition>
+      <EntityDefinition Name="XUsrParam" ObjectID="3a62e3d9-5461-44a4-98a5-38d5e5c44e1f">
+        <Fields>
+          <Field Name="Clave" Type="string" MaxLength="100" IsPrimaryKey="true" />
+          <Field Name="Login" Type="string" MaxLength="8" IsPrimaryKey="true" />
+          <Field Name="Orden" Type="short" Precision="5" IsPrimaryKey="true" />
+          <Field Name="Value1" Type="string" IsOptional="true" MaxLength="255" />
+          <Field Name="Value2" Type="string" IsOptional="true" MaxLength="255" />
+          <Field Name="Value3" Type="string" IsOptional="true" MaxLength="255" />
+          <Field Name="Value4" Type="string" IsOptional="true" MaxLength="255" />
+          <Field Name="Value5" Type="string" IsOptional="true" MaxLength="255" />
+        </Fields>
+      </EntityDefinition>
+    </EntityDefinitions>
+    <Relationships>
+      <NormalRelationship Name="AdPreJub.Afiliado-Afiliado.AdPreJub" Start=":AdPreJub" End=":Afiliado" StartNavigator="Afiliado" EndNavigator="AdPreJub" Type="1" StartIsOptional="true">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="Ci" PkField="Ci" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="AdPreJubPago.AdPreJub-AdPreJub.AdPreJubPagos" Start=":AdPreJubPago" End=":AdPreJub" StartNavigator="AdPreJub" EndNavigator="AdPreJubPagos" Type="4">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="Ci" PkField="Ci" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="AfeccionGrupo.Patologium-Patologium.AfeccionGrupos" Start=":AfeccionGrupo" End=":Patologium" StartNavigator="Patologium" EndNavigator="AfeccionGrupos" Type="4" EndIsOptional="true">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="CodPatologia" PkField="CodPatologia" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="AfeccionTipo.AfeccionGrupo-AfeccionGrupo.AfeccionTipos" Start=":AfeccionTipo" End=":AfeccionGrupo" StartNavigator="AfeccionGrupo" EndNavigator="AfeccionTipos" Type="4" EndIsOptional="true">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="CodAfeccionGrupo" PkField="CodAfeccionGrupo" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Afiliado.Banco-Banco.Afiliados" Start=":Afiliado" End=":Banco" StartNavigator="Banco" EndNavigator="Afiliados" Type="4" EndIsOptional="true">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="CodBanco" PkField="CodBanco" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Afiliado.Mutualistum-Mutualistum.Afiliados" Start=":Afiliado" End=":Mutualistum" StartNavigator="Mutualistum" EndNavigator="Afiliados" Type="4" EndIsOptional="true">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="CodMutualista" PkField="CodMutualista" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Afiliado.RegimenJubilatorio-RegimenJubilatorio.Afiliados" Start=":Afiliado" End=":RegimenJubilatorio" StartNavigator="RegimenJubilatorio" EndNavigator="Afiliados" Type="4" EndIsOptional="true">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="CodRegimenJubilatorio" PkField="CodRegimenJubilatorio" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="AfiliadoApunte.Afiliado-Afiliado.AfiliadoApuntes" Start=":AfiliadoApunte" End=":Afiliado" StartNavigator="Afiliado" EndNavigator="AfiliadoApuntes" Type="4">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="Ci" PkField="Ci" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="AfiliadoEspecialidad.Afiliado-Afiliado.AfiliadoEspecialidads" Start=":AfiliadoEspecialidad" End=":Afiliado" StartNavigator="Afiliado" EndNavigator="AfiliadoEspecialidads" Type="4">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="Ci" PkField="Ci" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="AfiliadoEspecialidad.Especialidad-Especialidad.AfiliadoEspecialidads" Start=":AfiliadoEspecialidad" End=":Especialidad" StartNavigator="Especialidad" EndNavigator="AfiliadoEspecialidads" Type="4" DeleteRuleAction="1">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="CodEspecialidad" PkField="CodEspecialidad" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Certificacion.AfeccionTipo-AfeccionTipo.Certificacions" Start=":Certificacion" End=":AfeccionTipo" StartNavigator="AfeccionTipo" EndNavigator="Certificacions" Type="4" EndIsOptional="true">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="CodAfeccionTipo" PkField="CodAfeccionTipo" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Certificacion.Afiliado-Afiliado.Certificacions" Start=":Certificacion" End=":Afiliado" StartNavigator="Afiliado" EndNavigator="Certificacions" Type="4" EndIsOptional="true">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="Ci" PkField="Ci" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Certificacion.Certificador-Certificador.Certificacions" Start=":Certificacion" End=":Certificador" StartNavigator="Certificador" EndNavigator="Certificacions" Type="4" EndIsOptional="true">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="CodCertificador" PkField="CodCertificador" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Certificacion.SalidaTipo-SalidaTipo.Certificacions" Start=":Certificacion" End=":SalidaTipo" StartNavigator="SalidaTipo" EndNavigator="Certificacions" Type="4" EndIsOptional="true">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="CodSalidaTipo" PkField="CodSalidaTipo" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="CertificacionProrroga.Afiliado-Afiliado.CertificacionProrrogas" Start=":CertificacionProrroga" End=":Afiliado" StartNavigator="Afiliado" EndNavigator="CertificacionProrrogas" Type="4" DeleteRuleAction="1">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="Ci" PkField="Ci" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Empresa.RegimenAporte-RegimenAporte.Empresas" Start=":Empresa" End=":RegimenAporte" StartNavigator="RegimenAporte" EndNavigator="Empresas" Type="4" EndIsOptional="true">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="CodRegimenAporte" PkField="CodRegimenAporte" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Empresa.SituacionPago-SituacionPago.Empresas" Start=":Empresa" End=":SituacionPago" StartNavigator="SituacionPago" EndNavigator="Empresas" Type="4" EndIsOptional="true">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="CodSituacionPago" PkField="CodSituacionPago" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="EmpresaPago.Empresa-Empresa.EmpresaPagos" Start=":EmpresaPago" End=":Empresa" StartNavigator="Empresa" EndNavigator="EmpresaPagos" Type="4">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="CodEmpresa" PkField="CodEmpresa" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Imponible.Trabaja-Trabaja.Imponibles" Start=":Imponible" End=":Trabaja" StartNavigator="Trabaja" EndNavigator="Imponibles" Type="4" DeleteRuleAction="1">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="Ci" PkField="Ci" />
+          <FieldFieldRelationship FkField="CodEmpresa" PkField="CodEmpresa" />
+          <FieldFieldRelationship FkField="Fechaingreso" PkField="FechaIngreso" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Mutualistum.FormaPago-FormaPago.Mutualista" Start=":Mutualistum" End=":FormaPago" StartNavigator="FormaPago" EndNavigator="Mutualista" Type="4" EndIsOptional="true">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="CodFormaPago" PkField="CodFormaPago" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Prestacion.Afiliado-Afiliado.Prestacions" Start=":Prestacion" End=":Afiliado" StartNavigator="Afiliado" EndNavigator="Prestacions" Type="4">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="Ci" PkField="Ci" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Prestacion.Moneda1-Moneda.Prestacions" Start=":Prestacion" End=":Moneda" StartNavigator="Moneda1" EndNavigator="Prestacions" Type="4" EndIsOptional="true">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="Moneda" PkField="Simbolo" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Prestacion.PrestacionTipo-PrestacionTipo.Prestacions" Start=":Prestacion" End=":PrestacionTipo" StartNavigator="PrestacionTipo" EndNavigator="Prestacions" Type="4">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="CodPrestacionTipo" PkField="CodPrestacionTipo" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="PrimaFallecimiento.Afiliado-Afiliado.PrimaFallecimiento" Start=":PrimaFallecimiento" End=":Afiliado" StartNavigator="Afiliado" EndNavigator="PrimaFallecimiento" Type="1" StartIsOptional="true" DeleteRuleAction="1">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="Ci" PkField="Ci" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Recetum.Prestacion-Prestacion.Receta" Start=":Recetum" End=":Prestacion" StartNavigator="Prestacion" EndNavigator="Receta" Type="4" DeleteRuleAction="1">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="Ci" PkField="Ci" />
+          <FieldFieldRelationship FkField="CodPrestacionTipo" PkField="CodPrestacionTipo" />
+          <FieldFieldRelationship FkField="Fecha" PkField="Fecha" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Recetum.RecetaDistancium-RecetaDistancium.Receta" Start=":Recetum" End=":RecetaDistancium" StartNavigator="RecetaDistancium" EndNavigator="Receta" Type="4">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="CodRecetaDistancia" PkField="CodRecetaDistancia" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="ReintegroMutual.Afiliado-Afiliado.ReintegroMutuals" Start=":ReintegroMutual" End=":Afiliado" StartNavigator="Afiliado" EndNavigator="ReintegroMutuals" Type="4">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="Ci" PkField="Ci" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="ReintegroMutual.Mutualistum-Mutualistum.ReintegroMutuals" Start=":ReintegroMutual" End=":Mutualistum" StartNavigator="Mutualistum" EndNavigator="ReintegroMutuals" Type="4" EndIsOptional="true">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="CodMutualista" PkField="CodMutualista" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="SubsidioCabezal.Afiliado-Afiliado.SubsidioCabezals" Start=":SubsidioCabezal" End=":Afiliado" StartNavigator="Afiliado" EndNavigator="SubsidioCabezals" Type="4" EndIsOptional="true">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="Ci" PkField="Ci" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="SubsidioCabezalBp.SubsidioCabezal-SubsidioCabezal.SubsidioCabezalBp" Start=":SubsidioCabezalBp" End=":SubsidioCabezal" StartNavigator="SubsidioCabezal" EndNavigator="SubsidioCabezalBp" Type="1" StartIsOptional="true" DeleteRuleAction="1">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="IdSubsidio" PkField="IdSubsidio" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="SubsidioCabezalEmpresa.Empresa-Empresa.SubsidioCabezalEmpresas" Start=":SubsidioCabezalEmpresa" End=":Empresa" StartNavigator="Empresa" EndNavigator="SubsidioCabezalEmpresas" Type="4">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="CodEmpresa" PkField="CodEmpresa" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="SubsidioCabezalEmpresa.SubsidioCabezal-SubsidioCabezal.SubsidioCabezalEmpresas" Start=":SubsidioCabezalEmpresa" End=":SubsidioCabezal" StartNavigator="SubsidioCabezal" EndNavigator="SubsidioCabezalEmpresas" Type="4" DeleteRuleAction="1">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="IdSubsidio" PkField="IdSubsidio" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="SubsidioEnfermedad.SubsidioCabezal-SubsidioCabezal.SubsidioEnfermedads" Start=":SubsidioEnfermedad" End=":SubsidioCabezal" StartNavigator="SubsidioCabezal" EndNavigator="SubsidioEnfermedads" Type="4" DeleteRuleAction="1">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="IdSubsidio" PkField="IdSubsidio" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="SubsidioImponible.Empresa-Empresa.SubsidioImponibles" Start=":SubsidioImponible" End=":Empresa" StartNavigator="Empresa" EndNavigator="SubsidioImponibles" Type="4" EndIsOptional="true" DeleteRuleAction="1">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="CodEmpresa" PkField="CodEmpresa" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="SubsidioImponible.SubsidioCabezal-SubsidioCabezal.SubsidioImponibles" Start=":SubsidioImponible" End=":SubsidioCabezal" StartNavigator="SubsidioCabezal" EndNavigator="SubsidioImponibles" Type="4" EndIsOptional="true" DeleteRuleAction="1">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="IdSubsidio" PkField="IdSubsidio" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="SubsidioItem.SubsidioCabezal-SubsidioCabezal.SubsidioItems" Start=":SubsidioItem" End=":SubsidioCabezal" StartNavigator="SubsidioCabezal" EndNavigator="SubsidioItems" Type="4" DeleteRuleAction="1">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="IdSubsidio" PkField="IdSubsidio" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="SubsidioItem.SubsidioItemCod-SubsidioItemCod.SubsidioItems" Start=":SubsidioItem" End=":SubsidioItemCod" StartNavigator="SubsidioItemCod" EndNavigator="SubsidioItems" Type="4" DeleteRuleAction="1">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="CodSubsidioItemCod" PkField="CodSubsidioItemCod" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="SubsidioItemEmpresa.Empresa-Empresa.SubsidioItemEmpresas" Start=":SubsidioItemEmpresa" End=":Empresa" StartNavigator="Empresa" EndNavigator="SubsidioItemEmpresas" Type="4">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="CodEmpresa" PkField="CodEmpresa" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Trabaja.Afiliado-Afiliado.Trabajas" Start=":Trabaja" End=":Afiliado" StartNavigator="Afiliado" EndNavigator="Trabajas" Type="4">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="Ci" PkField="Ci" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Trabaja.BajaMotivo-BajaMotivo.Trabajas" Start=":Trabaja" End=":BajaMotivo" StartNavigator="BajaMotivo" EndNavigator="Trabajas" Type="4" EndIsOptional="true">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="CodBajaMotivo" PkField="CodBajaMotivo" />
+        </FieldRelationships>
+      </NormalRelationship>
+      <NormalRelationship Name="Trabaja.Empresa-Empresa.Trabajas" Start=":Trabaja" End=":Empresa" StartNavigator="Empresa" EndNavigator="Trabajas" Type="4">
+        <FieldRelationships>
+          <FieldFieldRelationship FkField="CodEmpresa" PkField="CodEmpresa" />
+        </FieldRelationships>
+      </NormalRelationship>
+    </Relationships>
+    <InheritanceHierarchies />
+  </EntityModel>
+  <TargetDatabases>
+    <TargetDatabase Type="4F77DEE6-918E-4a53-8B3B-A076B00A3E0D" SyncSource="2">
+      <ConnectionElements>
+        <ConnectionElement Name="CatalogName" Value="sgpaserv2003" />
+        <ConnectionElement Name="UserID" Value="" />
+        <ConnectionElement Name="Password" Value="" />
+        <ConnectionElement Name="DatabaseFile" Value="C:\Temp\sgpaserv2003.mdb" />
+        <ConnectionElement Name="SecurityFile" Value="" />
+        <ConnectionElement Name="DatabasePassword" Value="XXXXXX" />
+        <ConnectionElement Name="CurrencyScale" Value="2" />
+      </ConnectionElements>
+      <SystemSequences>
+        <Sequence Name="@@IDENTITY" />
+      </SystemSequences>
+      <Catalogs>
+        <Catalog Name="sgpaserv2003" SyncSource="2">
+          <Schemas>
+            <Schema Name="Default" SyncSource="2" LastSyncWithDatabase="2023-08-16T14:27:18.1791827Z">
+              <Tables>
+                <Table Name="AdPreJub">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="CI" Ordinal="2" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="FechaPresentacion" Ordinal="3" IsOptional="true" DbType="2" />
+                    <Field Name="ImporteMensual" Ordinal="4" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="FechaJubilacion" Ordinal="5" IsOptional="true" DbType="2" />
+                    <Field Name="Observaciones" Ordinal="6" IsOptional="true" DbType="7" Length="536870911" />
+                    <Field Name="Usr" Ordinal="7" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="Ts" Ordinal="8" IsOptional="true" DbType="2" />
+                  </Fields>
+                </Table>
+                <Table Name="AdPreJubPago">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="CI" Ordinal="2" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="Mes" Ordinal="3" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="month(date())" DbType="5" Precision="5" />
+                    <Field Name="Anio" Ordinal="4" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="year(Date())" DbType="5" Precision="5" />
+                    <Field Name="Fecha" Ordinal="5" IsOptional="true" DbType="2" />
+                    <Field Name="Importe" Ordinal="6" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="10" Precision="7" />
+                    <Field Name="Observaciones" Ordinal="7" IsOptional="true" DbType="7" Length="536870911" />
+                    <Field Name="Usr" Ordinal="8" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="Ts" Ordinal="9" IsOptional="true" DbType="2" />
+                  </Fields>
+                </Table>
+                <Table Name="AfeccionGrupo">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="CodAfeccionGrupo" Ordinal="2" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="Descrip" Ordinal="3" IsOptional="true" DbType="11" Length="50" />
+                    <Field Name="CodPatologia" Ordinal="4" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="Usr" Ordinal="5" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="Ts" Ordinal="6" IsOptional="true" DbType="2" />
+                  </Fields>
+                </Table>
+                <Table Name="AfeccionTipo">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="CodAfeccionTipo" Ordinal="2" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="Descrip" Ordinal="3" IsOptional="true" DbType="11" Length="200" />
+                    <Field Name="CodAfeccionGrupo" Ordinal="4" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="Usr" Ordinal="5" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="Ts" Ordinal="6" IsOptional="true" DbType="2" />
+                    <Field Name="CodDiameg" Ordinal="7" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                  </Fields>
+                </Table>
+                <Table Name="Afiliado">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="CI" Ordinal="2" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="Nombres" Ordinal="3" IsOptional="true" DbType="11" Length="50" />
+                    <Field Name="Apellido1" Ordinal="4" IsOptional="true" DbType="11" Length="30" />
+                    <Field Name="Apellido2" Ordinal="5" IsOptional="true" DbType="11" Length="30" />
+                    <Field Name="FechaNacimiento" Ordinal="6" IsOptional="true" DbType="2" />
+                    <Field Name="Sexo" Ordinal="7" IsOptional="true" DbType="11" Length="1" />
+                    <Field Name="Direccion" Ordinal="8" IsOptional="true" DbType="11" Length="100" />
+                    <Field Name="Telefono" Ordinal="9" IsOptional="true" DbType="11" Length="25" />
+                    <Field Name="EMail" Ordinal="10" IsOptional="true" DbType="11" Length="100" />
+                    <Field Name="CodMutualista" Ordinal="11" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="FechaIngMutualista" Ordinal="12" IsOptional="true" DbType="2" />
+                    <Field Name="FechaBajaMutualista" Ordinal="13" IsOptional="true" DbType="2" />
+                    <Field Name="NroSocioMutualista" Ordinal="14" IsOptional="true" DbType="11" Length="12" />
+                    <Field Name="CodRegimenJubilatorio" Ordinal="15" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="0" Precision="3" />
+                    <Field Name="CodDepartamento" Ordinal="16" IsOptional="true" HasDefaultValue="true" DefaultValue="&quot;NDF&quot;" DbType="11" Length="3" />
+                    <Field Name="PagaMutualista" Ordinal="17" HasDefaultValue="true" DefaultValue="True" DbType="12" Length="2" />
+                    <Field Name="CodSituacionMutual" Ordinal="18" IsOptional="true" DbType="11" Length="2" />
+                    <Field Name="CodBanco" Ordinal="19" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="NroCuenta" Ordinal="20" IsOptional="true" DbType="11" Length="50" />
+                    <Field Name="NroFunCuenta" Ordinal="21" IsOptional="true" DbType="11" Length="50" />
+                    <Field Name="Movil" Ordinal="22" IsOptional="true" DbType="11" Length="50" />
+                    <Field Name="Usr" Ordinal="23" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="Ts" Ordinal="24" IsOptional="true" DbType="2" />
+                  </Fields>
+                  <UniqueConstraints>
+                    <UniqueConstraint Name="CI">
+                      <Field Name="CI" />
+                    </UniqueConstraint>
+                  </UniqueConstraints>
+                </Table>
+                <Table Name="AfiliadoApunte">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="CI" Ordinal="2" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="Fecha" Ordinal="3" IsOptional="true" IsPrimaryKey="true" DbType="2" />
+                    <Field Name="Descrip" Ordinal="4" IsOptional="true" DbType="7" Length="536870911" />
+                    <Field Name="Usr" Ordinal="5" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="Ts" Ordinal="6" IsOptional="true" DbType="2" />
+                  </Fields>
+                </Table>
+                <Table Name="AfiliadoEspecialidad">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="CI" Ordinal="2" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="CodEspecialidad" Ordinal="3" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="Usr" Ordinal="4" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="Ts" Ordinal="5" IsOptional="true" DbType="2" />
+                  </Fields>
+                </Table>
+                <Table Name="AporteTipo">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="CodAporteTipo" Ordinal="2" IsOptional="true" IsPrimaryKey="true" DbType="11" Length="3" />
+                    <Field Name="Descrip" Ordinal="3" IsOptional="true" DbType="11" Length="50" />
+                    <Field Name="Usr" Ordinal="4" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="Ts" Ordinal="5" IsOptional="true" DbType="2" />
+                  </Fields>
+                </Table>
+                <Table Name="BajaMotivo">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="CodBajaMotivo" Ordinal="2" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="Descrip" Ordinal="3" IsOptional="true" DbType="11" Length="50" />
+                    <Field Name="Usr" Ordinal="4" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="Ts" Ordinal="5" IsOptional="true" DbType="2" />
+                  </Fields>
+                </Table>
+                <Table Name="Banco">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="CodBanco" Ordinal="2" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="Descripcion" Ordinal="3" IsOptional="true" DbType="11" Length="50" />
+                    <Field Name="Usr" Ordinal="4" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="Ts" Ordinal="5" IsOptional="true" DbType="2" />
+                  </Fields>
+                </Table>
+                <Table Name="Certificacion">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="NroLlamado" Ordinal="2" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="CI" Ordinal="3" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="NroRecibo" Ordinal="4" IsOptional="true" DbType="6" Precision="10" />
+                    <Field Name="FechaRecibido" Ordinal="5" IsOptional="true" DbType="2" />
+                    <Field Name="FechaCertificacion" Ordinal="6" IsOptional="true" DbType="2" />
+                    <Field Name="FechaIni" Ordinal="7" IsOptional="true" DbType="2" />
+                    <Field Name="FechaFin" Ordinal="8" IsOptional="true" DbType="2" />
+                    <Field Name="CodAfeccionTipo" Ordinal="9" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="CodCertificador" Ordinal="10" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="CodSalidaTipo" Ordinal="11" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="Efectiva" Ordinal="12" DbType="12" Length="2" />
+                    <Field Name="Indicaciones" Ordinal="13" IsOptional="true" DbType="7" Length="536870911" />
+                    <Field Name="ImporteDeducible" Ordinal="14" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="4" Precision="15" />
+                    <Field Name="Trabaja" Ordinal="15" DbType="12" Length="2" />
+                    <Field Name="Usr" Ordinal="16" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="Ts" Ordinal="17" IsOptional="true" DbType="2" />
+                  </Fields>
+                </Table>
+                <Table Name="CertificacionProrroga">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="CI" Ordinal="2" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="Fecha" Ordinal="3" IsOptional="true" IsPrimaryKey="true" DbType="2" />
+                    <Field Name="Dias" Ordinal="4" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="Observaciones" Ordinal="5" IsOptional="true" DbType="7" Length="536870911" />
+                    <Field Name="Usr" Ordinal="6" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="Ts" Ordinal="7" IsOptional="true" DbType="2" />
+                  </Fields>
+                </Table>
+                <Table Name="Certificador">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="CodCertificador" Ordinal="2" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="Descrip" Ordinal="3" IsOptional="true" DbType="11" Length="50" />
+                    <Field Name="Direccion" Ordinal="4" IsOptional="true" DbType="11" Length="50" />
+                    <Field Name="Telefono" Ordinal="5" IsOptional="true" DbType="11" Length="25" />
+                    <Field Name="Fax" Ordinal="6" IsOptional="true" DbType="11" Length="25" />
+                    <Field Name="Bip" Ordinal="7" IsOptional="true" DbType="11" Length="25" />
+                    <Field Name="CobraLlamado" Ordinal="8" HasDefaultValue="true" DefaultValue="True" DbType="12" Length="2" />
+                    <Field Name="Usr" Ordinal="9" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="Ts" Ordinal="10" IsOptional="true" DbType="2" />
+                  </Fields>
+                </Table>
+                <Table Name="Cuenta">
+                  <Fields>
+                    <Field Name="CI" Ordinal="2" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="CodBanco" Ordinal="3" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="NroCuenta" Ordinal="4" IsOptional="true" DbType="11" Length="50" />
+                  </Fields>
+                </Table>
+                <Table Name="Departamento">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="CodDepartamento" Ordinal="2" IsOptional="true" IsPrimaryKey="true" DbType="11" Length="3" />
+                    <Field Name="Descrip" Ordinal="3" IsOptional="true" DbType="11" Length="50" />
+                  </Fields>
+                </Table>
+                <Table Name="Empresa">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="CodEmpresa" Ordinal="2" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="Nombre" Ordinal="3" IsOptional="true" DbType="11" Length="50" />
+                    <Field Name="Direccion" Ordinal="4" IsOptional="true" DbType="11" Length="50" />
+                    <Field Name="Telefono" Ordinal="5" IsOptional="true" DbType="11" Length="25" />
+                    <Field Name="Fax" Ordinal="6" IsOptional="true" DbType="11" Length="25" />
+                    <Field Name="EMail" Ordinal="7" IsOptional="true" DbType="11" Length="25" />
+                    <Field Name="AporteCasemed" Ordinal="8" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="10" Precision="7" />
+                    <Field Name="AporteAguinaldo" Ordinal="9" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="PersonaContacto" Ordinal="10" IsOptional="true" DbType="11" Length="50" />
+                    <Field Name="Autoridades" Ordinal="11" IsOptional="true" DbType="11" Length="255" />
+                    <Field Name="CodRegimenAporte" Ordinal="12" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="CodSituacionPago" Ordinal="13" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="Liquidar" Ordinal="14" DbType="12" Length="2" />
+                    <Field Name="Ficticia" Ordinal="15" DbType="12" Length="2" />
+                    <Field Name="Usr" Ordinal="16" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="Ts" Ordinal="17" IsOptional="true" DbType="2" />
+                  </Fields>
+                </Table>
+                <Table Name="EmpresaPago">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="CodEmpresa" Ordinal="2" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="Mes" Ordinal="3" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="Anio" Ordinal="4" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="Importe" Ordinal="5" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="Usr" Ordinal="6" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="Ts" Ordinal="7" IsOptional="true" DbType="2" />
+                  </Fields>
+                </Table>
+                <Table Name="Especialidad">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="CodEspecialidad" Ordinal="2" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="Descrip" Ordinal="3" IsOptional="true" DbType="11" Length="50" />
+                    <Field Name="Usr" Ordinal="4" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="Ts" Ordinal="5" IsOptional="true" DbType="2" />
+                  </Fields>
+                </Table>
+                <Table Name="FormaPago">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="CodFormaPago" Ordinal="2" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="Descrip" Ordinal="3" IsOptional="true" DbType="11" Length="50" />
+                    <Field Name="Usr" Ordinal="4" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="Ts" Ordinal="5" IsOptional="true" DbType="2" />
+                  </Fields>
+                </Table>
+                <Table Name="FranjaIRPF">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="Desde" Ordinal="2" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="4" Precision="15" />
+                    <Field Name="Hasta" Ordinal="3" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="4" Precision="15" />
+                    <Field Name="Porcentaje" Ordinal="4" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="4" Precision="15" />
+                  </Fields>
+                </Table>
+                <Table Name="IMP">
+                  <Fields>
+                    <Field Name="CI" Ordinal="2" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="Importe" Ordinal="3" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="4" Precision="15" />
+                  </Fields>
+                </Table>
+                <Table Name="Imponible">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="CI" Ordinal="2" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="CodEmpresa" Ordinal="3" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="Fechaingreso" Ordinal="4" IsOptional="true" IsPrimaryKey="true" DbType="2" />
+                    <Field Name="Mes" Ordinal="5" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="0" Precision="3" />
+                    <Field Name="Anio" Ordinal="6" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="Concepto" Ordinal="7" IsOptional="true" IsPrimaryKey="true" DbType="11" Length="3" />
+                    <Field Name="IdTrabaja" Ordinal="8" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="DiasTrabajados" Ordinal="9" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5">
+                      <CustomProperties>
+                        <CustomProperty Name="Description" Value="(Este campo iría siempre por defecto con 30)" />
+                      </CustomProperties>
+                    </Field>
+                    <Field Name="Importe" Ordinal="10" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="4" Precision="15" />
+                    <Field Name="Usr" Ordinal="11" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="Ts" Ordinal="12" IsOptional="true" DbType="2" />
+                    <Field Name="AnioMes" Ordinal="13" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                  </Fields>
+                </Table>
+                <Table Name="IMS">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="Mes" Ordinal="2" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="Month(Date())" DbType="5" Precision="5" />
+                    <Field Name="Anio" Ordinal="3" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="Year(Date())" DbType="5" Precision="5" />
+                    <Field Name="Importe" Ordinal="4" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="10" Precision="7" />
+                    <Field Name="AnioMes" Ordinal="5" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="Usr" Ordinal="6" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="Ts" Ordinal="7" IsOptional="true" DbType="2" />
+                  </Fields>
+                </Table>
+                <Table Name="InformeEstadistico">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="IdRpt" Ordinal="2" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="Grupo" Ordinal="3" IsOptional="true" DbType="11" Length="50" />
+                    <Field Name="Orden" Ordinal="4" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="TituloPantalla" Ordinal="5" IsOptional="true" DbType="11" Length="255" />
+                    <Field Name="TituloRpt" Ordinal="6" IsOptional="true" DbType="11" Length="255" />
+                    <Field Name="MesAnio" Ordinal="7" DbType="12" Length="2" />
+                    <Field Name="Periodo" Ordinal="8" DbType="12" Length="2" />
+                    <Field Name="Empresa" Ordinal="9" DbType="12" Length="2" />
+                    <Field Name="Fecha" Ordinal="10" DbType="12" Length="2" />
+                    <Field Name="GrupoEtario" Ordinal="11" DbType="12" Length="2" />
+                    <Field Name="Comentario" Ordinal="12" IsOptional="true" DbType="7" Length="536870911" />
+                    <Field Name="Patologia" Ordinal="13" DbType="12" Length="2" />
+                  </Fields>
+                </Table>
+                <Table Name="Liquidacion_BPS">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="Id" Ordinal="2" IsIdentity="true" IsPrimaryKey="true" DbType="6" Precision="10" />
+                    <Field Name="CI" Ordinal="3" DbType="4" Precision="15" />
+                    <Field Name="NOMBRE" Ordinal="4" IsOptional="true" DbType="11" Length="255" />
+                    <Field Name="APELLIDO" Ordinal="5" IsOptional="true" DbType="11" Length="255" />
+                    <Field Name="MONTO_TOTAL" Ordinal="6" IsOptional="true" DbType="4" Precision="15" />
+                    <Field Name="MES_DE_CARGO" Ordinal="7" DbType="6" Precision="10" />
+                    <Field Name="NOM_EMPRESA" Ordinal="8" IsOptional="true" DbType="11" Length="255" />
+                    <Field Name="PCT_POR_EMPRESA" Ordinal="9" DbType="4" Precision="15" />
+                    <Field Name="FECHA_PER_DESDE" Ordinal="10" IsOptional="true" DbType="2" />
+                    <Field Name="FECHA_PER_HASTA" Ordinal="11" IsOptional="true" DbType="2" />
+                    <Field Name="N_ ENTREGA" Ordinal="12" IsOptional="true" DbType="6" Precision="10" />
+                    <Field Name="FECHA_DE_ENTREGA" Ordinal="13" IsOptional="true" DbType="2" />
+                    <Field Name="MES" Ordinal="14" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="ANIO" Ordinal="15" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="LIQUIDO" Ordinal="16" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="4" Precision="15" />
+                  </Fields>
+                </Table>
+                <Table Name="MaeFun">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="NroFun" Ordinal="2" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10">
+                      <CustomProperties>
+                        <CustomProperty Name="Description" Value="Número de Funcionario" />
+                      </CustomProperties>
+                    </Field>
+                    <Field Name="NroCuenta" Ordinal="3" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10">
+                      <CustomProperties>
+                        <CustomProperty Name="Description" Value="Número de Cuenta del Funcionario" />
+                      </CustomProperties>
+                    </Field>
+                    <Field Name="Apellido1" Ordinal="4" DbType="11" Length="15">
+                      <CustomProperties>
+                        <CustomProperty Name="Description" Value="Primer Apellido" />
+                      </CustomProperties>
+                    </Field>
+                    <Field Name="Apellido2" Ordinal="5" IsOptional="true" DbType="11" Length="15">
+                      <CustomProperties>
+                        <CustomProperty Name="Description" Value="Segudo Apellido" />
+                      </CustomProperties>
+                    </Field>
+                    <Field Name="Nombre1" Ordinal="6" DbType="11" Length="15">
+                      <CustomProperties>
+                        <CustomProperty Name="Description" Value="Primer nombre" />
+                      </CustomProperties>
+                    </Field>
+                    <Field Name="Nombre2" Ordinal="7" IsOptional="true" DbType="11" Length="15">
+                      <CustomProperties>
+                        <CustomProperty Name="Description" Value="Segudo Nombre" />
+                      </CustomProperties>
+                    </Field>
+                    <Field Name="Cedula" Ordinal="8" IsOptional="true" DbType="6" Precision="10">
+                      <CustomProperties>
+                        <CustomProperty Name="Description" Value="Cédula de Identidad" />
+                      </CustomProperties>
+                    </Field>
+                    <Field Name="Nacionalidad" Ordinal="9" IsOptional="true" DbType="5" Precision="5">
+                      <CustomProperties>
+                        <CustomProperty Name="Description" Value="0-Oriental 1- Extranjero 2-Ciudadano Legal" />
+                      </CustomProperties>
+                    </Field>
+                    <Field Name="FecNac" Ordinal="10" IsOptional="true" DbType="2">
+                      <CustomProperties>
+                        <CustomProperty Name="Description" Value="Fecha de Nacimiento" />
+                      </CustomProperties>
+                    </Field>
+                    <Field Name="EstCivil" Ordinal="11" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5">
+                      <CustomProperties>
+                        <CustomProperty Name="Description" Value="1-Soltero 2-Casado 3-Viudo 4-Divorciado" />
+                      </CustomProperties>
+                    </Field>
+                    <Field Name="DirCalle" Ordinal="12" IsOptional="true" DbType="11" Length="20" />
+                    <Field Name="DirPuerta" Ordinal="13" IsOptional="true" DbType="11" Length="4" />
+                    <Field Name="DirBis" Ordinal="14" IsOptional="true" DbType="11" Length="2" />
+                    <Field Name="DirPiso" Ordinal="15" IsOptional="true" DbType="11" Length="2" />
+                    <Field Name="DirApto" Ordinal="16" IsOptional="true" DbType="11" Length="4" />
+                    <Field Name="DirBloque" Ordinal="17" IsOptional="true" DbType="11" Length="2" />
+                    <Field Name="DirLocal" Ordinal="18" IsOptional="true" DbType="11" Length="30">
+                      <CustomProperties>
+                        <CustomProperty Name="Description" Value="Localidad de la Dirección" />
+                      </CustomProperties>
+                    </Field>
+                    <Field Name="CodCargo" Ordinal="19" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="DesCargo" Ordinal="20" IsOptional="true" DbType="11" Length="25" />
+                    <Field Name="Telefono" Ordinal="21" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="FecIngreso" Ordinal="22" IsOptional="true" DbType="2">
+                      <CustomProperties>
+                        <CustomProperty Name="Description" Value="Fecha en que fue ingresado al Sistema" />
+                      </CustomProperties>
+                    </Field>
+                    <Field Name="InfDbla" Ordinal="23" HasDefaultValue="true" DefaultValue="False" DbType="12" Length="2">
+                      <CustomProperties>
+                        <CustomProperty Name="Description" Value="Indica si fue informado al DBLA" />
+                      </CustomProperties>
+                    </Field>
+                    <Field Name="FecInfDbla" Ordinal="24" IsOptional="true" DbType="2">
+                      <CustomProperties>
+                        <CustomProperty Name="Description" Value="Fecha en que fue informado al Banco" />
+                      </CustomProperties>
+                    </Field>
+                    <Field Name="AsigCuenta" Ordinal="25" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5">
+                      <CustomProperties>
+                        <CustomProperty Name="Description" Value="Indica como fue asignada la cuenta 0-sin asignación,1-Asignada por la empresa, 2 Asignada por el banco" />
+                      </CustomProperties>
+                    </Field>
+                    <Field Name="FecAsigCta" Ordinal="26" IsOptional="true" DbType="2">
+                      <CustomProperties>
+                        <CustomProperty Name="Description" Value="Fecha en que fue asignada la cuenta" />
+                      </CustomProperties>
+                    </Field>
+                  </Fields>
+                </Table>
+                <Table Name="Moneda">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="Moneda" Ordinal="2" IsOptional="true" IsPrimaryKey="true" DbType="11" Length="3" />
+                  </Fields>
+                </Table>
+                <Table Name="Mutualista">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="CodMutualista" Ordinal="2" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="Nombre" Ordinal="3" IsOptional="true" DbType="11" Length="50" />
+                    <Field Name="Direccion" Ordinal="4" IsOptional="true" DbType="11" Length="50" />
+                    <Field Name="Telefono" Ordinal="5" IsOptional="true" DbType="11" Length="50" />
+                    <Field Name="Fax" Ordinal="6" IsOptional="true" DbType="11" Length="25" />
+                    <Field Name="EMail" Ordinal="7" IsOptional="true" DbType="11" Length="25" />
+                    <Field Name="DiaPago" Ordinal="8" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="0" Precision="3" />
+                    <Field Name="CodFormaPago" Ordinal="9" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="PersonaContacto" Ordinal="10" IsOptional="true" DbType="11" Length="50" />
+                    <Field Name="Cuota" Ordinal="11" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="4" Precision="15" />
+                    <Field Name="Usr" Ordinal="12" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="Ts" Ordinal="13" IsOptional="true" DbType="2" />
+                    <Field Name="Ficticia" Ordinal="14" DbType="12" Length="2" />
+                  </Fields>
+                </Table>
+                <Table Name="NoCargadoHL">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="CI" Ordinal="2" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="Apellido1" Ordinal="3" IsOptional="true" DbType="11" Length="50" />
+                    <Field Name="Apellido2" Ordinal="4" IsOptional="true" DbType="11" Length="50" />
+                    <Field Name="Nombres" Ordinal="5" IsOptional="true" DbType="11" Length="50" />
+                    <Field Name="CodEmpresa" Ordinal="6" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="Mes" Ordinal="7" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="Anio" Ordinal="8" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="Usr" Ordinal="9" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="Ts" Ordinal="10" IsOptional="true" DbType="2" />
+                  </Fields>
+                </Table>
+                <Table Name="Parametros">
+                  <Fields>
+                    <Field Name="SMN" Ordinal="2" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="4" Precision="15">
+                      <CustomProperties>
+                        <CustomProperty Name="Description" Value="Salario mínimo nacional" />
+                      </CustomProperties>
+                    </Field>
+                    <Field Name="TopeJubilatorio" Ordinal="3" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="10" Precision="7">
+                      <CustomProperties>
+                        <CustomProperty Name="Description" Value="Tope Jubilatorio" />
+                      </CustomProperties>
+                    </Field>
+                    <Field Name="TopePrima" Ordinal="4" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="10" Precision="7" />
+                    <Field Name="UR" Ordinal="5" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="10" Precision="7" />
+                    <Field Name="PctAdPreJub" Ordinal="6" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="10" Precision="7" />
+                    <Field Name="BCP" Ordinal="7" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="4" Precision="15" />
+                    <Field Name="TopeLiquidoBPS" Ordinal="8" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="4" Precision="15">
+                      <CustomProperties>
+                        <CustomProperty Name="Description" Value="Tope BPS para calculo de liquidacion BPS" />
+                      </CustomProperties>
+                    </Field>
+                    <Field Name="pctBPS" Ordinal="9" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="4" Precision="15" />
+                  </Fields>
+                </Table>
+                <Table Name="Patologia">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="CodPatologia" Ordinal="2" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="Descrip" Ordinal="3" IsOptional="true" DbType="11" Length="50" />
+                    <Field Name="Usr" Ordinal="4" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="Ts" Ordinal="5" IsOptional="true" DbType="2" />
+                  </Fields>
+                </Table>
+                <Table Name="Prestacion">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="CI" Ordinal="2" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="Fecha" Ordinal="3" IsOptional="true" IsPrimaryKey="true" DbType="2" />
+                    <Field Name="CodPrestacionTipo" Ordinal="4" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="Moneda" Ordinal="5" IsOptional="true" DbType="11" Length="3" />
+                    <Field Name="Importe" Ordinal="6" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="4" Precision="15" />
+                    <Field Name="Boleta" Ordinal="7" DbType="12" Length="2" />
+                    <Field Name="Observaciones" Ordinal="8" IsOptional="true" DbType="7" Length="536870911" />
+                    <Field Name="Usr" Ordinal="9" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="Ts" Ordinal="10" IsOptional="true" DbType="2" />
+                  </Fields>
+                </Table>
+                <Table Name="PrestacionTipo">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="CodPrestacionTipo" Ordinal="2" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="Descrip" Ordinal="3" IsOptional="true" DbType="11" Length="50" />
+                    <Field Name="FechaVigencia" Ordinal="4" IsOptional="true" DbType="2" />
+                    <Field Name="ImporteTopeDISSE" Ordinal="5" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="4" Precision="15" />
+                    <Field Name="ImporteTopeCASEMED" Ordinal="6" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="4" Precision="15" />
+                    <Field Name="PeriodoRenovacion" Ordinal="7" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5">
+                      <CustomProperties>
+                        <CustomProperty Name="Description" Value="Es la cantidad de tiempo (en meses) que se puede renovar la prestación." />
+                      </CustomProperties>
+                    </Field>
+                    <Field Name="Receta" Ordinal="8" DbType="12" Length="2" />
+                    <Field Name="Obs" Ordinal="9" IsOptional="true" DbType="7" Length="536870911" />
+                    <Field Name="Usr" Ordinal="10" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="Ts" Ordinal="11" IsOptional="true" DbType="2" />
+                  </Fields>
+                </Table>
+                <Table Name="PrimaFallecimiento">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="CI" Ordinal="2" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="FechaFirma" Ordinal="3" IsOptional="true" DbType="2" />
+                    <Field Name="FechaFallecimiento" Ordinal="4" IsOptional="true" DbType="2" />
+                    <Field Name="Importe" Ordinal="5" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="4" Precision="15" />
+                    <Field Name="FechaPago" Ordinal="6" IsOptional="true" DbType="2" />
+                    <Field Name="Observaciones" Ordinal="7" IsOptional="true" DbType="7" Length="536870911" />
+                    <Field Name="Usr" Ordinal="8" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="Ts" Ordinal="9" IsOptional="true" DbType="2" />
+                  </Fields>
+                </Table>
+                <Table Name="Receta">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="CI" Ordinal="2" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="Fecha" Ordinal="3" IsOptional="true" IsPrimaryKey="true" DbType="2" />
+                    <Field Name="CodPrestacionTipo" Ordinal="4" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="CodRecetaDistancia" Ordinal="5" IsOptional="true" IsPrimaryKey="true" DbType="11" Length="3" />
+                    <Field Name="Esf_I" Ordinal="6" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="10" Precision="7" />
+                    <Field Name="Esf_D" Ordinal="7" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="10" Precision="7" />
+                    <Field Name="Cil_I" Ordinal="8" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="10" Precision="7" />
+                    <Field Name="Cil_D" Ordinal="9" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="10" Precision="7" />
+                    <Field Name="Usr" Ordinal="10" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="Ts" Ordinal="11" IsOptional="true" DbType="2" />
+                  </Fields>
+                </Table>
+                <Table Name="RecetaDistancia">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="CodRecetaDistancia" Ordinal="2" IsOptional="true" IsPrimaryKey="true" DbType="11" Length="3" />
+                    <Field Name="Descrip" Ordinal="3" IsOptional="true" DbType="11" Length="50" />
+                  </Fields>
+                </Table>
+                <Table Name="RegimenAporte">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="CodRegimenAporte" Ordinal="2" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="Descrip" Ordinal="3" IsOptional="true" DbType="11" Length="50" />
+                    <Field Name="Porcentaje" Ordinal="4" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="Usr" Ordinal="5" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="Ts" Ordinal="6" IsOptional="true" DbType="2" />
+                  </Fields>
+                </Table>
+                <Table Name="RegimenJubilatorio">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="CodRegimenJubilatorio" Ordinal="2" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="0" Precision="3" />
+                    <Field Name="Descrip" Ordinal="3" IsOptional="true" DbType="11" Length="50" />
+                    <Field Name="Usr" Ordinal="4" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="Ts" Ordinal="5" IsOptional="true" DbType="2" />
+                  </Fields>
+                </Table>
+                <Table Name="ReintegroMutual">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="CI" Ordinal="2" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="Mes" Ordinal="3" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="Anio" Ordinal="4" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="Fecha" Ordinal="5" IsOptional="true" DbType="2" />
+                    <Field Name="CodMutualista" Ordinal="6" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="Importe" Ordinal="7" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="10" Precision="7" />
+                    <Field Name="Observaciones" Ordinal="8" IsOptional="true" DbType="7" Length="536870911" />
+                    <Field Name="Usr" Ordinal="9" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="Ts" Ordinal="10" IsOptional="true" DbType="2" />
+                  </Fields>
+                </Table>
+                <Table Name="SalidaTipo">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="CodSalidaTipo" Ordinal="2" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="Descrip" Ordinal="3" IsOptional="true" DbType="11" Length="50" />
+                    <Field Name="Usr" Ordinal="4" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="Ts" Ordinal="5" IsOptional="true" DbType="2" />
+                  </Fields>
+                </Table>
+                <Table Name="Seleccion">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="Id" Ordinal="2" IsIdentity="true" IsPrimaryKey="true" DbType="6" Precision="10" />
+                    <Field Name="Usr" Ordinal="3" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="Form" Ordinal="4" IsOptional="true" DbType="11" Length="255" />
+                    <Field Name="Nombre" Ordinal="5" IsOptional="true" DbType="11" Length="255" />
+                    <Field Name="Txt" Ordinal="6" IsOptional="true" DbType="7" Length="536870911" />
+                    <Field Name="System" Ordinal="7" DbType="12" Length="2">
+                      <CustomProperties>
+                        <CustomProperty Name="Description" Value="Indica si es del Usuario o del sistema." />
+                      </CustomProperties>
+                    </Field>
+                  </Fields>
+                </Table>
+                <Table Name="SituacionMutual">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="CodSituacionMutual" Ordinal="2" IsOptional="true" IsPrimaryKey="true" DbType="11" Length="2" />
+                    <Field Name="Descrip" Ordinal="3" IsOptional="true" DbType="11" Length="50" />
+                    <Field Name="Pagar" Ordinal="4" DbType="12" Length="2" />
+                    <Field Name="Usr" Ordinal="5" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="Ts" Ordinal="6" IsOptional="true" DbType="2" />
+                  </Fields>
+                </Table>
+                <Table Name="SituacionPago">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="CodSituacionPago" Ordinal="2" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="Descrip" Ordinal="3" IsOptional="true" DbType="11" Length="50" />
+                    <Field Name="Usr" Ordinal="4" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="Ts" Ordinal="5" IsOptional="true" DbType="2" />
+                  </Fields>
+                </Table>
+                <Table Name="SubsidioCabezal">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="IdSubsidio" Ordinal="2" IsIdentity="true" IsPrimaryKey="true" DbType="6" Precision="10" />
+                    <Field Name="Mes" Ordinal="3" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="0" Precision="3" />
+                    <Field Name="Anio" Ordinal="4" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="CI" Ordinal="5" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="Liquidar" Ordinal="6" DbType="12" Length="2" />
+                    <Field Name="ValorJornal" Ordinal="7" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="10" Precision="7" />
+                    <Field Name="Dias" Ordinal="8" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="ImpNominal" Ordinal="9" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="4" Precision="15" />
+                    <Field Name="ImpAguinaldo" Ordinal="10" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="4" Precision="15" />
+                    <Field Name="ImpLiquido" Ordinal="11" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="4" Precision="15" />
+                    <Field Name="NroRecibo" Ordinal="12" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="FechaPago" Ordinal="13" IsOptional="true" DbType="2" />
+                    <Field Name="CodBanco" Ordinal="14" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="NroCuenta" Ordinal="15" IsOptional="true" DbType="11" Length="50" />
+                    <Field Name="Usr" Ordinal="16" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="Ts" Ordinal="17" IsOptional="true" DbType="2" />
+                  </Fields>
+                  <UniqueConstraints>
+                    <UniqueConstraint Name="IdSubsidio">
+                      <Field Name="IdSubsidio" />
+                    </UniqueConstraint>
+                  </UniqueConstraints>
+                </Table>
+                <Table Name="SubsidioCabezal_BPS">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="IdSubsidio" Ordinal="2" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="DiasBPS" Ordinal="3" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="LiquidoBPS" Ordinal="4" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="4" Precision="15" />
+                    <Field Name="AguinaldoBPS" Ordinal="5" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="4" Precision="15" />
+                    <Field Name="LiquidoPagar" Ordinal="6" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="4" Precision="15">
+                      <CustomProperties>
+                        <CustomProperty Name="Description" Value="Liquido CASEMED - Liquido BPS" />
+                      </CustomProperties>
+                    </Field>
+                  </Fields>
+                </Table>
+                <Table Name="SubsidioCabezalEmpresa">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="IdSubsidio" Ordinal="2" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="CodEmpresa" Ordinal="3" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="ValorJornal" Ordinal="4" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="10" Precision="7" />
+                    <Field Name="Dias" Ordinal="5" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="ImpNominal" Ordinal="6" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="4" Precision="15" />
+                    <Field Name="ImpAguinaldo" Ordinal="7" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="4" Precision="15" />
+                    <Field Name="ImpLiquido" Ordinal="8" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="4" Precision="15" />
+                    <Field Name="Usr" Ordinal="9" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="Ts" Ordinal="10" IsOptional="true" DbType="2" />
+                  </Fields>
+                </Table>
+                <Table Name="SubsidioEnfermedad">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="IdSubsidio" Ordinal="2" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="FechaIni" Ordinal="3" IsOptional="true" IsPrimaryKey="true" DbType="2" />
+                    <Field Name="FechaFin" Ordinal="4" IsOptional="true" DbType="2" />
+                    <Field Name="FechaIniSubsidio" Ordinal="5" IsOptional="true" DbType="2" />
+                    <Field Name="FechaFinSubsidio" Ordinal="6" IsOptional="true" DbType="2" />
+                    <Field Name="NroLlamado" Ordinal="7" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="Dias" Ordinal="8" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="0" Precision="3" />
+                    <Field Name="Importe" Ordinal="9" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="4" Precision="15" />
+                    <Field Name="Usr" Ordinal="10" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="Ts" Ordinal="11" IsOptional="true" DbType="2" />
+                  </Fields>
+                </Table>
+                <Table Name="SubsidioImponible">
+                  <Fields>
+                    <Field Name="IdSubsidio" Ordinal="2" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="Mes" Ordinal="3" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="0" Precision="3" />
+                    <Field Name="Anio" Ordinal="4" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="CodEmpresa" Ordinal="5" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="Dias" Ordinal="6" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="Importe" Ordinal="7" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="4" Precision="15" />
+                    <Field Name="Usr" Ordinal="8" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="Ts" Ordinal="9" IsOptional="true" DbType="2" />
+                  </Fields>
+                </Table>
+                <Table Name="SubsidioItem">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="IdSubsidio" Ordinal="2" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="CodSubsidioItemCod" Ordinal="3" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="Importe" Ordinal="4" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="4" Precision="15" />
+                    <Field Name="AbiEmp" Ordinal="5" DbType="12" Length="2" />
+                    <Field Name="Usr" Ordinal="6" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="Ts" Ordinal="7" IsOptional="true" DbType="2" />
+                  </Fields>
+                </Table>
+                <Table Name="SubsidioItemCod">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="CodSubsidioItemCod" Ordinal="2" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="Descrip" Ordinal="3" IsOptional="true" DbType="11" Length="50" />
+                    <Field Name="Tipo" Ordinal="4" IsOptional="true" DbType="11" Length="1">
+                      <CustomProperties>
+                        <CustomProperty Name="Description" Value="(Obero, Patronal)" />
+                      </CustomProperties>
+                    </Field>
+                    <Field Name="ValorTipo" Ordinal="5" IsOptional="true" DbType="11" Length="50">
+                      <CustomProperties>
+                        <CustomProperty Name="Description" Value="(%, *, +, -)" />
+                      </CustomProperties>
+                    </Field>
+                    <Field Name="Signo" Ordinal="6" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="0" Precision="3" />
+                    <Field Name="Comparar" Ordinal="7" DbType="12" Length="2" />
+                    <Field Name="CompararContra" Ordinal="8" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="0" Precision="3" />
+                    <Field Name="Valor" Ordinal="9" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="4" Precision="15" />
+                    <Field Name="TipoComp" Ordinal="10" IsOptional="true" DbType="11" Length="1">
+                      <CustomProperties>
+                        <CustomProperty Name="Description" Value="(Si se compara solo contra el importe o contra los SMN)" />
+                      </CustomProperties>
+                    </Field>
+                    <Field Name="Operador" Ordinal="11" IsOptional="true" DbType="11" Length="5" />
+                    <Field Name="ValorMin" Ordinal="12" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="4" Precision="15" />
+                    <Field Name="ValorMax" Ordinal="13" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="4" Precision="15" />
+                    <Field Name="Procesar" Ordinal="14" DbType="12" Length="2" />
+                    <Field Name="FechaVigencia" Ordinal="15" IsOptional="true" DbType="2" />
+                    <Field Name="FechaBaja" Ordinal="16" IsOptional="true" DbType="2" />
+                    <Field Name="AperturaXEmpresa" Ordinal="17" DbType="12" Length="2" />
+                    <Field Name="ModificaNominal" Ordinal="18" DbType="12" Length="2" />
+                  </Fields>
+                </Table>
+                <Table Name="SubsidioItemCod_Afiliado">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="SubItmCodAfiId" Ordinal="2" IsIdentity="true" IsPrimaryKey="true" DbType="6" Precision="10" />
+                    <Field Name="CodSubsidioItemCod" Ordinal="3" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="CI" Ordinal="4" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="Valor" Ordinal="5" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="4" Precision="15" />
+                    <Field Name="Vigencia" Ordinal="6" IsOptional="true" DbType="2" />
+                    <Field Name="Usr" Ordinal="7" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="Ts" Ordinal="8" IsOptional="true" DbType="2" />
+                  </Fields>
+                </Table>
+                <Table Name="SubsidioItemEmpresa">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="IdSubsidio" Ordinal="2" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="CodSubsidioItemCod" Ordinal="3" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="CodEmpresa" Ordinal="4" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="Importe" Ordinal="5" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="10" Precision="7" />
+                    <Field Name="Usr" Ordinal="6" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="Ts" Ordinal="7" IsOptional="true" DbType="2" />
+                  </Fields>
+                </Table>
+                <Table Name="tmp_Rectificativas">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="Id" Ordinal="2" IsIdentity="true" IsPrimaryKey="true" DbType="6" Precision="10" />
+                    <Field Name="EMPRESA" Ordinal="3" IsOptional="true" DbType="4" Precision="15" />
+                    <Field Name="CI" Ordinal="4" IsOptional="true" DbType="4" Precision="15" />
+                    <Field Name="Concepto" Ordinal="5" IsOptional="true" DbType="4" Precision="15" />
+                    <Field Name="Importe" Ordinal="6" IsOptional="true" DbType="4" Precision="15" />
+                  </Fields>
+                </Table>
+                <Table Name="tmpCorrecciones">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="CI" Ordinal="2" IsOptional="true" IsPrimaryKey="true" DbType="4" Precision="15" />
+                    <Field Name="Nombre" Ordinal="3" IsOptional="true" DbType="11" Length="255" />
+                    <Field Name="Fecha Inicio" Ordinal="4" IsOptional="true" DbType="2" />
+                    <Field Name="Fecha Fin" Ordinal="5" IsOptional="true" DbType="2" />
+                  </Fields>
+                </Table>
+                <Table Name="Trabaja">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="CI" Ordinal="2" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="CodEmpresa" Ordinal="3" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="FechaIngreso" Ordinal="4" IsOptional="true" IsPrimaryKey="true" DbType="2" />
+                    <Field Name="FechaBaja" Ordinal="5" IsOptional="true" DbType="2" />
+                    <Field Name="CodBajaMotivo" Ordinal="6" IsOptional="true" HasDefaultValue="true" DefaultValue="0" DbType="6" Precision="10" />
+                    <Field Name="NroFichaEmpresa" Ordinal="7" IsOptional="true" DbType="11" Length="20" />
+                    <Field Name="IdTrabaja" Ordinal="8" IsIdentity="true" DbType="6" Precision="10" />
+                    <Field Name="FechaIngCasemed" Ordinal="9" IsOptional="true" DbType="2" />
+                    <Field Name="Usr" Ordinal="10" IsOptional="true" DbType="11" Length="8" />
+                    <Field Name="Ts" Ordinal="11" IsOptional="true" DbType="2" />
+                  </Fields>
+                  <UniqueConstraints>
+                    <UniqueConstraint Name="Id_Trabaja">
+                      <Field Name="IdTrabaja" />
+                    </UniqueConstraint>
+                  </UniqueConstraints>
+                </Table>
+                <Table Name="xUsrParam">
+                  <PkConstraintName Name="PrimaryKey" />
+                  <Fields>
+                    <Field Name="login" Ordinal="2" IsOptional="true" IsPrimaryKey="true" DbType="11" Length="8" />
+                    <Field Name="clave" Ordinal="3" IsOptional="true" IsPrimaryKey="true" DbType="11" Length="100" />
+                    <Field Name="orden" Ordinal="4" IsOptional="true" IsPrimaryKey="true" HasDefaultValue="true" DefaultValue="0" DbType="5" Precision="5" />
+                    <Field Name="value1" Ordinal="5" IsOptional="true" DbType="11" Length="255" />
+                    <Field Name="value2" Ordinal="6" IsOptional="true" DbType="11" Length="255" />
+                    <Field Name="value3" Ordinal="7" IsOptional="true" DbType="11" Length="255" />
+                    <Field Name="value4" Ordinal="8" IsOptional="true" DbType="11" Length="255" />
+                    <Field Name="value5" Ordinal="9" IsOptional="true" DbType="11" Length="255" />
+                  </Fields>
+                </Table>
+              </Tables>
+            </Schema>
+          </Schemas>
+          <ForeignKeyConstraints>
+            <ForeignKeyConstraint Name="Default:AdPreJub:{AC7D271E-D1A0-4E26-A7D1-B96FA9772E2E}" UpdateRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="Default:Afiliado:CI" FkField="Default:AdPreJub:CI" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="Default:AdPreJubPago:{B4207912-6F9A-4086-A09B-F48B818B8349}" UpdateRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="Default:AdPreJub:CI" FkField="Default:AdPreJubPago:CI" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="Default:AfeccionGrupo:{F165F91A-10D2-4DD7-8453-A7D9350ECDCD}" UpdateRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="Default:Patologia:CodPatologia" FkField="Default:AfeccionGrupo:CodPatologia" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="Default:AfeccionTipo:{3454391C-FD47-46C3-A128-ED3FE7200222}" UpdateRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="Default:AfeccionGrupo:CodAfeccionGrupo" FkField="Default:AfeccionTipo:CodAfeccionGrupo" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="Default:Afiliado:{3F6C1FA7-9557-4022-9DD2-29FCD9612688}" UpdateRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="Default:Banco:CodBanco" FkField="Default:Afiliado:CodBanco" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="Default:Afiliado:{AAE5B955-BBB1-46A6-9F94-1C94A1BF14CD}" UpdateRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="Default:RegimenJubilatorio:CodRegimenJubilatorio" FkField="Default:Afiliado:CodRegimenJubilatorio" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="Default:Afiliado:{E2D9D85C-52F6-4C6B-9C9E-3E52F771D1D3}" UpdateRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="Default:Mutualista:CodMutualista" FkField="Default:Afiliado:CodMutualista" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="Default:AfiliadoApunte:{2A6CAD29-A9F7-4C1B-9654-62FFE719CA89}" UpdateRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="Default:Afiliado:CI" FkField="Default:AfiliadoApunte:CI" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="Default:AfiliadoEspecialidad:{27F0F6FE-CD4E-49E9-B397-B14967F84151}" UpdateRuleAction="1" DeleteRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="Default:Especialidad:CodEspecialidad" FkField="Default:AfiliadoEspecialidad:CodEspecialidad" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="Default:AfiliadoEspecialidad:{FF932F6A-8429-4988-9C78-E8ECE976EAD0}" UpdateRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="Default:Afiliado:CI" FkField="Default:AfiliadoEspecialidad:CI" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="Default:Certificacion:{52D96FAF-148B-4A0F-B002-C204431DA50D}" UpdateRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="Default:AfeccionTipo:CodAfeccionTipo" FkField="Default:Certificacion:CodAfeccionTipo" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="Default:Certificacion:{7A42EDFA-0BCF-4A6E-AB81-40D3AF18E793}" UpdateRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="Default:SalidaTipo:CodSalidaTipo" FkField="Default:Certificacion:CodSalidaTipo" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="Default:Certificacion:{85E5E720-5ED4-4C1E-B6A4-A7D831E7FDB4}" UpdateRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="Default:Afiliado:CI" FkField="Default:Certificacion:CI" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="Default:Certificacion:{974AE034-7B71-4B2A-9E88-E012A95FDD32}" UpdateRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="Default:Certificador:CodCertificador" FkField="Default:Certificacion:CodCertificador" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="Default:CertificacionProrroga:{D9EBAE5A-A508-4643-885D-1063348E27E2}" UpdateRuleAction="1" DeleteRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="Default:Afiliado:CI" FkField="Default:CertificacionProrroga:CI" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="Default:Empresa:{BED8CBEC-8ED0-4D0F-A28C-18068C1B235C}" UpdateRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="Default:SituacionPago:CodSituacionPago" FkField="Default:Empresa:CodSituacionPago" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="Default:Empresa:{C7F05B05-E6E0-4510-8D58-CFCE58E35A74}" UpdateRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="Default:RegimenAporte:CodRegimenAporte" FkField="Default:Empresa:CodRegimenAporte" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="Default:EmpresaPago:{73ECD04B-382D-4AE2-AB8F-C19CAF91BE81}" UpdateRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="Default:Empresa:CodEmpresa" FkField="Default:EmpresaPago:CodEmpresa" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="Default:Imponible:{C572067F-840A-43E2-9F5E-95870B48ECFB}" UpdateRuleAction="1" DeleteRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="Default:Trabaja:CI" FkField="Default:Imponible:CI" />
+                <FieldPair PkField="Default:Trabaja:CodEmpresa" FkField="Default:Imponible:CodEmpresa" />
+                <FieldPair PkField="Default:Trabaja:FechaIngreso" FkField="Default:Imponible:Fechaingreso" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="Default:Mutualista:{E52622F5-0F13-415D-BF40-CE99CE207BEC}" UpdateRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="Default:FormaPago:CodFormaPago" FkField="Default:Mutualista:CodFormaPago" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="Default:Prestacion:{51B4C3F0-28E5-4DBE-BEB8-1D5F337F1917}" UpdateRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="Default:Moneda:Moneda" FkField="Default:Prestacion:Moneda" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="Default:Prestacion:{DC1751A6-E05A-4AF7-BC73-16C659DED92E}" UpdateRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="Default:Afiliado:CI" FkField="Default:Prestacion:CI" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="Default:Prestacion:{F7BF9F2E-6FEA-49C4-9A95-802124F2940B}" UpdateRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="Default:PrestacionTipo:CodPrestacionTipo" FkField="Default:Prestacion:CodPrestacionTipo" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="Default:PrimaFallecimiento:{3EAAC2E4-453C-4C17-A0B6-BEB976A22E05}" UpdateRuleAction="1" DeleteRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="Default:Afiliado:CI" FkField="Default:PrimaFallecimiento:CI" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="Default:Receta:{6445B466-CB6C-42C2-A256-630BB4813BA7}" UpdateRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="Default:RecetaDistancia:CodRecetaDistancia" FkField="Default:Receta:CodRecetaDistancia" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="Default:Receta:{AEAE7110-126F-4E80-A94C-0B5A65147D28}" UpdateRuleAction="1" DeleteRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="Default:Prestacion:CI" FkField="Default:Receta:CI" />
+                <FieldPair PkField="Default:Prestacion:Fecha" FkField="Default:Receta:Fecha" />
+                <FieldPair PkField="Default:Prestacion:CodPrestacionTipo" FkField="Default:Receta:CodPrestacionTipo" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="Default:ReintegroMutual:{8C9B36BB-3CFE-4735-ACA5-B10EEF195948}" UpdateRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="Default:Mutualista:CodMutualista" FkField="Default:ReintegroMutual:CodMutualista" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="Default:ReintegroMutual:{AFFE4F95-04BA-4F56-9F90-9AE9978AAFC9}" UpdateRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="Default:Afiliado:CI" FkField="Default:ReintegroMutual:CI" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="Default:SubsidioCabezal:{7DF7DF2F-284A-47C3-AAB1-46D5401C7178}" UpdateRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="Default:Afiliado:CI" FkField="Default:SubsidioCabezal:CI" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="Default:SubsidioCabezal_BPS:{B6F0DE98-17A0-4C4B-927C-3E34F0E3E119}" UpdateRuleAction="1" DeleteRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="Default:SubsidioCabezal:IdSubsidio" FkField="Default:SubsidioCabezal_BPS:IdSubsidio" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="Default:SubsidioCabezalEmpresa:{3D3975B9-FE18-4FFF-AA9A-0C5D27EBBCF2}" UpdateRuleAction="1" DeleteRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="Default:SubsidioCabezal:IdSubsidio" FkField="Default:SubsidioCabezalEmpresa:IdSubsidio" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="Default:SubsidioCabezalEmpresa:{95B4F042-B3A3-4C80-A08B-4778FF1854D0}" UpdateRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="Default:Empresa:CodEmpresa" FkField="Default:SubsidioCabezalEmpresa:CodEmpresa" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="Default:SubsidioEnfermedad:{CBD7E743-DEB8-41AB-8800-E3DBC2D95615}" UpdateRuleAction="1" DeleteRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="Default:SubsidioCabezal:IdSubsidio" FkField="Default:SubsidioEnfermedad:IdSubsidio" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="Default:SubsidioImponible:{3865091D-2EA0-4C81-AC0C-75C28D02E92C}" UpdateRuleAction="1" DeleteRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="Default:SubsidioCabezal:IdSubsidio" FkField="Default:SubsidioImponible:IdSubsidio" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="Default:SubsidioImponible:{796700B4-FA9D-4B17-AE58-499C2F62C288}" UpdateRuleAction="1" DeleteRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="Default:Empresa:CodEmpresa" FkField="Default:SubsidioImponible:CodEmpresa" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="Default:SubsidioItem:{89361F31-1A28-4A14-BC2D-B3E1A93A9A54}" UpdateRuleAction="1" DeleteRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="Default:SubsidioCabezal:IdSubsidio" FkField="Default:SubsidioItem:IdSubsidio" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="Default:SubsidioItem:{8EF54D51-B7E2-41DA-93A1-8CD39CB72ADF}" UpdateRuleAction="1" DeleteRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="Default:SubsidioItemCod:CodSubsidioItemCod" FkField="Default:SubsidioItem:CodSubsidioItemCod" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="Default:SubsidioItemEmpresa:{2269677A-23C6-4C64-BA63-2F9C88FFD939}" UpdateRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="Default:Empresa:CodEmpresa" FkField="Default:SubsidioItemEmpresa:CodEmpresa" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="Default:Trabaja:{099A2DC9-A890-4BD1-BE6D-7B2F26080387}" UpdateRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="Default:Afiliado:CI" FkField="Default:Trabaja:CI" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="Default:Trabaja:{D081B544-ACC7-47B1-B9A6-824BD4D91C49}" UpdateRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="Default:BajaMotivo:CodBajaMotivo" FkField="Default:Trabaja:CodBajaMotivo" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+            <ForeignKeyConstraint Name="Default:Trabaja:{E8DB663E-0E62-47D3-B54F-80099BFB9E42}" UpdateRuleAction="1">
+              <FieldPairs>
+                <FieldPair PkField="Default:Empresa:CodEmpresa" FkField="Default:Trabaja:CodEmpresa" />
+              </FieldPairs>
+            </ForeignKeyConstraint>
+          </ForeignKeyConstraints>
+        </Catalog>
+      </Catalogs>
+    </TargetDatabase>
+  </TargetDatabases>
+  <MappingStores>
+    <MappingStore Type="4F77DEE6-918E-4a53-8B3B-A076B00A3E0D">
+      <EntityMappings>
+        <EntityMapping EntityName=":AdPreJub" TargetName="sgpaserv2003:Default:AdPreJub">
+          <FieldMappings>
+            <FieldMapping FieldName="Ci" TargetFieldName="CI" />
+            <FieldMapping FieldName="FechaJubilacion" TargetFieldName="FechaJubilacion" />
+            <FieldMapping FieldName="FechaPresentacion" TargetFieldName="FechaPresentacion" />
+            <FieldMapping FieldName="ImporteMensual" TargetFieldName="ImporteMensual" />
+            <FieldMapping FieldName="Observaciones" TargetFieldName="Observaciones" />
+            <FieldMapping FieldName="Ts" TargetFieldName="Ts" />
+            <FieldMapping FieldName="Usr" TargetFieldName="Usr" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":AdPreJubPago" TargetName="sgpaserv2003:Default:AdPreJubPago">
+          <FieldMappings>
+            <FieldMapping FieldName="Anio" TargetFieldName="Anio" />
+            <FieldMapping FieldName="Ci" TargetFieldName="CI" />
+            <FieldMapping FieldName="Fecha" TargetFieldName="Fecha" />
+            <FieldMapping FieldName="Importe" TargetFieldName="Importe" />
+            <FieldMapping FieldName="Mes" TargetFieldName="Mes" />
+            <FieldMapping FieldName="Observaciones" TargetFieldName="Observaciones" />
+            <FieldMapping FieldName="Ts" TargetFieldName="Ts" />
+            <FieldMapping FieldName="Usr" TargetFieldName="Usr" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":AfeccionGrupo" TargetName="sgpaserv2003:Default:AfeccionGrupo">
+          <FieldMappings>
+            <FieldMapping FieldName="CodAfeccionGrupo" TargetFieldName="CodAfeccionGrupo" />
+            <FieldMapping FieldName="CodPatologia" TargetFieldName="CodPatologia" />
+            <FieldMapping FieldName="Descrip" TargetFieldName="Descrip" />
+            <FieldMapping FieldName="Ts" TargetFieldName="Ts" />
+            <FieldMapping FieldName="Usr" TargetFieldName="Usr" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":AfeccionTipo" TargetName="sgpaserv2003:Default:AfeccionTipo">
+          <FieldMappings>
+            <FieldMapping FieldName="CodAfeccionGrupo" TargetFieldName="CodAfeccionGrupo" />
+            <FieldMapping FieldName="CodAfeccionTipo" TargetFieldName="CodAfeccionTipo" />
+            <FieldMapping FieldName="CodDiameg" TargetFieldName="CodDiameg" />
+            <FieldMapping FieldName="Descrip" TargetFieldName="Descrip" />
+            <FieldMapping FieldName="Ts" TargetFieldName="Ts" />
+            <FieldMapping FieldName="Usr" TargetFieldName="Usr" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":Afiliado" TargetName="sgpaserv2003:Default:Afiliado">
+          <FieldMappings>
+            <FieldMapping FieldName="Apellido1" TargetFieldName="Apellido1" />
+            <FieldMapping FieldName="Apellido2" TargetFieldName="Apellido2" />
+            <FieldMapping FieldName="Ci" TargetFieldName="CI" />
+            <FieldMapping FieldName="CodBanco" TargetFieldName="CodBanco" />
+            <FieldMapping FieldName="CodDepartamento" TargetFieldName="CodDepartamento" />
+            <FieldMapping FieldName="CodMutualista" TargetFieldName="CodMutualista" />
+            <FieldMapping FieldName="CodRegimenJubilatorio" TargetFieldName="CodRegimenJubilatorio" />
+            <FieldMapping FieldName="CodSituacionMutual" TargetFieldName="CodSituacionMutual" />
+            <FieldMapping FieldName="Direccion" TargetFieldName="Direccion" />
+            <FieldMapping FieldName="Email" TargetFieldName="EMail" />
+            <FieldMapping FieldName="FechaBajaMutualista" TargetFieldName="FechaBajaMutualista" />
+            <FieldMapping FieldName="FechaIngMutualista" TargetFieldName="FechaIngMutualista" />
+            <FieldMapping FieldName="FechaNacimiento" TargetFieldName="FechaNacimiento" />
+            <FieldMapping FieldName="Movil" TargetFieldName="Movil" />
+            <FieldMapping FieldName="Nombres" TargetFieldName="Nombres" />
+            <FieldMapping FieldName="NroCuenta" TargetFieldName="NroCuenta" />
+            <FieldMapping FieldName="NroFunCuenta" TargetFieldName="NroFunCuenta" />
+            <FieldMapping FieldName="NroSocioMutualista" TargetFieldName="NroSocioMutualista" />
+            <FieldMapping FieldName="PagaMutualista" TargetFieldName="PagaMutualista" />
+            <FieldMapping FieldName="Sexo" TargetFieldName="Sexo" />
+            <FieldMapping FieldName="Telefono" TargetFieldName="Telefono" />
+            <FieldMapping FieldName="Ts" TargetFieldName="Ts" />
+            <FieldMapping FieldName="Usr" TargetFieldName="Usr" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":AfiliadoApunte" TargetName="sgpaserv2003:Default:AfiliadoApunte">
+          <FieldMappings>
+            <FieldMapping FieldName="Ci" TargetFieldName="CI" />
+            <FieldMapping FieldName="Descrip" TargetFieldName="Descrip" />
+            <FieldMapping FieldName="Fecha" TargetFieldName="Fecha" />
+            <FieldMapping FieldName="Ts" TargetFieldName="Ts" />
+            <FieldMapping FieldName="Usr" TargetFieldName="Usr" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":AfiliadoEspecialidad" TargetName="sgpaserv2003:Default:AfiliadoEspecialidad">
+          <FieldMappings>
+            <FieldMapping FieldName="Ci" TargetFieldName="CI" />
+            <FieldMapping FieldName="CodEspecialidad" TargetFieldName="CodEspecialidad" />
+            <FieldMapping FieldName="Ts" TargetFieldName="Ts" />
+            <FieldMapping FieldName="Usr" TargetFieldName="Usr" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":AporteTipo" TargetName="sgpaserv2003:Default:AporteTipo">
+          <FieldMappings>
+            <FieldMapping FieldName="CodAporteTipo" TargetFieldName="CodAporteTipo" />
+            <FieldMapping FieldName="Descrip" TargetFieldName="Descrip" />
+            <FieldMapping FieldName="Ts" TargetFieldName="Ts" />
+            <FieldMapping FieldName="Usr" TargetFieldName="Usr" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":BajaMotivo" TargetName="sgpaserv2003:Default:BajaMotivo">
+          <FieldMappings>
+            <FieldMapping FieldName="CodBajaMotivo" TargetFieldName="CodBajaMotivo" />
+            <FieldMapping FieldName="Descrip" TargetFieldName="Descrip" />
+            <FieldMapping FieldName="Ts" TargetFieldName="Ts" />
+            <FieldMapping FieldName="Usr" TargetFieldName="Usr" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":Banco" TargetName="sgpaserv2003:Default:Banco">
+          <FieldMappings>
+            <FieldMapping FieldName="CodBanco" TargetFieldName="CodBanco" />
+            <FieldMapping FieldName="Descripcion" TargetFieldName="Descripcion" />
+            <FieldMapping FieldName="Ts" TargetFieldName="Ts" />
+            <FieldMapping FieldName="Usr" TargetFieldName="Usr" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":Certificacion" TargetName="sgpaserv2003:Default:Certificacion">
+          <FieldMappings>
+            <FieldMapping FieldName="Ci" TargetFieldName="CI" />
+            <FieldMapping FieldName="CodAfeccionTipo" TargetFieldName="CodAfeccionTipo" />
+            <FieldMapping FieldName="CodCertificador" TargetFieldName="CodCertificador" />
+            <FieldMapping FieldName="CodSalidaTipo" TargetFieldName="CodSalidaTipo" />
+            <FieldMapping FieldName="Efectiva" TargetFieldName="Efectiva" />
+            <FieldMapping FieldName="FechaCertificacion" TargetFieldName="FechaCertificacion" />
+            <FieldMapping FieldName="FechaFin" TargetFieldName="FechaFin" />
+            <FieldMapping FieldName="FechaIni" TargetFieldName="FechaIni" />
+            <FieldMapping FieldName="FechaRecibido" TargetFieldName="FechaRecibido" />
+            <FieldMapping FieldName="ImporteDeducible" TargetFieldName="ImporteDeducible" />
+            <FieldMapping FieldName="Indicaciones" TargetFieldName="Indicaciones" />
+            <FieldMapping FieldName="NroLlamado" TargetFieldName="NroLlamado" />
+            <FieldMapping FieldName="NroRecibo" TargetFieldName="NroRecibo" />
+            <FieldMapping FieldName="Trabaja" TargetFieldName="Trabaja" />
+            <FieldMapping FieldName="Ts" TargetFieldName="Ts" />
+            <FieldMapping FieldName="Usr" TargetFieldName="Usr" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":CertificacionProrroga" TargetName="sgpaserv2003:Default:CertificacionProrroga">
+          <FieldMappings>
+            <FieldMapping FieldName="Ci" TargetFieldName="CI" />
+            <FieldMapping FieldName="Dias" TargetFieldName="Dias" />
+            <FieldMapping FieldName="Fecha" TargetFieldName="Fecha" />
+            <FieldMapping FieldName="Observaciones" TargetFieldName="Observaciones" />
+            <FieldMapping FieldName="Ts" TargetFieldName="Ts" />
+            <FieldMapping FieldName="Usr" TargetFieldName="Usr" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":Certificador" TargetName="sgpaserv2003:Default:Certificador">
+          <FieldMappings>
+            <FieldMapping FieldName="Bip" TargetFieldName="Bip" />
+            <FieldMapping FieldName="CobraLlamado" TargetFieldName="CobraLlamado" />
+            <FieldMapping FieldName="CodCertificador" TargetFieldName="CodCertificador" />
+            <FieldMapping FieldName="Descrip" TargetFieldName="Descrip" />
+            <FieldMapping FieldName="Direccion" TargetFieldName="Direccion" />
+            <FieldMapping FieldName="Fax" TargetFieldName="Fax" />
+            <FieldMapping FieldName="Telefono" TargetFieldName="Telefono" />
+            <FieldMapping FieldName="Ts" TargetFieldName="Ts" />
+            <FieldMapping FieldName="Usr" TargetFieldName="Usr" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":Cuentum" TargetName="sgpaserv2003:Default:Cuenta">
+          <FieldMappings>
+            <FieldMapping FieldName="Ci" TargetFieldName="CI" />
+            <FieldMapping FieldName="CodBanco" TargetFieldName="CodBanco" />
+            <FieldMapping FieldName="NroCuenta" TargetFieldName="NroCuenta" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":Departamento" TargetName="sgpaserv2003:Default:Departamento">
+          <FieldMappings>
+            <FieldMapping FieldName="CodDepartamento" TargetFieldName="CodDepartamento" />
+            <FieldMapping FieldName="Descrip" TargetFieldName="Descrip" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":Empresa" TargetName="sgpaserv2003:Default:Empresa">
+          <FieldMappings>
+            <FieldMapping FieldName="AporteAguinaldo" TargetFieldName="AporteAguinaldo" />
+            <FieldMapping FieldName="AporteCasemed" TargetFieldName="AporteCasemed" />
+            <FieldMapping FieldName="Autoridades" TargetFieldName="Autoridades" />
+            <FieldMapping FieldName="CodEmpresa" TargetFieldName="CodEmpresa" />
+            <FieldMapping FieldName="CodRegimenAporte" TargetFieldName="CodRegimenAporte" />
+            <FieldMapping FieldName="CodSituacionPago" TargetFieldName="CodSituacionPago" />
+            <FieldMapping FieldName="Direccion" TargetFieldName="Direccion" />
+            <FieldMapping FieldName="Email" TargetFieldName="EMail" />
+            <FieldMapping FieldName="Fax" TargetFieldName="Fax" />
+            <FieldMapping FieldName="Ficticia" TargetFieldName="Ficticia" />
+            <FieldMapping FieldName="Liquidar" TargetFieldName="Liquidar" />
+            <FieldMapping FieldName="Nombre" TargetFieldName="Nombre" />
+            <FieldMapping FieldName="PersonaContacto" TargetFieldName="PersonaContacto" />
+            <FieldMapping FieldName="Telefono" TargetFieldName="Telefono" />
+            <FieldMapping FieldName="Ts" TargetFieldName="Ts" />
+            <FieldMapping FieldName="Usr" TargetFieldName="Usr" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":EmpresaPago" TargetName="sgpaserv2003:Default:EmpresaPago">
+          <FieldMappings>
+            <FieldMapping FieldName="Anio" TargetFieldName="Anio" />
+            <FieldMapping FieldName="CodEmpresa" TargetFieldName="CodEmpresa" />
+            <FieldMapping FieldName="Importe" TargetFieldName="Importe" />
+            <FieldMapping FieldName="Mes" TargetFieldName="Mes" />
+            <FieldMapping FieldName="Ts" TargetFieldName="Ts" />
+            <FieldMapping FieldName="Usr" TargetFieldName="Usr" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":Especialidad" TargetName="sgpaserv2003:Default:Especialidad">
+          <FieldMappings>
+            <FieldMapping FieldName="CodEspecialidad" TargetFieldName="CodEspecialidad" />
+            <FieldMapping FieldName="Descrip" TargetFieldName="Descrip" />
+            <FieldMapping FieldName="Ts" TargetFieldName="Ts" />
+            <FieldMapping FieldName="Usr" TargetFieldName="Usr" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":FormaPago" TargetName="sgpaserv2003:Default:FormaPago">
+          <FieldMappings>
+            <FieldMapping FieldName="CodFormaPago" TargetFieldName="CodFormaPago" />
+            <FieldMapping FieldName="Descrip" TargetFieldName="Descrip" />
+            <FieldMapping FieldName="Ts" TargetFieldName="Ts" />
+            <FieldMapping FieldName="Usr" TargetFieldName="Usr" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":FranjaIrpf" TargetName="sgpaserv2003:Default:FranjaIRPF">
+          <FieldMappings>
+            <FieldMapping FieldName="Desde" TargetFieldName="Desde" />
+            <FieldMapping FieldName="Hasta" TargetFieldName="Hasta" />
+            <FieldMapping FieldName="Porcentaje" TargetFieldName="Porcentaje" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":Im" TargetName="sgpaserv2003:Default:IMS">
+          <FieldMappings>
+            <FieldMapping FieldName="Anio" TargetFieldName="Anio" />
+            <FieldMapping FieldName="AnioMes" TargetFieldName="AnioMes" />
+            <FieldMapping FieldName="Importe" TargetFieldName="Importe" />
+            <FieldMapping FieldName="Mes" TargetFieldName="Mes" />
+            <FieldMapping FieldName="Ts" TargetFieldName="Ts" />
+            <FieldMapping FieldName="Usr" TargetFieldName="Usr" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":Imp" TargetName="sgpaserv2003:Default:IMP">
+          <FieldMappings>
+            <FieldMapping FieldName="Ci" TargetFieldName="CI" />
+            <FieldMapping FieldName="Importe" TargetFieldName="Importe" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":Imponible" TargetName="sgpaserv2003:Default:Imponible">
+          <FieldMappings>
+            <FieldMapping FieldName="Anio" TargetFieldName="Anio" />
+            <FieldMapping FieldName="AnioMes" TargetFieldName="AnioMes" />
+            <FieldMapping FieldName="Ci" TargetFieldName="CI" />
+            <FieldMapping FieldName="CodEmpresa" TargetFieldName="CodEmpresa" />
+            <FieldMapping FieldName="Concepto" TargetFieldName="Concepto" />
+            <FieldMapping FieldName="DiasTrabajados" TargetFieldName="DiasTrabajados" />
+            <FieldMapping FieldName="Fechaingreso" TargetFieldName="Fechaingreso" />
+            <FieldMapping FieldName="IdTrabaja" TargetFieldName="IdTrabaja" />
+            <FieldMapping FieldName="Importe" TargetFieldName="Importe" />
+            <FieldMapping FieldName="Mes" TargetFieldName="Mes" />
+            <FieldMapping FieldName="Ts" TargetFieldName="Ts" />
+            <FieldMapping FieldName="Usr" TargetFieldName="Usr" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":InformeEstadistico" TargetName="sgpaserv2003:Default:InformeEstadistico">
+          <FieldMappings>
+            <FieldMapping FieldName="Comentario" TargetFieldName="Comentario" />
+            <FieldMapping FieldName="Empresa" TargetFieldName="Empresa" />
+            <FieldMapping FieldName="Fecha" TargetFieldName="Fecha" />
+            <FieldMapping FieldName="Grupo" TargetFieldName="Grupo" />
+            <FieldMapping FieldName="GrupoEtario" TargetFieldName="GrupoEtario" />
+            <FieldMapping FieldName="IdRpt" TargetFieldName="IdRpt" />
+            <FieldMapping FieldName="MesAnio" TargetFieldName="MesAnio" />
+            <FieldMapping FieldName="Orden" TargetFieldName="Orden" />
+            <FieldMapping FieldName="Patologia" TargetFieldName="Patologia" />
+            <FieldMapping FieldName="Periodo" TargetFieldName="Periodo" />
+            <FieldMapping FieldName="TituloPantalla" TargetFieldName="TituloPantalla" />
+            <FieldMapping FieldName="TituloRpt" TargetFieldName="TituloRpt" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":LiquidacionBp" TargetName="sgpaserv2003:Default:Liquidacion_BPS">
+          <FieldMappings>
+            <FieldMapping FieldName="Anio" TargetFieldName="ANIO" />
+            <FieldMapping FieldName="Apellido" TargetFieldName="APELLIDO" />
+            <FieldMapping FieldName="Ci" TargetFieldName="CI" />
+            <FieldMapping FieldName="FechaDeEntrega" TargetFieldName="FECHA_DE_ENTREGA" />
+            <FieldMapping FieldName="FechaPerDesde" TargetFieldName="FECHA_PER_DESDE" />
+            <FieldMapping FieldName="FechaPerHasta" TargetFieldName="FECHA_PER_HASTA" />
+            <FieldMapping FieldName="Id" TargetFieldName="Id" SequenceToUse="@@IDENTITY" />
+            <FieldMapping FieldName="Liquido" TargetFieldName="LIQUIDO" />
+            <FieldMapping FieldName="Mes" TargetFieldName="MES" />
+            <FieldMapping FieldName="MesDeCargo" TargetFieldName="MES_DE_CARGO" />
+            <FieldMapping FieldName="MontoTotal" TargetFieldName="MONTO_TOTAL" />
+            <FieldMapping FieldName="NEntrega" TargetFieldName="N_ ENTREGA" />
+            <FieldMapping FieldName="Nombre" TargetFieldName="NOMBRE" />
+            <FieldMapping FieldName="NomEmpresa" TargetFieldName="NOM_EMPRESA" />
+            <FieldMapping FieldName="PctPorEmpresa" TargetFieldName="PCT_POR_EMPRESA" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":MaeFun" TargetName="sgpaserv2003:Default:MaeFun">
+          <FieldMappings>
+            <FieldMapping FieldName="Apellido1" TargetFieldName="Apellido1" />
+            <FieldMapping FieldName="Apellido2" TargetFieldName="Apellido2" />
+            <FieldMapping FieldName="AsigCuenta" TargetFieldName="AsigCuenta" />
+            <FieldMapping FieldName="Cedula" TargetFieldName="Cedula" />
+            <FieldMapping FieldName="CodCargo" TargetFieldName="CodCargo" />
+            <FieldMapping FieldName="DesCargo" TargetFieldName="DesCargo" />
+            <FieldMapping FieldName="DirApto" TargetFieldName="DirApto" />
+            <FieldMapping FieldName="DirBis" TargetFieldName="DirBis" />
+            <FieldMapping FieldName="DirBloque" TargetFieldName="DirBloque" />
+            <FieldMapping FieldName="DirCalle" TargetFieldName="DirCalle" />
+            <FieldMapping FieldName="DirLocal" TargetFieldName="DirLocal" />
+            <FieldMapping FieldName="DirPiso" TargetFieldName="DirPiso" />
+            <FieldMapping FieldName="DirPuerta" TargetFieldName="DirPuerta" />
+            <FieldMapping FieldName="EstCivil" TargetFieldName="EstCivil" />
+            <FieldMapping FieldName="FecAsigCta" TargetFieldName="FecAsigCta" />
+            <FieldMapping FieldName="FecInfDbla" TargetFieldName="FecInfDbla" />
+            <FieldMapping FieldName="FecIngreso" TargetFieldName="FecIngreso" />
+            <FieldMapping FieldName="FecNac" TargetFieldName="FecNac" />
+            <FieldMapping FieldName="InfDbla" TargetFieldName="InfDbla" />
+            <FieldMapping FieldName="Nacionalidad" TargetFieldName="Nacionalidad" />
+            <FieldMapping FieldName="Nombre1" TargetFieldName="Nombre1" />
+            <FieldMapping FieldName="Nombre2" TargetFieldName="Nombre2" />
+            <FieldMapping FieldName="NroCuenta" TargetFieldName="NroCuenta" />
+            <FieldMapping FieldName="NroFun" TargetFieldName="NroFun" />
+            <FieldMapping FieldName="Telefono" TargetFieldName="Telefono" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":Moneda" TargetName="sgpaserv2003:Default:Moneda">
+          <FieldMappings>
+            <FieldMapping FieldName="Simbolo" TargetFieldName="Moneda" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":Mutualistum" TargetName="sgpaserv2003:Default:Mutualista">
+          <FieldMappings>
+            <FieldMapping FieldName="CodFormaPago" TargetFieldName="CodFormaPago" />
+            <FieldMapping FieldName="CodMutualista" TargetFieldName="CodMutualista" />
+            <FieldMapping FieldName="Cuota" TargetFieldName="Cuota" />
+            <FieldMapping FieldName="DiaPago" TargetFieldName="DiaPago" />
+            <FieldMapping FieldName="Direccion" TargetFieldName="Direccion" />
+            <FieldMapping FieldName="Email" TargetFieldName="EMail" />
+            <FieldMapping FieldName="Fax" TargetFieldName="Fax" />
+            <FieldMapping FieldName="Ficticia" TargetFieldName="Ficticia" />
+            <FieldMapping FieldName="Nombre" TargetFieldName="Nombre" />
+            <FieldMapping FieldName="PersonaContacto" TargetFieldName="PersonaContacto" />
+            <FieldMapping FieldName="Telefono" TargetFieldName="Telefono" />
+            <FieldMapping FieldName="Ts" TargetFieldName="Ts" />
+            <FieldMapping FieldName="Usr" TargetFieldName="Usr" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":NoCargadoHl" TargetName="sgpaserv2003:Default:NoCargadoHL">
+          <FieldMappings>
+            <FieldMapping FieldName="Anio" TargetFieldName="Anio" />
+            <FieldMapping FieldName="Apellido1" TargetFieldName="Apellido1" />
+            <FieldMapping FieldName="Apellido2" TargetFieldName="Apellido2" />
+            <FieldMapping FieldName="Ci" TargetFieldName="CI" />
+            <FieldMapping FieldName="CodEmpresa" TargetFieldName="CodEmpresa" />
+            <FieldMapping FieldName="Mes" TargetFieldName="Mes" />
+            <FieldMapping FieldName="Nombres" TargetFieldName="Nombres" />
+            <FieldMapping FieldName="Ts" TargetFieldName="Ts" />
+            <FieldMapping FieldName="Usr" TargetFieldName="Usr" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":Parametro" TargetName="sgpaserv2003:Default:Parametros">
+          <FieldMappings>
+            <FieldMapping FieldName="Bcp" TargetFieldName="BCP" />
+            <FieldMapping FieldName="PctAdPreJub" TargetFieldName="PctAdPreJub" />
+            <FieldMapping FieldName="PctBps" TargetFieldName="pctBPS" />
+            <FieldMapping FieldName="Smn" TargetFieldName="SMN" />
+            <FieldMapping FieldName="TopeJubilatorio" TargetFieldName="TopeJubilatorio" />
+            <FieldMapping FieldName="TopeLiquidoBps" TargetFieldName="TopeLiquidoBPS" />
+            <FieldMapping FieldName="TopePrima" TargetFieldName="TopePrima" />
+            <FieldMapping FieldName="Ur" TargetFieldName="UR" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":Patologium" TargetName="sgpaserv2003:Default:Patologia">
+          <FieldMappings>
+            <FieldMapping FieldName="CodPatologia" TargetFieldName="CodPatologia" />
+            <FieldMapping FieldName="Descrip" TargetFieldName="Descrip" />
+            <FieldMapping FieldName="Ts" TargetFieldName="Ts" />
+            <FieldMapping FieldName="Usr" TargetFieldName="Usr" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":Prestacion" TargetName="sgpaserv2003:Default:Prestacion">
+          <FieldMappings>
+            <FieldMapping FieldName="Boleta" TargetFieldName="Boleta" />
+            <FieldMapping FieldName="Ci" TargetFieldName="CI" />
+            <FieldMapping FieldName="CodPrestacionTipo" TargetFieldName="CodPrestacionTipo" />
+            <FieldMapping FieldName="Fecha" TargetFieldName="Fecha" />
+            <FieldMapping FieldName="Importe" TargetFieldName="Importe" />
+            <FieldMapping FieldName="Moneda" TargetFieldName="Moneda" />
+            <FieldMapping FieldName="Observaciones" TargetFieldName="Observaciones" />
+            <FieldMapping FieldName="Ts" TargetFieldName="Ts" />
+            <FieldMapping FieldName="Usr" TargetFieldName="Usr" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":PrestacionTipo" TargetName="sgpaserv2003:Default:PrestacionTipo">
+          <FieldMappings>
+            <FieldMapping FieldName="CodPrestacionTipo" TargetFieldName="CodPrestacionTipo" />
+            <FieldMapping FieldName="Descrip" TargetFieldName="Descrip" />
+            <FieldMapping FieldName="FechaVigencia" TargetFieldName="FechaVigencia" />
+            <FieldMapping FieldName="ImporteTopeCasemed" TargetFieldName="ImporteTopeCASEMED" />
+            <FieldMapping FieldName="ImporteTopeDisse" TargetFieldName="ImporteTopeDISSE" />
+            <FieldMapping FieldName="Obs" TargetFieldName="Obs" />
+            <FieldMapping FieldName="PeriodoRenovacion" TargetFieldName="PeriodoRenovacion" />
+            <FieldMapping FieldName="Receta" TargetFieldName="Receta" />
+            <FieldMapping FieldName="Ts" TargetFieldName="Ts" />
+            <FieldMapping FieldName="Usr" TargetFieldName="Usr" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":PrimaFallecimiento" TargetName="sgpaserv2003:Default:PrimaFallecimiento">
+          <FieldMappings>
+            <FieldMapping FieldName="Ci" TargetFieldName="CI" />
+            <FieldMapping FieldName="FechaFallecimiento" TargetFieldName="FechaFallecimiento" />
+            <FieldMapping FieldName="FechaFirma" TargetFieldName="FechaFirma" />
+            <FieldMapping FieldName="FechaPago" TargetFieldName="FechaPago" />
+            <FieldMapping FieldName="Importe" TargetFieldName="Importe" />
+            <FieldMapping FieldName="Observaciones" TargetFieldName="Observaciones" />
+            <FieldMapping FieldName="Ts" TargetFieldName="Ts" />
+            <FieldMapping FieldName="Usr" TargetFieldName="Usr" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":RecetaDistancium" TargetName="sgpaserv2003:Default:RecetaDistancia">
+          <FieldMappings>
+            <FieldMapping FieldName="CodRecetaDistancia" TargetFieldName="CodRecetaDistancia" />
+            <FieldMapping FieldName="Descrip" TargetFieldName="Descrip" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":Recetum" TargetName="sgpaserv2003:Default:Receta">
+          <FieldMappings>
+            <FieldMapping FieldName="Ci" TargetFieldName="CI" />
+            <FieldMapping FieldName="CilD" TargetFieldName="Cil_D" />
+            <FieldMapping FieldName="CilI" TargetFieldName="Cil_I" />
+            <FieldMapping FieldName="CodPrestacionTipo" TargetFieldName="CodPrestacionTipo" />
+            <FieldMapping FieldName="CodRecetaDistancia" TargetFieldName="CodRecetaDistancia" />
+            <FieldMapping FieldName="EsfD" TargetFieldName="Esf_D" />
+            <FieldMapping FieldName="EsfI" TargetFieldName="Esf_I" />
+            <FieldMapping FieldName="Fecha" TargetFieldName="Fecha" />
+            <FieldMapping FieldName="Ts" TargetFieldName="Ts" />
+            <FieldMapping FieldName="Usr" TargetFieldName="Usr" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":RegimenAporte" TargetName="sgpaserv2003:Default:RegimenAporte">
+          <FieldMappings>
+            <FieldMapping FieldName="CodRegimenAporte" TargetFieldName="CodRegimenAporte" />
+            <FieldMapping FieldName="Descrip" TargetFieldName="Descrip" />
+            <FieldMapping FieldName="Porcentaje" TargetFieldName="Porcentaje" />
+            <FieldMapping FieldName="Ts" TargetFieldName="Ts" />
+            <FieldMapping FieldName="Usr" TargetFieldName="Usr" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":RegimenJubilatorio" TargetName="sgpaserv2003:Default:RegimenJubilatorio">
+          <FieldMappings>
+            <FieldMapping FieldName="CodRegimenJubilatorio" TargetFieldName="CodRegimenJubilatorio" />
+            <FieldMapping FieldName="Descrip" TargetFieldName="Descrip" />
+            <FieldMapping FieldName="Ts" TargetFieldName="Ts" />
+            <FieldMapping FieldName="Usr" TargetFieldName="Usr" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":ReintegroMutual" TargetName="sgpaserv2003:Default:ReintegroMutual">
+          <FieldMappings>
+            <FieldMapping FieldName="Anio" TargetFieldName="Anio" />
+            <FieldMapping FieldName="Ci" TargetFieldName="CI" />
+            <FieldMapping FieldName="CodMutualista" TargetFieldName="CodMutualista" />
+            <FieldMapping FieldName="Fecha" TargetFieldName="Fecha" />
+            <FieldMapping FieldName="Importe" TargetFieldName="Importe" />
+            <FieldMapping FieldName="Mes" TargetFieldName="Mes" />
+            <FieldMapping FieldName="Observaciones" TargetFieldName="Observaciones" />
+            <FieldMapping FieldName="Ts" TargetFieldName="Ts" />
+            <FieldMapping FieldName="Usr" TargetFieldName="Usr" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":SalidaTipo" TargetName="sgpaserv2003:Default:SalidaTipo">
+          <FieldMappings>
+            <FieldMapping FieldName="CodSalidaTipo" TargetFieldName="CodSalidaTipo" />
+            <FieldMapping FieldName="Descrip" TargetFieldName="Descrip" />
+            <FieldMapping FieldName="Ts" TargetFieldName="Ts" />
+            <FieldMapping FieldName="Usr" TargetFieldName="Usr" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":Seleccion" TargetName="sgpaserv2003:Default:Seleccion">
+          <FieldMappings>
+            <FieldMapping FieldName="Form" TargetFieldName="Form" />
+            <FieldMapping FieldName="Id" TargetFieldName="Id" SequenceToUse="@@IDENTITY" />
+            <FieldMapping FieldName="Nombre" TargetFieldName="Nombre" />
+            <FieldMapping FieldName="System" TargetFieldName="System" />
+            <FieldMapping FieldName="Txt" TargetFieldName="Txt" />
+            <FieldMapping FieldName="Usr" TargetFieldName="Usr" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":SituacionMutual" TargetName="sgpaserv2003:Default:SituacionMutual">
+          <FieldMappings>
+            <FieldMapping FieldName="CodSituacionMutual" TargetFieldName="CodSituacionMutual" />
+            <FieldMapping FieldName="Descrip" TargetFieldName="Descrip" />
+            <FieldMapping FieldName="Pagar" TargetFieldName="Pagar" />
+            <FieldMapping FieldName="Ts" TargetFieldName="Ts" />
+            <FieldMapping FieldName="Usr" TargetFieldName="Usr" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":SituacionPago" TargetName="sgpaserv2003:Default:SituacionPago">
+          <FieldMappings>
+            <FieldMapping FieldName="CodSituacionPago" TargetFieldName="CodSituacionPago" />
+            <FieldMapping FieldName="Descrip" TargetFieldName="Descrip" />
+            <FieldMapping FieldName="Ts" TargetFieldName="Ts" />
+            <FieldMapping FieldName="Usr" TargetFieldName="Usr" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":SubsidioCabezal" TargetName="sgpaserv2003:Default:SubsidioCabezal">
+          <FieldMappings>
+            <FieldMapping FieldName="Anio" TargetFieldName="Anio" />
+            <FieldMapping FieldName="Ci" TargetFieldName="CI" />
+            <FieldMapping FieldName="CodBanco" TargetFieldName="CodBanco" />
+            <FieldMapping FieldName="Dias" TargetFieldName="Dias" />
+            <FieldMapping FieldName="FechaPago" TargetFieldName="FechaPago" />
+            <FieldMapping FieldName="IdSubsidio" TargetFieldName="IdSubsidio" SequenceToUse="@@IDENTITY" />
+            <FieldMapping FieldName="ImpAguinaldo" TargetFieldName="ImpAguinaldo" />
+            <FieldMapping FieldName="ImpLiquido" TargetFieldName="ImpLiquido" />
+            <FieldMapping FieldName="ImpNominal" TargetFieldName="ImpNominal" />
+            <FieldMapping FieldName="Liquidar" TargetFieldName="Liquidar" />
+            <FieldMapping FieldName="Mes" TargetFieldName="Mes" />
+            <FieldMapping FieldName="NroCuenta" TargetFieldName="NroCuenta" />
+            <FieldMapping FieldName="NroRecibo" TargetFieldName="NroRecibo" />
+            <FieldMapping FieldName="Ts" TargetFieldName="Ts" />
+            <FieldMapping FieldName="Usr" TargetFieldName="Usr" />
+            <FieldMapping FieldName="ValorJornal" TargetFieldName="ValorJornal" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":SubsidioCabezalBp" TargetName="sgpaserv2003:Default:SubsidioCabezal_BPS">
+          <FieldMappings>
+            <FieldMapping FieldName="AguinaldoBps" TargetFieldName="AguinaldoBPS" />
+            <FieldMapping FieldName="DiasBps" TargetFieldName="DiasBPS" />
+            <FieldMapping FieldName="IdSubsidio" TargetFieldName="IdSubsidio" />
+            <FieldMapping FieldName="LiquidoBps" TargetFieldName="LiquidoBPS" />
+            <FieldMapping FieldName="LiquidoPagar" TargetFieldName="LiquidoPagar" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":SubsidioCabezalEmpresa" TargetName="sgpaserv2003:Default:SubsidioCabezalEmpresa">
+          <FieldMappings>
+            <FieldMapping FieldName="CodEmpresa" TargetFieldName="CodEmpresa" />
+            <FieldMapping FieldName="Dias" TargetFieldName="Dias" />
+            <FieldMapping FieldName="IdSubsidio" TargetFieldName="IdSubsidio" />
+            <FieldMapping FieldName="ImpAguinaldo" TargetFieldName="ImpAguinaldo" />
+            <FieldMapping FieldName="ImpLiquido" TargetFieldName="ImpLiquido" />
+            <FieldMapping FieldName="ImpNominal" TargetFieldName="ImpNominal" />
+            <FieldMapping FieldName="Ts" TargetFieldName="Ts" />
+            <FieldMapping FieldName="Usr" TargetFieldName="Usr" />
+            <FieldMapping FieldName="ValorJornal" TargetFieldName="ValorJornal" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":SubsidioEnfermedad" TargetName="sgpaserv2003:Default:SubsidioEnfermedad">
+          <FieldMappings>
+            <FieldMapping FieldName="Dias" TargetFieldName="Dias" />
+            <FieldMapping FieldName="FechaFin" TargetFieldName="FechaFin" />
+            <FieldMapping FieldName="FechaFinSubsidio" TargetFieldName="FechaFinSubsidio" />
+            <FieldMapping FieldName="FechaIni" TargetFieldName="FechaIni" />
+            <FieldMapping FieldName="FechaIniSubsidio" TargetFieldName="FechaIniSubsidio" />
+            <FieldMapping FieldName="IdSubsidio" TargetFieldName="IdSubsidio" />
+            <FieldMapping FieldName="Importe" TargetFieldName="Importe" />
+            <FieldMapping FieldName="NroLlamado" TargetFieldName="NroLlamado" />
+            <FieldMapping FieldName="Ts" TargetFieldName="Ts" />
+            <FieldMapping FieldName="Usr" TargetFieldName="Usr" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":SubsidioImponible" TargetName="sgpaserv2003:Default:SubsidioImponible">
+          <FieldMappings>
+            <FieldMapping FieldName="Anio" TargetFieldName="Anio" />
+            <FieldMapping FieldName="CodEmpresa" TargetFieldName="CodEmpresa" />
+            <FieldMapping FieldName="Dias" TargetFieldName="Dias" />
+            <FieldMapping FieldName="IdSubsidio" TargetFieldName="IdSubsidio" />
+            <FieldMapping FieldName="Importe" TargetFieldName="Importe" />
+            <FieldMapping FieldName="Mes" TargetFieldName="Mes" />
+            <FieldMapping FieldName="Ts" TargetFieldName="Ts" />
+            <FieldMapping FieldName="Usr" TargetFieldName="Usr" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":SubsidioItem" TargetName="sgpaserv2003:Default:SubsidioItem">
+          <FieldMappings>
+            <FieldMapping FieldName="AbiEmp" TargetFieldName="AbiEmp" />
+            <FieldMapping FieldName="CodSubsidioItemCod" TargetFieldName="CodSubsidioItemCod" />
+            <FieldMapping FieldName="IdSubsidio" TargetFieldName="IdSubsidio" />
+            <FieldMapping FieldName="Importe" TargetFieldName="Importe" />
+            <FieldMapping FieldName="Ts" TargetFieldName="Ts" />
+            <FieldMapping FieldName="Usr" TargetFieldName="Usr" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":SubsidioItemCod" TargetName="sgpaserv2003:Default:SubsidioItemCod">
+          <FieldMappings>
+            <FieldMapping FieldName="AperturaXempresa" TargetFieldName="AperturaXEmpresa" />
+            <FieldMapping FieldName="CodSubsidioItemCod" TargetFieldName="CodSubsidioItemCod" />
+            <FieldMapping FieldName="Comparar" TargetFieldName="Comparar" />
+            <FieldMapping FieldName="CompararContra" TargetFieldName="CompararContra" />
+            <FieldMapping FieldName="Descrip" TargetFieldName="Descrip" />
+            <FieldMapping FieldName="FechaBaja" TargetFieldName="FechaBaja" />
+            <FieldMapping FieldName="FechaVigencia" TargetFieldName="FechaVigencia" />
+            <FieldMapping FieldName="ModificaNominal" TargetFieldName="ModificaNominal" />
+            <FieldMapping FieldName="Operador" TargetFieldName="Operador" />
+            <FieldMapping FieldName="Procesar" TargetFieldName="Procesar" />
+            <FieldMapping FieldName="Signo" TargetFieldName="Signo" />
+            <FieldMapping FieldName="Tipo" TargetFieldName="Tipo" />
+            <FieldMapping FieldName="TipoComp" TargetFieldName="TipoComp" />
+            <FieldMapping FieldName="Valor" TargetFieldName="Valor" />
+            <FieldMapping FieldName="ValorMax" TargetFieldName="ValorMax" />
+            <FieldMapping FieldName="ValorMin" TargetFieldName="ValorMin" />
+            <FieldMapping FieldName="ValorTipo" TargetFieldName="ValorTipo" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":SubsidioItemCodAfiliado" TargetName="sgpaserv2003:Default:SubsidioItemCod_Afiliado">
+          <FieldMappings>
+            <FieldMapping FieldName="Ci" TargetFieldName="CI" />
+            <FieldMapping FieldName="CodSubsidioItemCod" TargetFieldName="CodSubsidioItemCod" />
+            <FieldMapping FieldName="SubItmCodAfiId" TargetFieldName="SubItmCodAfiId" SequenceToUse="@@IDENTITY" />
+            <FieldMapping FieldName="Ts" TargetFieldName="Ts" />
+            <FieldMapping FieldName="Usr" TargetFieldName="Usr" />
+            <FieldMapping FieldName="Valor" TargetFieldName="Valor" />
+            <FieldMapping FieldName="Vigencia" TargetFieldName="Vigencia" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":SubsidioItemEmpresa" TargetName="sgpaserv2003:Default:SubsidioItemEmpresa">
+          <FieldMappings>
+            <FieldMapping FieldName="CodEmpresa" TargetFieldName="CodEmpresa" />
+            <FieldMapping FieldName="CodSubsidioItemCod" TargetFieldName="CodSubsidioItemCod" />
+            <FieldMapping FieldName="IdSubsidio" TargetFieldName="IdSubsidio" />
+            <FieldMapping FieldName="Importe" TargetFieldName="Importe" />
+            <FieldMapping FieldName="Ts" TargetFieldName="Ts" />
+            <FieldMapping FieldName="Usr" TargetFieldName="Usr" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":TmpCorreccione" TargetName="sgpaserv2003:Default:tmpCorrecciones">
+          <FieldMappings>
+            <FieldMapping FieldName="Ci" TargetFieldName="CI" />
+            <FieldMapping FieldName="FechaFin" TargetFieldName="Fecha Fin" />
+            <FieldMapping FieldName="FechaInicio" TargetFieldName="Fecha Inicio" />
+            <FieldMapping FieldName="Nombre" TargetFieldName="Nombre" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":TmpRectificativa" TargetName="sgpaserv2003:Default:tmp_Rectificativas">
+          <FieldMappings>
+            <FieldMapping FieldName="Ci" TargetFieldName="CI" />
+            <FieldMapping FieldName="Concepto" TargetFieldName="Concepto" />
+            <FieldMapping FieldName="Empresa" TargetFieldName="EMPRESA" />
+            <FieldMapping FieldName="Id" TargetFieldName="Id" SequenceToUse="@@IDENTITY" />
+            <FieldMapping FieldName="Importe" TargetFieldName="Importe" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":Trabaja" TargetName="sgpaserv2003:Default:Trabaja">
+          <FieldMappings>
+            <FieldMapping FieldName="Ci" TargetFieldName="CI" />
+            <FieldMapping FieldName="CodBajaMotivo" TargetFieldName="CodBajaMotivo" />
+            <FieldMapping FieldName="CodEmpresa" TargetFieldName="CodEmpresa" />
+            <FieldMapping FieldName="FechaBaja" TargetFieldName="FechaBaja" />
+            <FieldMapping FieldName="FechaIngCasemed" TargetFieldName="FechaIngCasemed" />
+            <FieldMapping FieldName="FechaIngreso" TargetFieldName="FechaIngreso" />
+            <FieldMapping FieldName="IdTrabaja" TargetFieldName="IdTrabaja" SequenceToUse="@@IDENTITY" />
+            <FieldMapping FieldName="NroFichaEmpresa" TargetFieldName="NroFichaEmpresa" />
+            <FieldMapping FieldName="Ts" TargetFieldName="Ts" />
+            <FieldMapping FieldName="Usr" TargetFieldName="Usr" />
+          </FieldMappings>
+        </EntityMapping>
+        <EntityMapping EntityName=":XUsrParam" TargetName="sgpaserv2003:Default:xUsrParam">
+          <FieldMappings>
+            <FieldMapping FieldName="Clave" TargetFieldName="clave" />
+            <FieldMapping FieldName="Login" TargetFieldName="login" />
+            <FieldMapping FieldName="Orden" TargetFieldName="orden" />
+            <FieldMapping FieldName="Value1" TargetFieldName="value1" />
+            <FieldMapping FieldName="Value2" TargetFieldName="value2" />
+            <FieldMapping FieldName="Value3" TargetFieldName="value3" />
+            <FieldMapping FieldName="Value4" TargetFieldName="value4" />
+            <FieldMapping FieldName="Value5" TargetFieldName="value5" />
+          </FieldMappings>
+        </EntityMapping>
+      </EntityMappings>
+      <TypedViewMappings />
+      <SPCallMappings />
+      <TvfCallMappings />
+      <TypeConversionDefinitions />
+    </MappingStore>
+  </MappingStores>
+  <ModelViews />
+</Project>

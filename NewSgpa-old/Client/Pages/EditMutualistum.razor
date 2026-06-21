@@ -1,0 +1,138 @@
+@page "/edit-mutualistum"
+@attribute [Authorize]
+
+<PageTitle>Edit Mutualistum</PageTitle>
+<RadzenRow>
+    <RadzenColumn SizeMD="9">
+    <RadzenLabel style="font-weight: bold" Text="Item no longer available." Visible="@(!canEdit)" />
+    </RadzenColumn>
+    <RadzenColumn SizeMD="3">
+    <RadzenButton ButtonStyle="ButtonStyle.Secondary" style="margin-bottom: 20px" Text="Close" Visible="@(!canEdit)" Click="@CancelButtonClick" />
+    </RadzenColumn>
+</RadzenRow>
+<RadzenRow>
+    <RadzenColumn SizeMD="9">
+    <RadzenLabel style="font-weight: bold" Text="Another user has made conflicting changes to one or more of the fields you have modified. Please reload." Visible="@hasChanges" />
+    </RadzenColumn>
+    <RadzenColumn SizeMD="3">
+    <RadzenButton ButtonStyle="ButtonStyle.Secondary" Icon="autorenew" style="margin-bottom: 20px" Text="Reload" Visible="@hasChanges" Click="@ReloadButtonClick" />
+    </RadzenColumn>
+</RadzenRow>
+
+    <RadzenColumn SizeMD=12>
+        <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@errorVisible">Cannot save Mutualistum</RadzenAlert>
+        <RadzenTemplateForm TItem="SgpaNew.Server.Models.Sgpa.Mutualistum" Data="@mutualistum" Visible="@(mutualistum != null && canEdit)" Submit="@FormSubmit">
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Cod Mutualista" Component="CodMutualista" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@mutualistum.CodMutualista" Name="CodMutualista" />
+                    <RadzenRequiredValidator Component="CodMutualista" Text="CodMutualista is required" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Nombre" Component="Nombre" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@mutualistum.Nombre" Name="Nombre" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Direccion" Component="Direccion" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@mutualistum.Direccion" Name="Direccion" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Telefono" Component="Telefono" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@mutualistum.Telefono" Name="Telefono" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Fax" Component="Fax" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@mutualistum.Fax" Name="Fax" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="E Mail" Component="EMail" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@mutualistum.EMail" Name="EMail" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Dia Pago" Component="DiaPago" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@mutualistum.DiaPago" Name="DiaPago" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Persona Contacto" Component="PersonaContacto" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@mutualistum.PersonaContacto" Name="PersonaContacto" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Cuota" Component="Cuota" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@mutualistum.Cuota" Name="Cuota" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Usr" Component="Usr" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@mutualistum.Usr" Name="Usr" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Ts" Component="Ts" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDatePicker DateFormat="dd/MM/yyyy" style="display: block; width: 100%" @bind-Value="@mutualistum.Ts" Name="Ts" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Ficticia" Component="Ficticia" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenCheckBox @bind-Value="@mutualistum.Ficticia" Name="Ficticia" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Forma Pago" Component="FormaPago" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@formaPagosForCodFormaPago" TextProperty="Descrip" ValueProperty="CodFormaPago" AllowClear=true
+                         Placeholder="Choose FormaPago" style="display: block; width: 100%" @bind-Value="@mutualistum.CodFormaPago" Name="CodFormaPago"
+                        SelectedValue=@formaPagosForCodFormaPagoValue Count=@formaPagosForCodFormaPagoCount LoadData=@formaPagosForCodFormaPagoLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+          <RadzenStack  Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                    <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Submit" Icon="save" Text="Save" Variant="Variant.Flat" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Text="Cancel" Variant="Variant.Flat" Click="@CancelButtonClick"  />
+          </RadzenStack>
+        </RadzenTemplateForm>
+    </RadzenColumn>
+

@@ -1,0 +1,49 @@
+@page "/subsidiocabezal-bps"
+@attribute [Authorize]
+
+<PageTitle>SubsidiocabezalBps</PageTitle>
+<RadzenStack>
+    <RadzenRow AlignItems="AlignItems.Center">
+        <RadzenColumn Size="12" SizeMD="6">
+            <RadzenText Text="SubsidiocabezalBps" TextStyle="TextStyle.H3" TagName="TagName.H1" style="margin: 0" />
+        </RadzenColumn>
+        <RadzenColumn Size="12" SizeMD="6">
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                <RadzenSplitButton Icon="get_app" Text="Export" Click="@ExportClick" Variant="Variant.Flat" Shade="Shade.Lighter">
+                    <RadzenSplitButtonItem Text="Excel" Value="xlsx" />
+                    <RadzenSplitButtonItem Text="CSV" Value="csv" />
+                </RadzenSplitButton>
+                <RadzenButton Icon="add_circle_outline" Text="Add" Click="@AddButtonClick" Variant="Variant.Flat" />
+            </RadzenStack>
+        </RadzenColumn>
+    </RadzenRow>
+    <RadzenRow>
+      <RadzenColumn SizeMD=12>
+        <RadzenDataGrid @ref="grid0" ColumnWidth="200px"  AllowFiltering="true" FilterMode="FilterMode.Advanced" AllowPaging="true" AllowSorting="true" ShowPagingSummary="true" PageSizeOptions=@(new int[]{5, 10, 20, 30})
+            Data="@subsidiocabezalBps" Count=count LoadData=@Grid0LoadData  TItem="SgpaNew.Server.Models.Sgpa.SubsidiocabezalBp" RowDoubleClick="@EditRow" >
+            <Columns>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.SubsidiocabezalBp" Property="DiasBPS" Title="Dias B P S">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.SubsidiocabezalBp" Property="LiquidoBPS" Title="Liquido B P S">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.SubsidiocabezalBp" Property="AguinaldoBPS" Title="Aguinaldo B P S">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.SubsidiocabezalBp" Property="LiquidoPagar" Title="Liquido Pagar">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.SubsidiocabezalBp" Property="SubsidioCabezal.NroCuenta" Title="Subsidio Cabezal">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.SubsidiocabezalBp" Filterable="false" Sortable="false" Width="70px" TextAlign="TextAlign.Center">
+                    <Template Context="subsidiocabezalBp">
+
+                        <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Medium"
+                            Shade="Shade.Lighter" Variant="Variant.Flat"
+                            Click=@(args => GridDeleteButtonClick(args, subsidiocabezalBp)) @onclick:stopPropagation="true" />
+                    </Template>
+                </RadzenDataGridColumn>
+            </Columns>
+
+        </RadzenDataGrid>
+
+    </RadzenColumn>
+  </RadzenRow>
+</RadzenStack>

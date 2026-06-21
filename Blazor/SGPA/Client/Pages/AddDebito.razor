@@ -1,0 +1,73 @@
+@page "/add-debito"
+
+<PageTitle>Add Debito</PageTitle>
+    <RadzenColumn SizeMD=12>
+        <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@errorVisible">Cannot save Debito</RadzenAlert>
+        <RadzenTemplateForm TItem="SGPA.Server.Models.CMU.Debito" Data="@debito" Visible="@(debito != null && canEdit)" Submit="@FormSubmit">
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Numero Cabezal" Component="NumeroCabezal" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@debito.NumeroCabezal" Name="NumeroCabezal" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Codigo Comercio" Component="CodigoComercio" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@debito.CodigoComercio" Name="CodigoComercio" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Numero Sucursal" Component="NumeroSucursal" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@debito.NumeroSucursal" Name="NumeroSucursal" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Fecha Carga Resultado" Component="FechaCargaResultado" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDatePicker DateFormat="MM/dd/yyyy" style="display: block; width: 100%" @bind-Value="@debito.FechaCargaResultado" Name="FechaCargaResultado" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Identificacion" Component="Identificacion" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@debito.Identificacion" Name="Identificacion" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Agente Cobranza Debito" Component="AgenteCobranzaDebito" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@agenteCobranzaDebitosForAgenteDebito" TextProperty="CodigoComercio" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose AgenteCobranzaDebito" style="display: block; width: 100%" @bind-Value="@debito.AgenteDebito" Name="AgenteDebito"
+                        SelectedValue=@agenteCobranzaDebitosForAgenteDebitoValue Count=@agenteCobranzaDebitosForAgenteDebitoCount LoadData=@agenteCobranzaDebitosForAgenteDebitoLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Cobro" Component="Cobro" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@cobrosForId" TextProperty="Comentario" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose Cobro" style="display: block; width: 100%" @bind-Value="@debito.Id" Name="Id"
+                        SelectedValue=@cobrosForIdValue Count=@cobrosForIdCount LoadData=@cobrosForIdLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+          <RadzenStack  Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                    <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Submit" Icon="save" Text="Save" Variant="Variant.Flat" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Text="Cancel" Variant="Variant.Flat" Click="@CancelButtonClick"  />
+          </RadzenStack>
+        </RadzenTemplateForm>
+    </RadzenColumn>
+

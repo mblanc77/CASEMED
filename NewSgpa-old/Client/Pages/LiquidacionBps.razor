@@ -1,0 +1,69 @@
+@page "/liquidacion-bps"
+@attribute [Authorize]
+
+<PageTitle>LiquidacionBps</PageTitle>
+<RadzenStack>
+    <RadzenRow AlignItems="AlignItems.Center">
+        <RadzenColumn Size="12" SizeMD="6">
+            <RadzenText Text="LiquidacionBps" TextStyle="TextStyle.H3" TagName="TagName.H1" style="margin: 0" />
+        </RadzenColumn>
+        <RadzenColumn Size="12" SizeMD="6">
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                <RadzenSplitButton Icon="get_app" Text="Export" Click="@ExportClick" Variant="Variant.Flat" Shade="Shade.Lighter">
+                    <RadzenSplitButtonItem Text="Excel" Value="xlsx" />
+                    <RadzenSplitButtonItem Text="CSV" Value="csv" />
+                </RadzenSplitButton>
+                <RadzenButton Icon="add_circle_outline" Text="Add" Click="@AddButtonClick" Variant="Variant.Flat" />
+            </RadzenStack>
+        </RadzenColumn>
+    </RadzenRow>
+    <RadzenRow>
+      <RadzenColumn SizeMD=12>
+        <RadzenDataGrid @ref="grid0" ColumnWidth="200px"  AllowFiltering="true" FilterMode="FilterMode.Advanced" AllowPaging="true" AllowSorting="true" ShowPagingSummary="true" PageSizeOptions=@(new int[]{5, 10, 20, 30})
+            Data="@liquidacionBps" Count=count LoadData=@Grid0LoadData  TItem="SgpaNew.Server.Models.Sgpa.LiquidacionBp" RowDoubleClick="@EditRow" >
+            <Columns>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.LiquidacionBp" Property="LiquidacionBPSId" Title="Liquidacion B P S Id">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.LiquidacionBp" Property="CI" Title="C I">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.LiquidacionBp" Property="NOMBRE" Title="N O M B R E">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.LiquidacionBp" Property="APELLIDO" Title="A P E L L I D O">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.LiquidacionBp" Property="MONTO_TOTAL" Title="M O N T O T O T A L">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.LiquidacionBp" Property="MES_DE_CARGO" Title="M E S D E C A R G O">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.LiquidacionBp" Property="NOM_EMPRESA" Title="N O M E M P R E S A">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.LiquidacionBp" Property="PCT_POR_EMPRESA" Title="P C T P O R E M P R E S A">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.LiquidacionBp" Property="FECHA_PER_DESDE" Title="F E C H A P E R D E S D E">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.LiquidacionBp" Property="FECHA_PER_HASTA" Title="F E C H A P E R H A S T A">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.LiquidacionBp" Property="N_ENTREGA" Title="N E N T R E G A">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.LiquidacionBp" Property="FECHA_DE_ENTREGA" Title="F E C H A D E E N T R E G A">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.LiquidacionBp" Property="MES" Title="M E S">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.LiquidacionBp" Property="ANIO" Title="A N I O">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.LiquidacionBp" Property="LIQUIDO" Title="L I Q U I D O">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.LiquidacionBp" Filterable="false" Sortable="false" Width="70px" TextAlign="TextAlign.Center">
+                    <Template Context="liquidacionBp">
+
+                        <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Medium"
+                            Shade="Shade.Lighter" Variant="Variant.Flat"
+                            Click=@(args => GridDeleteButtonClick(args, liquidacionBp)) @onclick:stopPropagation="true" />
+                    </Template>
+                </RadzenDataGridColumn>
+            </Columns>
+
+        </RadzenDataGrid>
+
+    </RadzenColumn>
+  </RadzenRow>
+</RadzenStack>

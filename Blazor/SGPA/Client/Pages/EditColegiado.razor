@@ -1,0 +1,503 @@
+@page "/edit-colegiado"
+
+<PageTitle>Edit Colegiado</PageTitle>
+<RadzenRow>
+    <RadzenColumn SizeMD="9">
+    <RadzenLabel style="font-weight: bold" Text="Item no longer available." Visible="@(!canEdit)" />
+    </RadzenColumn>
+    <RadzenColumn SizeMD="3">
+    <RadzenButton ButtonStyle="ButtonStyle.Secondary" style="margin-bottom: 20px" Text="Close" Visible="@(!canEdit)" Click="@CancelButtonClick" />
+    </RadzenColumn>
+</RadzenRow>
+<RadzenRow>
+    <RadzenColumn SizeMD="9">
+    <RadzenLabel style="font-weight: bold" Text="Another user has made conflicting changes to one or more of the fields you have modified. Please reload." Visible="@hasChanges" />
+    </RadzenColumn>
+    <RadzenColumn SizeMD="3">
+    <RadzenButton ButtonStyle="ButtonStyle.Secondary" Icon="autorenew" style="margin-bottom: 20px" Text="Reload" Visible="@hasChanges" Click="@ReloadButtonClick" />
+    </RadzenColumn>
+</RadzenRow>
+
+    <RadzenColumn SizeMD=12>
+        <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@errorVisible">Cannot save Colegiado</RadzenAlert>
+        <RadzenTemplateForm TItem="SGPA.Server.Models.CMU.Colegiado" Data="@colegiado" Visible="@(colegiado != null && canEdit)" Submit="@FormSubmit">
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Documento" Component="Documento" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@colegiado.Documento" Name="Documento" />
+                    <RadzenRequiredValidator Component="Documento" Text="Documento is required" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Nombres" Component="Nombres" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@colegiado.Nombres" Name="Nombres" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Apellido1" Component="Apellido1" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@colegiado.Apellido1" Name="Apellido1" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Apellido2" Component="Apellido2" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@colegiado.Apellido2" Name="Apellido2" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Fecha Nacimiento" Component="FechaNacimiento" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDatePicker DateFormat="MM/dd/yyyy" style="display: block; width: 100%" @bind-Value="@colegiado.FechaNacimiento" Name="FechaNacimiento" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Matricula" Component="Matricula" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@colegiado.Matricula" Name="Matricula" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Sexo" Component="Sexo" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@colegiado.Sexo" Name="Sexo" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="E Mail" Component="EMail" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@colegiado.EMail" Name="EMail" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Celular" Component="Celular" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@colegiado.Celular" Name="Celular" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Telefono Particular" Component="TelefonoParticular" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@colegiado.TelefonoParticular" Name="TelefonoParticular" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Telefono Laboral" Component="TelefonoLaboral" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@colegiado.TelefonoLaboral" Name="TelefonoLaboral" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Fecha Presentacion D J" Component="FechaPresentacionDJ" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDatePicker DateFormat="MM/dd/yyyy" style="display: block; width: 100%" @bind-Value="@colegiado.FechaPresentacionDJ" Name="FechaPresentacionDJ" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Numero Puerta" Component="NumeroPuerta" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@colegiado.NumeroPuerta" Name="NumeroPuerta" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Apartamento" Component="Apartamento" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@colegiado.Apartamento" Name="Apartamento" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Monto Nominal D J" Component="MontoNominalDJ" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@colegiado.MontoNominalDJ" Name="MontoNominalDJ" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Fecha Baja" Component="FechaBaja" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDatePicker DateFormat="MM/dd/yyyy" style="display: block; width: 100%" @bind-Value="@colegiado.FechaBaja" Name="FechaBaja" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Fecha Presentacion Titulo" Component="FechaPresentacionTitulo" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDatePicker DateFormat="MM/dd/yyyy" style="display: block; width: 100%" @bind-Value="@colegiado.FechaPresentacionTitulo" Name="FechaPresentacionTitulo" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Fecha Vencimiento D J" Component="FechaVencimientoDJ" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDatePicker DateFormat="MM/dd/yyyy" style="display: block; width: 100%" @bind-Value="@colegiado.FechaVencimientoDJ" Name="FechaVencimientoDJ" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Comentario Baja" Component="ComentarioBaja" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@colegiado.ComentarioBaja" Name="ComentarioBaja" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Fecha Habilitacion M S P" Component="FechaHabilitacionMSP" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDatePicker DateFormat="MM/dd/yyyy" style="display: block; width: 100%" @bind-Value="@colegiado.FechaHabilitacionMSP" Name="FechaHabilitacionMSP" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Fecha Expedicion Titulo" Component="FechaExpedicionTitulo" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDatePicker DateFormat="MM/dd/yyyy" style="display: block; width: 100%" @bind-Value="@colegiado.FechaExpedicionTitulo" Name="FechaExpedicionTitulo" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Numero Tarjeta" Component="NumeroTarjeta" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@colegiado.NumeroTarjeta" Name="NumeroTarjeta" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Vencimiento Tarjeta" Component="VencimientoTarjeta" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@colegiado.VencimientoTarjeta" Name="VencimientoTarjeta" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Localidad" Component="Localidad" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@colegiado.Localidad" Name="Localidad" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Direccion" Component="Direccion" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@colegiado.Direccion" Name="Direccion" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Ultimo Cambio Contraseña" Component="UltimoCambioContraseña" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDatePicker DateFormat="MM/dd/yyyy" style="display: block; width: 100%" @bind-Value="@colegiado.UltimoCambioContraseña" Name="UltimoCambioContraseña" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Codigo Postal" Component="CodigoPostal" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@colegiado.CodigoPostal" Name="CodigoPostal" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Lugar Nacimiento" Component="LugarNacimiento" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@colegiado.LugarNacimiento" Name="LugarNacimiento" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="No Verificar Documento" Component="NoVerificarDocumento" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenCheckBox @bind-Value="@colegiado.NoVerificarDocumento" Name="NoVerificarDocumento" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Importado" Component="Importado" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenCheckBox @bind-Value="@colegiado.Importado" Name="Importado" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Optimistic Lock Field" Component="OptimisticLockField" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@colegiado.OptimisticLockField" Name="OptimisticLockField" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Fecha Fin Exoneracion" Component="FechaFinExoneracion" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDatePicker DateFormat="MM/dd/yyyy" style="display: block; width: 100%" @bind-Value="@colegiado.FechaFinExoneracion" Name="FechaFinExoneracion" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Fecha Verificacionalta" Component="FechaVerificacionalta" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDatePicker DateFormat="MM/dd/yyyy" style="display: block; width: 100%" @bind-Value="@colegiado.FechaVerificacionalta" Name="FechaVerificacionalta" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Fecha Verificacion Baja" Component="FechaVerificacionBaja" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDatePicker DateFormat="MM/dd/yyyy" style="display: block; width: 100%" @bind-Value="@colegiado.FechaVerificacionBaja" Name="FechaVerificacionBaja" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Nro Formulario Alta" Component="NroFormularioAlta" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@colegiado.NroFormularioAlta" Name="NroFormularioAlta" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Ultima Actualizacion Datos" Component="UltimaActualizacionDatos" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDatePicker DateFormat="MM/dd/yyyy" style="display: block; width: 100%" @bind-Value="@colegiado.UltimaActualizacionDatos" Name="UltimaActualizacionDatos" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Fecha Alta" Component="FechaAlta" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDatePicker DateFormat="MM/dd/yyyy" style="display: block; width: 100%" @bind-Value="@colegiado.FechaAlta" Name="FechaAlta" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Fecha Vinculacion" Component="FechaVinculacion" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDatePicker DateFormat="MM/dd/yyyy" style="display: block; width: 100%" @bind-Value="@colegiado.FechaVinculacion" Name="FechaVinculacion" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Fecha Carga E Mail" Component="FechaCargaEMail" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDatePicker DateFormat="MM/dd/yyyy" style="display: block; width: 100%" @bind-Value="@colegiado.FechaCargaEMail" Name="FechaCargaEMail" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Fecha1er Pago" Component="Fecha1erPago" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDatePicker DateFormat="MM/dd/yyyy" style="display: block; width: 100%" @bind-Value="@colegiado.Fecha1erPago" Name="Fecha1erPago" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Nro Formulario Baja" Component="NroFormularioBaja" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@colegiado.NroFormularioBaja" Name="NroFormularioBaja" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="G C Record" Component="GCRecord" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@colegiado.GCRecord" Name="GCRecord" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Elector2015" Component="Elector2015" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenCheckBox @bind-Value="@colegiado.Elector2015" Name="Elector2015" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Email Alt" Component="EmailAlt" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@colegiado.EmailAlt" Name="EmailAlt" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Fecha Ingreso Baja" Component="FechaIngresoBaja" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDatePicker DateFormat="MM/dd/yyyy" style="display: block; width: 100%" @bind-Value="@colegiado.FechaIngresoBaja" Name="FechaIngresoBaja" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Fecha Solicitud Baja" Component="FechaSolicitudBaja" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDatePicker DateFormat="MM/dd/yyyy" style="display: block; width: 100%" @bind-Value="@colegiado.FechaSolicitudBaja" Name="FechaSolicitudBaja" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Fecha Solicitud Alta" Component="FechaSolicitudAlta" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDatePicker DateFormat="MM/dd/yyyy" style="display: block; width: 100%" @bind-Value="@colegiado.FechaSolicitudAlta" Name="FechaSolicitudAlta" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Fecha Exoneracion Anterior" Component="FechaExoneracionAnterior" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDatePicker DateFormat="MM/dd/yyyy" style="display: block; width: 100%" @bind-Value="@colegiado.FechaExoneracionAnterior" Name="FechaExoneracionAnterior" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Legacy Colegiado Carne Id" Component="LegacyColegiadoCarneId" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@colegiado.LegacyColegiadoCarneId" Name="LegacyColegiadoCarneId" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Agente Cobranza" Component="AgenteCobranza" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@agenteCobranzasForAgenteCobro" TextProperty="ParseClass" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose AgenteCobranza" style="display: block; width: 100%" @bind-Value="@colegiado.AgenteCobro" Name="AgenteCobro"
+                        SelectedValue=@agenteCobranzasForAgenteCobroValue Count=@agenteCobranzasForAgenteCobroCount LoadData=@agenteCobranzasForAgenteCobroLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Baja Motivo1" Component="BajaMotivo1" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@bajaMotivosForBajaMotivo" TextProperty="Descripcion" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose BajaMotivo1" style="display: block; width: 100%" @bind-Value="@colegiado.BajaMotivo" Name="BajaMotivo"
+                        SelectedValue=@bajaMotivosForBajaMotivoValue Count=@bajaMotivosForBajaMotivoCount LoadData=@bajaMotivosForBajaMotivoLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Categoria Colegiado1" Component="CategoriaColegiado1" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@categoriaColegiadosForCategoriaColegiado" TextProperty="Descripcion" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose CategoriaColegiado1" style="display: block; width: 100%" @bind-Value="@colegiado.CategoriaColegiado" Name="CategoriaColegiado"
+                        SelectedValue=@categoriaColegiadosForCategoriaColegiadoValue Count=@categoriaColegiadosForCategoriaColegiadoCount LoadData=@categoriaColegiadosForCategoriaColegiadoLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Departamento1" Component="Departamento1" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@departamentosForDepartamento" TextProperty="Nombre" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose Departamento1" style="display: block; width: 100%" @bind-Value="@colegiado.Departamento" Name="Departamento"
+                        SelectedValue=@departamentosForDepartamentoValue Count=@departamentosForDepartamentoCount LoadData=@departamentosForDepartamentoLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Pai" Component="Pai" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@paisForPaisTitulo" TextProperty="Nombre" ValueProperty="Codigo" AllowClear=true
+                         Placeholder="Choose Pai" style="display: block; width: 100%" @bind-Value="@colegiado.PaisTitulo" Name="PaisTitulo"
+                        SelectedValue=@paisForPaisTituloValue Count=@paisForPaisTituloCount LoadData=@paisForPaisTituloLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Regional" Component="Regional" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@regionalsForRegionalTrabaja" TextProperty="Descripcion" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose Regional" style="display: block; width: 100%" @bind-Value="@colegiado.RegionalTrabaja" Name="RegionalTrabaja"
+                        SelectedValue=@regionalsForRegionalTrabajaValue Count=@regionalsForRegionalTrabajaCount LoadData=@regionalsForRegionalTrabajaLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Agente Cobranza1" Component="AgenteCobranza1" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@agenteCobranzasForUltimoAgenteCobro" TextProperty="ParseClass" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose AgenteCobranza1" style="display: block; width: 100%" @bind-Value="@colegiado.UltimoAgenteCobro" Name="UltimoAgenteCobro"
+                        SelectedValue=@agenteCobranzasForUltimoAgenteCobroValue Count=@agenteCobranzasForUltimoAgenteCobroCount LoadData=@agenteCobranzasForUltimoAgenteCobroLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Universidad Titulo Grado1" Component="UniversidadTituloGrado1" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@universidadTituloGradosForUniversidadTituloGrado" TextProperty="Descripcion" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose UniversidadTituloGrado1" style="display: block; width: 100%" @bind-Value="@colegiado.UniversidadTituloGrado" Name="UniversidadTituloGrado"
+                        SelectedValue=@universidadTituloGradosForUniversidadTituloGradoValue Count=@universidadTituloGradosForUniversidadTituloGradoCount LoadData=@universidadTituloGradosForUniversidadTituloGradoLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+          <RadzenStack  Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                    <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Submit" Icon="save" Text="Save" Variant="Variant.Flat" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Text="Cancel" Variant="Variant.Flat" Click="@CancelButtonClick"  />
+          </RadzenStack>
+        </RadzenTemplateForm>
+    </RadzenColumn>
+

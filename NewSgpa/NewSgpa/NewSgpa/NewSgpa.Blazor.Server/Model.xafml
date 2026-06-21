@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Application Title="CASEMED - SGPA" Logo="Images/LogoCasemed">
+  <Options UIType="TabbedMDI"
+		 FormStyle="Ribbon"
+		 RestoreTabbedMdiLayout="True"
+		 ShowTabImage="True"
+		 VirtualScrollingEnabled="True"
+		 ColorPaletteName="Office Colorful"
+		 ConfirmDelete="True"
+		 LookupSmallCollectionItemCount="50">
+  </Options>
+  <NavigationItems NavigationStyle="Accordion" DefaultChildItemsDisplayStyle="List" ShowImages="True" />
+  <Views>
+	<!-- Blazor-specific: configure grid virtual scrolling for large tables -->
+	<ListView Id="Imponible_ListView" DataAccessMode="Server" />
+	<ListView Id="SubsidioCabezal_ListView" DataAccessMode="Server" />
+	<ListView Id="SubsidioItem_ListView" DataAccessMode="Server" />
+	<ListView Id="Certificacion_ListView" DataAccessMode="Server" />
+	<ListView Id="Prestacion_ListView" DataAccessMode="Server" />
+	<ListView Id="SpPrestamo_ListView" DataAccessMode="Server" />
+	<ListView Id="SpFactura_ListView" DataAccessMode="Server" />
+	<ListView Id="SpCuota_ListView" DataAccessMode="Server" />
+	<ListView Id="SpPago_ListView" DataAccessMode="Server" />
+	<ListView Id="SpRetencion_ListView" DataAccessMode="Server" />
+	<ListView Id="SpPagoError_ListView" DataAccessMode="Server" />
+  </Views>
+</Application>

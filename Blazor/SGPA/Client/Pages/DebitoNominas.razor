@@ -1,0 +1,60 @@
+@page "/debito-nominas"
+
+<PageTitle>DebitoNominas</PageTitle>
+<RadzenStack>
+    <RadzenRow AlignItems="AlignItems.Center">
+        <RadzenColumn Size="12" SizeMD="6">
+            <RadzenText Text="DebitoNominas" TextStyle="TextStyle.H3" TagName="TagName.H1" style="margin: 0" />
+        </RadzenColumn>
+        <RadzenColumn Size="12" SizeMD="6">
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                <RadzenSplitButton Icon="get_app" Text="Export" Click="@ExportClick" Variant="Variant.Flat" Shade="Shade.Lighter">
+                    <RadzenSplitButtonItem Text="Excel" Value="xlsx" />
+                    <RadzenSplitButtonItem Text="CSV" Value="csv" />
+                </RadzenSplitButton>
+                <RadzenButton Icon="add_circle_outline" Text="Add" Click="@AddButtonClick" Variant="Variant.Flat" />
+            </RadzenStack>
+        </RadzenColumn>
+    </RadzenRow>
+    <RadzenRow>
+      <RadzenColumn SizeMD=12>
+        <RadzenDataGrid @ref="grid0" ColumnWidth="200px"  AllowFiltering="true" FilterMode="FilterMode.Advanced" AllowPaging="true" AllowSorting="true" ShowPagingSummary="true" PageSizeOptions=@(new int[]{5, 10, 20, 30})
+            Data="@debitoNominas" Count=count LoadData=@Grid0LoadData  TItem="SGPA.Server.Models.CMU.DebitoNomina" RowDoubleClick="@EditRow" >
+            <Columns>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.DebitoNomina" Property="NumeroTransaccion" Title="Numero Transaccion">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.DebitoNomina" Property="NumeroTarjeta" Title="Numero Tarjeta">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.DebitoNomina" Property="FechaVtoTarjeta" Title="Fecha Vto Tarjeta">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.DebitoNomina" Property="Aprobado" Title="Aprobado">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.DebitoNomina" Property="MotivoRechazo" Title="Motivo Rechazo">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.DebitoNomina" Property="FechaTransaccion" Title="Fecha Transaccion">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.DebitoNomina" Property="Observado" Title="Observado">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.DebitoNomina" Property="MotivoObservado" Title="Motivo Observado">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.DebitoNomina" Property="ImporteOriginal" Title="Importe Original">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.DebitoNomina" Property="Debito1.CodigoComercio" Title="Debito1">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.DebitoNomina" Property="CobroNomina.Obs" Title="Cobro Nomina">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.DebitoNomina" Filterable="false" Sortable="false" Width="70px" TextAlign="TextAlign.Center">
+                    <Template Context="debitoNomina">
+
+                        <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Medium"
+                            Shade="Shade.Lighter" Variant="Variant.Flat"
+                            Click=@(args => GridDeleteButtonClick(args, debitoNomina)) @onclick:stopPropagation="true" />
+                    </Template>
+                </RadzenDataGridColumn>
+            </Columns>
+
+        </RadzenDataGrid>
+
+    </RadzenColumn>
+  </RadzenRow>
+</RadzenStack>

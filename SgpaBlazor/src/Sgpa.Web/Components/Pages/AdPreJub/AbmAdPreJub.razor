@@ -1,0 +1,34 @@
+@page "/adprejub"
+@page "/adprejub/nuevo"
+@page "/adprejub/{CI:long}"
+@rendermode InteractiveServer
+@using Sgpa.Domain.Entities
+@using Sgpa.Web.Components.Crud
+
+<PageTitle>Adelantos prejubilatorios</PageTitle>
+
+<SgpaMasterDetailView TMaster="AdPreJub" BaseRoute="/adprejub"
+                      TitlePlural="Adelantos prejubilatorios" TitleSingular="el adelanto" NewLabel="Nuevo adelanto"
+                      @* Paridad VB6 (AbmAfili: Enabled = rs.EOF): presentación e importe sólo editables al crear. *@
+                      FieldEditable="@((a, col, isNew) => isNew || (col != "FechaPresentacion" && col != "ImporteMensual"))">
+    <ListColumns>
+        <DxGridDataColumn FieldName="CI" Caption="Cédula" Width="140px" DisplayFormat="0" />
+        <DxGridDataColumn FieldName="FechaPresentacion" Caption="Presentación" DisplayFormat="d" Width="140px" />
+        <DxGridDataColumn FieldName="ImporteMensual" Caption="Importe mensual" DisplayFormat="n0" />
+        <DxGridDataColumn FieldName="FechaJubilacion" Caption="Jubilación" DisplayFormat="d" Width="140px" />
+    </ListColumns>
+    <DetailHeader Context="a">
+        Adelanto prejubilatorio — cédula @a.CI
+    </DetailHeader>
+    <ChildTabs Context="a">
+        <DxTabPage Text="Pagos" TabIconCssClass="fa-solid fa-money-bill-wave">
+            <div class="p-2">
+                <SgpaCrudView TEntity="AdPreJubPago" Title="Pagos del adelanto" FilterColumn="CI" FilterValue="a.CI" />
+            </div>
+        </DxTabPage>
+    </ChildTabs>
+</SgpaMasterDetailView>
+
+@code {
+    [Parameter] public long CI { get; set; }
+}

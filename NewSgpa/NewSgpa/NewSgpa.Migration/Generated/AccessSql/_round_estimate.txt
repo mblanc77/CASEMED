@@ -1,0 +1,2 @@
+GeneratedAtUtc=2026-06-08T20:55:37.6135847Z GeneratedSqlFiles=6 SqlCmdOutFiles=12 SqlCmdErrFiles=12 NonEmptyErrLines=0 MsgLinesInOut=4 TodoMarkers=0
+EstimatedRoundsRemaining=1

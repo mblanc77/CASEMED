@@ -1,0 +1,46 @@
+@page "/parametros"
+@attribute [Authorize]
+
+<PageTitle>Parametros</PageTitle>
+<RadzenStack>
+    <RadzenRow AlignItems="AlignItems.Center">
+        <RadzenColumn Size="12" SizeMD="6">
+            <RadzenText Text="Parametros" TextStyle="TextStyle.H3" TagName="TagName.H1" style="margin: 0" />
+        </RadzenColumn>
+        <RadzenColumn Size="12" SizeMD="6">
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                <RadzenSplitButton Icon="get_app" Text="Export" Click="@ExportClick" Variant="Variant.Flat" Shade="Shade.Lighter">
+                    <RadzenSplitButtonItem Text="Excel" Value="xlsx" />
+                    <RadzenSplitButtonItem Text="CSV" Value="csv" />
+                </RadzenSplitButton>
+            </RadzenStack>
+        </RadzenColumn>
+    </RadzenRow>
+    <RadzenRow>
+      <RadzenColumn SizeMD=12>
+        <RadzenDataGrid @ref="grid0" ColumnWidth="200px"  AllowFiltering="true" FilterMode="FilterMode.Advanced" AllowPaging="true" AllowSorting="true" ShowPagingSummary="true" PageSizeOptions=@(new int[]{5, 10, 20, 30})
+            Data="@parametros" Count=count LoadData=@Grid0LoadData  TItem="SgpaNew.Server.Models.Sgpa.Parametro" >
+            <Columns>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.Parametro" Property="SMN" Title="S M N">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.Parametro" Property="TopeJubilatorio" Title="Tope Jubilatorio">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.Parametro" Property="TopePrima" Title="Tope Prima">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.Parametro" Property="UR" Title="U R">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.Parametro" Property="PctAdPreJub" Title="Pct Ad Pre Jub">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.Parametro" Property="BCP" Title="B C P">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.Parametro" Property="TopeLiquidoBPS" Title="Tope Liquido B P S">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.Parametro" Property="pctBPS" Title="pct B P S">
+                </RadzenDataGridColumn>
+            </Columns>
+
+        </RadzenDataGrid>
+
+    </RadzenColumn>
+  </RadzenRow>
+</RadzenStack>

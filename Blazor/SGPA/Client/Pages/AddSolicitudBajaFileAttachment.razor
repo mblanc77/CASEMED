@@ -1,0 +1,57 @@
+@page "/add-solicitud-baja-file-attachment"
+
+<PageTitle>Add SolicitudBajaFileAttachment</PageTitle>
+    <RadzenColumn SizeMD=12>
+        <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@errorVisible">Cannot save SolicitudBajaFileAttachment</RadzenAlert>
+        <RadzenTemplateForm TItem="SGPA.Server.Models.CMU.SolicitudBajaFileAttachment" Data="@solicitudBajaFileAttachment" Visible="@(solicitudBajaFileAttachment != null && canEdit)" Submit="@FormSubmit">
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Comentario" Component="Comentario" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@solicitudBajaFileAttachment.Comentario" Name="Comentario" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Optimistic Lock Field" Component="OptimisticLockField" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@solicitudBajaFileAttachment.OptimisticLockField" Name="OptimisticLockField" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="G C Record" Component="GCRecord" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@solicitudBajaFileAttachment.GCRecord" Name="GCRecord" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="File Datum" Component="FileDatum" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@fileDataForFile" TextProperty="FileName" ValueProperty="Oid" AllowClear=true
+                         Placeholder="Choose FileDatum" style="display: block; width: 100%" @bind-Value="@solicitudBajaFileAttachment.File" Name="File"
+                        SelectedValue=@fileDataForFileValue Count=@fileDataForFileCount LoadData=@fileDataForFileLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Solicitud Baja" Component="SolicitudBaja" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@solicitudBajasForSolicitud" TextProperty="OtrosMotivo" ValueProperty="OID" AllowClear=true
+                         Placeholder="Choose SolicitudBaja" style="display: block; width: 100%" @bind-Value="@solicitudBajaFileAttachment.Solicitud" Name="Solicitud"
+                        SelectedValue=@solicitudBajasForSolicitudValue Count=@solicitudBajasForSolicitudCount LoadData=@solicitudBajasForSolicitudLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+          <RadzenStack  Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                    <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Submit" Icon="save" Text="Save" Variant="Variant.Flat" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Text="Cancel" Variant="Variant.Flat" Click="@CancelButtonClick"  />
+          </RadzenStack>
+        </RadzenTemplateForm>
+    </RadzenColumn>
+

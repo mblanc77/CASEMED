@@ -1,0 +1,123 @@
+=== TABLES ===
+TABLE: 600_Afiliado_Certificado
+  CI | Long(4) | Required=Falso
+  Nombres | Text(50) | Required=Falso
+  Apellido1 | Text(30) | Required=Falso
+  Apellido2 | Text(30) | Required=Falso
+  FechaNacimiento | Date(8) | Required=Falso
+  Sexo | Text(1) | Required=Falso
+  CodMutualista | Integer(2) | Required=Falso
+  DescMutualista | Text(50) | Required=Falso
+  Especialidad | Text(255) | Required=Falso
+  Promedio | Single(4) | Required=Falso
+  Empleos | Text(255) | Required=Falso
+  DiaProrroga | Long(4) | Required=Falso
+  DiasUltPro | Long(4) | Required=Falso
+  F_Ult_Prorroga | Date(8) | Required=Falso
+  F_Ult_Certificacion | Date(8) | Required=Falso
+
+TABLE: 600_Afiliado_Certificado_Afeccion
+  CI | Long(4) | Required=Falso
+  CodAfeccionTipo | Integer(2) | Required=Falso
+  DescAfeccionTipo | Text(255) | Required=Falso
+  Cantidad | Long(4) | Required=Falso
+  Dias | Integer(2) | Required=Falso
+
+TABLE: 600_Rpt_<125_Pct
+  Grupo | Text(50) | Required=Falso
+  CI | Long(4) | Required=Falso
+  Nombre | Text(100) | Required=Falso
+  Importe | Long(4) | Required=Falso
+  Especialidad | Text(50) | Required=Falso
+
+TABLE: 600_Rpt_AfiliadoMutualista
+  CI | Text(255) | Required=Falso
+  Nombres | Text(50) | Required=Falso
+  Apellido1 | Text(30) | Required=Falso
+  Apellido2 | Text(30) | Required=Falso
+  FechaNacimiento | Date(8) | Required=Falso
+  Sexo | Text(1) | Required=Falso
+  Telefono | Text(25) | Required=Falso
+  EMail | Text(25) | Required=Falso
+  CodMutualista | Integer(2) | Required=Falso
+  DescMutualista | Text(50) | Required=Falso
+  FechaIngMutualista | Date(8) | Required=Falso
+  NroSocioMutualista | Text(12) | Required=Falso
+  CodRegimenJubilatorio | Byte(1) | Required=Falso
+  DescRegimenJubilatorio | Text(50) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+  DescAfiliado | Text(255) | Required=Falso
+  Cuota | Double(8) | Required=Falso
+  Direccion | Text(100) | Required=Falso
+  PagaMutualista | Boolean(1) | Required=Falso
+  CodDepartamento | Text(3) | Required=Falso
+  CodEmpresa | Integer(2) | Required=Falso
+  DescEmpresa | Text(50) | Required=Falso
+  DescSituacionMutual | Text(50) | Required=Falso
+
+TABLE: 600_Rpt_BPS
+  Mes | Integer(2) | Required=Falso
+  Anio | Long(4) | Required=Falso
+  Cantidad | Long(4) | Required=Falso
+  Monto | Long(4) | Required=Falso
+  TributoMonto | Long(4) | Required=Falso
+  ImpRetPatronal | Long(4) | Required=Falso
+  ImpRetObrero | Long(4) | Required=Falso
+  TotImpRet | Long(4) | Required=Falso
+  TotImpMut | Long(4) | Required=Falso
+  TributoTotImpMut | Long(4) | Required=Falso
+
+TABLE: 600_Rpt_CantidadDescrip
+  Codigo | Long(4) | Required=Falso
+  Cantidad | Long(4) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+
+TABLE: 600_Rpt_CantidadDescrip2
+  Codigo | Long(4) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  Descrip2 | Text(50) | Required=Falso
+  Cantidad | Long(4) | Required=Falso
+
+TABLE: 600_Rpt_Cheque_Tmp
+  CI | Long(4) | Required=Falso
+  Nombre | Text(255) | Required=Falso
+  Fecha | Date(8) | Required=Falso
+  Importe | Single(4) | Required=Falso
+  Letras | Text(255) | Required=Falso
+
+TABLE: 600_Rpt_Recibo
+  IdSubsidio | Long(4) | Required=Falso
+  NroRecibo | Text(50) | Required=Falso
+  Mes | Text(50) | Required=Falso
+  Nombre | Text(50) | Required=Falso
+  CI | Text(50) | Required=Falso
+  Periodo | Text(255) | Required=Falso
+  Item | Text(255) | Required=Falso
+  Importe | Single(4) | Required=Falso
+  Signo | Integer(2) | Required=Falso
+  bANCO | Text(255) | Required=Falso
+
+TABLE: 600_SubsidioFecha_Tmp
+  IDSubsidio | Long(4) | Required=Falso
+  DescFecha | Text(255) | Required=Falso
+
+TABLE: 600_SubsidioResumen_Tmp
+  Anio | Integer(2) | Required=Falso
+  Mes | Byte(1) | Required=Falso
+  CI | Text(255) | Required=Falso
+  DescAfiliado | Text(255) | Required=Falso
+  Dias | Integer(2) | Required=Falso
+  Nombres | Text(50) | Required=Falso
+  Apellido1 | Text(30) | Required=Falso
+  Apellido2 | Text(30) | Required=Falso
+  ImpNominal | Double(8) | Required=Falso
+  ImpAguinaldo | Double(8) | Required=Falso
+  ImpLiquido | Double(8) | Required=Falso
+  Liquidar | Boolean(1) | Required=Falso
+  FechaNacimiento | Date(8) | Required=Falso
+  DescFecha | Text(255) | Required=Falso
+  CIOrig | Long(4) | Required=Falso
+  Baja | Boolean(1) | Required=Falso
+
+=== QUERIES ===

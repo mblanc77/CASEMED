@@ -1,0 +1,56 @@
+@page "/add-subsidiocabezal-bp"
+@attribute [Authorize]
+
+<PageTitle>Add SubsidiocabezalBp</PageTitle>
+    <RadzenColumn SizeMD=12>
+        <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@errorVisible">Cannot save SubsidiocabezalBp</RadzenAlert>
+        <RadzenTemplateForm TItem="SgpaNew.Server.Models.Sgpa.SubsidiocabezalBp" Data="@subsidiocabezalBp" Visible="@(subsidiocabezalBp != null && canEdit)" Submit="@FormSubmit">
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Dias B P S" Component="DiasBPS" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@subsidiocabezalBp.DiasBPS" Name="DiasBPS" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Liquido B P S" Component="LiquidoBPS" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@subsidiocabezalBp.LiquidoBPS" Name="LiquidoBPS" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Aguinaldo B P S" Component="AguinaldoBPS" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@subsidiocabezalBp.AguinaldoBPS" Name="AguinaldoBPS" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Liquido Pagar" Component="LiquidoPagar" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@subsidiocabezalBp.LiquidoPagar" Name="LiquidoPagar" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Subsidio Cabezal" Component="SubsidioCabezal" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@subsidioCabezalsForIdSubsidio" TextProperty="NroCuenta" ValueProperty="IdSubsidio" AllowClear=true
+                         Placeholder="Choose SubsidioCabezal" style="display: block; width: 100%" @bind-Value="@subsidiocabezalBp.IdSubsidio" Name="IdSubsidio"
+                        SelectedValue=@subsidioCabezalsForIdSubsidioValue Count=@subsidioCabezalsForIdSubsidioCount LoadData=@subsidioCabezalsForIdSubsidioLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+          <RadzenStack  Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                    <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Submit" Icon="save" Text="Save" Variant="Variant.Flat" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Text="Cancel" Variant="Variant.Flat" Click="@CancelButtonClick"  />
+          </RadzenStack>
+        </RadzenTemplateForm>
+    </RadzenColumn>
+

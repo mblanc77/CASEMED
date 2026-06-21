@@ -1,0 +1,967 @@
+@page "/prestamos/calcular"
+@page "/prestamos/calcular/{IDPrestamo:int}"
+@rendermode InteractiveServer
+@using Sgpa.Business.Prestamos
+@using Sgpa.Business.Afiliados
+@using Sgpa.Web.Components.Pages.Pagos
+@using Sgpa.Web.Components.Pages.Retenciones
+@inject IDbExecutor Db
+@inject AfiliadoService Afiliado
+@inject PrestamoRepository Repo
+@inject PrestamoGrabadoService Grabado
+@inject PrestamoAccionesService Acciones
+@inject RefinanciacionService Refi
+@inject NavigationManager Nav
+
+@*
+    Workbench de préstamos (port de frmPrestamo.frm, app SP).
+    ETAPA 1: layout + cálculo en vivo (sistema francés). ETAPA 2: afiliado por cédula, promedio de
+    ingresos, tope, elegibilidad (≥3 aportes salvo Fideicomiso), aviso si la cuota supera el % del
+    promedio, GRABADO del alta y EDICIÓN (ruta /prestamos/calcular/{id}) de un préstamo existente —
+    sólo cobro/cheque/banco/observaciones; al emitir genera cuotas + facturas + detalle vía
+    PrestamoGrabadoService. Incluye la calculadora "Plan" (port de frmPlan): planes por cuota fija
+    (hasta el tope) o por monto (cuota ≤ objetivo) que vuelcan cuotas/importe al cálculo, y la toolbar
+    de acciones (port de frmPrestamo): ANULAR (préstamo + cuotas + facturas) y CANCELACIÓN ANTICIPADA
+    (anula facturas emitidas y emite la factura de cancelación) vía PrestamoAccionesService.
+*@
+
+<PageTitle>@(_editMode ? $"Editar préstamo Nº {IDPrestamo:00000}" : "Nuevo préstamo")</PageTitle>
+
+<div class="d-flex align-items-center justify-content-between mb-2">
+    <h3 class="mb-0">@(_editMode ? $"Editar préstamo Nº {IDPrestamo:00000}" : "Nuevo préstamo")</h3>
+    <DxButton Text="Volver" IconCssClass="fa-solid fa-arrow-left" RenderStyle="ButtonRenderStyle.Secondary"
+              Click="@(() => Nav.NavigateTo("/prestamos"))" />
+</div>
+
+@* --- Toolbar de acciones (port de la toolbar de frmPrestamo) --- *@
+@if (_editMode && _edit is not null)
+{
+    <div class="card mb-3">
+        <div class="card-body d-flex flex-wrap gap-2 align-items-center py-2">
+            <span class="text-muted me-2">Estado: <span class="badge bg-secondary">@_edit.CodPrestamoEstado</span></span>
+            <DxButton Text="Anular préstamo" IconCssClass="fa-solid fa-ban" RenderStyle="ButtonRenderStyle.Danger"
+                      Click="@(() => { _confirmAnular = true; _accionMsg = _accionError = null; })" Enabled="@PuedeAnular" />
+            <DxButton Text="Cancelación anticipada" IconCssClass="fa-solid fa-money-bill-wave" RenderStyle="ButtonRenderStyle.Secondary"
+                      Click="AbrirCancelacionAsync" Enabled="@PuedeCancelar" />
+            <DxButton Text="Refinanciar" IconCssClass="fa-solid fa-rotate" RenderStyle="ButtonRenderStyle.Secondary"
+                      Click="AbrirRefinanciacionAsync" Enabled="@PuedeRefinanciar" />
+            <span class="vr mx-1"></span>
+            <DxButton Text="Facturas / Cobro" IconCssClass="fa-solid fa-file-invoice-dollar" RenderStyle="ButtonRenderStyle.Secondary"
+                      Click="@(() => _showFacturas = true)" />
+            <DxButton Text="Cuotas" IconCssClass="fa-solid fa-list-ol" RenderStyle="ButtonRenderStyle.Secondary"
+                      Click="@(() => _showCuotas = true)" />
+            <DxButton Text="Pagos parciales" IconCssClass="fa-solid fa-coins" RenderStyle="ButtonRenderStyle.Secondary"
+                      Click="@(() => _showPagosParciales = true)" Enabled="@(_edit.CodPrestamoTipo == TipoFideicomiso)" />
+            <DxButton Text="Retenciones" IconCssClass="fa-solid fa-hand" RenderStyle="ButtonRenderStyle.Secondary"
+                      Click="@(() => _showRetenciones = true)" />
+            <span class="vr mx-1"></span>
+            <DxButton Text="Reportes" IconCssClass="fa-solid fa-print" RenderStyle="ButtonRenderStyle.Secondary"
+                      Click="@(() => _reportesDialog?.Open(IDPrestamo.GetValueOrDefault(), _edit.CodPrestamoTipo == TipoFideicomiso))" />
+            @if (_accionMsg is not null)
+            {
+                <span class="text-success ms-2"><i class="fa-solid fa-check"></i> @_accionMsg</span>
+            }
+            @if (_accionError is not null)
+            {
+                <span class="text-danger ms-2">@_accionError</span>
+            }
+        </div>
+    </div>
+}
+
+<div class="row g-3">
+    <div class="col-lg-7">
+        @* --- Afiliado --- *@
+        <div class="card mb-3">
+            <div class="card-header"><i class="fa-solid fa-user"></i> Afiliado</div>
+            <div class="card-body">
+                <DxFormLayout>
+                    <DxFormLayoutItem Caption="Tipo de préstamo" ColSpanMd="6">
+                        <DxComboBox Data="_tipos" @bind-Value="_tipo" @bind-Value:after="RecomputeElegible"
+                                    ValueFieldName="@nameof(TipoVm.CodPrestamoTipo)" TextFieldName="@nameof(TipoVm.Descrip)"
+                                    NullText="Tipo…" TData="TipoVm" TValue="string" ReadOnly="_editMode" />
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Cédula" ColSpanMd="6" BeginRow="true">
+                        @* Enter en la cédula dispara la búsqueda (paridad con txtCI_KeyPress del VB6).
+                           "Buscar afiliado" (verde) va a la derecha de la cédula. *@
+                        <div class="d-flex align-items-center gap-2" @onkeyup="OnCedulaKeyDown">
+                            <DxSpinEdit @ref="_ciEdit" @bind-Value="_ci" ShowSpinButtons="false" DisplayFormat="0"
+                                        NullText="cédula (99 = prueba)" ReadOnly="_editMode" CssClass="flex-grow-1" />
+                            @if (!_editMode)
+                            {
+                                <DxButton Text="Buscar" IconCssClass="fa-solid fa-magnifying-glass"
+                                          RenderStyle="ButtonRenderStyle.Success" Click="AbrirBuscarAfiliado" />
+                            }
+                        </div>
+                    </DxFormLayoutItem>
+                    @if (!_editMode)
+                    {
+                        <DxFormLayoutItem Caption="Abrir Nº préstamo" ColSpanMd="6" BeginRow="true">
+                            @* Buscar por nº de préstamo (port de txtNroPrestamo): abre el préstamo existente. *@
+                            <div @onkeyup="OnNroPrestamoKeyDown">
+                                <DxSpinEdit @bind-Value="_nroPrestamoBuscar" ShowSpinButtons="false" MinValue="0" DisplayFormat="0" NullText="Nº préstamo…" />
+                            </div>
+                        </DxFormLayoutItem>
+                        <DxFormLayoutItem ColSpanMd="12" BeginRow="true">
+                            <DxButton Text="Comentarios" IconCssClass="fa-solid fa-comments"
+                                      RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => _showComentarios = true)"
+                                      Enabled="@(_ci is > 0 and not 99)" />
+                            <DxButton Text="Detalle de ingresos" IconCssClass="fa-solid fa-money-check-dollar" CssClass="ms-2"
+                                      RenderStyle="ButtonRenderStyle.Secondary" Click="AbrirDetalleIngresosAsync"
+                                      Enabled="@(_ci is > 0 and not 99)" />
+                        </DxFormLayoutItem>
+                    }
+                </DxFormLayout>
+
+                @if (_afiliadoOk)
+                {
+                    <div class="mt-3">
+                        @if (_esPrueba)
+                        {
+                            <div class="fw-semibold text-danger">Cálculo de prueba (CI 99)</div>
+                        }
+                        else if (_ficha is not null)
+                        {
+                            <div class="fw-semibold text-secondary">@_ficha.DescAfiliado</div>
+                            <div class="small text-muted">@_ficha.Direccion @(string.IsNullOrWhiteSpace(_ficha.Telefono) ? "" : "· " + _ficha.Telefono)</div>
+                            <dl class="row mb-0 mt-2">
+                                <dt class="col-5 text-muted fw-normal">Promedio de ingresos</dt>
+                                <dd class="col-7">$ @_promedio.ToString("N0")</dd>
+                                <dt class="col-5 text-muted fw-normal">Meses con aporte (12m)</dt>
+                                <dd class="col-7">@_aportes</dd>
+                            </dl>
+                        }
+                    </div>
+
+                    @if (!_elegible)
+                    {
+                        <div class="alert alert-warning mt-2 mb-0">
+                            El afiliado tiene @_aportes aporte(s); se requieren 3 (salvo Fideicomiso). No tiene derecho a pedir préstamos.
+                        </div>
+                    }
+                }
+                @if (_afiliadoMsg is not null)
+                {
+                    <div class="alert alert-danger mt-2 mb-0">@_afiliadoMsg</div>
+                }
+            </div>
+        </div>
+
+        @* --- Cálculo en vivo --- *@
+        <div class="card">
+            <div class="card-header"><i class="fa-solid fa-calculator"></i> Cálculo</div>
+            <div class="card-body">
+                @if (!_puedeCalcular && !_editMode)
+                {
+                    <div class="text-muted">
+                        @(_afiliadoOk && _elegible && string.IsNullOrEmpty(_tipo)
+                            ? "Elegí el tipo de préstamo para habilitar el cálculo."
+                            : "Buscá un afiliado elegible (o CI 99) y elegí el tipo para habilitar el cálculo.")
+                    </div>
+                }
+                @if (_editMode)
+                {
+                    <div class="text-muted mb-2">Los datos financieros no se modifican al editar; sólo los datos de cobro/cheque.</div>
+                }
+                <DxFormLayout CssClass="@((_puedeCalcular || _editMode) ? "" : "opacity-50")">
+                    <DxFormLayoutItem Caption="Moneda" ColSpanMd="4">
+                        <DxComboBox Data="_monedas" @bind-Value="_moneda"
+                                    ValueFieldName="@nameof(MonedaInfo.CodMoneda)" TextFieldName="@nameof(MonedaInfo.Descrip)"
+                                    NullText="Moneda…" TData="MonedaInfo" TValue="string" Enabled="_puedeCalcular" ReadOnly="_editMode" />
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Importe" ColSpanMd="4">
+                        <DxSpinEdit @bind-Value="_importe" MinValue="0" DisplayFormat="N2" Enabled="_puedeCalcular" ReadOnly="_editMode" />
+                    </DxFormLayoutItem>
+                    <DxFormLayoutItem Caption="Cuotas" ColSpanMd="4">
+                        <DxSpinEdit @bind-Value="_cuotas" MinValue="1" MaxValue="@_prm.MaxCuotas" Enabled="_puedeCalcular" ReadOnly="_editMode" />
+                    </DxFormLayoutItem>
+                    @if (!_editMode)
+                    {
+                        <DxFormLayoutItem ColSpanMd="12" BeginRow="true">
+                            <DxButton Text="Calcular" IconCssClass="fa-solid fa-gears" RenderStyle="ButtonRenderStyle.Primary"
+                                      Click="Calcular" Enabled="_puedeCalcular" />
+                            <DxButton Text="Plan…" IconCssClass="fa-solid fa-list-ol" RenderStyle="ButtonRenderStyle.Secondary"
+                                      CssClass="ms-2" Click="AbrirPlan" Enabled="_puedeCalcular" />
+                            @if (_cuadro is not null)
+                            {
+                                <span class="ms-3">Valor de la cuota: <strong>@_valorCuota.ToString("N2")</strong></span>
+                            }
+                        </DxFormLayoutItem>
+                    }
+                    else if (_cuadro is not null)
+                    {
+                        <DxFormLayoutItem ColSpanMd="12" BeginRow="true">
+                            <span>Valor de la cuota: <strong>@_valorCuota.ToString("N2")</strong></span>
+                        </DxFormLayoutItem>
+                    }
+                </DxFormLayout>
+                @if (_avisoTope)
+                {
+                    <div class="alert alert-warning mt-2 mb-0">
+                        ¡Atención! La cuota supera el @_prm.PctPrestamo.ToString("0")% del promedio de ingresos del afiliado.
+                    </div>
+                }
+                @if (_error is not null)
+                {
+                    <div class="alert alert-danger mt-2 mb-0">@_error</div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        @* --- Contexto financiero --- *@
+        <div class="card mb-3">
+            <div class="card-header"><i class="fa-solid fa-coins"></i> Contexto financiero</div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-6 text-muted fw-normal">Tasa anual (moneda)</dt>
+                    <dd class="col-6 text-end">@(_tasa is null ? "—" : _tasa.Value.ToString("N2") + " %")</dd>
+                    <dt class="col-6 text-muted fw-normal">UR</dt>
+                    <dd class="col-6 text-end">@_prm.UR.ToString("N2")</dd>
+                    <dt class="col-6 text-muted fw-normal">Dólar</dt>
+                    <dd class="col-6 text-end">@_prm.Dolar.ToString("N2")</dd>
+                    <dt class="col-6 text-muted fw-normal">Tope disponible</dt>
+                    <dd class="col-6 text-end">@(_afiliadoOk ? Tope.ToString("N2") : "—")</dd>
+                </dl>
+            </div>
+        </div>
+
+        @if (_prestamosAnt.Count > 0)
+        {
+            <div class="card">
+                <div class="card-header"><i class="fa-solid fa-clock-rotate-left"></i> Préstamos anteriores</div>
+                <DxGrid Data="_prestamosAnt" PageSize="6">
+                    <Columns>
+                        <DxGridDataColumn FieldName="IDPrestamo" Caption="Nº" Width="70px" />
+                        <DxGridDataColumn FieldName="CodMoneda" Caption="Mon." Width="70px" />
+                        <DxGridDataColumn FieldName="Fecha" Caption="Fecha" DisplayFormat="d" />
+                        <DxGridDataColumn FieldName="Importe" Caption="Importe" DisplayFormat="N2" />
+                        <DxGridDataColumn FieldName="Pct_Retenidas" Caption="% Ret." DisplayFormat="P0" />
+                    </Columns>
+                </DxGrid>
+            </div>
+        }
+    </div>
+</div>
+
+@if (_cuadro is not null)
+{
+    <div class="card mt-3">
+        <div class="card-header d-flex align-items-center">
+            <i class="fa-solid fa-table-list me-2"></i> Cuadro de amortización
+            <span class="ms-auto text-muted small">
+                Total cuotas @_totImporte.ToString("N2") · Intereses @_totInteres.ToString("N2") · Amortización @_totAmort.ToString("N2")
+            </span>
+        </div>
+        <DxGrid Data="_cuadro" PageSize="12">
+            <Columns>
+                <DxGridDataColumn FieldName="Nro" Caption="Cuota" Width="80px" />
+                <DxGridDataColumn FieldName="Monto" Caption="Saldo inicial" DisplayFormat="N2" />
+                <DxGridDataColumn FieldName="Importe" Caption="Cuota" DisplayFormat="N2" />
+                <DxGridDataColumn FieldName="Interes" Caption="Interés" DisplayFormat="N2" />
+                <DxGridDataColumn FieldName="Amortizacion" Caption="Amortización" DisplayFormat="N2" />
+                <DxGridDataColumn FieldName="Saldo" Caption="Saldo" DisplayFormat="N2" />
+            </Columns>
+        </DxGrid>
+    </div>
+
+    @* --- Datos del préstamo + grabado --- *@
+    <div class="card mt-3">
+        <div class="card-header"><i class="fa-solid fa-floppy-disk me-2"></i> Datos del préstamo</div>
+        <div class="card-body">
+            <DxFormLayout>
+                <DxFormLayoutItem Caption="Fecha" ColSpanMd="4">
+                    <DxDateEdit @bind-Date="_fecha" />
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Fecha de cobro" ColSpanMd="4">
+                    <DxDateEdit @bind-Date="_fechaCobro" NullText="(sin emitir)" ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto" />
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Estado" ColSpanMd="4">
+                    <span class="badge @(_fechaCobro is null ? "bg-secondary" : "bg-success")">
+                        @(_fechaCobro is null ? "Ingresado" : "Emitido (genera cuotas y facturas)")
+                    </span>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Nº serie cheque" ColSpanMd="3" BeginRow="true">
+                    <DxSpinEdit @bind-Value="_nroSerieCheque" MinValue="0" />
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Nº cheque" ColSpanMd="3">
+                    <DxSpinEdit @bind-Value="_nroCheque" MinValue="0" />
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Banco" ColSpanMd="3">
+                    <DxTextBox @bind-Text="_banco" />
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Sucursal" ColSpanMd="3">
+                    <DxTextBox @bind-Text="_sucursal" />
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Nº cuenta" ColSpanMd="4" BeginRow="true">
+                    <DxTextBox @bind-Text="_nroCta" />
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Observaciones" ColSpanMd="8">
+                    <DxTextBox @bind-Text="_observaciones" />
+                </DxFormLayoutItem>
+                <DxFormLayoutItem ColSpanMd="12" BeginRow="true">
+                    <DxButton Text="@(_editMode ? "Guardar cambios" : "Grabar préstamo")" IconCssClass="fa-solid fa-floppy-disk"
+                              RenderStyle="ButtonRenderStyle.Primary" Click="OnGrabarAsync" Enabled="@(!_grabando)" />
+                </DxFormLayoutItem>
+            </DxFormLayout>
+            @if (_grabadoOk is not null)
+            {
+                <div class="alert alert-success mt-2 mb-0">@_grabadoOk</div>
+            }
+            @if (_grabadoError is not null)
+            {
+                <div class="alert alert-danger mt-2 mb-0">@_grabadoError</div>
+            }
+        </div>
+    </div>
+}
+
+@* --- Calculadora de planes (port de frmPlan) --- *@
+<DxPopup @bind-Visible="_planVisible" HeaderText="Plan de cuotas" Width="min(720px, 96vw)"
+         CloseOnEscape="true" ShowFooter="false">
+    <BodyContentTemplate>
+        <div class="row g-2 align-items-end mb-3">
+            <div class="col-md-5">
+                <label class="form-label small text-muted mb-1">Cálculo</label>
+                <DxComboBox Data="_planModos" Value="_planPorCuota" ValueChanged="@((bool v) => _planPorCuota = v)"
+                            ValueFieldName="PorCuota" TextFieldName="Text" TData="PlanModo" TValue="bool" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label small text-muted mb-1">@(_planPorCuota ? "Cuota objetivo" : "Monto a prestar")</label>
+                <DxSpinEdit @bind-Value="_planValor" MinValue="0" DisplayFormat="N2" />
+            </div>
+            <div class="col-md-3">
+                <DxButton Text="Calcular" IconCssClass="fa-solid fa-gears" RenderStyle="ButtonRenderStyle.Primary" Click="CalcularPlanes" />
+            </div>
+        </div>
+        @if (_planes.Count == 0)
+        {
+            <div class="text-muted">Elegí el modo, ingresá un valor y calculá para ver los planes viables (dentro del tope).</div>
+        }
+        else
+        {
+            <DxGrid Data="_planes" PageSize="12">
+                <Columns>
+                    <DxGridDataColumn FieldName="Cuotas" Caption="Cuotas" Width="90px" />
+                    <DxGridDataColumn FieldName="Importe" Caption="Imp. cuota" DisplayFormat="N2" />
+                    <DxGridDataColumn FieldName="Monto" Caption="Monto" DisplayFormat="N2" />
+                    <DxGridDataColumn Caption="" Width="100px" AllowSort="false">
+                        <CellDisplayTemplate Context="cell">
+                            @{ var plan = (PlanCuota)cell.DataItem; }
+                            <DxButton Text="Elegir" RenderStyle="ButtonRenderStyle.Success"
+                                      Click="@(() => ElegirPlan(plan))" />
+                        </CellDisplayTemplate>
+                    </DxGridDataColumn>
+                </Columns>
+            </DxGrid>
+        }
+    </BodyContentTemplate>
+</DxPopup>
+
+@* --- Confirmar anulación --- *@
+<DxPopup @bind-Visible="_confirmAnular" HeaderText="Anular préstamo" Width="460px" CloseOnEscape="true">
+    <BodyContentTemplate>
+        <p>¿Seguro que querés <strong>anular</strong> el préstamo Nº @($"{IDPrestamo:00000}")? Se anularán también sus cuotas y facturas.</p>
+        <div class="d-flex justify-content-end gap-2">
+            <DxButton Text="No" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => _confirmAnular = false)" />
+            <DxButton Text="Sí, anular" RenderStyle="ButtonRenderStyle.Danger" Click="AnularAsync" Enabled="@(!_accionando)" />
+        </div>
+    </BodyContentTemplate>
+</DxPopup>
+
+@* --- Confirmar cancelación anticipada --- *@
+<DxPopup @bind-Visible="_confirmCancelar" HeaderText="Cancelación anticipada" Width="500px" CloseOnEscape="true">
+    <BodyContentTemplate>
+        <p>
+            Importe a cobrar para cancelar el préstamo Nº @($"{IDPrestamo:00000}"):
+            <strong>@_importeCancelacion.ToString("N2")</strong> (saldo + interés a hoy).
+        </p>
+        <p class="text-muted small mb-3">Se anularán las facturas emitidas y se generará una factura de cancelación.</p>
+        <div class="d-flex justify-content-end gap-2">
+            <DxButton Text="Cancelar" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => _confirmCancelar = false)" />
+            <DxButton Text="Confirmar cancelación" RenderStyle="ButtonRenderStyle.Primary" Click="CancelarAsync" Enabled="@(!_accionando)" />
+        </div>
+    </BodyContentTemplate>
+</DxPopup>
+
+@* --- Refinanciación --- *@
+<DxPopup @bind-Visible="_confirmRefi" HeaderText="Refinanciar préstamo" Width="500px" CloseOnEscape="true">
+    <BodyContentTemplate Context="popup">
+        <p>
+            Importe a refinanciar del préstamo Nº @($"{IDPrestamo:00000}"):
+            <strong>@_refiImporte.ToString("N2")</strong> (amortización pendiente + mora de las vencidas).
+        </p>
+        <DxFormLayout>
+            <DxFormLayoutItem Caption="Cuotas del nuevo préstamo" ColSpanMd="6">
+                <DxSpinEdit @bind-Value="_refiCuotas" MinValue="1" MaxValue="120" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="Mantener la tasa actual" ColSpanMd="6">
+                <DxCheckBox @bind-Checked="_refiMismaTasa" />
+            </DxFormLayoutItem>
+        </DxFormLayout>
+        <p class="text-muted small mt-2 mb-3">
+            El préstamo actual quedará refinanciado (saldo cero) y se creará uno nuevo <strong>ingresado</strong>
+            por el importe refinanciado, que luego se emite con su fecha de cobro.
+        </p>
+        <div class="d-flex justify-content-end gap-2">
+            <DxButton Text="Cancelar" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => _confirmRefi = false)" Enabled="@(!_accionando)" />
+            <DxButton Text="Confirmar refinanciación" RenderStyle="ButtonRenderStyle.Primary" Click="RefinanciarAsync" Enabled="@(!_accionando)" />
+        </div>
+    </BodyContentTemplate>
+</DxPopup>
+
+@* --- Toolbar de edición: facturas/cobro, cuotas, pagos parciales, retenciones (port de Toolbar1) --- *@
+@if (_editMode && _edit is not null)
+{
+    <DxPopup @bind-Visible="_showFacturas" HeaderText="@($"Facturas / Cobro — préstamo Nº {IDPrestamo:00000}")" Width="820px" CloseOnEscape="true">
+        <BodyContentTemplate Context="popup"><FacturasCobro IDPrestamo="_edit.IDPrestamo" /></BodyContentTemplate>
+    </DxPopup>
+
+    <DxPopup @bind-Visible="_showCuotas" HeaderText="@($"Cuotas — préstamo Nº {IDPrestamo:00000}")" Width="820px" CloseOnEscape="true">
+        <BodyContentTemplate Context="popup">
+            <SgpaCrudView TEntity="SP_Cuota" Title="" FilterColumn="IDPrestamo" FilterValue="_edit.IDPrestamo" />
+        </BodyContentTemplate>
+    </DxPopup>
+
+    <DxPopup @bind-Visible="_showPagosParciales" HeaderText="@($"Pagos parciales — préstamo Nº {IDPrestamo:00000}")" Width="760px" CloseOnEscape="true">
+        <BodyContentTemplate Context="popup">
+            <SgpaCrudView TEntity="SP_PagoParcial" Title="" FilterColumn="IDPrestamo" FilterValue="_edit.IDPrestamo" />
+        </BodyContentTemplate>
+    </DxPopup>
+
+    <DxPopup @bind-Visible="_showRetenciones" HeaderText="@($"Retenciones — préstamo Nº {IDPrestamo:00000}")" Width="900px" CloseOnEscape="true">
+        <BodyContentTemplate Context="popup"><RetencionesPanel IDPrestamo="_edit.IDPrestamo" CI="_edit.CI" /></BodyContentTemplate>
+    </DxPopup>
+}
+
+@* --- Comentarios del afiliado (port de cmdComentario → frmAfiliadoComentario) --- *@
+<DxPopup @bind-Visible="_showComentarios" HeaderText="@($"Comentarios — cédula {_ci}")" Width="720px" CloseOnEscape="true">
+    <BodyContentTemplate Context="popup">
+        @if (_ci is > 0)
+        {
+            <SgpaCrudView TEntity="SP_AfiliadoComentario" Title="" FilterColumn="CI" FilterValue="_ci.Value"
+                          OnNew="@(c => c.Fecha = DateTime.Today)" />
+        }
+    </BodyContentTemplate>
+</DxPopup>
+
+@* --- Detalle de ingresos / líquidos (port de cmdDetalleIngreso → frmImpLiquido), agrupado por empresa --- *@
+<DxPopup @bind-Visible="_showDetalleIngreso" HeaderText="@($"Detalle de ingresos (líquidos) — cédula {_ci}")" Width="780px" CloseOnEscape="true">
+    <BodyContentTemplate Context="popup">
+        <DxGrid Data="_impLiquidos" PageSize="20" AutoExpandAllGroupRows="true">
+            <Columns>
+                <DxGridDataColumn FieldName="EmpresaNombre" Caption="Empresa" GroupIndex="0" />
+                <DxGridDataColumn FieldName="Anio" Caption="Año" Width="90px" />
+                <DxGridDataColumn FieldName="Mes" Caption="Mes" Width="90px" />
+                <DxGridDataColumn FieldName="Importe" Caption="Líquido" DisplayFormat="N2" />
+            </Columns>
+        </DxGrid>
+    </BodyContentTemplate>
+</DxPopup>
+
+@* --- Buscar afiliado (port de cmdBuscar / frmBuscarxNombre): por cédula o nombre/apellido --- *@
+<DxPopup @bind-Visible="_showBuscar" HeaderText="Buscar afiliado" Width="820px" CloseOnEscape="true">
+    <BodyContentTemplate Context="popup">
+        <div class="mb-2">
+            @* Una sola caja: escribí cédula o nombre/apellido (varias palabras); busca en vivo. *@
+            <DxTextBox Text="@_buscarTermino" TextChanged="OnBuscarTextChanged" BindValueMode="BindValueMode.OnInput"
+                       NullText="Buscar por cédula o nombre…" ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto" />
+        </div>
+        <div class="small text-muted mb-1">Hacé clic en una fila (o en “Elegir”) para cargar el afiliado.</div>
+        <DxGrid Data="_buscarResultados" PageSize="10" CssClass="w-100"
+                SelectionMode="GridSelectionMode.Single" AllowSelectRowByClick="true"
+                SelectedDataItemChanged="OnBuscarRowSelected">
+            <Columns>
+                <DxGridDataColumn  Width="60px" AllowSort="false">
+                    <CellDisplayTemplate Context="cell">
+                        <DxButton Text="Elegir" RenderStyle="ButtonRenderStyle.Link" SizeMode="SizeMode.Small"
+                                  Click="@(() => SeleccionarAfiliadoAsync((AfiliadoBusqueda)cell.DataItem))" />
+                    </CellDisplayTemplate>
+                </DxGridDataColumn>
+                <DxGridDataColumn FieldName="CI" Caption="Cédula" Width="130px" DisplayFormat="0" />
+                <DxGridDataColumn Caption="Afiliado">
+                    <CellDisplayTemplate Context="cell">@(((AfiliadoBusqueda)cell.DataItem).NombreCompleto)</CellDisplayTemplate>
+                </DxGridDataColumn>
+         
+            </Columns>
+        </DxGrid>
+    </BodyContentTemplate>
+</DxPopup>
+
+<Sgpa.Web.Components.Reportes.PrestamoReportesDialog @ref="_reportesDialog" />
+
+@code {
+    private const string TipoFideicomiso = "fid";
+
+    [Parameter] public int? IDPrestamo { get; set; }
+    private bool _editMode;
+    private PrestamoEditView? _edit;
+    private Sgpa.Web.Components.Reportes.PrestamoReportesDialog? _reportesDialog;
+
+    private long? _ci;
+    private DxSpinEdit<long?>? _ciEdit;   // para enfocar la cédula al abrir un préstamo nuevo
+    private string? _tipo;
+    private int? _nroPrestamoBuscar;
+    private bool _showComentarios, _showDetalleIngreso;
+    private bool _showFacturas, _showCuotas, _showPagosParciales, _showRetenciones;
+    private bool _showBuscar;
+    private string _buscarTermino = "";
+    private IReadOnlyList<AfiliadoBusqueda> _buscarResultados = Array.Empty<AfiliadoBusqueda>();
+    private IReadOnlyList<ImpLiquidoVm> _impLiquidos = Array.Empty<ImpLiquidoVm>();
+    private List<TipoVm> _tipos = new();
+    private List<MonedaInfo> _monedas = new();
+    private string? _moneda;
+    private double _importe;
+    private int _cuotas = 12;
+
+    private PrestamoParametros _prm = new() { MaxCuotas = 12 };
+
+    // Afiliado / crédito.
+    private bool _afiliadoOk, _esPrueba, _elegible;
+    private AfiliadoFicha? _ficha;
+    private double _promedio, _saldoAbierto, _cuotaAbierta;
+    private int _aportes;
+    private string? _afiliadoMsg;
+    private List<PrestamoAnterior> _prestamosAnt = new();
+
+    private IReadOnlyList<CuotaAmortizacion>? _cuadro;
+    private double _valorCuota, _totImporte, _totInteres, _totAmort;
+    private bool _avisoTope;
+    private string? _error;
+
+    // Calculadora de planes.
+    private bool _planVisible;
+    private bool _planPorCuota = true;
+    private double _planValor;
+    private double _planCuotaObjetivo;
+    private readonly List<PlanModo> _planModos = new() { new("Por cuota fija", true), new("Por monto fijo", false) };
+    private IReadOnlyList<PlanCuota> _planes = Array.Empty<PlanCuota>();
+
+    // Acciones de toolbar (anular / cancelación anticipada).
+    private bool _confirmAnular, _confirmCancelar, _accionando;
+    private double _importeCancelacion;
+    private string? _accionMsg, _accionError;
+    private bool PuedeAnular => _edit is not null && _edit.CodPrestamoEstado != "anu";
+    private bool PuedeCancelar => _edit is not null && _edit.CodPrestamoEstado == "emi";
+    private bool PuedeRefinanciar => _edit is not null && (_edit.CodPrestamoEstado is "pro" or "ret");
+
+    private bool _confirmRefi;
+    private int _refiCuotas = 12;
+    private bool _refiMismaTasa = true;
+    private double _refiImporte;
+
+    // Grabado.
+    private DateTime? _fecha = DateTime.Today;
+    private DateTime? _fechaCobro;
+    private int _nroSerieCheque, _nroCheque;
+    private string? _nroCta, _banco, _sucursal, _observaciones;
+    private bool _grabando;
+    private string? _grabadoOk, _grabadoError;
+
+    private double? _tasa => _monedas.FirstOrDefault(m => m.CodMoneda == _moneda)?.Tasa;
+    // El cálculo necesita afiliado elegible + tipo elegido (salvo el cálculo de prueba CI 99).
+    private bool _puedeCalcular => _afiliadoOk && _elegible && (_esPrueba || !string.IsNullOrEmpty(_tipo));
+
+    // Tope disponible recalculado según la moneda elegida (no requiere re-consultar).
+    private double Tope
+    {
+        get
+        {
+            var topeBase = (_prm.TopeSueldos > 0 ? 0d : _prm.UR * _prm.TopeUR) - _saldoAbierto;
+            if (_moneda == PrestamoRepository.CodMonedaDolar && _prm.Dolar > 0) topeBase /= _prm.Dolar;
+            return Math.Max(topeBase, 0d);
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _prm = await Repo.GetParametrosAsync();
+        _monedas = (await Repo.GetMonedasAsync()).ToList();
+        _moneda = _monedas.FirstOrDefault()?.CodMoneda;
+        _cuotas = Math.Min(12, _prm.MaxCuotas);
+        _tipos = (await Db.QueryAsync<TipoVm>(
+            "SELECT CodPrestamoTipo, Descrip FROM dbo.SP_PrestamoTipo ORDER BY CodPrestamoTipo")).ToList();
+        _tipo = _tipos.FirstOrDefault()?.CodPrestamoTipo;
+
+        if (IDPrestamo is not null)
+            await CargarEdicionAsync(IDPrestamo.Value);
+    }
+
+    // Al abrir para un nuevo préstamo, el foco arranca en la cédula (usabilidad, paridad con el VB6).
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !_editMode && _ciEdit is not null)
+            await _ciEdit.FocusAsync();
+    }
+
+    /// <summary>Carga un préstamo existente en modo edición: ficha del afiliado, datos financieros (fijos) y cobro.</summary>
+    private async Task CargarEdicionAsync(int id)
+    {
+        var p = await Repo.GetPrestamoEditAsync(id);
+        if (p is null) { _afiliadoMsg = $"No existe el préstamo Nº {id}."; return; }
+
+        _edit = p;
+        _editMode = true;
+
+        _ci = p.CI;
+        _tipo = p.CodPrestamoTipo;
+        _moneda = p.CodMoneda;
+        _importe = p.Importe;
+        _cuotas = p.Cuotas;
+
+        // Ficha del afiliado (sólo para mostrar; en edición no hay controles de elegibilidad).
+        _ficha = await Repo.GetAfiliadoAsync(p.CI);
+        _afiliadoOk = true;
+        _elegible = true;
+
+        // Reconstruye el cuadro a partir de los datos fijos del préstamo (igual que el grabado).
+        _cuadro = PrestamoCalculator.CargarCuadroAmortizacion(p.Cuotas, p.Tasa, p.Importe);
+        _valorCuota = p.ImporteCuota != 0 ? p.ImporteCuota : (_cuadro.Count > 0 ? _cuadro[0].Importe : 0d);
+        _totImporte = _cuadro.Sum(c => c.Importe);
+        _totInteres = _cuadro.Sum(c => c.Interes);
+        _totAmort = _cuadro.Sum(c => c.Amortizacion);
+
+        // Datos editables actuales.
+        _fecha = p.Fecha;
+        _fechaCobro = p.FechaCobro;
+        _nroSerieCheque = p.NroSerieCheque;
+        _nroCheque = p.NroCheque;
+        _nroCta = p.NroCta;
+        _banco = p.Banco;
+        _sucursal = p.Sucursal;
+        _observaciones = p.Observaciones;
+    }
+
+    private async Task BuscarAfiliadoAsync()
+    {
+        _afiliadoOk = _esPrueba = _elegible = false;
+        _afiliadoMsg = _error = null;
+        _ficha = null; _cuadro = null; _avisoTope = false;
+        _promedio = _saldoAbierto = _cuotaAbierta = 0; _aportes = 0;
+        _prestamosAnt = new();
+
+        if (_ci is null) { _afiliadoMsg = "Ingresá la cédula."; return; }
+
+        if (_ci == 99) // cálculo de prueba (sin afiliado ni controles; no requiere tipo)
+        {
+            _esPrueba = true; _afiliadoOk = true; _elegible = true;
+            return;
+        }
+
+        var c = await Repo.GetCreditoAsync(_ci.Value, _moneda, _prm);
+        if (c.Ficha is null) { _afiliadoMsg = "Nº de cédula inexistente."; return; }
+
+        _ficha = c.Ficha;
+        _promedio = c.Promedio; _aportes = c.Aportes;
+        _saldoAbierto = c.SaldoAbierto; _cuotaAbierta = c.CuotaAbierta;
+        _afiliadoOk = true;
+        _elegible = PrestamoRepository.EsElegible(_aportes) || _tipo == TipoFideicomiso;
+        _prestamosAnt = (await Repo.GetPrestamosAnterioresAsync(_ci.Value, 0)).ToList();
+    }
+
+    // Enter en la cédula → busca el afiliado (paridad con txtCI_KeyPress vbKeyReturn del VB6).
+    private async Task OnCedulaKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key is "Enter" or "NumpadEnter") await BuscarAfiliadoAsync();
+    }
+
+    // Enter en "Abrir Nº préstamo" → abre el préstamo existente (port de txtNroPrestamo_KeyPress).
+    private void OnNroPrestamoKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key is "Enter" or "NumpadEnter" && _nroPrestamoBuscar is > 0)
+            Nav.NavigateTo($"/prestamos/calcular/{_nroPrestamoBuscar}", forceLoad: true);
+    }
+
+    // Detalle de ingresos: los líquidos del afiliado, agrupados por empresa (port de frmImpLiquido).
+    private async Task AbrirDetalleIngresosAsync()
+    {
+        if (_ci is not > 0) return;
+        _impLiquidos = await Db.QueryAsync<ImpLiquidoVm>(
+            @"SELECT l.Anio, l.Mes, ISNULL(e.Nombre, CAST(l.CodEmpresa AS nvarchar(20))) AS EmpresaNombre,
+                     CAST(ISNULL(l.Importe,0) AS float) Importe
+              FROM dbo.SP_ImpLiquido l
+              LEFT JOIN dbo.Empresa e ON e.CodEmpresa = l.CodEmpresa
+              WHERE l.CI=@ci
+              ORDER BY EmpresaNombre, l.Anio DESC, l.Mes DESC",
+            new { ci = _ci.Value });
+        _showDetalleIngreso = true;
+    }
+
+    public sealed class ImpLiquidoVm
+    {
+        public int? Anio { get; set; }
+        public int? Mes { get; set; }
+        public string? EmpresaNombre { get; set; }
+        public double Importe { get; set; }
+    }
+
+    // Buscar afiliado (popup): por cédula o nombre/apellido. Al elegir, carga como si se hubiera tipeado el CI.
+    private void AbrirBuscarAfiliado()
+    {
+        _buscarTermino = "";
+        _buscarResultados = Array.Empty<AfiliadoBusqueda>();
+        _showBuscar = true;
+    }
+
+    private CancellationTokenSource? _buscarCts;
+
+    // Búsqueda en vivo (estilo XAF) con un pequeño debounce para no consultar en cada tecla.
+    private async Task OnBuscarTextChanged(string texto)
+    {
+        _buscarTermino = texto;
+        _buscarCts?.Cancel();
+        _buscarCts = new CancellationTokenSource();
+        var ct = _buscarCts.Token;
+        try
+        {
+            await Task.Delay(250, ct);
+            _buscarResultados = await Afiliado.BuscarAsync(_buscarTermino, ct: ct);
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (OperationCanceledException) { /* tecla siguiente canceló esta búsqueda */ }
+    }
+
+    private Task OnBuscarRowSelected(object? item)
+        => item is AfiliadoBusqueda b ? SeleccionarAfiliadoAsync(b) : Task.CompletedTask;
+
+    private async Task SeleccionarAfiliadoAsync(AfiliadoBusqueda b)
+    {
+        _ci = b.CI;
+        _showBuscar = false;
+        await BuscarAfiliadoAsync();
+    }
+
+    // Recalcula la elegibilidad al cambiar el tipo (ej. Fideicomiso no exige los 3 aportes).
+    private void RecomputeElegible()
+    {
+        if (_afiliadoOk && !_esPrueba)
+            _elegible = PrestamoRepository.EsElegible(_aportes) || _tipo == TipoFideicomiso;
+    }
+
+    private void Calcular()
+    {
+        _error = null; _avisoTope = false; _grabadoOk = _grabadoError = null;
+        if (!_puedeCalcular) return;
+        if (string.IsNullOrEmpty(_moneda)) { _error = "Seleccioná la moneda."; return; }
+        if (_importe <= 0) { _error = "Ingresá el importe."; return; }
+        if (_cuotas <= 0) { _error = "Ingresá la cantidad de cuotas."; return; }
+
+        var tasa = _tasa ?? 0d;
+        _cuadro = PrestamoCalculator.CargarCuadroAmortizacion(_cuotas, tasa, _importe);
+        _valorCuota = _cuadro.Count > 0 ? _cuadro[0].Importe : 0d;
+        _totImporte = _cuadro.Sum(c => c.Importe);
+        _totInteres = _cuadro.Sum(c => c.Interes);
+        _totAmort = _cuadro.Sum(c => c.Amortizacion);
+
+        // Aviso: cuota (en pesos) + cuota de préstamo abierto supera el % del promedio (port del control VB6).
+        if (!_esPrueba && _tipo != TipoFideicomiso && _promedio > 0)
+        {
+            var cuotaPesos = _moneda == PrestamoRepository.CodMonedaDolar ? _valorCuota * _prm.Dolar : _valorCuota;
+            if (cuotaPesos + _cuotaAbierta > _promedio * _prm.PctPrestamo / 100d)
+                _avisoTope = true;
+        }
+    }
+
+    // Tasa de cambio para expresar el promedio (en pesos) en la moneda del préstamo (port de TasaxCambio).
+    private double TasaCambioActual => _moneda == PrestamoRepository.CodMonedaDolar && _prm.Dolar > 0 ? _prm.Dolar : 1d;
+
+    private void AbrirPlan()
+    {
+        if (!_puedeCalcular) return;
+        // Cuota objetivo sugerida: promedio × % préstamo, en la moneda elegida; para CI 99 (prueba), el tope.
+        _planCuotaObjetivo = _esPrueba
+            ? Tope
+            : Math.Round(_promedio * (_prm.PctPrestamo / 100d) / TasaCambioActual, 2, MidpointRounding.AwayFromZero);
+        _planValor = _planCuotaObjetivo;
+        _planes = Array.Empty<PlanCuota>();
+        _planPorCuota = true;
+        _planVisible = true;
+    }
+
+    private void CalcularPlanes()
+    {
+        var tasa = _tasa ?? 0d;
+        _planes = _planPorCuota
+            ? PrestamoCalculator.PlanesPorCuotaHastaTope(_planValor, _prm.MaxCuotas, tasa, Tope)
+            : PrestamoCalculator.PlanesPorMontoConCuotaMax(_planValor, _prm.MaxCuotas, tasa, _planCuotaObjetivo);
+    }
+
+    private void ElegirPlan(PlanCuota p)
+    {
+        _importe = Math.Round(p.Monto, 2, MidpointRounding.AwayFromZero);
+        _cuotas = p.Cuotas;
+        _planVisible = false;
+        Calcular();
+    }
+
+    public sealed record PlanModo(string Text, bool PorCuota);
+
+    private async Task AnularAsync()
+    {
+        if (_edit is null) return;
+        _accionando = true; _accionMsg = _accionError = null;
+        try
+        {
+            await Acciones.AnularAsync(_edit.IDPrestamo);
+            _edit.CodPrestamoEstado = "anu";
+            _confirmAnular = false;
+            _accionMsg = $"Préstamo Nº {_edit.IDPrestamo:00000} anulado.";
+        }
+        catch (Exception ex) { _accionError = $"No se pudo anular: {ex.Message}"; }
+        finally { _accionando = false; }
+    }
+
+    private async Task AbrirCancelacionAsync()
+    {
+        if (_edit is null) return;
+        _accionMsg = _accionError = null;
+        try
+        {
+            _importeCancelacion = await Acciones.CalcularCancelacionAsync(_edit.IDPrestamo);
+            _confirmCancelar = true;
+        }
+        catch (Exception ex) { _accionError = $"No se pudo calcular la cancelación: {ex.Message}"; }
+    }
+
+    private async Task CancelarAsync()
+    {
+        if (_edit is null) return;
+        _accionando = true; _accionMsg = _accionError = null;
+        try
+        {
+            var r = await Acciones.CancelarAsync(_edit.IDPrestamo);
+            _confirmCancelar = false;
+            _accionMsg = $"Cancelación generada: factura Nº {r.NroFactura} por {r.Importe:N2}.";
+        }
+        catch (Exception ex) { _accionError = $"No se pudo cancelar: {ex.Message}"; }
+        finally { _accionando = false; }
+    }
+
+    private async Task AbrirRefinanciacionAsync()
+    {
+        if (_edit is null) return;
+        _accionMsg = _accionError = null;
+        try
+        {
+            _refiImporte = await Refi.CalcularImporteRefinanciadoAsync(_edit.IDPrestamo, DateTime.Today);
+            _refiCuotas = _edit.Cuotas > 0 ? _edit.Cuotas : 12;
+            _refiMismaTasa = true;
+            _confirmRefi = true;
+        }
+        catch (Exception ex) { _accionError = $"No se pudo calcular la refinanciación: {ex.Message}"; }
+    }
+
+    private async Task RefinanciarAsync()
+    {
+        if (_edit is null) return;
+        _accionando = true; _accionMsg = _accionError = null;
+        try
+        {
+            var r = await Refi.RefinanciarAsync(_edit.IDPrestamo, DateTime.Today, _refiCuotas, _refiMismaTasa);
+            _confirmRefi = false;
+            // El préstamo nuevo queda ingresado: se abre para emitirlo (fecha de cobro) como cualquier alta.
+            Nav.NavigateTo($"/prestamos/calcular/{r.NuevoIDPrestamo}", forceLoad: true);
+        }
+        catch (Exception ex) { _accionError = $"No se pudo refinanciar: {ex.Message}"; }
+        finally { _accionando = false; }
+    }
+
+    private Task OnGrabarAsync() => _editMode ? EditarAsync() : GrabarAsync();
+
+    private async Task EditarAsync()
+    {
+        _grabadoOk = _grabadoError = null;
+        if (_edit is null) { _grabadoError = "No se cargó el préstamo a editar."; return; }
+        if (_fecha is null) { _grabadoError = "Ingresá la fecha del préstamo."; return; }
+
+        _grabando = true;
+        try
+        {
+            var req = new EditarPrestamoRequest
+            {
+                IDPrestamo = _edit.IDPrestamo,
+                Fecha = _fecha.Value,
+                FechaCobro = _fechaCobro,
+                NroSerieCheque = _nroSerieCheque,
+                NroCheque = _nroCheque,
+                NroCta = _nroCta,
+                Banco = _banco,
+                Sucursal = _sucursal,
+                Observaciones = _observaciones,
+            };
+
+            var r = await Grabado.EditarAsync(req);
+            _edit.CodPrestamoEstado = r.CodPrestamoEstado;   // refleja el posible paso a "emitido"
+            _grabadoOk = r.CuotasGeneradas > 0
+                ? $"Préstamo Nº {r.IDPrestamo:00000} emitido: {r.CuotasGeneradas} cuota(s) y {r.FacturasGeneradas} factura(s) generadas."
+                : $"Préstamo Nº {r.IDPrestamo:00000} actualizado.";
+        }
+        catch (Exception ex)
+        {
+            _grabadoError = $"No se pudo guardar el préstamo: {ex.Message}";
+        }
+        finally
+        {
+            _grabando = false;
+        }
+    }
+
+    private async Task GrabarAsync()
+    {
+        _grabadoOk = _grabadoError = null;
+
+        if (_esPrueba) { _grabadoError = "El cálculo de prueba (CI 99) no se graba."; return; }
+        if (_cuadro is null) { _grabadoError = "Calculá el préstamo antes de grabar."; return; }
+        if (_ci is null || string.IsNullOrEmpty(_moneda) || string.IsNullOrEmpty(_tipo))
+        {
+            _grabadoError = "Faltan datos del afiliado/préstamo.";
+            return;
+        }
+        if (_fecha is null) { _grabadoError = "Ingresá la fecha del préstamo."; return; }
+
+        _grabando = true;
+        try
+        {
+            var req = new GrabarPrestamoRequest
+            {
+                CI = _ci.Value,
+                CodMoneda = _moneda!,
+                CodPrestamoTipo = _tipo!,
+                Importe = _importe,
+                Cuotas = _cuotas,
+                ImporteCuota = _valorCuota,
+                Tasa = _tasa ?? 0d,
+                Promedio = _promedio,
+                Fecha = _fecha.Value,
+                FechaCobro = _fechaCobro,
+                NroSerieCheque = _nroSerieCheque,
+                NroCheque = _nroCheque,
+                NroCta = _nroCta,
+                Banco = _banco,
+                Sucursal = _sucursal,
+                Observaciones = _observaciones,
+                Cuadro = _cuadro,
+            };
+
+            var r = await Grabado.GrabarAsync(req);
+            _grabadoOk = r.CodPrestamoEstado == "emi"
+                ? $"Préstamo Nº {r.IDPrestamo:00000} emitido: {r.CuotasGeneradas} cuota(s) y {r.FacturasGeneradas} factura(s) generadas."
+                : $"Préstamo Nº {r.IDPrestamo:00000} ingresado (sin emitir).";
+        }
+        catch (Exception ex)
+        {
+            _grabadoError = $"No se pudo grabar el préstamo: {ex.Message}";
+        }
+        finally
+        {
+            _grabando = false;
+        }
+    }
+
+    public sealed class TipoVm
+    {
+        public string CodPrestamoTipo { get; set; } = "";
+        public string? Descrip { get; set; }
+    }
+}

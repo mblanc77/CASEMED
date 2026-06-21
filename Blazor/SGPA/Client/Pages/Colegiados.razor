@@ -1,0 +1,152 @@
+@page "/colegiados"
+
+<PageTitle>Colegiados</PageTitle>
+<RadzenStack>
+    <RadzenRow AlignItems="AlignItems.Center">
+        <RadzenColumn Size="12" SizeMD="6">
+            <RadzenText Text="Colegiados" TextStyle="TextStyle.H3" TagName="TagName.H1" style="margin: 0" />
+        </RadzenColumn>
+        <RadzenColumn Size="12" SizeMD="6">
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                <RadzenSplitButton Icon="get_app" Text="Export" Click="@ExportClick" Variant="Variant.Flat" Shade="Shade.Lighter">
+                    <RadzenSplitButtonItem Text="Excel" Value="xlsx" />
+                    <RadzenSplitButtonItem Text="CSV" Value="csv" />
+                </RadzenSplitButton>
+                <RadzenButton Icon="add_circle_outline" Text="Add" Click="@AddButtonClick" Variant="Variant.Flat" />
+            </RadzenStack>
+        </RadzenColumn>
+    </RadzenRow>
+    <RadzenRow>
+      <RadzenColumn SizeMD=12>
+        <RadzenDataGrid @ref="grid0" ColumnWidth="200px"  AllowFiltering="true" FilterMode="FilterMode.Advanced" AllowPaging="true" AllowSorting="true" ShowPagingSummary="true" PageSizeOptions=@(new int[]{5, 10, 20, 30})
+            Data="@colegiados" Count=count LoadData=@Grid0LoadData  TItem="SGPA.Server.Models.CMU.Colegiado" RowDoubleClick="@EditRow" >
+            <Columns>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="Documento" Title="Documento">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="Nombres" Title="Nombres">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="Apellido1" Title="Apellido1">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="Apellido2" Title="Apellido2">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="FechaNacimiento" Title="Fecha Nacimiento">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="Matricula" Title="Matricula">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="Sexo" Title="Sexo">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="EMail" Title="E Mail">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="Celular" Title="Celular">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="TelefonoParticular" Title="Telefono Particular">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="TelefonoLaboral" Title="Telefono Laboral">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="FechaPresentacionDJ" Title="Fecha Presentacion D J">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="NumeroPuerta" Title="Numero Puerta">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="Apartamento" Title="Apartamento">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="MontoNominalDJ" Title="Monto Nominal D J">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="FechaBaja" Title="Fecha Baja">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="FechaPresentacionTitulo" Title="Fecha Presentacion Titulo">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="FechaVencimientoDJ" Title="Fecha Vencimiento D J">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="ComentarioBaja" Title="Comentario Baja">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="FechaHabilitacionMSP" Title="Fecha Habilitacion M S P">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="FechaExpedicionTitulo" Title="Fecha Expedicion Titulo">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="NumeroTarjeta" Title="Numero Tarjeta">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="VencimientoTarjeta" Title="Vencimiento Tarjeta">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="Localidad" Title="Localidad">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="Direccion" Title="Direccion">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="UltimoCambioContraseña" Title="Ultimo Cambio Contraseña">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="CodigoPostal" Title="Codigo Postal">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="LugarNacimiento" Title="Lugar Nacimiento">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="NoVerificarDocumento" Title="No Verificar Documento">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="Importado" Title="Importado">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="OptimisticLockField" Title="Optimistic Lock Field">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="FechaFinExoneracion" Title="Fecha Fin Exoneracion">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="FechaVerificacionalta" Title="Fecha Verificacionalta">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="FechaVerificacionBaja" Title="Fecha Verificacion Baja">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="NroFormularioAlta" Title="Nro Formulario Alta">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="UltimaActualizacionDatos" Title="Ultima Actualizacion Datos">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="FechaAlta" Title="Fecha Alta">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="FechaVinculacion" Title="Fecha Vinculacion">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="FechaCargaEMail" Title="Fecha Carga E Mail">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="Fecha1erPago" Title="Fecha1er Pago">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="NroFormularioBaja" Title="Nro Formulario Baja">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="GCRecord" Title="G C Record">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="Elector2015" Title="Elector2015">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="EmailAlt" Title="Email Alt">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="FechaIngresoBaja" Title="Fecha Ingreso Baja">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="FechaSolicitudBaja" Title="Fecha Solicitud Baja">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="FechaSolicitudAlta" Title="Fecha Solicitud Alta">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="FechaExoneracionAnterior" Title="Fecha Exoneracion Anterior">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="LegacyColegiadoCarneId" Title="Legacy Colegiado Carne Id">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="AgenteCobranza.ParseClass" Title="Agente Cobranza">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="BajaMotivo1.Descripcion" Title="Baja Motivo1">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="CategoriaColegiado1.Descripcion" Title="Categoria Colegiado1">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="Departamento1.Nombre" Title="Departamento1">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="Pai.Nombre" Title="Pai">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="Regional.Descripcion" Title="Regional">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="AgenteCobranza1.ParseClass" Title="Agente Cobranza1">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Property="UniversidadTituloGrado1.Descripcion" Title="Universidad Titulo Grado1">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Colegiado" Filterable="false" Sortable="false" Width="70px" TextAlign="TextAlign.Center">
+                    <Template Context="colegiado">
+
+                        <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Medium"
+                            Shade="Shade.Lighter" Variant="Variant.Flat"
+                            Click=@(args => GridDeleteButtonClick(args, colegiado)) @onclick:stopPropagation="true" />
+                    </Template>
+                </RadzenDataGridColumn>
+            </Columns>
+
+        </RadzenDataGrid>
+
+    </RadzenColumn>
+  </RadzenRow>
+</RadzenStack>

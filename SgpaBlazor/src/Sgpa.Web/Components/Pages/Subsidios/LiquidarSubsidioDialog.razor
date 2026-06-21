@@ -1,0 +1,335 @@
+@rendermode InteractiveServer
+@using Sgpa.Business.Subsidios
+@using Sgpa.Business.Subsidios.Export
+@using Sgpa.Business.Subsidios.Import
+@using Sgpa.Data.Preferencias
+@using System.Text.Json
+@inject IPreferenciaVistaStore Prefs
+@inject ISubsidioLiquidacionService Liquidador
+@inject IDbExecutor Db
+@inject NbcExporter Nbc
+@inject BrouExporter Brou
+@inject SubsidioExtraExporter Extra
+@inject SubsidioImporter Importer
+@inject WebCurrentUser CurrentUser
+@inject IJSRuntime JS
+
+@*
+    Acción "Liquidar" del ABM de Subsidios (consolida la antigua página /subsidios/liquidar).
+    Pide Mes/Año + Cédula opcional + flags Liquidar / Generar nros de recibo (igual que el
+    frmLiquidaSubsidio del VB6). Incluye los exports bancarios y los imports BPS/líquidos (punto 1).
+*@
+
+<DxPopup @bind-Visible="Visible" HeaderText="Liquidación de subsidios" Width="min(960px, 96vw)"
+         ShowFooter="false" CloseOnEscape="true">
+    <BodyContentTemplate Context="popup">
+        @if (!CurrentUser.IsAdmin)
+        {
+            <div class="alert alert-warning mb-0">La liquidación está reservada a administradores.</div>
+        }
+        else
+        {
+        <div class="position-relative">
+            <DxFormLayout>
+                <DxFormLayoutItem Caption="Año" ColSpanMd="3">
+                    <DxSpinEdit @bind-Value="_anio" @bind-Value:after="GuardarPrefsAsync" MinValue="2000" MaxValue="2100" />
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Mes" ColSpanMd="3">
+                    <DxSpinEdit @bind-Value="_mes" @bind-Value:after="GuardarPrefsAsync" MinValue="1" MaxValue="12" />
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Cédula (opcional)" ColSpanMd="6">
+                    <DxSpinEdit @bind-Value="_ci" @bind-Value:after="GuardarPrefsAsync" NullText="Todos los afiliados" ShowSpinButtons="false" DisplayFormat="0" />
+                </DxFormLayoutItem>
+                <DxFormLayoutItem ColSpanMd="6" BeginRow="true">
+                    <DxCheckBox @bind-Checked="_liquidar" @bind-Checked:after="GuardarPrefsAsync">Sólo empresas con flag Liquidar</DxCheckBox>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem ColSpanMd="6">
+                    <DxCheckBox @bind-Checked="_genNroRecibo" @bind-Checked:after="GuardarPrefsAsync">Generar nros de recibo</DxCheckBox>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem ColSpanMd="12" BeginRow="true">
+                    <DxButton Text="@(_ejecutando ? "Procesando…" : "Ejecutar liquidación")"
+                              IconCssClass="fa-solid fa-gears" RenderStyle="ButtonRenderStyle.Primary"
+                              Enabled="!_ejecutando" Click="@(() => _confirmVisible = true)" />
+                </DxFormLayoutItem>
+            </DxFormLayout>
+
+            @if (_error is not null)
+            {
+                <div class="alert alert-danger mt-3">@_error</div>
+            }
+            @if (_resultado is not null)
+            {
+                <div class="alert alert-success mt-3">
+                    Liquidación completa: <strong>@_resultado.AfiliadosProcesados</strong> afiliados procesados,
+                    <strong>@_resultado.SubsidiosGenerados</strong> subsidios generados@(_genNroRecibo ? " (con nros de recibo)" : "").
+                </div>
+            }
+
+            <hr />
+
+            <div class="d-flex align-items-center gap-2 flex-wrap mb-2">
+                <span class="fw-semibold">Período @_anio/@_mes.ToString("00")</span>
+                <span class="text-muted">@_total cabezales · Líquido total @_totalLiquido.ToString("N2")</span>
+                <span class="ms-auto"></span>
+                <span class="text-muted">Fecha de pago</span>
+                <DxDateEdit @bind-Date="_fechaPago" @bind-Date:after="GuardarPrefsAsync" />
+                <DxButton Text="Recargar" IconCssClass="fa-solid fa-rotate" RenderStyle="ButtonRenderStyle.Secondary"
+                          Click="CargarCabezalesAsync" />
+            </div>
+
+            <div class="d-flex align-items-center gap-2 flex-wrap mb-2">
+                <span class="text-muted"><i class="fa-solid fa-file-export me-1"></i>Exportar:</span>
+                <DxButton Text="NBC" IconCssClass="fa-solid fa-file-lines" RenderStyle="ButtonRenderStyle.Secondary" Click="ExportarNbc" />
+                <DxButton Text="BROU (texto)" IconCssClass="fa-solid fa-file-lines" RenderStyle="ButtonRenderStyle.Secondary" Click="ExportarBrou" />
+                <DxButton Text="BROU (Excel)" IconCssClass="fa-solid fa-file-excel" RenderStyle="ButtonRenderStyle.Secondary" Click="ExportarBrouExcel" />
+                <DxButton Text="Discount" IconCssClass="fa-solid fa-file-excel" RenderStyle="ButtonRenderStyle.Secondary" Click="ExportarDiscount" />
+                <DxButton Text="BPS" IconCssClass="fa-solid fa-file-excel" RenderStyle="ButtonRenderStyle.Secondary" Click="ExportarBps" />
+            </div>
+
+            <div class="d-flex align-items-center gap-3 flex-wrap mb-2">
+                <span class="text-muted"><i class="fa-solid fa-file-import me-1"></i>Importar (CSV):</span>
+                <label class="btn btn-outline-secondary btn-sm mb-0">
+                    <i class="fa-solid fa-upload me-1"></i> Liquidación BPS
+                    <InputFile OnChange="ImportarBpsAsync" accept=".csv,.txt" class="d-none" />
+                </label>
+                <label class="btn btn-outline-secondary btn-sm mb-0">
+                    <i class="fa-solid fa-upload me-1"></i> Actualizar líquidos
+                    <InputFile OnChange="ImportarLiquidosAsync" accept=".csv,.txt" class="d-none" />
+                </label>
+                @if (_importMsg is not null)
+                {
+                    <span class="text-success">@_importMsg</span>
+                }
+            </div>
+
+            @if (_cabezales is not null)
+            {
+                <DxGrid Data="_cabezales" ShowSearchBox="true" PageSize="10">
+                    <Columns>
+                        <DxGridDataColumn FieldName="CI" Caption="Cédula" DisplayFormat="0" />
+                        <DxGridDataColumn FieldName="NroRecibo" Caption="Recibo" />
+                        <DxGridDataColumn FieldName="Dias" Caption="Días" />
+                        <DxGridDataColumn FieldName="ImpNominal" Caption="Nominal" DisplayFormat="N2" />
+                        <DxGridDataColumn FieldName="ImpAguinaldo" Caption="Aguinaldo" DisplayFormat="N2" />
+                        <DxGridDataColumn FieldName="ImpLiquido" Caption="Líquido (bruto)" DisplayFormat="N2" />
+                        <DxGridDataColumn FieldName="LiquidoPagar" Caption="Neto a pagar" DisplayFormat="N2" />
+                    </Columns>
+                    @* Totaliza los montos de las filas visibles (respeta el filtro/búsqueda del grid). *@
+                    <TotalSummary>
+                        <DxGridSummaryItem SummaryType="GridSummaryItemType.Count" FieldName="CI" FooterColumnName="CI" DisplayText="{0} subsidios" />
+                        <DxGridSummaryItem SummaryType="GridSummaryItemType.Sum" FieldName="ImpNominal" FooterColumnName="ImpNominal" ValueDisplayFormat="N2" />
+                        <DxGridSummaryItem SummaryType="GridSummaryItemType.Sum" FieldName="ImpAguinaldo" FooterColumnName="ImpAguinaldo" ValueDisplayFormat="N2" />
+                        <DxGridSummaryItem SummaryType="GridSummaryItemType.Sum" FieldName="ImpLiquido" FooterColumnName="ImpLiquido" ValueDisplayFormat="N2" />
+                        <DxGridSummaryItem SummaryType="GridSummaryItemType.Sum" FieldName="LiquidoPagar" FooterColumnName="LiquidoPagar" ValueDisplayFormat="N2" />
+                    </TotalSummary>
+                </DxGrid>
+            }
+
+            @* Overlay de progreso DENTRO del popup (mismo stacking context que el DxPopup → siempre visible). *@
+            @if (_ejecutando)
+            {
+                <div class="sgpa-liq-overlay">
+                    <div class="sgpa-wait-card">
+                        <div class="sgpa-wait-text mb-3">Liquidando subsidios…</div>
+                        <svg class="sgpa-radial" viewBox="0 0 120 120" width="150" height="150">
+                            <circle cx="60" cy="60" r="52" fill="none" stroke="#e1e4f0" stroke-width="12" />
+                            <circle cx="60" cy="60" r="52" fill="none" stroke="#1C3680" stroke-width="12"
+                                    stroke-linecap="round" transform="rotate(-90 60 60)"
+                                    stroke-dasharray="326.726" stroke-dashoffset="@DashOffset" />
+                            <text x="60" y="60" text-anchor="middle" dominant-baseline="central"
+                                  font-size="26" font-weight="600" fill="#1C3680">@_progreso.Porcentaje%</text>
+                        </svg>
+                        <div class="text-muted small mt-2">
+                            @(_progreso.Total > 0 ? $"{_progreso.Procesados} de {_progreso.Total} afiliados" : "Preparando…")
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        }
+    </BodyContentTemplate>
+</DxPopup>
+
+<DxPopup @bind-Visible="_confirmVisible" HeaderText="Confirmar liquidación" Width="480px">
+    <BodyContentTemplate>
+        <p>
+            Vas a (re)liquidar el período <strong>@_anio/@_mes.ToString("00")</strong>
+            @(_ci.HasValue ? $" para la cédula {_ci}" : " para todos los afiliados").
+            Esto <strong>borra y recalcula</strong> los subsidios del período. ¿Continuar?
+        </p>
+        <div class="d-flex justify-content-end gap-2">
+            <DxButton Text="Cancelar" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => _confirmVisible = false)" />
+            <DxButton Text="Sí, liquidar" RenderStyle="ButtonRenderStyle.Danger" Click="EjecutarAsync" />
+        </div>
+    </BodyContentTemplate>
+</DxPopup>
+
+
+@code {
+    [Parameter] public bool Visible { get; set; }
+    [Parameter] public EventCallback<bool> VisibleChanged { get; set; }
+    /// <summary>Se dispara tras una liquidación exitosa (para que el ABM recargue la lista).</summary>
+    [Parameter] public EventCallback OnLiquidado { get; set; }
+
+    private int _anio = DateTime.Today.Year;
+    private int _mes = DateTime.Today.Month;
+    private long? _ci;
+    private bool _liquidar = true;
+    private bool _genNroRecibo;
+    private DateTime _fechaPago = DateTime.Today;
+
+    private bool _ejecutando, _confirmVisible;
+    private string? _error, _importMsg;
+    private LiquidacionResultado? _resultado;
+    private LiquidacionProgreso _progreso;   // avance mientras liquida (para el wait dialog)
+
+    // Offset del anillo SVG (circunferencia 2·π·52 ≈ 326.726). Formato invariante para no romper el SVG con coma decimal.
+    private string DashOffset =>
+        (326.726 * (1 - _progreso.Porcentaje / 100.0)).ToString(System.Globalization.CultureInfo.InvariantCulture);
+
+    private List<CabezalVm>? _cabezales;
+    private int _total;
+    private decimal _totalLiquido;
+
+    private const string PrefKey = "subsidios:liquidar";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CurrentUser.EnsureLoadedAsync();
+        if (!CurrentUser.IsAdmin) return;
+        var json = await Prefs.GetAsync(CurrentUser.UserName, PrefKey);
+        if (json is null) return;
+        try
+        {
+            var p = JsonSerializer.Deserialize<LiquidarPrefs>(json);
+            if (p is null) return;
+            // Restaura tal cual se guardó, incluyendo campos vaciados (Ci null = "todos los afiliados").
+            _anio = p.Anio;
+            _mes = p.Mes;
+            _ci = p.Ci;
+            _liquidar = p.Liquidar;
+            _genNroRecibo = p.GenNroRecibo;
+            _fechaPago = p.FechaPago;
+        }
+        catch { /* pref corrupta: se ignora */ }
+    }
+
+    // Persiste el estado actual del formulario (se llama tras cada cambio de campo). Respeta los campos vacíos:
+    // si Cédula quedó sin valor, se guarda Ci=null y al reabrir vuelve a "Todos los afiliados".
+    private Task GuardarPrefsAsync()
+    {
+        var p = new LiquidarPrefs
+        {
+            Anio = _anio, Mes = _mes, Ci = _ci,
+            Liquidar = _liquidar, GenNroRecibo = _genNroRecibo, FechaPago = _fechaPago,
+        };
+        return Prefs.SaveAsync(CurrentUser.UserName, PrefKey, JsonSerializer.Serialize(p));
+    }
+
+    private sealed class LiquidarPrefs
+    {
+        public int Anio { get; set; }
+        public int Mes { get; set; }
+        public long? Ci { get; set; }            // null = todos los afiliados (campo vaciable)
+        public bool Liquidar { get; set; }
+        public bool GenNroRecibo { get; set; }
+        public DateTime FechaPago { get; set; }
+    }
+
+    private async Task EjecutarAsync()
+    {
+        _confirmVisible = false;
+        _ejecutando = true;
+        _progreso = new LiquidacionProgreso(0, 0);
+        _error = null; _resultado = null; _importMsg = null;
+        try
+        {
+            var prog = new Progress<LiquidacionProgreso>(p => InvokeAsync(() => { _progreso = p; StateHasChanged(); }));
+            _resultado = await Liquidador.LiquidarAsync(_anio, _mes, _liquidar, _ci, _genNroRecibo, prog);
+            await CargarCabezalesAsync();
+            if (OnLiquidado.HasDelegate) await OnLiquidado.InvokeAsync();
+        }
+        catch (Exception ex) { _error = ex.Message; }
+        finally { _ejecutando = false; }
+    }
+
+    private async Task CargarCabezalesAsync()
+    {
+        var rows = await Db.QueryAsync<CabezalVm>(
+            @"SELECT TOP 1000 c.CI, c.NroRecibo, c.Dias,
+                     CAST(c.ImpNominal AS decimal(18,2)) ImpNominal,
+                     CAST(c.ImpAguinaldo AS decimal(18,2)) ImpAguinaldo,
+                     CAST(c.ImpLiquido AS decimal(18,2)) ImpLiquido,
+                     CAST(ISNULL(b.LiquidoPagar, c.ImpLiquido) AS decimal(18,2)) LiquidoPagar
+              FROM dbo.SubsidioCabezal c
+              LEFT JOIN dbo.SubsidioCabezal_BPS b ON b.IdSubsidio = c.IdSubsidio
+              WHERE c.Anio=@a AND c.Mes=@m AND c.Liquidar=@l ORDER BY c.CI",
+            new { a = _anio, m = _mes, l = _liquidar });
+        _cabezales = rows.ToList();
+
+        var tot = await Db.QuerySingleOrDefaultAsync<(int N, decimal Liq)>(
+            "SELECT COUNT(*) N, ISNULL(SUM(CAST(ImpLiquido AS decimal(18,2))),0) Liq FROM dbo.SubsidioCabezal WHERE Anio=@a AND Mes=@m AND Liquidar=@l",
+            new { a = _anio, m = _mes, l = _liquidar });
+        _total = tot.N; _totalLiquido = tot.Liq;
+    }
+
+    private async Task ExportarNbc()
+        => await DescargarAsync($"nbc_{_anio}{_mes:00}.txt", await Nbc.GenerarAsync(_mes, _anio, _fechaPago, _liquidar));
+
+    private async Task ExportarBrou()
+        => await DescargarAsync($"brou_{_fechaPago:yyMMdd}.txt", (await Brou.GenerarAsync(_mes, _anio, _fechaPago, _liquidar)).Content);
+
+    private async Task ExportarBrouExcel()
+        => await DescargarAsync($"brou_{_anio}{_mes:00}.xls", await Extra.GenerarBrouExcelAsync(_mes, _anio, _fechaPago, _liquidar));
+
+    private async Task ExportarDiscount()
+        => await DescargarAsync($"discount_{_anio}{_mes:00}.xls", await Extra.GenerarDiscountAsync(_mes, _anio, _fechaPago, _liquidar));
+
+    private async Task ExportarBps()
+        => await DescargarAsync($"bps_{_anio}{_mes:00}.xls", await Extra.GenerarBpsAsync(_mes, _anio, _liquidar));
+
+    private async Task ImportarBpsAsync(InputFileChangeEventArgs e)
+    {
+        _error = _importMsg = null;
+        try
+        {
+            var csv = await LeerArchivoAsync(e);
+            var res = await Importer.CargarBpsAsync(csv);
+            _importMsg = $"BPS cargado: {res.Insertados} filas (entrega {res.NroEntrega}).";
+        }
+        catch (Exception ex) { _error = ex.Message; }
+    }
+
+    private async Task ImportarLiquidosAsync(InputFileChangeEventArgs e)
+    {
+        _error = _importMsg = null;
+        try
+        {
+            var csv = await LeerArchivoAsync(e);
+            var n = await Importer.ActualizarLiquidosAsync(csv);
+            _importMsg = $"Líquidos actualizados: {n} subsidios.";
+            await CargarCabezalesAsync();
+        }
+        catch (Exception ex) { _error = ex.Message; }
+    }
+
+    private static async Task<string> LeerArchivoAsync(InputFileChangeEventArgs e)
+    {
+        using var reader = new StreamReader(e.File.OpenReadStream(maxAllowedSize: 25 * 1024 * 1024));
+        return await reader.ReadToEndAsync();
+    }
+
+    private ValueTask DescargarAsync(string fileName, string content)
+        => JS.InvokeVoidAsync("sgpaDownloadText", fileName, content);
+
+    public sealed class CabezalVm
+    {
+        public long CI { get; set; }
+        public int? NroRecibo { get; set; }
+        public int Dias { get; set; }
+        public decimal ImpNominal { get; set; }
+        public decimal ImpAguinaldo { get; set; }
+        public decimal ImpLiquido { get; set; }
+        public decimal LiquidoPagar { get; set; }
+    }
+}

@@ -1,0 +1,321 @@
+@page "/informes-estadisticos"
+@rendermode InteractiveServer
+@attribute [Microsoft.AspNetCore.Authorization.Authorize]
+@using DevExpress.Blazor.Reporting
+@using DevExpress.XtraReports.UI
+@using Microsoft.JSInterop
+@using Sgpa.Web.Reporting.Predefinidos
+@using Sgpa.Web.Reports.Estadisticos
+@using Sgpa.Data.Preferencias
+@using Sgpa.Web.Security
+@inject IEstadisticaReporteData Data
+@inject IEstadisticaReportes Reportes
+@inject IPreferenciaVistaStore Pref
+@inject WebCurrentUser CurrentUser
+@inject IJSRuntime JS
+
+<PageTitle>Informes estadísticos</PageTitle>
+
+<h3 class="mb-1"><i class="fa-solid fa-chart-pie me-2 text-primary"></i>Informes estadísticos</h3>
+<p class="text-muted">Elegí un informe, ajustá los parámetros y el tipo de gráfico, y luego <b>Ver</b> o <b>Imprimir</b>.</p>
+
+<div class="row g-3">
+    <div class="col-lg-6">
+        <DxTreeView AllowSelectNodes="true" SizeMode="SizeMode.Small" CssClass="sgpa-est-tree"
+                    NodeExpandCollapseAction="TreeViewNodeExpandCollapseAction.NodeClick"
+                    SelectionChanged="OnNodeSelected">
+            <Nodes>
+                @foreach (var grupo in _grupos)
+                {
+                    <DxTreeViewNode Text="@grupo.Key" IconCssClass="@GrupoIcono(grupo.Key)" Expanded="true">
+                        <Nodes>
+                            @foreach (var d in grupo)
+                            {
+                                <DxTreeViewNode Text="@d.TituloPantalla" Name="@d.IdRpt.ToString()"
+                                                IconCssClass="fa-solid fa-chart-simple" />
+                            }
+                        </Nodes>
+                    </DxTreeViewNode>
+                }
+            </Nodes>
+        </DxTreeView>
+    </div>
+
+    <div class="col-lg-6">
+        @if (_sel is null)
+        {
+            <div class="alert alert-light border text-muted">Seleccioná un informe de la lista.</div>
+        }
+        else
+        {
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">@_sel.TituloRpt</h5>
+                    @if (!string.IsNullOrWhiteSpace(_sel.Comentario))
+                    {
+                        <p class="text-muted small">@_sel.Comentario</p>
+                    }
+
+                    <div class="row g-2 mb-2">
+                        @if (_sel.Empresa)
+                        {
+                            <div class="col-12">
+                                <label class="form-label small mb-0">Empresa</label>
+                                <DxComboBox TData="EmpresaItem" TValue="int" Data="_empresas" CssClass="w-100"
+                                            TextFieldName="@nameof(EmpresaItem.Nombre)" ValueFieldName="@nameof(EmpresaItem.CodEmpresa)"
+                                            @bind-Value="_codEmpresa" SizeMode="SizeMode.Small" />
+                            </div>
+                        }
+                        @if (_sel.MesAnio)
+                        {
+                            <div class="col-6">
+                                <label class="form-label small mb-0">Mes (yyyymm)</label>
+                                <DxSpinEdit @bind-Value="_mes" NullText="202603" ShowSpinButtons="false"
+                                            DisplayFormat="0" SizeMode="SizeMode.Small" CssClass="w-100" />
+                            </div>
+                        }
+                        @if (_sel.Periodo)
+                        {
+                            <div class="col-6">
+                                <label class="form-label small mb-0">Inicio</label>
+                                <DxDateEdit @bind-Date="_fechaIni" SizeMode="SizeMode.Small" CssClass="w-100" NullText="(Todas)" />
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label small mb-0">Fin</label>
+                                <DxDateEdit @bind-Date="_fechaFin" SizeMode="SizeMode.Small" CssClass="w-100" NullText="(Todas)" />
+                            </div>
+                        }
+                        @if (_sel.Fecha)
+                        {
+                            <div class="col-6">
+                                <label class="form-label small mb-0">Fecha</label>
+                                <DxDateEdit @bind-Date="_fecha" SizeMode="SizeMode.Small" CssClass="w-100" NullText="(Actual)" />
+                            </div>
+                        }
+                        @if (_sel.GrupoEtario)
+                        {
+                            <div class="col-6">
+                                <label class="form-label small mb-0">Grupo etario</label>
+                                <DxComboBox TData="GeItem" TValue="int" Data="_gruposEtarios" CssClass="w-100"
+                                            TextFieldName="@nameof(GeItem.Label)" ValueFieldName="@nameof(GeItem.Id)"
+                                            @bind-Value="_grupoEtario" SizeMode="SizeMode.Small" />
+                            </div>
+                        }
+                        @if (_sel.Patologia)
+                        {
+                            <div class="col-12">
+                                <label class="form-label small mb-0">Patología (filtro)</label>
+                                <DxComboBox TData="PatologiaItem" TValue="int?" Data="_patologias" CssClass="w-100"
+                                            TextFieldName="@nameof(PatologiaItem.Descrip)" ValueFieldName="@nameof(PatologiaItem.CodPatologia)"
+                                            NullText="(Todas las patologías)" ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
+                                            @bind-Value="_codPatologia" SizeMode="SizeMode.Small" />
+                            </div>
+                        }
+                        <div class="col-6">
+                            <label class="form-label small mb-0">Tipo de gráfico</label>
+                            <DxComboBox TData="TipoGrafico" TValue="TipoGrafico" Data="_tipos" Value="_tipo"
+                                        ValueChanged="@((TipoGrafico t) => OnTipoChangedAsync(t))"
+                                        SizeMode="SizeMode.Small" CssClass="w-100">
+                                <EditBoxTemplate>
+                                    <span class="d-inline-flex align-items-center gap-2">
+                                        <i class="fa-solid @TipoIcono(_tipo)" style="font-size:20px"></i>@TipoLabel(_tipo)
+                                    </span>
+                                </EditBoxTemplate>
+                                <ItemDisplayTemplate Context="t">
+                                    <span class="d-inline-flex align-items-center gap-2">
+                                        <i class="fa-solid @TipoIcono(t.DataItem)" style="font-size:24px;width:30px;text-align:center"></i>@TipoLabel(t.DataItem)
+                                    </span>
+                                </ItemDisplayTemplate>
+                            </DxComboBox>
+                        </div>
+                    </div>
+
+                    @if (_error is not null)
+                    {
+                        <div class="text-danger small mb-2">@_error</div>
+                    }
+
+                    <div class="d-flex gap-2">
+                        <DxButton Text="Ver" IconCssClass="fa-solid fa-eye" RenderStyle="ButtonRenderStyle.Primary"
+                                  Enabled="@(!_busy)" Click="VerAsync" />
+                        <DxButton Text="Imprimir" IconCssClass="fa-solid fa-print" RenderStyle="ButtonRenderStyle.Secondary"
+                                  Enabled="@(!_busy)" Click="ImprimirAsync" />
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<DxPopup @bind-Visible="_viewerVisible" HeaderText="@(_sel?.TituloRpt ?? "Vista previa")" Width="95vw" Height="92vh" CloseOnEscape="true">
+    <BodyContentTemplate>
+        @if (_report is not null)
+        {
+            <div class="sgpa-report-viewer-host">
+                <DxReportViewer Report="_report" />
+            </div>
+        }
+    </BodyContentTemplate>
+</DxPopup>
+
+<SgpaWaitDialog Visible="_busy" Text="Generando gráfico…" />
+
+@code {
+    private List<InformeEstadisticoDef> _catalogo = new();
+    private List<IGrouping<string, InformeEstadisticoDef>> _grupos = new();
+    private List<EmpresaItem> _empresas = new();
+    private List<PatologiaItem> _patologias = new();
+    private InformeEstadisticoDef? _sel;
+
+    private int _codEmpresa;            // 0 = Todas
+    private int? _mes;
+    private DateTime? _fechaIni, _fechaFin, _fecha;
+    private int _grupoEtario;           // 0 = Todos
+    private int? _codPatologia;         // null = todas
+
+    // Ícono por grupo del catálogo (Font Awesome); ítems usan uno genérico (fa-chart-simple).
+    private static string GrupoIcono(string grupo) => grupo switch
+    {
+        "Empleos" => "fa-solid fa-briefcase",
+        "Imponibles" => "fa-solid fa-coins",
+        "Certificaciones" => "fa-solid fa-file-medical",
+        "Edad" => "fa-solid fa-hourglass-half",
+        "Sexo" => "fa-solid fa-venus-mars",
+        "Especialidad" => "fa-solid fa-user-doctor",
+        "Afecciones" => "fa-solid fa-notes-medical",
+        "Afiliados" => "fa-solid fa-id-card",
+        "Prestaciones" => "fa-solid fa-stethoscope",
+        _ => "fa-solid fa-folder",
+    };
+    private TipoGrafico _tipo = TipoGrafico.Barras;
+    private readonly TipoGrafico[] _tipos = { TipoGrafico.Circular, TipoGrafico.Barras, TipoGrafico.Area };
+
+    private static string TipoIcono(TipoGrafico t) => t switch
+    {
+        TipoGrafico.Circular => "fa-chart-pie",
+        TipoGrafico.Barras => "fa-chart-column",
+        TipoGrafico.Area => "fa-chart-area",
+        _ => "fa-chart-simple",
+    };
+    private static string TipoLabel(TipoGrafico t) => t switch
+    {
+        TipoGrafico.Circular => "Circular",
+        TipoGrafico.Barras => "Barras",
+        TipoGrafico.Area => "Área",
+        _ => t.ToString(),
+    };
+
+    public sealed record GeItem(int Id, string Label);
+    private readonly GeItem[] _gruposEtarios = EstadisticaReporteData.GruposEtarios.Select(g => new GeItem(g.Id, g.Label)).ToArray();
+
+    private bool _busy, _viewerVisible;
+    private string? _error;
+    private XtraReport? _report;
+    private string _login = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CurrentUser.EnsureLoadedAsync();
+        _login = CurrentUser.UserName;
+        _catalogo = (await Data.GetCatalogoAsync()).ToList();
+        _grupos = _catalogo.GroupBy(c => c.Grupo).ToList();
+        var emps = await Data.GetEmpresasAsync();
+        _empresas = new List<EmpresaItem> { new() { CodEmpresa = 0, Nombre = "(Todas las empresas)" } };
+        _empresas.AddRange(emps);
+        _patologias = (await Data.GetPatologiasAsync()).ToList();
+    }
+
+    // Clave de preferencia (reusa el store genérico PreferenciaVista, por par Login+Vista).
+    private static string Vista(int idRpt) => $"InformeEstadistico.{idRpt}";
+
+    // Selección de un nodo hoja del árbol (Name = IdRpt). Los nodos de grupo no tienen Name => se ignoran.
+    private async Task OnNodeSelected(TreeViewNodeEventArgs e)
+    {
+        if (e.NodeInfo?.Name is string n && int.TryParse(n, out var id))
+        {
+            var d = _catalogo.FirstOrDefault(x => x.IdRpt == id);
+            if (d is not null)
+            {
+                SeleccionarInforme(d);
+                await CargarTipoRecordadoAsync(d.IdRpt);
+            }
+        }
+    }
+
+    // Al cambiar de informe, arranca con el tipo default y limpia filtros propios del informe.
+    private void SeleccionarInforme(InformeEstadisticoDef d)
+    {
+        _sel = d;
+        _error = null;
+        _report = null;
+        _grupoEtario = 0;
+        _codPatologia = null;
+        _tipo = EstadisticaReportes.TipoDefault(d.IdRpt);
+    }
+
+    // Recuerda por reporte el tipo de gráfico elegido (persistido en base, por usuario).
+    private async Task CargarTipoRecordadoAsync(int idRpt)
+    {
+        var saved = await Pref.GetAsync(_login, Vista(idRpt));
+        if (Enum.TryParse<TipoGrafico>(saved, out var t)) _tipo = t;
+    }
+
+    private async Task OnTipoChangedAsync(TipoGrafico t)
+    {
+        _tipo = t;
+        if (_sel is not null)
+            await Pref.SaveAsync(_login, Vista(_sel.IdRpt), t.ToString());
+    }
+
+    private string? Validar()
+    {
+        if (_sel is null) return "Seleccioná un informe.";
+        if (_sel.MesAnio && (_mes is null || _mes < 190001 || _mes % 100 is < 1 or > 12))
+            return "Ingresá un mes válido en formato yyyymm (ej. 202603).";
+        if (_sel.Periodo && (_fechaIni.HasValue ^ _fechaFin.HasValue))
+            return "Completá ambas fechas del período, o dejá las dos vacías.";
+        return null;
+    }
+
+    private InformeParametros Parametros() => new()
+    {
+        CodEmpresa = _codEmpresa,
+        Mes = _mes,
+        FechaIni = _fechaIni,
+        FechaFin = _fechaFin,
+        Fecha = _fecha,
+        GrupoEtario = _grupoEtario,
+        CodPatologia = _codPatologia,
+    };
+
+    private async Task VerAsync()
+    {
+        _error = Validar();
+        if (_error is not null) return;
+
+        _busy = true; StateHasChanged();
+        try { _report = await Reportes.BuildAsync(_sel!.IdRpt, Parametros(), _tipo); }
+        finally { _busy = false; }
+        _viewerVisible = _report is not null;
+    }
+
+    private async Task ImprimirAsync()
+    {
+        _error = Validar();
+        if (_error is not null) return;
+        await JS.InvokeVoidAsync("window.open", BuildUrl(), "_blank");
+    }
+
+    private string BuildUrl()
+    {
+        var qs = new List<string> { $"tipo={_tipo}" };
+        if (_codEmpresa > 0) qs.Add($"empresa={_codEmpresa}");
+        if (_mes is { } m) qs.Add($"mes={m}");
+        if (_fechaIni is { } fi) qs.Add($"fini={fi:yyyy-MM-dd}");
+        if (_fechaFin is { } ff) qs.Add($"ffin={ff:yyyy-MM-dd}");
+        if (_fecha is { } f) qs.Add($"fecha={f:yyyy-MM-dd}");
+        if (_sel!.GrupoEtario && _grupoEtario > 0) qs.Add($"ge={_grupoEtario}");
+        if (_sel!.Patologia && _codPatologia is { } cp) qs.Add($"pat={cp}");
+        return $"/reportes/estadistico/{_sel!.IdRpt}/pdf?{string.Join('&', qs)}";
+    }
+}

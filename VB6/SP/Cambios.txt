@@ -1,0 +1,14 @@
+Agregar
+
+Consultas:
+===========
+Rpt_PagoError
+Rpt_RetencionPrestamo
+
+
+
+Formularios:
+===========
+MDIPrin
+frmDBGRpt_PagoError
+frmDBGRpt_RetencionPrestamo

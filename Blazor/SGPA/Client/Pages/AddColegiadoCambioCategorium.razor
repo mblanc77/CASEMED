@@ -1,0 +1,73 @@
+@page "/add-colegiado-cambio-categorium"
+
+<PageTitle>Add ColegiadoCambioCategorium</PageTitle>
+    <RadzenColumn SizeMD=12>
+        <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@errorVisible">Cannot save ColegiadoCambioCategorium</RadzenAlert>
+        <RadzenTemplateForm TItem="SGPA.Server.Models.CMU.ColegiadoCambioCategorium" Data="@colegiadoCambioCategorium" Visible="@(colegiadoCambioCategorium != null && canEdit)" Submit="@FormSubmit">
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Fecha Desde" Component="FechaDesde" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDatePicker DateFormat="MM/dd/yyyy" style="display: block; width: 100%" @bind-Value="@colegiadoCambioCategorium.FechaDesde" Name="FechaDesde" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Fecha Hasta" Component="FechaHasta" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDatePicker DateFormat="MM/dd/yyyy" style="display: block; width: 100%" @bind-Value="@colegiadoCambioCategorium.FechaHasta" Name="FechaHasta" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Comentarios" Component="Comentarios" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@colegiadoCambioCategorium.Comentarios" Name="Comentarios" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Optimistic Lock Field" Component="OptimisticLockField" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@colegiadoCambioCategorium.OptimisticLockField" Name="OptimisticLockField" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="G C Record" Component="GCRecord" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@colegiadoCambioCategorium.GCRecord" Name="GCRecord" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Categoria Colegiado" Component="CategoriaColegiado" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@categoriaColegiadosForCategoria" TextProperty="Descripcion" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose CategoriaColegiado" style="display: block; width: 100%" @bind-Value="@colegiadoCambioCategorium.Categoria" Name="Categoria"
+                        SelectedValue=@categoriaColegiadosForCategoriaValue Count=@categoriaColegiadosForCategoriaCount LoadData=@categoriaColegiadosForCategoriaLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Colegiado1" Component="Colegiado1" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@colegiadosForColegiado" TextProperty="Nombres" ValueProperty="Documento" AllowClear=true
+                         Placeholder="Choose Colegiado1" style="display: block; width: 100%" @bind-Value="@colegiadoCambioCategorium.Colegiado" Name="Colegiado"
+                        SelectedValue=@colegiadosForColegiadoValue Count=@colegiadosForColegiadoCount LoadData=@colegiadosForColegiadoLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+          <RadzenStack  Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                    <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Submit" Icon="save" Text="Save" Variant="Variant.Flat" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Text="Cancel" Variant="Variant.Flat" Click="@CancelButtonClick"  />
+          </RadzenStack>
+        </RadzenTemplateForm>
+    </RadzenColumn>
+

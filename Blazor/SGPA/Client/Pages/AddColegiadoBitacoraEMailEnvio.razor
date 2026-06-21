@@ -1,0 +1,55 @@
+@page "/add-colegiado-bitacora-e-mail-envio"
+
+<PageTitle>Add ColegiadoBitacoraEMailEnvio</PageTitle>
+    <RadzenColumn SizeMD=12>
+        <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@errorVisible">Cannot save ColegiadoBitacoraEMailEnvio</RadzenAlert>
+        <RadzenTemplateForm TItem="SGPA.Server.Models.CMU.ColegiadoBitacoraEMailEnvio" Data="@colegiadoBitacoraEMailEnvio" Visible="@(colegiadoBitacoraEMailEnvio != null && canEdit)" Submit="@FormSubmit">
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Destinatario" Component="Destinatario" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@colegiadoBitacoraEMailEnvio.Destinatario" Name="Destinatario" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Fecha Hora Envio" Component="FechaHoraEnvio" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@colegiadoBitacoraEMailEnvio.FechaHoraEnvio" Name="FechaHoraEnvio" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Titulo" Component="Titulo" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@colegiadoBitacoraEMailEnvio.Titulo" Name="Titulo" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Automatico" Component="Automatico" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenCheckBox @bind-Value="@colegiadoBitacoraEMailEnvio.Automatico" Name="Automatico" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Colegiado Bitacora Notum" Component="ColegiadoBitacoraNotum" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@colegiadoBitacoraNotaForId" TextProperty="Contenido" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose ColegiadoBitacoraNotum" style="display: block; width: 100%" @bind-Value="@colegiadoBitacoraEMailEnvio.Id" Name="Id"
+                        SelectedValue=@colegiadoBitacoraNotaForIdValue Count=@colegiadoBitacoraNotaForIdCount LoadData=@colegiadoBitacoraNotaForIdLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+          <RadzenStack  Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                    <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Submit" Icon="save" Text="Save" Variant="Variant.Flat" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Text="Cancel" Variant="Variant.Flat" Click="@CancelButtonClick"  />
+          </RadzenStack>
+        </RadzenTemplateForm>
+    </RadzenColumn>
+

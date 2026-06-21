@@ -1,0 +1,74 @@
+@page "/edit-tramite-infoadjuntaespecialidad"
+
+<PageTitle>Edit TramiteInfoadjuntaespecialidad</PageTitle>
+<RadzenRow>
+    <RadzenColumn SizeMD="9">
+    <RadzenLabel style="font-weight: bold" Text="Item no longer available." Visible="@(!canEdit)" />
+    </RadzenColumn>
+    <RadzenColumn SizeMD="3">
+    <RadzenButton ButtonStyle="ButtonStyle.Secondary" style="margin-bottom: 20px" Text="Close" Visible="@(!canEdit)" Click="@CancelButtonClick" />
+    </RadzenColumn>
+</RadzenRow>
+<RadzenRow>
+    <RadzenColumn SizeMD="9">
+    <RadzenLabel style="font-weight: bold" Text="Another user has made conflicting changes to one or more of the fields you have modified. Please reload." Visible="@hasChanges" />
+    </RadzenColumn>
+    <RadzenColumn SizeMD="3">
+    <RadzenButton ButtonStyle="ButtonStyle.Secondary" Icon="autorenew" style="margin-bottom: 20px" Text="Reload" Visible="@hasChanges" Click="@ReloadButtonClick" />
+    </RadzenColumn>
+</RadzenRow>
+
+    <RadzenColumn SizeMD=12>
+        <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@errorVisible">Cannot save TramiteInfoadjuntaespecialidad</RadzenAlert>
+        <RadzenTemplateForm TItem="SGPA.Server.Models.CMU.TramiteInfoadjuntaespecialidad" Data="@tramiteInfoadjuntaespecialidad" Visible="@(tramiteInfoadjuntaespecialidad != null && canEdit)" Submit="@FormSubmit">
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Facultad" Component="Facultad" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@tramiteInfoadjuntaespecialidad.Facultad" Name="Facultad" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Tipo Reconocimiento" Component="TipoReconocimiento" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@tramiteInfoadjuntaespecialidad.TipoReconocimiento" Name="TipoReconocimiento" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Institucion" Component="Institucion" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@tramiteInfoadjuntaespecialidad.Institucion" Name="Institucion" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Especialidad1" Component="Especialidad1" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@especialidadsForEspecialidad" TextProperty="Nombre" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose Especialidad1" style="display: block; width: 100%" @bind-Value="@tramiteInfoadjuntaespecialidad.Especialidad" Name="Especialidad"
+                        SelectedValue=@especialidadsForEspecialidadValue Count=@especialidadsForEspecialidadCount LoadData=@especialidadsForEspecialidadLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Tramite Info Adjunta Titulo" Component="TramiteInfoAdjuntaTitulo" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@tramiteInfoadjuntatitulosForOID" TextProperty="IdentificadorFrente" ValueProperty="OID" AllowClear=true
+                         Placeholder="Choose TramiteInfoAdjuntaTitulo" style="display: block; width: 100%" @bind-Value="@tramiteInfoadjuntaespecialidad.OID" Name="OID"
+                        SelectedValue=@tramiteInfoadjuntatitulosForOIDValue Count=@tramiteInfoadjuntatitulosForOIDCount LoadData=@tramiteInfoadjuntatitulosForOIDLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+          <RadzenStack  Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                    <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Submit" Icon="save" Text="Save" Variant="Variant.Flat" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Text="Cancel" Variant="Variant.Flat" Click="@CancelButtonClick"  />
+          </RadzenStack>
+        </RadzenTemplateForm>
+    </RadzenColumn>
+

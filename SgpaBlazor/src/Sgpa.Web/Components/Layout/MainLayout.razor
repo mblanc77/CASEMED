@@ -1,0 +1,54 @@
+﻿@inherits LayoutComponentBase
+@inject WebCurrentUser CurrentUser
+
+<div class="page">
+    <div class="sidebar">
+        @* DxTreeView necesita interactividad para expandir/colapsar → isla InteractiveServer. *@
+        <NavMenu @rendermode="InteractiveServer" />
+    </div>
+
+    <main>
+        <div class="top-row px-4 d-flex justify-content-end align-items-center gap-3">
+            <span class="text-muted">
+                <span class="bi bi-person-circle"></span>
+                @(CurrentUser.Context?.Nombre ?? CurrentUser.UserName)
+                @if (CurrentUser.IsAdmin) { <span class="badge bg-secondary ms-1">admin</span> }
+            </span>
+            <form method="post" action="/auth/logout" class="m-0">
+                <button type="submit" class="btn btn-sm btn-outline-secondary">Salir</button>
+            </form>
+        </div>
+
+        <article class="content px-4">
+            @* Red de seguridad: una excepción de render no capturada muestra un cartel en vez de matar el
+               circuito. Los errores de guardado del CRUD ya se manejan en sus componentes (mensaje + log). *@
+            <ErrorBoundary>
+                <ChildContent>@Body</ChildContent>
+                <ErrorContent>
+                    <div class="alert alert-danger m-3">
+                        <h5 class="mb-2"><i class="fa-solid fa-triangle-exclamation me-2"></i>Ocurrió un error inesperado</h5>
+                        <p class="mb-2">La operación no pudo completarse. El detalle quedó registrado en el log.</p>
+                        <a class="btn btn-sm btn-outline-danger" href=".">Recargar</a>
+                    </div>
+                </ErrorContent>
+            </ErrorBoundary>
+        </article>
+    </main>
+</div>
+
+@* El provider vive como isla interactiva: comparte el circuito (y por ende el IToastNotificationService
+   con scope) de las páginas CRUD interactivas, de modo que sus ShowToast lleguen acá. *@
+<DxToastProvider @rendermode="InteractiveServer"
+                 HorizontalAlignment="HorizontalAlignment.Center"
+                 VerticalAlignment="VerticalEdge.Bottom"
+                 MaxToastCount="4" />
+
+<div id="blazor-error-ui" data-nosnippet>
+    An unhandled error has occurred.
+    <a href="." class="reload">Reload</a>
+    <span class="dismiss">🗙</span>
+</div>
+
+@code {
+    protected override Task OnInitializedAsync() => CurrentUser.EnsureLoadedAsync();
+}

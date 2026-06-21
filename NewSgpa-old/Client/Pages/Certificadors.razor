@@ -1,0 +1,57 @@
+@page "/certificadors"
+@attribute [Authorize]
+
+<PageTitle>Certificadors</PageTitle>
+<RadzenStack>
+    <RadzenRow AlignItems="AlignItems.Center">
+        <RadzenColumn Size="12" SizeMD="6">
+            <RadzenText Text="Certificadors" TextStyle="TextStyle.H3" TagName="TagName.H1" style="margin: 0" />
+        </RadzenColumn>
+        <RadzenColumn Size="12" SizeMD="6">
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                <RadzenSplitButton Icon="get_app" Text="Export" Click="@ExportClick" Variant="Variant.Flat" Shade="Shade.Lighter">
+                    <RadzenSplitButtonItem Text="Excel" Value="xlsx" />
+                    <RadzenSplitButtonItem Text="CSV" Value="csv" />
+                </RadzenSplitButton>
+                <RadzenButton Icon="add_circle_outline" Text="Add" Click="@AddButtonClick" Variant="Variant.Flat" />
+            </RadzenStack>
+        </RadzenColumn>
+    </RadzenRow>
+    <RadzenRow>
+      <RadzenColumn SizeMD=12>
+        <RadzenDataGrid @ref="grid0" ColumnWidth="200px"  AllowFiltering="true" FilterMode="FilterMode.Advanced" AllowPaging="true" AllowSorting="true" ShowPagingSummary="true" PageSizeOptions=@(new int[]{5, 10, 20, 30})
+            Data="@certificadors" Count=count LoadData=@Grid0LoadData  TItem="SgpaNew.Server.Models.Sgpa.Certificador" RowDoubleClick="@EditRow" >
+            <Columns>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.Certificador" Property="CodCertificador" Title="Cod Certificador">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.Certificador" Property="Descrip" Title="Descrip">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.Certificador" Property="Direccion" Title="Direccion">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.Certificador" Property="Telefono" Title="Telefono">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.Certificador" Property="Fax" Title="Fax">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.Certificador" Property="Bip" Title="Bip">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.Certificador" Property="CobraLlamado" Title="Cobra Llamado">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.Certificador" Property="Usr" Title="Usr">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.Certificador" Property="Ts" Title="Ts">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SgpaNew.Server.Models.Sgpa.Certificador" Filterable="false" Sortable="false" Width="70px" TextAlign="TextAlign.Center">
+                    <Template Context="certificador">
+
+                        <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Medium"
+                            Shade="Shade.Lighter" Variant="Variant.Flat"
+                            Click=@(args => GridDeleteButtonClick(args, certificador)) @onclick:stopPropagation="true" />
+                    </Template>
+                </RadzenDataGridColumn>
+            </Columns>
+
+        </RadzenDataGrid>
+
+    </RadzenColumn>
+  </RadzenRow>
+</RadzenStack>

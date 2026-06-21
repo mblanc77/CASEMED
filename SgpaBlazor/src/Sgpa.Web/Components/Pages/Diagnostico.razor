@@ -1,0 +1,48 @@
+@page "/diagnostico"
+@using System.Data
+@inject IDbExecutor Db
+@rendermode InteractiveServer
+
+<PageTitle>Diagnóstico</PageTitle>
+
+<h3>Diagnóstico de conexión — NewSgpa2</h3>
+
+@if (_error is not null)
+{
+    <div class="alert alert-danger">@_error</div>
+}
+else if (_tables is null)
+{
+    <p><em>Conectando…</em></p>
+}
+else
+{
+    <p>Conexión OK. Tablas en la base: <strong>@_tables.Count</strong></p>
+    <DxGrid Data="_tables" ShowSearchBox="true" PageSize="15">
+        <Columns>
+            <DxGridDataColumn FieldName="Name" Caption="Tabla" />
+            <DxGridDataColumn FieldName="CreateDate" Caption="Creada" DisplayFormat="g" />
+        </Columns>
+    </DxGrid>
+}
+
+@code {
+    private List<TableInfo>? _tables;
+    private string? _error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var rows = await Db.QueryAsync<TableInfo>(
+                "SELECT name AS Name, create_date AS CreateDate FROM sys.tables ORDER BY name");
+            _tables = rows.ToList();
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+    }
+
+    public sealed record TableInfo(string Name, DateTime CreateDate);
+}

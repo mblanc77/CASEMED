@@ -1,0 +1,132 @@
+ %% NO MODIFIQUE NI ELIMINE ESTE ARCHIVO. %% 
+ %% Este archivo contiene información acerca de la instalación de una aplicación. %% 
+ %% Se utilizará para quitar automáticamente de su PC todos los componentes de la aplicación, si elige hacerlo. %% 
+
+
+NOTE: Inicio de la sección bootstrapper
+
+CONFIG: Title: "Sistema de Gestión de Prest. y Aportes"
+
+ACTION: RegKey: "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion", "SharedDLLs"
+
+ACTION: SystemFile: "C:\WINDOWS\SYSTEM\VB6STKIT.DLL"
+(El archivo en disco ya estaba actualizado)
+
+ACTION: SystemFile: "C:\WINDOWS\SYSTEM\COMCAT.DLL"
+(El archivo en disco ya estaba actualizado)
+
+ACTION: SystemFile: "C:\WINDOWS\SYSTEM\MSVCRT40.DLL"
+(El archivo en disco ya estaba actualizado)
+
+*** ERROR: C:\WINDOWS\SYSTEM\VB6ES.DLL
+*** ERROR: Infracción de acceso al copiar el archivo.
+*** ERROR: (El usuario respondió con 'Reintentar')
+*** DURANTE ESTA ACCIÓN: SystemFile: "C:\WINDOWS\SYSTEM\VB6ES.DLL"
+
+ACTION: SystemFile: "C:\WINDOWS\SYSTEM\VB6ES.DLL"
+(No se puede encontrar el archivo o es de una versión antigua; se ha copiado el archivo nuevo)
+
+ACTION: SystemFile: "C:\WINDOWS\SYSTEM\STDOLE2.TLB"
+(El archivo en disco ya estaba actualizado)
+
+ACTION: SystemFile: "C:\WINDOWS\SYSTEM\ASYCFILT.DLL"
+(El archivo en disco ya estaba actualizado)
+
+ACTION: SystemFile: "C:\WINDOWS\SYSTEM\OLEPRO32.DLL"
+(El archivo en disco ya estaba actualizado)
+
+ACTION: SystemFile: "C:\WINDOWS\SYSTEM\OLEAUT32.DLL"
+(El archivo en disco ya estaba actualizado)
+
+ACTION: SystemFile: "C:\WINDOWS\SYSTEM\MSVBVM60.DLL"
+(El archivo en disco ya estaba actualizado)
+
+ACTION: DllSelfRegister: "C:\WINDOWS\SYSTEM\COMCAT.DLL"
+
+ACTION: TLBRegister: "C:\WINDOWS\SYSTEM\STDOLE2.TLB"
+
+ACTION: DllSelfRegister: "C:\WINDOWS\SYSTEM\OLEPRO32.DLL"
+
+ACTION: DllSelfRegister: "C:\WINDOWS\SYSTEM\OLEAUT32.DLL"
+
+ACTION: DllSelfRegister: "C:\WINDOWS\SYSTEM\MSVBVM60.DLL"
+
+NOTE: Final de la sección bootstrapper
+
+NOTE: Inicializando el programa principal de instalación 'Setup1.exe'....
+
+ACTION: CreateDir: "C:\WINDOWS\Menú Inicio\Programas\Sistema de Gestión de Prest. y Aportes"
+
+ACTION: SystemFile: "C:\WINDOWS\SYSTEM\MSXBSE35.DLL"
+(No se puede encontrar el archivo o es de una versión antigua; se ha copiado el archivo nuevo)
+
+ACTION: SystemFile: "C:\WINDOWS\SYSTEM\MSTEXT35.DLL"
+(No se puede encontrar el archivo o es de una versión antigua; se ha copiado el archivo nuevo)
+
+ACTION: SystemFile: "C:\WINDOWS\SYSTEM\MSEXCL35.DLL"
+(No se puede encontrar el archivo o es de una versión antigua; se ha copiado el archivo nuevo)
+
+ACTION: SystemFile: "C:\WINDOWS\SYSTEM\tdbgpp.dll"
+(No se puede encontrar el archivo o es de una versión antigua; se ha copiado el archivo nuevo)
+
+ACTION: SharedFile: "C:\WINDOWS\SYSTEM\tdbg6.ocx"
+(No se puede encontrar el archivo o es de una versión antigua; se ha copiado el archivo nuevo)
+
+ACTION: SharedFile: "C:\WINDOWS\SYSTEM\OpcPBar.ocx"
+(No se puede encontrar el archivo o es de una versión antigua; se ha copiado el archivo nuevo)
+
+ACTION: SharedFile: "C:\WINDOWS\SYSTEM\MSCH2ES.DLL"
+(No se puede encontrar el archivo o es de una versión antigua; se ha copiado el archivo nuevo)
+
+ACTION: SharedFile: "C:\WINDOWS\SYSTEM\MSCHRT20.OCX"
+(No se puede encontrar el archivo o es de una versión antigua; se ha copiado el archivo nuevo)
+
+ACTION: SharedFile: "C:\WINDOWS\SYSTEM\MSCMCES.DLL"
+(No se puede encontrar el archivo o es de una versión antigua; se ha copiado el archivo nuevo)
+
+ACTION: SharedFile: "C:\WINDOWS\SYSTEM\Mscomctl.ocx"
+(No se puede encontrar el archivo o es de una versión antigua; se ha copiado el archivo nuevo)
+
+ACTION: SharedFile: "C:\WINDOWS\SYSTEM\Opccombo.ocx"
+(No se puede encontrar el archivo o es de una versión antigua; se ha copiado el archivo nuevo)
+
+ACTION: SharedFile: "C:\WINDOWS\SYSTEM\OPCINPUT.OCX"
+(No se puede encontrar el archivo o es de una versión antigua; se ha copiado el archivo nuevo)
+
+ACTION: SharedFile: "C:\WINDOWS\SYSTEM\OPCSCROL.OCX"
+(No se puede encontrar el archivo o es de una versión antigua; se ha copiado el archivo nuevo)
+
+ACTION: SharedFile: "C:\WINDOWS\SYSTEM\MSMSKES.DLL"
+(No se puede encontrar el archivo o es de una versión antigua; se ha copiado el archivo nuevo)
+
+ACTION: SharedFile: "C:\WINDOWS\SYSTEM\MSMASK32.OCX"
+(No se puede encontrar el archivo o es de una versión antigua; se ha copiado el archivo nuevo)
+
+ACTION: DllSelfRegister: "C:\WINDOWS\SYSTEM\MSXBSE35.DLL"
+
+ACTION: DllSelfRegister: "C:\WINDOWS\SYSTEM\MSTEXT35.DLL"
+
+ACTION: DllSelfRegister: "C:\WINDOWS\SYSTEM\MSEXCL35.DLL"
+
+ACTION: DllSelfRegister: "C:\WINDOWS\SYSTEM\tdbg6.ocx"
+
+ACTION: DllSelfRegister: "C:\WINDOWS\SYSTEM\OpcPBar.ocx"
+
+ACTION: DllSelfRegister: "C:\WINDOWS\SYSTEM\MSCHRT20.OCX"
+
+ACTION: DllSelfRegister: "C:\WINDOWS\SYSTEM\Mscomctl.ocx"
+
+ACTION: DllSelfRegister: "C:\WINDOWS\SYSTEM\Opccombo.ocx"
+
+ACTION: DllSelfRegister: "C:\WINDOWS\SYSTEM\OPCINPUT.OCX"
+
+ACTION: DllSelfRegister: "C:\WINDOWS\SYSTEM\OPCSCROL.OCX"
+
+ACTION: DllSelfRegister: "C:\WINDOWS\SYSTEM\MSMASK32.OCX"
+
+ACTION: ShellLink: "Sistema de Gestión de Prest. y Aportes", "Sistema de Gestión de Prest. y Aportes"
+
+ACTION: RegKey: "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion", "App Paths\Sgpa.exe"
+
+ACTION: RegValue: "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\Sgpa.exe", ""
+

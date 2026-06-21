@@ -1,0 +1,114 @@
+@page "/pagos/carga"
+@rendermode InteractiveServer
+@using Sgpa.Business.Pagos
+@using Sgpa.Data.Errors
+@using Sgpa.Web.Components.Crud
+@inject PagoService Pagos
+@inject IToastNotificationService Toasts
+
+@*
+    Carga batch de pagos desde archivo de cobranza Abitab (port de frmCargaPago + cAdmPago.ProcesarPagos).
+    Se elige la fecha de la carga y el archivo .dat; cada línea se cobra contra su factura. Las líneas que
+    no se pueden cobrar quedan registradas (ErrCargaAbitab) y se muestran abajo. Requiere el mapeo de
+    columnas configurado (tabla MapeoAbitab).
+*@
+
+<PageTitle>Carga de pagos (Abitab)</PageTitle>
+
+<h3 class="mb-3">Carga de pagos (Abitab)</h3>
+
+<div class="card mb-3" style="max-width: 720px;">
+    <div class="card-body">
+        <DxFormLayout>
+            <DxFormLayoutItem Caption="Fecha de la carga" ColSpanMd="6">
+                <DxDateEdit @bind-Date="_fecha" TValue="DateTime" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="Archivo" ColSpanMd="12">
+                <InputFile OnChange="CargarArchivoAsync" accept=".dat,.txt" class="form-control" />
+                @if (_fileName is not null)
+                {
+                    <small class="text-muted">@_fileName — @_lineas.Length línea(s)</small>
+                }
+            </DxFormLayoutItem>
+        </DxFormLayout>
+
+        <div class="d-flex justify-content-end mt-3">
+            <DxButton Text="Procesar carga" IconCssClass="fa-solid fa-file-import" RenderStyle="ButtonRenderStyle.Primary"
+                      Click="ProcesarAsync" Enabled="@(_lineas.Length > 0 && !_procesando)" />
+        </div>
+    </div>
+</div>
+
+@if (_result is not null)
+{
+    <div class="card" style="max-width: 720px;">
+        <div class="card-body">
+            <p class="mb-2">
+                Procesadas: <strong>@_result.Procesados</strong> ·
+                Correctas: <strong class="text-success">@_result.Ok</strong> ·
+                Con error: <strong class="@(_result.HuboErrores ? "text-danger" : "")">@_result.ConError</strong>
+            </p>
+            @if (_result.HuboErrores)
+            {
+                <DxGrid Data="_result.Errores" PageSize="10">
+                    <Columns>
+                        <DxGridDataColumn FieldName="NroReng" Caption="Línea" Width="90px" />
+                        <DxGridDataColumn FieldName="Descripcion" Caption="Detalle" />
+                    </Columns>
+                </DxGrid>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    private DateTime _fecha = DateTime.Today.AddDays(-1);
+    private string[] _lineas = Array.Empty<string>();
+    private string? _fileName;
+    private bool _procesando;
+    private CargaPagosResultado? _result;
+
+    private async Task CargarArchivoAsync(InputFileChangeEventArgs e)
+    {
+        try
+        {
+            using var reader = new StreamReader(e.File.OpenReadStream(maxAllowedSize: 16 * 1024 * 1024));
+            var texto = await reader.ReadToEndAsync();
+            _lineas = texto.Replace("\r\n", "\n").Replace('\r', '\n')
+                           .Split('\n', StringSplitOptions.RemoveEmptyEntries);
+            _fileName = e.File.Name;
+            _result = null;
+        }
+        catch (Exception ex)
+        {
+            _lineas = Array.Empty<string>();
+            _fileName = null;
+            Toasts.Error($"No se pudo leer el archivo: {ex.Message}");
+        }
+    }
+
+    private async Task ProcesarAsync()
+    {
+        _procesando = true;
+        try
+        {
+            _result = await Pagos.ProcesarPagosAsync(_lineas, _fecha);
+            if (_result.HuboErrores)
+                Toasts.Aviso($"Carga finalizada con {_result.ConError} error(es) de {_result.Procesados}.");
+            else
+                Toasts.Exito($"Carga realizada: {_result.Procesados} pago(s).");
+        }
+        catch (InvalidOperationException ex)
+        {
+            Toasts.Error(ex.Message);   // p.ej. mapeo Abitab no configurado
+        }
+        catch (Exception ex)
+        {
+            Toasts.Error(SqlErrorMessages.Amigable(ex));
+        }
+        finally
+        {
+            _procesando = false;
+        }
+    }
+}

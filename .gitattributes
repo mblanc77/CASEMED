@@ -1,0 +1,38 @@
+# Normalización de fin de línea + marcado de binarios para un repo mixto VB6 / .NET.
+* text=auto
+
+# Fuentes .NET / texto -> CRLF (entorno Windows)
+*.cs        text eol=crlf
+*.razor     text eol=crlf
+*.csproj    text eol=crlf
+*.slnx      text eol=crlf
+*.sln       text eol=crlf
+*.json      text eol=crlf
+*.config    text eol=crlf
+*.xml       text eol=crlf
+*.sql       text eol=crlf
+*.md        text eol=crlf
+*.ps1       text eol=crlf
+
+# Fuentes VB6 (texto, CRLF). El .frx es binario (recursos de form) -> no normalizar/diffear.
+*.vbp       text eol=crlf
+*.vbg       text eol=crlf
+*.frm       text eol=crlf
+*.bas       text eol=crlf
+*.cls       text eol=crlf
+*.ctl       text eol=crlf
+*.dsr       text eol=crlf
+*.frx       binary
+*.ctx       binary
+*.dca       binary
+*.pag       binary
+*.res       binary
+
+# Reportes / binarios que sí se versionan como fuente, sin diff
+*.rpt       binary
+*.repx      binary
+*.resx      text eol=crlf
+*.png       binary
+*.jpg       binary
+*.pdf       binary
+*.xps       binary

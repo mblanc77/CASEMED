@@ -1,0 +1,50 @@
+@page "/tramite-carne-estado-work-flows"
+
+<PageTitle>TramiteCarneEstadoWorkFlows</PageTitle>
+<RadzenStack>
+    <RadzenRow AlignItems="AlignItems.Center">
+        <RadzenColumn Size="12" SizeMD="6">
+            <RadzenText Text="TramiteCarneEstadoWorkFlows" TextStyle="TextStyle.H3" TagName="TagName.H1" style="margin: 0" />
+        </RadzenColumn>
+        <RadzenColumn Size="12" SizeMD="6">
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                <RadzenSplitButton Icon="get_app" Text="Export" Click="@ExportClick" Variant="Variant.Flat" Shade="Shade.Lighter">
+                    <RadzenSplitButtonItem Text="Excel" Value="xlsx" />
+                    <RadzenSplitButtonItem Text="CSV" Value="csv" />
+                </RadzenSplitButton>
+                <RadzenButton Icon="add_circle_outline" Text="Add" Click="@AddButtonClick" Variant="Variant.Flat" />
+            </RadzenStack>
+        </RadzenColumn>
+    </RadzenRow>
+    <RadzenRow>
+      <RadzenColumn SizeMD=12>
+        <RadzenDataGrid @ref="grid0" ColumnWidth="200px"  AllowFiltering="true" FilterMode="FilterMode.Advanced" AllowPaging="true" AllowSorting="true" ShowPagingSummary="true" PageSizeOptions=@(new int[]{5, 10, 20, 30})
+            Data="@tramiteCarneEstadoWorkFlows" Count=count LoadData=@Grid0LoadData  TItem="SGPA.Server.Models.CMU.TramiteCarneEstadoWorkFlow" RowDoubleClick="@EditRow" >
+            <Columns>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.TramiteCarneEstadoWorkFlow" Property="OID" Title="O I D">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.TramiteCarneEstadoWorkFlow" Property="OptimisticLockField" Title="Optimistic Lock Field">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.TramiteCarneEstadoWorkFlow" Property="GCRecord" Title="G C Record">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.TramiteCarneEstadoWorkFlow" Property="Reverso" Title="Reverso">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.TramiteCarneEstadoWorkFlow" Property="TramiteCarneEstadoCodigo.Descripcion" Title="Tramite Carne Estado Codigo">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.TramiteCarneEstadoWorkFlow" Property="TramiteCarneEstadoCodigo1.Descripcion" Title="Tramite Carne Estado Codigo1">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.TramiteCarneEstadoWorkFlow" Filterable="false" Sortable="false" Width="70px" TextAlign="TextAlign.Center">
+                    <Template Context="tramiteCarneEstadoWorkFlow">
+
+                        <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Medium"
+                            Shade="Shade.Lighter" Variant="Variant.Flat"
+                            Click=@(args => GridDeleteButtonClick(args, tramiteCarneEstadoWorkFlow)) @onclick:stopPropagation="true" />
+                    </Template>
+                </RadzenDataGridColumn>
+            </Columns>
+
+        </RadzenDataGrid>
+
+    </RadzenColumn>
+  </RadzenRow>
+</RadzenStack>

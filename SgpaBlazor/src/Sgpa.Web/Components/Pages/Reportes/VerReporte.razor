@@ -1,0 +1,92 @@
+@page "/reportes/ver/{Id:int}"
+@rendermode InteractiveServer
+@using DevExpress.Blazor.Reporting
+@using DevExpress.XtraReports.UI
+@using Microsoft.AspNetCore.WebUtilities
+@using Microsoft.JSInterop
+@using Sgpa.Domain.Security
+@using Sgpa.Web.Reporting
+@inject IReporteCatalogo Catalogo
+@inject IReportRenderService Renderer
+@inject WebCurrentUser CurrentUser
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+<PageTitle>@(_nombre ?? "Reporte")</PageTitle>
+
+<div class="d-flex align-items-center gap-2 px-2 py-1 border-bottom bg-light">
+    <DxButton Text="Volver" IconCssClass="fa-solid fa-arrow-left" RenderStyle="ButtonRenderStyle.Secondary"
+              SizeMode="SizeMode.Small" Click="VolverAsync" />
+    @if (_nombre is not null)
+    {
+        <span class="fw-semibold ms-1">@_nombre</span>
+    }
+</div>
+
+@if (_denied)
+{
+    <div class="alert alert-warning m-3">No tenés permiso de lectura sobre la tabla de este reporte.</div>
+}
+else if (_loading)
+{
+    <div class="d-flex flex-column align-items-center justify-content-center text-muted" style="height: calc(100vh - 170px);">
+        <div class="spinner-border mb-2" role="status"></div>
+        <div>Cargando reporte…</div>
+    </div>
+}
+else if (_report is null)
+{
+    <div class="text-muted p-3">No se encontró el reporte.</div>
+}
+else
+{
+    <div style="height: calc(100vh - 170px);">
+        <DxReportViewer Report="_report" />
+    </div>
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+    private XtraReport? _report;
+    private bool _denied;
+    private bool _loading = true;
+    private string? _nombre;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _denied = false;
+        _report = null;
+        _loading = true;
+        StateHasChanged();
+
+        try
+        {
+            await CurrentUser.EnsureLoadedAsync();
+            var info = await Catalogo.GetAsync(Id);
+            _nombre = info?.Nombre;
+
+            if (info?.TablaRoot is not null && !CurrentUser.IsAdmin
+                && (CurrentUser.PermissionsFor(info.TablaRoot) & PermissionAction.Read) == 0)
+            {
+                _denied = true;
+                return;
+            }
+
+            _report = await Renderer.BuildAsync(Id, KeysFromQuery());
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private async Task VolverAsync() => await JS.InvokeVoidAsync("history.back");
+
+    private IReadOnlyCollection<string>? KeysFromQuery()
+    {
+        var query = QueryHelpers.ParseQuery(new Uri(Nav.Uri).Query);
+        if (!query.TryGetValue("keys", out var raw) || string.IsNullOrEmpty(raw)) return null;
+        var list = raw.ToString().Split(',', StringSplitOptions.RemoveEmptyEntries);
+        return list.Length > 0 ? list : null;
+    }
+}

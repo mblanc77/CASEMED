@@ -1,0 +1,17 @@
+@page "/reintegros"
+@rendermode InteractiveServer
+@using Sgpa.Domain.Entities
+@using Sgpa.Web.Components.Crud
+@using Sgpa.Business.Reintegros
+@inject ReintegroService Reintegro
+
+<PageTitle>Reintegros mutuales</PageTitle>
+
+@*
+    ReintegroMutual tiene clave compuesta (CI+Mes+Anio) y no tiene tablas hijas → ABM = CRUD genérico.
+    Lógica de negocio portada de AbmReint.frm: validación del período (mes/año), aviso de elegibilidad
+    (1,25 SMN, no bloqueante) y actualización de la cuota del mutualista al grabar (ActualizarCuota).
+*@
+<SgpaCrudView TEntity="ReintegroMutual" Title="Reintegros mutuales"
+              OnAfterSaveAsync="@(r => Reintegro.ActualizarCuotaMutualAsync(r))"
+              GetWarningsAfterSaveAsync="@(r => Reintegro.GetAvisosAsync(r))" />

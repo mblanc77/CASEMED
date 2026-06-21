@@ -1,0 +1,59 @@
+@page "/auditoria"
+@rendermode InteractiveServer
+@using Sgpa.Data
+@using Sgpa.Data.Configuracion
+@inject IDbExecutor Db
+@inject ITablaConfigService TablaConfig
+@inject WebCurrentUser CurrentUser
+
+<PageTitle>Auditoría</PageTitle>
+
+<h3 class="mb-2">Auditoría de cambios</h3>
+<p class="text-muted">
+    Últimos cambios registrados en las tablas con auditoría activada (ver
+    <a href="/config/tablas">Configuración de tablas</a>). Filtrá por columna en la grilla.
+</p>
+
+@if (!CurrentUser.IsAdmin)
+{
+    <div class="alert alert-warning">La auditoría es sólo para administradores.</div>
+}
+else
+{
+    <DxGrid Data="_rows" PageSize="25" ShowFilterRow="true" ShowSearchBox="true">
+        <Columns>
+            <DxGridDataColumn FieldName="Fecha" Caption="Fecha" DisplayFormat="g" Width="160px" />
+            <DxGridDataColumn FieldName="Login" Caption="Usuario" Width="110px" />
+            <DxGridDataColumn FieldName="Tabla" Caption="Tabla" Width="160px">
+                <CellDisplayTemplate Context="cell">@TablaConfig.DisplayName(((AuditRow)cell.DataItem).Tabla)</CellDisplayTemplate>
+            </DxGridDataColumn>
+            <DxGridDataColumn FieldName="Clave" Caption="Clave" Width="120px" />
+            <DxGridDataColumn FieldName="Operacion" Caption="Op." Width="70px">
+                <CellDisplayTemplate Context="cell">@OpLabel(((AuditRow)cell.DataItem).Operacion)</CellDisplayTemplate>
+            </DxGridDataColumn>
+            <DxGridDataColumn FieldName="Campo" Caption="Campo" />
+            <DxGridDataColumn FieldName="ValorAnterior" Caption="Valor anterior" />
+            <DxGridDataColumn FieldName="ValorNuevo" Caption="Valor nuevo" />
+        </Columns>
+    </DxGrid>
+}
+
+@code {
+    private IReadOnlyList<AuditRow> _rows = Array.Empty<AuditRow>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CurrentUser.EnsureLoadedAsync();
+        if (!CurrentUser.IsAdmin) return;
+        await TablaConfig.EnsureLoadedAsync();
+        _rows = await Db.QueryAsync<AuditRow>(
+            @"SELECT TOP 2000 Id, Fecha, Login, Tabla, Clave, Operacion, Campo, ValorAnterior, ValorNuevo
+              FROM dbo.AuditCambio
+              ORDER BY Id DESC");
+    }
+
+    public sealed record AuditRow(long Id, DateTime Fecha, string? Login, string Tabla, string? Clave,
+        string Operacion, string? Campo, string? ValorAnterior, string? ValorNuevo);
+
+    private static string OpLabel(string op) => op switch { "I" => "Alta", "U" => "Modif.", "D" => "Baja", _ => op };
+}

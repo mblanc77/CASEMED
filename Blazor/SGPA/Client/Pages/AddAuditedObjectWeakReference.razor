@@ -1,0 +1,39 @@
+@page "/add-audited-object-weak-reference"
+
+<PageTitle>Add AuditedObjectWeakReference</PageTitle>
+    <RadzenColumn SizeMD=12>
+        <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@errorVisible">Cannot save AuditedObjectWeakReference</RadzenAlert>
+        <RadzenTemplateForm TItem="SGPA.Server.Models.CMU.AuditedObjectWeakReference" Data="@auditedObjectWeakReference" Visible="@(auditedObjectWeakReference != null && canEdit)" Submit="@FormSubmit">
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Int Id" Component="IntId" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@auditedObjectWeakReference.IntId" Name="IntId" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Display Name" Component="DisplayName" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@auditedObjectWeakReference.DisplayName" Name="DisplayName" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Xpweak Reference" Component="XpweakReference" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@xpWeakReferencesForOid" TextProperty="TargetKey" ValueProperty="Oid" AllowClear=true
+                         Placeholder="Choose XpweakReference" style="display: block; width: 100%" @bind-Value="@auditedObjectWeakReference.Oid" Name="Oid"
+                        SelectedValue=@xpWeakReferencesForOidValue Count=@xpWeakReferencesForOidCount LoadData=@xpWeakReferencesForOidLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+          <RadzenStack  Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                    <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Submit" Icon="save" Text="Save" Variant="Variant.Flat" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Text="Cancel" Variant="Variant.Flat" Click="@CancelButtonClick"  />
+          </RadzenStack>
+        </RadzenTemplateForm>
+    </RadzenColumn>
+

@@ -1,0 +1,1 @@
+SELECT Cantidad FROM [805_CertificadosActivos]('2025-01-01','2025-12-31')

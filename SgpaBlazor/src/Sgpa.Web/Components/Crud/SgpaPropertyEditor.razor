@@ -1,0 +1,127 @@
+@using Microsoft.AspNetCore.Components.Forms
+@using Sgpa.Domain.Metadata
+@using Sgpa.Data.Crud
+@inject ISgpaLookupService Lookups
+@*
+    Editor genérico de una propiedad de entidad. Si la columna es una FK por convención
+    (ver EntityCatalog.LookupTargetFor) muestra un combo con la descripción de la entidad
+    referida; si no, elige el editor DevExpress según el tipo CLR.
+*@
+
+@{
+    var t = Column.UnderlyingType;
+}
+
+@*
+    Los editores usan Value/ValueChanged (no @bind-Value) sobre una propiedad resuelta por reflexión,
+    por lo que no pueden proveer ValueExpression. La validación corre a nivel EditContext
+    (SgpaMetadataValidator), así que se desactiva la validación interna de cada editor DevExpress
+    (ValidationEnabled="false") — necesario para usarlos dentro de un EditForm real.
+*@
+@if (_lookup is not null)
+{
+    <DxComboBox Data="_lookup" TData="LookupItem" TValue="object"
+                Value="@Column.GetValue(Model)" ValueChanged="@((object v) => Set(v))"
+                ValueFieldName="@nameof(LookupItem.Value)" TextFieldName="@nameof(LookupItem.Text)"
+                ReadOnly="ReadOnly" FilteringMode="DataGridFilteringMode.Contains" ValidationEnabled="false"
+                ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto" NullText=" " />
+}
+else if (t == typeof(bool))
+{
+    <DxCheckBox Checked="@(GetAs<bool>())" CheckedChanged="@((bool v) => Set(v))" Enabled="!ReadOnly" ValidationEnabled="false" />
+}
+else if (t == typeof(DateTime))
+{
+    <DxDateEdit T="DateTime?" Date="@(GetNullable<DateTime>())" DateChanged="@((DateTime? v) => Set(v))" ReadOnly="ReadOnly" ValidationEnabled="false" NullText=" " />
+}
+else if (string.Equals(Column.Name, "CI", StringComparison.OrdinalIgnoreCase)
+         && (t == typeof(long) || t == typeof(int)))
+{
+    @* Cédula: textbox numérico sin spinners ni separadores de miles (DisplayFormat="0"). El rango (7-9 dígitos)
+       lo valida AfiliadoValidator; NO se usa MinValue/MaxValue porque DxSpinEdit clampea el valor. *@
+    <DxSpinEdit @ref="_cedulaEdit" T="long?" Value="@(GetNullable<long>())" ValueChanged="@((long? v) => SetCedula(v))"
+                ReadOnly="ReadOnly" ValidationEnabled="false" NullText=" " ShowSpinButtons="false" DisplayFormat="0" />
+}
+else if (t == typeof(int) || t == typeof(long) || t == typeof(short) || t == typeof(byte))
+{
+    <DxSpinEdit T="long?" Value="@(GetNullable<long>())" ValueChanged="@((long? v) => Set(v))" ReadOnly="ReadOnly" ValidationEnabled="false" NullText=" " />
+}
+else if (t == typeof(decimal) || t == typeof(double) || t == typeof(float))
+{
+    <DxSpinEdit T="decimal?" Value="@(GetNullable<decimal>())" ValueChanged="@((decimal? v) => Set(v))" ReadOnly="ReadOnly" ValidationEnabled="false" NullText=" " />
+}
+else
+{
+    <DxTextBox Text="@(Column.GetValue(Model)?.ToString() ?? string.Empty)" TextChanged="@((string v) => Set(v))" ReadOnly="ReadOnly" ValidationEnabled="false" />
+}
+
+@code {
+    [Parameter, EditorRequired] public object Model { get; set; } = default!;
+    [Parameter, EditorRequired] public ColumnMetadata Column { get; set; } = default!;
+    [Parameter] public EntityMetadata? Owner { get; set; }
+    [Parameter] public bool ReadOnly { get; set; }
+
+    // Aviso de "campo confirmado" (al salir del foco) hacia SgpaDetailForm, que notifica al EditContext para
+    // disparar la validación (ej. existencia de cédula). Se enruta por el padre porque la cascada del EditContext
+    // no siempre llega al editor a través del DxFormLayout. Hoy sólo lo dispara el editor de CI.
+    [Parameter] public EventCallback<string> OnFieldCommitted { get; set; }
+
+    /// <summary>Si es true, el editor toma el foco al abrir el formulario (sólo el editor de cédula).</summary>
+    [Parameter] public bool AutoFocus { get; set; }
+
+    private DxSpinEdit<long?>? _cedulaEdit;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && AutoFocus && _cedulaEdit is not null)
+            await _cedulaEdit.FocusAsync();
+    }
+
+    private IReadOnlyList<LookupItem>? _lookup;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _lookup = null;
+        if (Owner is null) return;
+        // La cédula (CI) siempre es un textbox numérico que se tipea, nunca un combo (Afiliado es enorme y, además,
+        // se quiere ingresar el número). Evita cargar el lookup de Afiliado y caer en un combo vacío.
+        if (IsCedula) return;
+        var target = EntityCatalog.LookupTargetFor(Column, Owner);
+        if (target is not null)
+            _lookup = await Lookups.GetAsync(target.EntityType);
+    }
+
+    private bool IsCedula => string.Equals(Column.Name, "CI", StringComparison.OrdinalIgnoreCase)
+        && (Column.UnderlyingType == typeof(long) || Column.UnderlyingType == typeof(int));
+
+    private T GetAs<T>() => Column.GetValue(Model) is T v ? v : default!;
+
+    private T? GetNullable<T>() where T : struct
+    {
+        var raw = Column.GetValue(Model);
+        if (raw is null) return null;
+        try { return (T)Convert.ChangeType(raw, typeof(T)); }
+        catch { return null; }
+    }
+
+    private void Set(object? value) => Column.SetValue(Model, Coerce(value, Column.ClrType, Column.UnderlyingType));
+
+    // Set + aviso al padre (al salir del foco) para que dispare la validación de existencia de la cédula.
+    // Sólo lo usa el editor de CI; el resto no notifica (validan en el guardado).
+    private async Task SetCedula(object? value)
+    {
+        Set(value);
+        await OnFieldCommitted.InvokeAsync(Column.Property.Name);
+    }
+
+    private static object? Coerce(object? value, Type targetType, Type underlying)
+    {
+        var isNullable = targetType != underlying || !targetType.IsValueType;
+        if (value is null || (value is string s && s.Length == 0))
+            return isNullable ? null : Activator.CreateInstance(underlying);
+
+        if (underlying.IsInstanceOfType(value)) return value;
+        try { return Convert.ChangeType(value, underlying); }
+        catch { return isNullable ? null : Activator.CreateInstance(underlying); }
+    }
+}

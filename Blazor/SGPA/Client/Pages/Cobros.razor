@@ -1,0 +1,68 @@
+@page "/cobros"
+
+<PageTitle>Cobros</PageTitle>
+<RadzenStack>
+    <RadzenRow AlignItems="AlignItems.Center">
+        <RadzenColumn Size="12" SizeMD="6">
+            <RadzenText Text="Cobros" TextStyle="TextStyle.H3" TagName="TagName.H1" style="margin: 0" />
+        </RadzenColumn>
+        <RadzenColumn Size="12" SizeMD="6">
+            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                <RadzenSplitButton Icon="get_app" Text="Export" Click="@ExportClick" Variant="Variant.Flat" Shade="Shade.Lighter">
+                    <RadzenSplitButtonItem Text="Excel" Value="xlsx" />
+                    <RadzenSplitButtonItem Text="CSV" Value="csv" />
+                </RadzenSplitButton>
+                <RadzenButton Icon="add_circle_outline" Text="Add" Click="@AddButtonClick" Variant="Variant.Flat" />
+            </RadzenStack>
+        </RadzenColumn>
+    </RadzenRow>
+    <RadzenRow>
+      <RadzenColumn SizeMD=12>
+        <RadzenDataGrid @ref="grid0" ColumnWidth="200px"  AllowFiltering="true" FilterMode="FilterMode.Advanced" AllowPaging="true" AllowSorting="true" ShowPagingSummary="true" PageSizeOptions=@(new int[]{5, 10, 20, 30})
+            Data="@cobros" Count=count LoadData=@Grid0LoadData  TItem="SGPA.Server.Models.CMU.Cobro" RowDoubleClick="@EditRow" >
+            <Columns>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Cobro" Property="Id" Title="Id">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Cobro" Property="MesCargo" Title="Mes Cargo">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Cobro" Property="AñoCargo" Title="Año Cargo">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Cobro" Property="Fecha" Title="Fecha">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Cobro" Property="MontoDepositado" Title="Monto Depositado">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Cobro" Property="PreCargado" Title="Pre Cargado">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Cobro" Property="IdExterno" Title="Id Externo">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Cobro" Property="OptimisticLockField" Title="Optimistic Lock Field">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Cobro" Property="GCRecord" Title="G C Record">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Cobro" Property="Comentario" Title="Comentario">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Cobro" Property="FechaIniCargo" Title="Fecha Ini Cargo">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Cobro" Property="FechaFinCargo" Title="Fecha Fin Cargo">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Cobro" Property="AgenteCobranza1.ParseClass" Title="Agente Cobranza1">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Cobro" Property="CuentaBancarium" Title="Cuenta Bancarium">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Cobro" Property="XpobjectType.TypeName" Title="Xpobject Type">
+                </RadzenDataGridColumn>
+                <RadzenDataGridColumn TItem="SGPA.Server.Models.CMU.Cobro" Filterable="false" Sortable="false" Width="70px" TextAlign="TextAlign.Center">
+                    <Template Context="cobro">
+
+                        <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Size="ButtonSize.Medium"
+                            Shade="Shade.Lighter" Variant="Variant.Flat"
+                            Click=@(args => GridDeleteButtonClick(args, cobro)) @onclick:stopPropagation="true" />
+                    </Template>
+                </RadzenDataGridColumn>
+            </Columns>
+
+        </RadzenDataGrid>
+
+    </RadzenColumn>
+  </RadzenRow>
+</RadzenStack>

@@ -1,0 +1,13 @@
+﻿<Solution>
+  <Configurations>
+    <BuildType Name="Debug" />
+    <BuildType Name="EasyTest" />
+    <BuildType Name="Release" />
+  </Configurations>
+  <Project Path="NewSgpa.Migration/NewSgpa.Migration.csproj" />
+  <Project Path="NewSgpa/NewSgpa.Blazor.Server/NewSgpa.Blazor.Server.csproj" />
+  <Project Path="NewSgpa/NewSgpa.E2E.Tests/NewSgpa.E2E.Tests.csproj" />
+  <Project Path="NewSgpa/NewSgpa.Module/NewSgpa.Module.csproj" />
+  <Project Path="NewSgpa/NewSgpa.Win/NewSgpa.Win.csproj" />
+</Solution>
+

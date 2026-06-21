@@ -1,0 +1,167 @@
+@*
+    Navegación lateral con DxTreeView (DevExpress): ítems agrupados por concepto, con íconos
+    Font Awesome. Requiere interactividad (el clic expande/colapsa vía circuito): se renderiza
+    como isla InteractiveServer desde MainLayout. NodeClick = expandir al hacer clic en el grupo.
+*@
+<div class="sgpa-brand">
+    <a href="" class="sgpa-brand-link"><img src="img/logo-casemed-white.png" alt="CASEMED" class="sgpa-brand-logo" /></a>
+</div>
+
+<div class="nav-scrollable">
+    @* Búsqueda rápida del menú: al tipear muestra una lista plana filtrada (sin acentos). *@
+    <div class="sgpa-nav-search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="search" @bind="_search" @bind:event="oninput" placeholder="Buscar en el menú…" aria-label="Buscar en el menú" />
+    </div>
+
+@if (!string.IsNullOrWhiteSpace(_search))
+{
+    <ul class="sgpa-nav-results">
+        @foreach (var i in Filtered)
+        {
+            <li><a href="@i.Url"><i class="fa-solid @i.Icon"></i> <span>@i.Label</span></a></li>
+        }
+        @if (!Filtered.Any())
+        {
+            <li class="sgpa-nav-empty">Sin resultados para “@_search”.</li>
+        }
+    </ul>
+}
+else
+{
+    <DxTreeView CssClass="sgpa-nav" AllowSelectNodes="true" SizeMode="SizeMode.Small"
+                NodeExpandCollapseAction="TreeViewNodeExpandCollapseAction.NodeClick">
+        <Nodes>
+            <DxTreeViewNode Text="Inicio" IconCssClass="fa-solid fa-house" NavigateUrl="/" />
+
+            <DxTreeViewNode Text="Padrón" IconCssClass="fa-solid fa-address-book" Expanded="true">
+                <Nodes>
+                    <DxTreeViewNode Text="Afiliados" IconCssClass="fa-solid fa-id-card" NavigateUrl="/afiliados" />
+                    <DxTreeViewNode Text="Empresas" IconCssClass="fa-solid fa-building" NavigateUrl="/empresas" />
+                    <DxTreeViewNode Text="Mutualistas" IconCssClass="fa-solid fa-hospital" NavigateUrl="/mutualistas" />
+                    <DxTreeViewNode Text="Certificaciones" IconCssClass="fa-solid fa-file-medical" NavigateUrl="/certificaciones" />
+                </Nodes>
+            </DxTreeViewNode>
+
+            @* Subsidios y Liquidación quedaron consolidados en un único ABM (la acción "Liquidar"
+               vive en la toolbar de /subsidios). *@
+            <DxTreeViewNode Text="Subsidios" IconCssClass="fa-solid fa-hand-holding-dollar" NavigateUrl="/subsidios" />
+
+            <DxTreeViewNode Text="Aportes y pagos" IconCssClass="fa-solid fa-coins">
+                <Nodes>
+                    <DxTreeViewNode Text="Imponibles" IconCssClass="fa-solid fa-coins" NavigateUrl="/imponibles" />
+                    <DxTreeViewNode Text="Prestaciones" IconCssClass="fa-solid fa-stethoscope" NavigateUrl="/prestaciones" />
+                    <DxTreeViewNode Text="Reintegros" IconCssClass="fa-solid fa-rotate-left" NavigateUrl="/reintegros" />
+                    <DxTreeViewNode Text="Adelantos prejub." IconCssClass="fa-solid fa-hourglass-half" NavigateUrl="/adprejub" />
+                </Nodes>
+            </DxTreeViewNode>
+
+            <DxTreeViewNode Text="Préstamos" IconCssClass="fa-solid fa-landmark">
+                <Nodes>
+                    <DxTreeViewNode Text="Préstamos" IconCssClass="fa-solid fa-landmark" NavigateUrl="/prestamos" />
+                    <DxTreeViewNode Text="Carga de pagos (Abitab)" IconCssClass="fa-solid fa-file-import" NavigateUrl="/pagos/carga" />
+                    <DxTreeViewNode Text="Errores de carga (Abitab)" IconCssClass="fa-solid fa-triangle-exclamation" NavigateUrl="/crud/ErrCargaAbitab" />
+                    <DxTreeViewNode Text="Estados de préstamo" IconCssClass="fa-solid fa-tags" NavigateUrl="/crud/SP_PrestamoEstado" />
+                    <DxTreeViewNode Text="Transiciones de estado" IconCssClass="fa-solid fa-right-left" NavigateUrl="/crud/SP_CtrlPrestamoEstado" />
+                </Nodes>
+            </DxTreeViewNode>
+
+            <DxTreeViewNode Text="Catálogos" IconCssClass="fa-solid fa-book">
+                <Nodes>
+                    @foreach (var (entity, label) in Catalogos)
+                    {
+                        <DxTreeViewNode Text="@label" IconCssClass="fa-solid fa-tag" NavigateUrl="@($"/crud/{entity}")" />
+                    }
+                </Nodes>
+            </DxTreeViewNode>
+
+            <DxTreeViewNode Text="Informes estadísticos" IconCssClass="fa-solid fa-chart-pie" NavigateUrl="/informes-estadisticos" />
+
+            <DxTreeViewNode Text="Sistema" IconCssClass="fa-solid fa-gear">
+                <Nodes>
+                    <DxTreeViewNode Text="Tablas" IconCssClass="fa-solid fa-table-list" NavigateUrl="/entidades" />
+                    <DxTreeViewNode Text="Parámetros" IconCssClass="fa-solid fa-sliders" NavigateUrl="/parametros" />
+                    <DxTreeViewNode Text="Configuración de tablas" IconCssClass="fa-solid fa-table-list" NavigateUrl="/config/tablas" />
+                    <DxTreeViewNode Text="Auditoría" IconCssClass="fa-solid fa-clock-rotate-left" NavigateUrl="/auditoria" />
+                    <DxTreeViewNode Text="Reportes" IconCssClass="fa-solid fa-file-lines" NavigateUrl="/reportes" />
+                    <DxTreeViewNode Text="Diagnóstico" IconCssClass="fa-solid fa-heart-pulse" NavigateUrl="/diagnostico" />
+                </Nodes>
+            </DxTreeViewNode>
+        </Nodes>
+    </DxTreeView>
+}
+</div>
+
+@code {
+    private string _search = string.Empty;
+
+    // Ítems "hoja" del menú (los grupos no navegan). Se combinan con los catálogos para la búsqueda.
+    private static readonly (string Label, string Url, string Icon)[] _leaf =
+    {
+        ("Inicio", "/", "fa-house"),
+        ("Afiliados", "/afiliados", "fa-id-card"),
+        ("Empresas", "/empresas", "fa-building"),
+        ("Mutualistas", "/mutualistas", "fa-hospital"),
+        ("Certificaciones", "/certificaciones", "fa-file-medical"),
+        ("Subsidios", "/subsidios", "fa-hand-holding-dollar"),
+        ("Imponibles", "/imponibles", "fa-coins"),
+        ("Prestaciones", "/prestaciones", "fa-stethoscope"),
+        ("Reintegros", "/reintegros", "fa-rotate-left"),
+        ("Adelantos prejubilatorios", "/adprejub", "fa-hourglass-half"),
+        ("Préstamos", "/prestamos", "fa-landmark"),
+        ("Carga de pagos (Abitab)", "/pagos/carga", "fa-file-import"),
+        ("Errores de carga (Abitab)", "/crud/ErrCargaAbitab", "fa-triangle-exclamation"),
+        ("Estados de préstamo", "/crud/SP_PrestamoEstado", "fa-tags"),
+        ("Transiciones de estado", "/crud/SP_CtrlPrestamoEstado", "fa-right-left"),
+        ("Tablas", "/entidades", "fa-table-list"),
+        ("Parámetros", "/parametros", "fa-sliders"),
+        ("Configuración de tablas", "/config/tablas", "fa-table-list"),
+        ("Auditoría", "/auditoria", "fa-clock-rotate-left"),
+        ("Reportes", "/reportes", "fa-file-lines"),
+        ("Informes estadísticos", "/informes-estadisticos", "fa-chart-pie"),
+        ("Diagnóstico", "/diagnostico", "fa-heart-pulse"),
+    };
+
+    private IEnumerable<(string Label, string Url, string Icon)> Filtered =>
+        _leaf
+            .Concat(Catalogos.Select(c => (c.Label, $"/crud/{c.Entity}", "fa-tag")))
+            .Where(i => Norm(i.Label).Contains(Norm(_search)))
+            .OrderBy(i => i.Label, StringComparer.OrdinalIgnoreCase);
+
+    // Normaliza para buscar sin distinguir mayúsculas ni acentos ("prestamo" matchea "Préstamos").
+    private static string Norm(string s)
+    {
+        if (string.IsNullOrEmpty(s)) return string.Empty;
+        var d = s.Normalize(System.Text.NormalizationForm.FormD);
+        var sb = new System.Text.StringBuilder(d.Length);
+        foreach (var ch in d)
+            if (System.Globalization.CharUnicodeInfo.GetUnicodeCategory(ch) != System.Globalization.UnicodeCategory.NonSpacingMark)
+                sb.Append(ch);
+        return sb.ToString().ToLowerInvariant();
+    }
+
+    // Catálogos (lookups) servidos por el CRUD genérico en /crud/{Entity}. Mapean a los forms VB6 Gr*.
+    private static readonly (string Entity, string Label)[] Catalogos =
+    {
+        ("Mutualista", "Mutualistas"),
+        ("Banco", "Bancos"),
+        ("Certificador", "Certificadores"),
+        ("Patologia", "Patologías"),
+        ("AfeccionGrupo", "Grupos de afección"),
+        ("AfeccionTipo", "Tipos de afección"),
+        ("SalidaTipo", "Tipos de salida"),
+        ("BajaMotivo", "Motivos de baja"),
+        ("FormaPago", "Formas de pago"),
+        ("AporteTipo", "Tipos de aporte"),
+        ("RegimenAporte", "Regímenes de aporte"),
+        ("RegimenJubilatorio", "Regímenes jubilatorios"),
+        ("SituacionPago", "Situaciones de pago"),
+        ("SituacionMutual", "Situaciones mutuales"),
+        ("Departamento", "Departamentos"),
+        ("Especialidad", "Especialidades"),
+        ("PrestacionTipo", "Tipos de prestación"),
+        ("RecetaDistancia", "Distancias de receta"),
+        ("IMS", "IMS"),
+        ("SP_Moneda", "Monedas (préstamos)"),
+    };
+}

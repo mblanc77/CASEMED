@@ -1,0 +1,33 @@
+@page "/add-usuario-regional"
+
+<PageTitle>Add UsuarioRegional</PageTitle>
+    <RadzenColumn SizeMD=12>
+        <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@errorVisible">Cannot save UsuarioRegional</RadzenAlert>
+        <RadzenTemplateForm TItem="SGPA.Server.Models.CMU.UsuarioRegional" Data="@usuarioRegional" Visible="@(usuarioRegional != null && canEdit)" Submit="@FormSubmit">
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Usuario" Component="Usuario" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@usuariosForOid" TextProperty="" ValueProperty="Oid" AllowClear=true
+                         Placeholder="Choose Usuario" style="display: block; width: 100%" @bind-Value="@usuarioRegional.Oid" Name="Oid"
+                        SelectedValue=@usuariosForOidValue Count=@usuariosForOidCount LoadData=@usuariosForOidLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Regional1" Component="Regional1" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@regionalsForRegional" TextProperty="Descripcion" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose Regional1" style="display: block; width: 100%" @bind-Value="@usuarioRegional.Regional" Name="Regional"
+                        SelectedValue=@regionalsForRegionalValue Count=@regionalsForRegionalCount LoadData=@regionalsForRegionalLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+          <RadzenStack  Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                    <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Submit" Icon="save" Text="Save" Variant="Variant.Flat" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Text="Cancel" Variant="Variant.Flat" Click="@CancelButtonClick"  />
+          </RadzenStack>
+        </RadzenTemplateForm>
+    </RadzenColumn>
+

@@ -1,0 +1,640 @@
+=== TABLES ===
+TABLE: AdPreJub
+  CI | Long(4) | Required=Falso
+  FechaPresentacion | Date(8) | Required=Falso
+  ImporteMensual | Integer(2) | Required=Falso
+  FechaJubilacion | Date(8) | Required=Falso
+  Observaciones | Memo(0) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: AdPreJubPago
+  CI | Long(4) | Required=Falso
+  Mes | Integer(2) | Required=Falso
+  Anio | Integer(2) | Required=Falso
+  Fecha | Date(8) | Required=Falso
+  Importe | Single(4) | Required=Falso
+  Observaciones | Memo(0) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: AfeccionGrupo
+  CodAfeccionGrupo | Long(4) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  CodPatologia | Long(4) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: AfeccionTipo
+  CodAfeccionTipo | Integer(2) | Required=Falso
+  Descrip | Text(200) | Required=Falso
+  CodAfeccionGrupo | Long(4) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+  CodDiameg | Long(4) | Required=Falso
+
+TABLE: Afiliado
+  CI | Long(4) | Required=Verdadero
+  Nombres | Text(50) | Required=Falso
+  Apellido1 | Text(30) | Required=Falso
+  Apellido2 | Text(30) | Required=Falso
+  FechaNacimiento | Date(8) | Required=Falso
+  Sexo | Text(1) | Required=Falso
+  Direccion | Text(100) | Required=Falso
+  Telefono | Text(25) | Required=Falso
+  EMail | Text(100) | Required=Falso
+  CodMutualista | Integer(2) | Required=Falso
+  FechaIngMutualista | Date(8) | Required=Falso
+  FechaBajaMutualista | Date(8) | Required=Falso
+  NroSocioMutualista | Text(12) | Required=Falso
+  CodRegimenJubilatorio | Byte(1) | Required=Falso
+  CodDepartamento | Text(3) | Required=Falso
+  PagaMutualista | Boolean(1) | Required=Falso
+  CodSituacionMutual | Text(2) | Required=Falso
+  CodBanco | Long(4) | Required=Falso
+  NroCuenta | Text(50) | Required=Falso
+  NroFunCuenta | Text(50) | Required=Falso
+  Movil | Text(50) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: AfiliadoApunte
+  CI | Long(4) | Required=Falso
+  Fecha | Date(8) | Required=Falso
+  Descrip | Memo(0) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: AfiliadoEspecialidad
+  CI | Long(4) | Required=Falso
+  CodEspecialidad | Long(4) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: AporteTipo
+  CodAporteTipo | Text(3) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: BajaMotivo
+  CodBajaMotivo | Long(4) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: Banco
+  CodBanco | Long(4) | Required=Falso
+  Descripcion | Text(50) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: BROU
+  CI | Double(8) | Required=Falso
+  NOMBRE Y APELLIDO | Text(255) | Required=Falso
+  Nº CUENTA | Double(8) | Required=Falso
+
+TABLE: Certificacion
+  NroLlamado | Long(4) | Required=Falso
+  CI | Long(4) | Required=Falso
+  NroRecibo | Long(4) | Required=Falso
+  FechaRecibido | Date(8) | Required=Falso
+  FechaCertificacion | Date(8) | Required=Falso
+  FechaIni | Date(8) | Required=Falso
+  FechaFin | Date(8) | Required=Falso
+  CodAfeccionTipo | Integer(2) | Required=Falso
+  CodCertificador | Integer(2) | Required=Falso
+  CodSalidaTipo | Integer(2) | Required=Falso
+  Efectiva | Boolean(1) | Required=Falso
+  Indicaciones | Memo(0) | Required=Falso
+  ImporteDeducible | Double(8) | Required=Falso
+  Trabaja | Boolean(1) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: CertificacionProrroga
+  CI | Long(4) | Required=Falso
+  Fecha | Date(8) | Required=Falso
+  Dias | Long(4) | Required=Falso
+  Observaciones | Memo(0) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: Certificador
+  CodCertificador | Integer(2) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  Direccion | Text(50) | Required=Falso
+  Telefono | Text(25) | Required=Falso
+  Fax | Text(25) | Required=Falso
+  Bip | Text(25) | Required=Falso
+  CobraLlamado | Boolean(1) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: CTASBROU
+  CI | Long(4) | Required=Falso
+  Cta | Text(50) | Required=Falso
+
+TABLE: Cuenta
+  CI | Long(4) | Required=Falso
+  CodBanco | Long(4) | Required=Falso
+  NroCuenta | Text(50) | Required=Falso
+
+TABLE: Departamento
+  CodDepartamento | Text(3) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+
+TABLE: DISCOUNT
+  CI | Double(8) | Required=Falso
+  FICHA | Double(8) | Required=Falso
+  NOMBRE Y APELLIDO | Text(255) | Required=Falso
+  Nº CUENTA | Double(8) | Required=Falso
+
+TABLE: Empresa
+  CodEmpresa | Integer(2) | Required=Falso
+  Nombre | Text(50) | Required=Falso
+  Direccion | Text(50) | Required=Falso
+  Telefono | Text(25) | Required=Falso
+  Fax | Text(25) | Required=Falso
+  EMail | Text(25) | Required=Falso
+  AporteCasemed | Single(4) | Required=Falso
+  AporteAguinaldo | Long(4) | Required=Falso
+  PersonaContacto | Text(50) | Required=Falso
+  Autoridades | Text(255) | Required=Falso
+  CodRegimenAporte | Integer(2) | Required=Falso
+  CodSituacionPago | Integer(2) | Required=Falso
+  Liquidar | Boolean(1) | Required=Falso
+  Ficticia | Boolean(1) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: EmpresaPago
+  CodEmpresa | Integer(2) | Required=Falso
+  Mes | Integer(2) | Required=Falso
+  Anio | Long(4) | Required=Falso
+  Importe | Long(4) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: Errores de conversión
+  Tipo de objeto | Text(255) | Required=Falso
+  Nombre de objeto | Text(255) | Required=Falso
+  Descripción del error | Memo(0) | Required=Falso
+
+TABLE: Errores de conversión1
+  Tipo de objeto | Text(255) | Required=Falso
+  Nombre de objeto | Text(255) | Required=Falso
+  Descripción del error | Memo(0) | Required=Falso
+
+TABLE: Errores de conversión2
+  Tipo de objeto | Text(255) | Required=Falso
+  Nombre de objeto | Text(255) | Required=Falso
+  Descripción del error | Memo(0) | Required=Falso
+
+TABLE: Errores de pegado
+  Campo0 | Memo(0) | Required=Falso
+  Campo1 | Memo(0) | Required=Falso
+  Campo2 | Memo(0) | Required=Falso
+
+TABLE: Especialidad
+  CodEspecialidad | Long(4) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: FormaPago
+  CodFormaPago | Integer(2) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: FranjaIRPF
+  Desde | Double(8) | Required=Falso
+  Hasta | Double(8) | Required=Falso
+  Porcentaje | Double(8) | Required=Falso
+
+TABLE: IMP
+  CI | Long(4) | Required=Falso
+  Importe | Double(8) | Required=Falso
+
+TABLE: Imponible
+  CI | Long(4) | Required=Falso
+  CodEmpresa | Integer(2) | Required=Falso
+  Fechaingreso | Date(8) | Required=Falso
+  Mes | Byte(1) | Required=Falso
+  Anio | Integer(2) | Required=Falso
+  Concepto | Text(3) | Required=Falso
+  IdTrabaja | Long(4) | Required=Falso
+  DiasTrabajados | Integer(2) | Required=Falso
+  Importe | Double(8) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+  AnioMes | Long(4) | Required=Falso
+
+TABLE: Imponible_ok
+
+TABLE: IMS
+  Mes | Integer(2) | Required=Falso
+  Anio | Integer(2) | Required=Falso
+  Importe | Single(4) | Required=Falso
+  AnioMes | Long(4) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: InformeEstadistico
+  IdRpt | Long(4) | Required=Falso
+  Grupo | Text(50) | Required=Falso
+  Orden | Long(4) | Required=Falso
+  TituloPantalla | Text(255) | Required=Falso
+  TituloRpt | Text(255) | Required=Falso
+  MesAnio | Boolean(1) | Required=Falso
+  Periodo | Boolean(1) | Required=Falso
+  Empresa | Boolean(1) | Required=Falso
+  Fecha | Boolean(1) | Required=Falso
+  GrupoEtario | Boolean(1) | Required=Falso
+  Comentario | Memo(0) | Required=Falso
+  Patologia | Boolean(1) | Required=Falso
+
+TABLE: Liquidacion_BPS
+  Id | Long(4) | Required=Falso
+  CI | Double(8) | Required=Verdadero
+  NOMBRE | Text(255) | Required=Falso
+  APELLIDO | Text(255) | Required=Falso
+  MONTO_TOTAL | Double(8) | Required=Falso
+  MES_DE_CARGO | Long(4) | Required=Verdadero
+  NOM_EMPRESA | Text(255) | Required=Falso
+  PCT_POR_EMPRESA | Double(8) | Required=Verdadero
+  FECHA_PER_DESDE | Date(8) | Required=Falso
+  FECHA_PER_HASTA | Date(8) | Required=Falso
+  N_ ENTREGA | Long(4) | Required=Falso
+  FECHA_DE_ENTREGA | Date(8) | Required=Falso
+  MES | Integer(2) | Required=Falso
+  ANIO | Integer(2) | Required=Falso
+  LIQUIDO | Double(8) | Required=Falso
+
+TABLE: MaeFun
+  NroFun | Long(4) | Required=Falso
+  NroCuenta | Long(4) | Required=Falso
+  Apellido1 | Text(15) | Required=Verdadero
+  Apellido2 | Text(15) | Required=Falso
+  Nombre1 | Text(15) | Required=Verdadero
+  Nombre2 | Text(15) | Required=Falso
+  Cedula | Long(4) | Required=Falso
+  Nacionalidad | Integer(2) | Required=Falso
+  FecNac | Date(8) | Required=Falso
+  EstCivil | Integer(2) | Required=Falso
+  DirCalle | Text(20) | Required=Falso
+  DirPuerta | Text(4) | Required=Falso
+  DirBis | Text(2) | Required=Falso
+  DirPiso | Text(2) | Required=Falso
+  DirApto | Text(4) | Required=Falso
+  DirBloque | Text(2) | Required=Falso
+  DirLocal | Text(30) | Required=Falso
+  CodCargo | Long(4) | Required=Falso
+  DesCargo | Text(25) | Required=Falso
+  Telefono | Text(8) | Required=Falso
+  FecIngreso | Date(8) | Required=Falso
+  InfDbla | Boolean(1) | Required=Falso
+  FecInfDbla | Date(8) | Required=Falso
+  AsigCuenta | Integer(2) | Required=Falso
+  FecAsigCta | Date(8) | Required=Falso
+
+TABLE: Moneda
+  Moneda | Text(3) | Required=Falso
+
+TABLE: Mutualista
+  CodMutualista | Integer(2) | Required=Falso
+  Nombre | Text(50) | Required=Falso
+  Direccion | Text(50) | Required=Falso
+  Telefono | Text(50) | Required=Falso
+  Fax | Text(25) | Required=Falso
+  EMail | Text(25) | Required=Falso
+  DiaPago | Byte(1) | Required=Falso
+  CodFormaPago | Integer(2) | Required=Falso
+  PersonaContacto | Text(50) | Required=Falso
+  Cuota | Double(8) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+  Ficticia | Boolean(1) | Required=Falso
+
+TABLE: NoCargadoHL
+  CI | Long(4) | Required=Falso
+  Apellido1 | Text(50) | Required=Falso
+  Apellido2 | Text(50) | Required=Falso
+  Nombres | Text(50) | Required=Falso
+  CodEmpresa | Long(4) | Required=Falso
+  Mes | Long(4) | Required=Falso
+  Anio | Long(4) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: Parametros
+  SMN | Double(8) | Required=Falso
+  TopeJubilatorio | Single(4) | Required=Falso
+  TopePrima | Single(4) | Required=Falso
+  UR | Single(4) | Required=Falso
+  PctAdPreJub | Single(4) | Required=Falso
+  BCP | Double(8) | Required=Falso
+  TopeLiquidoBPS | Double(8) | Required=Falso
+  pctBPS | Double(8) | Required=Falso
+
+TABLE: Patologia
+  CodPatologia | Long(4) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: Prestacion
+  CI | Long(4) | Required=Falso
+  Fecha | Date(8) | Required=Falso
+  CodPrestacionTipo | Integer(2) | Required=Falso
+  Moneda | Text(3) | Required=Falso
+  Importe | Double(8) | Required=Falso
+  Boleta | Boolean(1) | Required=Falso
+  Observaciones | Memo(0) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: PrestacionTipo
+  CodPrestacionTipo | Integer(2) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  FechaVigencia | Date(8) | Required=Falso
+  ImporteTopeDISSE | Double(8) | Required=Falso
+  ImporteTopeCASEMED | Double(8) | Required=Falso
+  PeriodoRenovacion | Integer(2) | Required=Falso
+  Receta | Boolean(1) | Required=Falso
+  Obs | Memo(0) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: PrimaFallecimiento
+  CI | Long(4) | Required=Falso
+  FechaFirma | Date(8) | Required=Falso
+  FechaFallecimiento | Date(8) | Required=Falso
+  Importe | Double(8) | Required=Falso
+  FechaPago | Date(8) | Required=Falso
+  Observaciones | Memo(0) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: qCorregirFinSubsidio
+  Id | Long(4) | Required=Falso
+  CI | Long(4) | Required=Falso
+  Nombre y apellido | Text(255) | Required=Falso
+  Fecha Inicio | Date(8) | Required=Falso
+  Fecha Fin | Date(8) | Required=Falso
+
+TABLE: Receta
+  CI | Long(4) | Required=Falso
+  Fecha | Date(8) | Required=Falso
+  CodPrestacionTipo | Integer(2) | Required=Falso
+  CodRecetaDistancia | Text(3) | Required=Falso
+  Esf_I | Single(4) | Required=Falso
+  Esf_D | Single(4) | Required=Falso
+  Cil_I | Single(4) | Required=Falso
+  Cil_D | Single(4) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: RecetaDistancia
+  CodRecetaDistancia | Text(3) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+
+TABLE: RegimenAporte
+  CodRegimenAporte | Integer(2) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  Porcentaje | Integer(2) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: RegimenJubilatorio
+  CodRegimenJubilatorio | Byte(1) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: ReintegroMutual
+  CI | Long(4) | Required=Falso
+  Mes | Integer(2) | Required=Falso
+  Anio | Integer(2) | Required=Falso
+  Fecha | Date(8) | Required=Falso
+  CodMutualista | Integer(2) | Required=Falso
+  Importe | Single(4) | Required=Falso
+  Observaciones | Memo(0) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: Riesgo_Setiembre
+  Id | Long(4) | Required=Falso
+  CI | Long(4) | Required=Falso
+  Nombre | Text(255) | Required=Falso
+  Fecha Inicio | Date(8) | Required=Falso
+  Fecha Fin | Date(8) | Required=Falso
+
+TABLE: SalidaTipo
+  CodSalidaTipo | Integer(2) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: Seleccion
+  Id | Long(4) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Form | Text(255) | Required=Falso
+  Nombre | Text(255) | Required=Falso
+  Txt | Memo(0) | Required=Falso
+  System | Boolean(1) | Required=Falso
+
+TABLE: SituacionMutual
+  CodSituacionMutual | Text(2) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  Pagar | Boolean(1) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SituacionPago
+  CodSituacionPago | Integer(2) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SubsidioCabezal
+  IdSubsidio | Long(4) | Required=Falso
+  Mes | Byte(1) | Required=Falso
+  Anio | Integer(2) | Required=Falso
+  CI | Long(4) | Required=Falso
+  Liquidar | Boolean(1) | Required=Falso
+  ValorJornal | Single(4) | Required=Falso
+  Dias | Integer(2) | Required=Falso
+  ImpNominal | Double(8) | Required=Falso
+  ImpAguinaldo | Double(8) | Required=Falso
+  ImpLiquido | Double(8) | Required=Falso
+  NroRecibo | Long(4) | Required=Falso
+  FechaPago | Date(8) | Required=Falso
+  CodBanco | Long(4) | Required=Falso
+  NroCuenta | Text(50) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SubsidioCabezal_BPS
+  IdSubsidio | Long(4) | Required=Falso
+  DiasBPS | Long(4) | Required=Falso
+  LiquidoBPS | Double(8) | Required=Falso
+  AguinaldoBPS | Double(8) | Required=Falso
+  LiquidoPagar | Double(8) | Required=Falso
+
+TABLE: SubsidioCabezalEmpresa
+  IdSubsidio | Long(4) | Required=Falso
+  CodEmpresa | Integer(2) | Required=Falso
+  ValorJornal | Single(4) | Required=Falso
+  Dias | Integer(2) | Required=Falso
+  ImpNominal | Double(8) | Required=Falso
+  ImpAguinaldo | Double(8) | Required=Falso
+  ImpLiquido | Double(8) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SubsidioEnfermedad
+  IdSubsidio | Long(4) | Required=Falso
+  FechaIni | Date(8) | Required=Falso
+  FechaFin | Date(8) | Required=Falso
+  FechaIniSubsidio | Date(8) | Required=Falso
+  FechaFinSubsidio | Date(8) | Required=Falso
+  NroLlamado | Long(4) | Required=Falso
+  Dias | Byte(1) | Required=Falso
+  Importe | Double(8) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SubsidioImponible
+  IdSubsidio | Long(4) | Required=Falso
+  Mes | Byte(1) | Required=Falso
+  Anio | Integer(2) | Required=Falso
+  CodEmpresa | Integer(2) | Required=Falso
+  Dias | Integer(2) | Required=Falso
+  Importe | Double(8) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SubsidioItem
+  IdSubsidio | Long(4) | Required=Falso
+  CodSubsidioItemCod | Integer(2) | Required=Falso
+  Importe | Double(8) | Required=Falso
+  AbiEmp | Boolean(1) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SubsidioItemCod
+  CodSubsidioItemCod | Integer(2) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  Tipo | Text(1) | Required=Falso
+  ValorTipo | Text(50) | Required=Falso
+  Signo | Byte(1) | Required=Falso
+  Comparar | Boolean(1) | Required=Falso
+  CompararContra | Byte(1) | Required=Falso
+  Valor | Double(8) | Required=Falso
+  TipoComp | Text(1) | Required=Falso
+  Operador | Text(5) | Required=Falso
+  ValorMin | Double(8) | Required=Falso
+  ValorMax | Double(8) | Required=Falso
+  Procesar | Boolean(1) | Required=Falso
+  FechaVigencia | Date(8) | Required=Falso
+  FechaBaja | Date(8) | Required=Falso
+  AperturaXEmpresa | Boolean(1) | Required=Falso
+  ModificaNominal | Boolean(1) | Required=Falso
+
+TABLE: SubsidioItemCod_Afiliado
+  SubItmCodAfiId | Long(4) | Required=Falso
+  CodSubsidioItemCod | Integer(2) | Required=Falso
+  CI | Long(4) | Required=Falso
+  Valor | Double(8) | Required=Falso
+  Vigencia | Date(8) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SubsidioItemEmpresa
+  IdSubsidio | Long(4) | Required=Falso
+  CodSubsidioItemCod | Integer(2) | Required=Falso
+  CodEmpresa | Integer(2) | Required=Falso
+  Importe | Single(4) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: tmp_Rectificativas
+  Id | Long(4) | Required=Falso
+  EMPRESA | Double(8) | Required=Falso
+  CI | Double(8) | Required=Falso
+  Concepto | Double(8) | Required=Falso
+  Importe | Double(8) | Required=Falso
+
+TABLE: tmpCorrecciones
+  CI | Double(8) | Required=Falso
+  Nombre | Text(255) | Required=Falso
+  Fecha Inicio | Date(8) | Required=Falso
+  Fecha Fin | Date(8) | Required=Falso
+
+TABLE: Trabaja
+  CI | Long(4) | Required=Falso
+  CodEmpresa | Integer(2) | Required=Falso
+  FechaIngreso | Date(8) | Required=Falso
+  FechaBaja | Date(8) | Required=Falso
+  CodBajaMotivo | Long(4) | Required=Falso
+  NroFichaEmpresa | Text(20) | Required=Falso
+  IdTrabaja | Long(4) | Required=Falso
+  FechaIngCasemed | Date(8) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: xUsrParam
+  login | Text(8) | Required=Falso
+  clave | Text(100) | Required=Falso
+  orden | Integer(2) | Required=Falso
+  value1 | Text(255) | Required=Falso
+  value2 | Text(255) | Required=Falso
+  value3 | Text(255) | Required=Falso
+  value4 | Text(255) | Required=Falso
+  value5 | Text(255) | Required=Falso
+
+=== QUERIES ===
+QUERY: Consulta1
+  SQL: UPDATE tExcel INNER JOIN (SubsidioCabezal INNER JOIN (SubsidioEnfermedad INNER JOIN Certificacion ON SubsidioEnfermedad.FechaIni = Certificacion.FechaIni) ON (SubsidioCabezal.IdSubsidio = SubsidioEnfermedad.IdSubsidio) AND (SubsidioCabezal.CI = Certificacion.CI)) ON tExcel.CI = Certificacion.CI SET SubsidioEnfermedad.FechaFin = [Certificacion].[FechaFin]
+WHERE (((SubsidioEnfermedad.FechaFin)<>[Certificacion].[FechaFin]) AND ((SubsidioCabezal.Anio)=2020) AND ((SubsidioCabezal.Mes)=7));
+
+
+QUERY: Consulta5
+  SQL: SELECT Imponible.CodEmpresa, Imponible.Concepto, Sum(Imponible.Importe) AS SumaDeImporte
+FROM Imponible
+WHERE (((Imponible.Mes)=1) AND ((Imponible.Anio)=2023))
+GROUP BY Imponible.CodEmpresa, Imponible.Concepto;
+
+
+QUERY: qCerti05
+  SQL: SELECT SubsidioCabezal.IdSubsidio, SubsidioCabezal.CI, SubsidioEnfermedad.FechaIni, SubsidioEnfermedad.FechaFin, SubsidioEnfermedad.FechaIniSubsidio, SubsidioEnfermedad.FechaFinSubsidio
+FROM SubsidioCabezal INNER JOIN SubsidioEnfermedad ON SubsidioCabezal.IdSubsidio = SubsidioEnfermedad.IdSubsidio
+WHERE (((SubsidioCabezal.Mes)=5) AND ((SubsidioCabezal.Anio)=2020));
+
+
+QUERY: qry_rect_tot
+  SQL: SELECT tmp_Rectificativas.EMPRESA, tmp_Rectificativas.CI, tmp_Rectificativas.Concepto, Sum(tmp_Rectificativas.Importe) AS SumaDeImporte
+FROM tmp_Rectificativas
+GROUP BY tmp_Rectificativas.EMPRESA, tmp_Rectificativas.CI, tmp_Rectificativas.Concepto;
+
+
+QUERY: qryNoEn2
+  SQL: SELECT xLiq1.*
+FROM xLiq2 RIGHT JOIN xLiq1 ON xLiq2.CI = xLiq1.CI
+WHERE (((xLiq2.CI) Is Null));
+
+
+QUERY: tmp_qry_rect_emp
+  SQL: SELECT tmp_Rectificativas.EMPRESA
+FROM tmp_Rectificativas
+GROUP BY tmp_Rectificativas.EMPRESA;
+
+
+QUERY: tmp_ult_empleo
+  SQL: SELECT *
+FROM Trabaja AS t1
+WHERE not exists (select * from Trabaja as t2 where t1.CI=t2.CI and t1.CodEmpresa=t2.CodEmpresa and t1.FechaIngreso < t2.FechaIngreso);
+
+

@@ -1,0 +1,43 @@
+@page "/entidades"
+@rendermode InteractiveServer
+@using Sgpa.Domain.Metadata
+@using Sgpa.Domain.Security
+@inject WebCurrentUser CurrentUser
+
+<PageTitle>Tablas</PageTitle>
+
+<h3>Tablas / Catálogos</h3>
+<p class="text-muted">Mostrando @(_items.Count) tabla(s) con permiso de lectura@(CurrentUser.IsAdmin ? " (admin: acceso total)" : "").</p>
+
+<DxGrid Data="_items" ShowSearchBox="true" PageSize="20" ColumnResizeMode="GridColumnResizeMode.NextColumn">
+    <Columns>
+        <DxGridDataColumn FieldName="Tabla" Caption="Tabla" />
+        <DxGridDataColumn FieldName="Clave" Caption="Clave" Width="160px" />
+        <DxGridDataColumn FieldName="Columnas" Caption="Columnas" Width="110px" />
+        <DxGridDataColumn Caption="" Width="90px" AllowSort="false" AllowGroup="false">
+            <CellDisplayTemplate Context="cell">
+                @{ var vm = (EntidadVm)cell.DataItem; }
+                <a class="btn btn-sm btn-primary py-0" href="@($"/crud/{vm.Nombre}")">Abrir</a>
+            </CellDisplayTemplate>
+        </DxGridDataColumn>
+    </Columns>
+</DxGrid>
+
+@code {
+    private List<EntidadVm> _items = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CurrentUser.EnsureLoadedAsync();
+        _items = EntityCatalog.CrudCapable
+            .Where(m => CurrentUser.IsAdmin || CurrentUser.Can(m.Table, PermissionAction.Read))
+            .Select(m => new EntidadVm(
+                Nombre: m.EntityType.Name,
+                Tabla: m.Table,
+                Clave: m.Keys.Count == 1 ? "Simple" : $"Compuesta ({m.Keys.Count})",
+                Columnas: m.ListColumns.Count()))
+            .ToList();
+    }
+
+    private sealed record EntidadVm(string Nombre, string Tabla, string Clave, int Columnas);
+}

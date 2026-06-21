@@ -1,0 +1,87 @@
+@page "/parametros"
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.Components.Forms
+@using Sgpa.Domain.Metadata
+@using Sgpa.Data
+@using Sgpa.Web.Components.Crud
+@using Cfg = Sgpa.Domain.Entities.Parametros
+@inject IDbExecutor Db
+@inject WebCurrentUser CurrentUser
+
+<PageTitle>Parámetros del sistema</PageTitle>
+
+<h3>Parámetros del sistema</h3>
+
+@if (!CurrentUser.IsAdmin)
+{
+    <div class="alert alert-warning">Los parámetros están reservados a administradores.</div>
+}
+else if (_param is null)
+{
+    <div class="alert alert-warning">No se encontró la fila de parámetros.</div>
+}
+else
+{
+    @if (_savedMessage is not null) { <div class="alert alert-success">@_savedMessage</div> }
+    @if (_error is not null) { <div class="alert alert-danger">@_error</div> }
+
+    <div class="card" style="max-width:720px;">
+        <div class="card-body">
+            <EditForm Model="_param" OnValidSubmit="SaveAsync">
+                <SgpaDetailForm Model="_param" Meta="_meta" IsNew="false" ColSpanMd="6" />
+                <div class="mt-2">
+                    <DxButton SubmitFormOnClick="true" IconCssClass="fa-solid fa-floppy-disk"
+                              Text="@(_saving ? "Guardando…" : "Guardar")"
+                              RenderStyle="ButtonRenderStyle.Primary" Enabled="!_saving" />
+                </div>
+            </EditForm>
+        </div>
+    </div>
+}
+
+@code {
+    private static readonly EntityMetadata _meta = EntityMetadata.For<Cfg>();
+
+    private Cfg? _param;
+    private bool _saving;
+    private string? _error, _savedMessage;
+
+    // UPDATE de la fila única: SET de todas las columnas (incluida auditoría); param = nombre de propiedad.
+    private static readonly string _updateSql =
+        "UPDATE [dbo].[Parametros] SET " +
+        string.Join(", ", _meta.Columns.Select(c => $"[{c.Name}]=@{c.Property.Name}"));
+
+    private static readonly string _selectSql =
+        "SELECT " + string.Join(", ", _meta.Columns.Select(c => $"[{c.Name}] AS [{c.Property.Name}]")) +
+        " FROM [dbo].[Parametros]";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CurrentUser.EnsureLoadedAsync();
+        if (!CurrentUser.IsAdmin) return;
+        var rows = await Db.QueryAsync<Cfg>(_selectSql);
+        _param = rows.Count > 0 ? rows[0] : null;
+    }
+
+    private async Task SaveAsync()
+    {
+        if (_param is null || !CurrentUser.IsAdmin) return;
+        _saving = true;
+        _error = _savedMessage = null;
+        try
+        {
+            _param.Usr = CurrentUser.UserName;
+            _param.Ts = DateTime.Now;
+            await Db.ExecuteAsync(_updateSql, _param);
+            _savedMessage = "Parámetros guardados.";
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+}

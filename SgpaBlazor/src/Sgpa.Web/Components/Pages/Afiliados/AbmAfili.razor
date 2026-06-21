@@ -1,0 +1,91 @@
+@page "/afiliados"
+@page "/afiliados/nuevo"
+@page "/afiliados/{CI:long}"
+@rendermode InteractiveServer
+@using Sgpa.Domain.Entities
+@using Sgpa.Web.Components.Crud
+@using Sgpa.Business.Afiliados
+@inject AfiliadoService Afiliado
+
+<PageTitle>Afiliados</PageTitle>
+
+<SgpaMasterDetailView TMaster="Afiliado" BaseRoute="/afiliados"
+                      TitlePlural="Afiliados" TitleSingular="el afiliado" NewLabel="Nuevo afiliado"
+                      GetWarningsAsync="@(a => Afiliado.GetAvisosAsync(a))">
+    <ListColumns>
+        <DxGridDataColumn FieldName="CI" Caption="Cédula" Width="120px" DisplayFormat="0" />
+        <DxGridDataColumn FieldName="Apellido1" Caption="1er apellido" />
+        <DxGridDataColumn FieldName="Apellido2" Caption="2do apellido" />
+        <DxGridDataColumn FieldName="Nombres" Caption="Nombres" />
+    </ListColumns>
+    <DetailHeader Context="a">
+        Afiliado @a.CI — @($"{a.Apellido1} {a.Apellido2}, {a.Nombres}".Trim())
+    </DetailHeader>
+    <DetailActions Context="a">
+        <DxButton Text="Reportes" IconCssClass="fa-solid fa-print" RenderStyle="ButtonRenderStyle.Success"
+                  Click="@(() => _reportesDialog?.Open("Afiliado", a.CI))" />
+    </DetailActions>
+    <ChildTabs Context="a">
+        <DxTabPage Text="Empleos" TabIconCssClass="fa-solid fa-briefcase">
+            <div class="p-2">
+                @* El promedio de ingresos va arriba (antes era una ficha aparte). *@
+                <div class="mb-3"><PromedioPanel CI="a.CI" /></div>
+                @* Empleos como master-detail: Trabaja (master) → Imponibles (hijo, carga diferida al expandir).
+                   Las filas con baja se muestran atenuadas. *@
+                <SgpaCrudView TEntity="Trabaja" Title="Empleos" FilterColumn="CI" FilterValue="a.CI"
+                              ColumnOrder="_ordenTrabaja"
+                              RowCssClass="@(t => t.FechaBaja is not null ? "sgpa-fila-baja" : null)">
+                    <DetailTemplate Context="t">
+                        <div class="p-2">
+
+                            <SgpaCrudView TEntity="Imponible" Title="Imponibles"
+                                   ColumnOrder="_ordenImponible" FilterColumn="IdTrabaja" FilterValue="t.IdTrabaja" />
+                        </div>
+                    </DetailTemplate>
+                </SgpaCrudView>
+            </div>
+        </DxTabPage>
+        <DxTabPage Text="Especialidades" TabIconCssClass="fa-solid fa-stethoscope">
+            <div class="p-2"><SgpaCrudView TEntity="AfiliadoEspecialidad" Title="Especialidades" FilterColumn="CI" FilterValue="a.CI" /></div>
+        </DxTabPage>
+        <DxTabPage Text="Apuntes" TabIconCssClass="fa-solid fa-note-sticky">
+            <div class="p-2"><SgpaCrudView TEntity="AfiliadoApunte" Title="Apuntes" FilterColumn="CI" FilterValue="a.CI" /></div>
+        </DxTabPage>
+        <DxTabPage Text="Prestaciones" TabIconCssClass="fa-solid fa-notes-medical">
+            <div class="p-2"><SgpaCrudView TEntity="Prestacion" Title="Prestaciones" FilterColumn="CI" FilterValue="a.CI" /></div>
+        </DxTabPage>
+        <DxTabPage Text="Subsidios" TabIconCssClass="fa-solid fa-hand-holding-dollar">
+            <div class="p-2"><SgpaCrudView TEntity="SubsidioCabezal" Title="Subsidios del afiliado" FilterColumn="CI" FilterValue="a.CI" /></div>
+        </DxTabPage>
+        <DxTabPage Text="Préstamos" TabIconCssClass="fa-solid fa-landmark">
+            <AfiliadoPrestamosHist CI="a.CI" />
+        </DxTabPage>
+        <DxTabPage Text="Prima por fallecimiento" TabIconCssClass="fa-solid fa-hand-holding-heart">
+            <div class="p-2"><PrimaPanel CI="a.CI" /></div>
+        </DxTabPage>
+    </ChildTabs>
+</SgpaMasterDetailView>
+
+<Sgpa.Web.Components.Reportes.SgpaReportesPredefDialog @ref="_reportesDialog" />
+
+@code {
+    // La clave de ruta la resuelve SgpaMasterDetailView desde la URL; se declara para que el router la enlace.
+    // Las reglas de negocio del afiliado viven en AfiliadoValidator (FluentValidation); el dígito verificador
+    // de la cédula se informa como aviso no bloqueante vía GetWarningsAsync.
+    [Parameter] public long CI { get; set; }
+
+    // Diálogo de reportes predefinidos del afiliado (botón "Reportes" en el encabezado del detalle).
+    private Sgpa.Web.Components.Reportes.SgpaReportesPredefDialog? _reportesDialog;
+
+    // Orden de columnas de la grilla de empleos (izq→der). Whitelist: sólo estas, en este orden (oculta IdTrabaja).
+    private static readonly string[] _ordenTrabaja =
+    [
+        nameof(Trabaja.CodEmpresa), nameof(Trabaja.FechaIngreso), nameof(Trabaja.FechaIngCasemed), nameof(Trabaja.NroFichaEmpresa), nameof(Trabaja.CodBajaMotivo), nameof(Trabaja.FechaBaja)
+    ];
+
+    // Orden de columnas de la grilla de imponibles (izq→der). Whitelist: sólo estas, en este orden.
+    private static readonly string[] _ordenImponible =
+    [
+        nameof(Imponible.CodEmpresa), nameof(Imponible.Anio), nameof(Imponible.Mes), nameof(Imponible.Concepto), nameof(Imponible.Importe)
+    ];
+}

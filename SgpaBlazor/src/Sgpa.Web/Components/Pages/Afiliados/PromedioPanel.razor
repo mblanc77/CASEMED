@@ -1,0 +1,60 @@
+@using Sgpa.Business.Afiliados
+@inject AfiliadoService Afiliado
+
+@*
+    Promedio de ingresos del afiliado (port de cmdPromedio / Promedio de AbmAfili.frm): media de los
+    imponibles mensuales (concepto 1, empleos activos) de los 6 meses que terminan 2 meses atrás. IMS-free.
+*@
+
+<div class="card">
+    <div class="card-header"><i class="fa-solid fa-chart-line me-1"></i> Promedio de ingresos</div>
+    <div class="card-body">
+        <p class="text-muted mb-2">
+            Media de los imponibles mensuales de los 6 meses que terminan 2 meses atrás (empleos activos).
+        </p>
+        <div class="d-flex align-items-center gap-3">
+            <div class="fs-4 fw-semibold">
+                @(_promedio is null ? "Sin datos" : "$ " + _promedio.Value.ToString("N2"))
+            </div>
+            <DxButton Text="Recalcular" IconCssClass="fa-solid fa-rotate"
+                      RenderStyle="ButtonRenderStyle.Secondary" Click="CargarAsync" Enabled="@(!_busy)" />
+        </div>
+        @if (_error is not null) { <div class="alert alert-danger mt-2 mb-0">@_error</div> }
+    </div>
+</div>
+
+@code {
+    [Parameter] public long CI { get; set; }
+
+    private double? _promedio;
+    private bool _busy;
+    private string? _error;
+    private long _loadedCI = -1;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (CI != _loadedCI)
+        {
+            _loadedCI = CI;
+            await CargarAsync();
+        }
+    }
+
+    private async Task CargarAsync()
+    {
+        _error = null;
+        _busy = true;
+        try
+        {
+            _promedio = await Afiliado.GetPromedioIngresosAsync(CI);
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+}

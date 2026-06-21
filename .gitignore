@@ -1,0 +1,95 @@
+# ==========================================================================
+#  CASEMED — repo de desarrollo .NET + VB6
+#  Sólo se versiona FUENTE. Build outputs, binarios de runtime y DATOS quedan fuera.
+# ==========================================================================
+
+# ===================== .NET / Visual Studio =====================
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Pp]ublish/
+publish-*/
+artifacts/
+[Tt]est[Rr]esults/
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.vspscc
+*.vssscc
+*.cache
+project.lock.json
+project.assets.json
+*.nuget.props
+*.nuget.targets
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+.nuget/
+
+# ===================== Binarios / símbolos =====================
+# Las DLL/EXE/PDB provienen de restore o compilación; no son fuente.
+*.dll
+*.exe
+*.pdb
+*.dll.config
+*.exe.config
+*.ocx          # OCX de terceros (VB6): se instalan aparte
+*.oca          # cache de typelib de OCX
+
+# ===================== VB6 (se versiona el fuente) =====================
+# Mantener:  .vbp .vbg .frm .frx .bas .cls .ctl .ctx .dob .dsr .pag .res .dsx .dca
+*.vbw          # workspace por usuario
+*.scc          # bindings de SourceSafe
+*.tlb
+
+# ===================== Bases Access — DATOS (excluidas) =====================
+# Pueden pesar cientos de MB y cambian seguido => NUNCA al repo. Son input externo
+# de la migración (rutas configurables --sgpa-mdb/--sp-mdb). Versionar con Git LFS si hiciera falta.
+*.mdb
+*.accdb
+*.mde
+*.accde
+*.ldb
+*.laccdb
+~$*.accdb
+
+# ===================== Comprimidos / backups empaquetados (no son fuente) =====================
+*.zip
+*.rar
+*.7z
+*.gz
+*.tar
+*.tgz
+
+# ===================== Herramientas descargadas (no son fuente) =====================
+**/UiVerify/driver/
+**/chromedriver*/
+*.chromedriver
+**/node_modules/
+
+# ===================== Logs / temporales / backups =====================
+logs/
+*.log
+*.tmp
+*.bak
+*.swp
+~$*
+*~
+
+# ===================== Sistema operativo / editores =====================
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store

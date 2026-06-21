@@ -1,0 +1,65 @@
+@page "/add-lugar-retiro-carne"
+
+<PageTitle>Add LugarRetiroCarne</PageTitle>
+    <RadzenColumn SizeMD=12>
+        <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@errorVisible">Cannot save LugarRetiroCarne</RadzenAlert>
+        <RadzenTemplateForm TItem="SGPA.Server.Models.CMU.LugarRetiroCarne" Data="@lugarRetiroCarne" Visible="@(lugarRetiroCarne != null && canEdit)" Submit="@FormSubmit">
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Descripcion" Component="Descripcion" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@lugarRetiroCarne.Descripcion" Name="Descripcion" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Comentarios" Component="Comentarios" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@lugarRetiroCarne.Comentarios" Name="Comentarios" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Optimistic Lock Field" Component="OptimisticLockField" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@lugarRetiroCarne.OptimisticLockField" Name="OptimisticLockField" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="G C Record" Component="GCRecord" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@lugarRetiroCarne.GCRecord" Name="GCRecord" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Departamento1" Component="Departamento1" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@departamentosForDepartamento" TextProperty="Nombre" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose Departamento1" style="display: block; width: 100%" @bind-Value="@lugarRetiroCarne.Departamento" Name="Departamento"
+                        SelectedValue=@departamentosForDepartamentoValue Count=@departamentosForDepartamentoCount LoadData=@departamentosForDepartamentoLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Grupo Lugar Retiro Carne" Component="GrupoLugarRetiroCarne" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@grupoLugarRetiroCarnesForGrupo" TextProperty="Descripcion" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose GrupoLugarRetiroCarne" style="display: block; width: 100%" @bind-Value="@lugarRetiroCarne.Grupo" Name="Grupo"
+                        SelectedValue=@grupoLugarRetiroCarnesForGrupoValue Count=@grupoLugarRetiroCarnesForGrupoCount LoadData=@grupoLugarRetiroCarnesForGrupoLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+          <RadzenStack  Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                    <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Submit" Icon="save" Text="Save" Variant="Variant.Flat" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Text="Cancel" Variant="Variant.Flat" Click="@CancelButtonClick"  />
+          </RadzenStack>
+        </RadzenTemplateForm>
+    </RadzenColumn>
+

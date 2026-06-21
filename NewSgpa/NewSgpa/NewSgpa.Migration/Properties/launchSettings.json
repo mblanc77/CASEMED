@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "NewSgpa.Migration": {
+      "commandName": "Project",
+      "commandLineArgs": ""
+    }
+  }
+}

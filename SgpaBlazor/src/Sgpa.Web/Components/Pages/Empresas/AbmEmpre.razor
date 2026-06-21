@@ -1,0 +1,44 @@
+@page "/empresas"
+@page "/empresas/nuevo"
+@page "/empresas/{CodEmpresa:int}"
+@rendermode InteractiveServer
+@using Sgpa.Domain.Entities
+@using Sgpa.Web.Components.Crud
+@using Sgpa.Business.Empresas
+@inject EmpresaService Empresa
+
+<PageTitle>Empresas</PageTitle>
+
+<SgpaMasterDetailView TMaster="Empresa" BaseRoute="/empresas"
+                      TitlePlural="Empresas" TitleSingular="la empresa" NewLabel="Nueva empresa"
+                      OnNewAsync="@(async e => e.CodEmpresa = await Empresa.ProximoCodEmpresaAsync())">
+    <ListColumns>
+        <DxGridDataColumn FieldName="CodEmpresa" Caption="Código" Width="110px" />
+        <DxGridDataColumn FieldName="Nombre" Caption="Nombre" />
+        <DxGridDataColumn FieldName="Liquidar" Caption="Liquida" Width="110px" />
+    </ListColumns>
+    <DetailHeader Context="e">
+        Empresa @e.CodEmpresa — @e.Nombre
+    </DetailHeader>
+    <DetailActions Context="e">
+        <DxButton Text="Reportes" IconCssClass="fa-solid fa-print" RenderStyle="ButtonRenderStyle.Success"
+                  Click="@(() => _reportesDialog?.Open("Empresa", e.CodEmpresa))" />
+    </DetailActions>
+    <ChildTabs Context="e">
+        <DxTabPage Text="Pagos" TabIconCssClass="fa-solid fa-money-bill-wave">
+            <div class="p-2"><SgpaCrudView TEntity="EmpresaPago" Title="Pagos de la empresa" FilterColumn="CodEmpresa" FilterValue="e.CodEmpresa" /></div>
+        </DxTabPage>
+        <DxTabPage Text="Empleados" TabIconCssClass="fa-solid fa-users">
+            <div class="p-2"><SgpaCrudView TEntity="Trabaja" Title="Empleados (Trabaja)" FilterColumn="CodEmpresa" FilterValue="e.CodEmpresa" /></div>
+        </DxTabPage>
+    </ChildTabs>
+</SgpaMasterDetailView>
+
+<Sgpa.Web.Components.Reportes.SgpaReportesPredefDialog @ref="_reportesDialog" />
+
+@code {
+    [Parameter] public int CodEmpresa { get; set; }
+
+    // Diálogo de reportes predefinidos de la empresa (botón "Reportes" en la barra de acciones del detalle).
+    private Sgpa.Web.Components.Reportes.SgpaReportesPredefDialog? _reportesDialog;
+}

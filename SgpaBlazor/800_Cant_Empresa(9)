@@ -1,0 +1,1 @@
+SELECT Cantidad FROM [800_Cantidad_Empresa](9,GETDATE())

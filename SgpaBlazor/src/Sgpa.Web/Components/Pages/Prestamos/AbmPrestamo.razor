@@ -1,0 +1,57 @@
+@page "/prestamos"
+@page "/prestamos/{IDPrestamo:int}"
+@rendermode InteractiveServer
+@using Sgpa.Domain.Entities
+@using Sgpa.Web.Components.Crud
+@using Sgpa.Web.Components.Pages.Pagos
+@using Sgpa.Web.Components.Pages.Retenciones
+@inject NavigationManager Nav
+
+<PageTitle>Préstamos</PageTitle>
+
+<SgpaMasterDetailView TMaster="SP_Prestamo" BaseRoute="/prestamos"
+                      TitlePlural="Préstamos" TitleSingular="el préstamo" NewLabel="Nuevo préstamo"
+                      AllowNew="false"
+                      OpenUrl="@(p => $"/prestamos/calcular/{p.IDPrestamo}")">
+    <ToolbarActions>
+        <DxButton Text="Nuevo" IconCssClass="fa-solid fa-plus" RenderStyle="ButtonRenderStyle.Primary"
+                  Click="@(() => Nav.NavigateTo("/prestamos/calcular"))" />
+    </ToolbarActions>
+    <ListColumns>
+        <DxGridDataColumn FieldName="IDPrestamo" Caption="Nº" Width="90px" />
+        <DxGridDataColumn FieldName="CI" Caption="Cédula" Width="130px" DisplayFormat="0" />
+        <DxGridDataColumn FieldName="Fecha" Caption="Fecha" DisplayFormat="d" Width="120px" />
+        <DxGridDataColumn FieldName="Importe" Caption="Importe" DisplayFormat="n2" />
+        <DxGridDataColumn FieldName="Cuotas" Caption="Cuotas" Width="90px" />
+        <DxGridDataColumn FieldName="CodPrestamoEstado" Caption="Estado" Width="110px" />
+    </ListColumns>
+    <DetailHeader Context="p">
+        <div class="d-flex align-items-center justify-content-between">
+            <span>Préstamo #@p.IDPrestamo — cédula @p.CI</span>
+            <DxButton Text="Editar cobro / emitir" IconCssClass="fa-solid fa-pen-to-square"
+                      RenderStyle="ButtonRenderStyle.Secondary"
+                      Click="@(() => Nav.NavigateTo($"/prestamos/calcular/{p.IDPrestamo}"))" />
+        </div>
+    </DetailHeader>
+    <ChildTabs Context="p">
+        <DxTabPage Text="Facturas / Cobro" TabIconCssClass="fa-solid fa-file-invoice-dollar">
+            <FacturasCobro IDPrestamo="p.IDPrestamo" />
+        </DxTabPage>
+        <DxTabPage Text="Cuotas" TabIconCssClass="fa-solid fa-list-ol">
+            <div class="p-2"><SgpaCrudView TEntity="SP_Cuota" Title="Cuotas" FilterColumn="IDPrestamo" FilterValue="p.IDPrestamo" /></div>
+        </DxTabPage>
+        <DxTabPage Text="Amortización" TabIconCssClass="fa-solid fa-table-list">
+            <div class="p-2"><SgpaCrudView TEntity="SP_CuadroAmortizacion" Title="Cuadro de amortización" FilterColumn="IDPrestamo" FilterValue="p.IDPrestamo" /></div>
+        </DxTabPage>
+        <DxTabPage Text="Pagos parciales" TabIconCssClass="fa-solid fa-coins">
+            <div class="p-2"><SgpaCrudView TEntity="SP_PagoParcial" Title="Pagos parciales" FilterColumn="IDPrestamo" FilterValue="p.IDPrestamo" /></div>
+        </DxTabPage>
+        <DxTabPage Text="Retenciones" TabIconCssClass="fa-solid fa-hand">
+            <RetencionesPanel IDPrestamo="p.IDPrestamo" CI="p.CI ?? 0" />
+        </DxTabPage>
+    </ChildTabs>
+</SgpaMasterDetailView>
+
+@code {
+    [Parameter] public int IDPrestamo { get; set; }
+}

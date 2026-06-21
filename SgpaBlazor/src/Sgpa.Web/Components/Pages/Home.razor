@@ -1,0 +1,129 @@
+@page "/"
+@rendermode InteractiveServer
+@using System.Globalization
+@using Sgpa.Business.Dashboard
+@inject DashboardService Dashboard
+@inject WebCurrentUser CurrentUser
+
+<PageTitle>Inicio — SGPA</PageTitle>
+
+<div class="sgpa-dash">
+    <div class="mb-3">
+        <h3 class="mb-0">Hola, @(CurrentUser.Context?.Nombre ?? CurrentUser.UserName)</h3>
+        <div class="text-muted text-capitalize">@DateTime.Now.ToString("dddd d 'de' MMMM 'de' yyyy", Es)</div>
+    </div>
+
+    @if (_data is null)
+    {
+        <div class="text-muted py-4"><i class="fa-solid fa-spinner fa-spin me-2"></i>Cargando indicadores…</div>
+    }
+    else
+    {
+        @* --- KPIs --- *@
+        <div class="row g-3 mb-1">
+            @foreach (var k in Kpis)
+            {
+                <div class="col-6 col-md-4 col-xl-2">
+                    <a href="@k.Url" class="sgpa-kpi">
+                        <span class="sgpa-kpi-icon"><i class="fa-solid @k.Icon"></i></span>
+                        <span class="sgpa-kpi-val">@k.Value</span>
+                        <span class="sgpa-kpi-lbl">@k.Label</span>
+                        @if (!string.IsNullOrEmpty(k.Sub))
+                        {
+                            <span class="sgpa-kpi-sub">@k.Sub</span>
+                        }
+                    </a>
+                </div>
+            }
+        </div>
+
+        <div class="row g-3 mt-1">
+            @* --- Préstamos por estado --- *@
+            <div class="col-12 col-xl-5">
+                <div class="card h-100">
+                    <div class="card-header"><i class="fa-solid fa-chart-pie me-2"></i>Préstamos vigentes por estado</div>
+                    <div class="card-body">
+                        @if (_data.PrestamosPorEstado.Count == 0)
+                        {
+                            <div class="text-muted">Sin datos.</div>
+                        }
+                        else
+                        {
+                            <DxPieChart Data="@_data.PrestamosPorEstado" Height="300px" InnerDiameter="0.55">
+                                <DxPieChartSeries ArgumentField="@((EstadoPrestamo e) => e.Estado)"
+                                                  ValueField="@((EstadoPrestamo e) => (double)e.Cantidad)">
+                                    <DxChartSeriesLabel Visible="true" />
+                                </DxPieChartSeries>
+                                <DxChartLegend Visible="true" Position="RelativePosition.Outside"
+                                               VerticalAlignment="VerticalEdge.Bottom"
+                                               HorizontalAlignment="HorizontalAlignment.Center"
+                                               Orientation="Orientation.Horizontal" />
+                                <DxChartTooltip Enabled="true" />
+                            </DxPieChart>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            @* --- Accesos directos --- *@
+            <div class="col-12 col-xl-7">
+                <div class="card h-100">
+                    <div class="card-header"><i class="fa-solid fa-bolt me-2"></i>Accesos directos</div>
+                    <div class="card-body">
+                        <div class="row g-2">
+                            @foreach (var t in Tiles)
+                            {
+                                <div class="col-6 col-md-4">
+                                    <a href="@t.Url" class="sgpa-tile">
+                                        <i class="fa-solid @t.Icon"></i>
+                                        <span>@t.Label</span>
+                                    </a>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private static readonly CultureInfo Es = CultureInfo.GetCultureInfo("es-UY");
+    private DashboardInfo? _data;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CurrentUser.EnsureLoadedAsync();
+        try { _data = await Dashboard.GetAsync(); }
+        catch { _data = new DashboardInfo(0, 0, 0, 0, 0, 0m, 0, 0, 0, Array.Empty<EstadoPrestamo>()); }
+    }
+
+    private (string Label, string Value, string Sub, string Icon, string Url)[] Kpis => _data is null
+        ? Array.Empty<(string, string, string, string, string)>()
+        : new[]
+        {
+            ("Afiliados", _data.Afiliados.ToString("#,0", Es), $"{_data.AfiliadosActivos.ToString("#,0", Es)} activos", "fa-id-card", "/afiliados"),
+            ("Empresas", _data.Empresas.ToString("#,0", Es), "", "fa-building", "/empresas"),
+            ("Préstamos vigentes", _data.PrestamosVigentes.ToString("#,0", Es), $"$ {_data.ImportePendiente.ToString("#,0", Es)} a cobrar", "fa-landmark", "/prestamos"),
+            ("Subsidios", _data.Subsidios.ToString("#,0", Es), "", "fa-hand-holding-dollar", "/subsidios"),
+            ("Certificaciones", _data.Certificaciones.ToString("#,0", Es), "", "fa-file-medical", "/certificaciones"),
+            ("Prestaciones", _data.Prestaciones.ToString("#,0", Es), "", "fa-stethoscope", "/prestaciones"),
+        };
+
+    private static readonly (string Label, string Icon, string Url)[] Tiles =
+    {
+        ("Afiliados", "fa-id-card", "/afiliados"),
+        ("Empresas", "fa-building", "/empresas"),
+        ("Préstamos", "fa-landmark", "/prestamos"),
+        ("Subsidios", "fa-hand-holding-dollar", "/subsidios"),
+        ("Certificaciones", "fa-file-medical", "/certificaciones"),
+        ("Imponibles", "fa-coins", "/imponibles"),
+        ("Prestaciones", "fa-stethoscope", "/prestaciones"),
+        ("Reintegros", "fa-rotate-left", "/reintegros"),
+        ("Adelantos prejub.", "fa-hourglass-half", "/adprejub"),
+        ("Carga de pagos", "fa-file-import", "/pagos/carga"),
+        ("Catálogos", "fa-book", "/entidades"),
+        ("Configuración", "fa-gear", "/parametros"),
+    };
+}

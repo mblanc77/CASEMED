@@ -1,0 +1,41 @@
+@page "/add-securitysystemuserusers-securitysystemrolerole"
+
+<PageTitle>Add SecuritysystemuserusersSecuritysystemrolerole</PageTitle>
+    <RadzenColumn SizeMD=12>
+        <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@errorVisible">Cannot save SecuritysystemuserusersSecuritysystemrolerole</RadzenAlert>
+        <RadzenTemplateForm TItem="SGPA.Server.Models.CMU.SecuritysystemuserusersSecuritysystemrolerole" Data="@securitysystemuserusersSecuritysystemrolerole" Visible="@(securitysystemuserusersSecuritysystemrolerole != null && canEdit)" Submit="@FormSubmit">
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Optimistic Lock Field" Component="OptimisticLockField" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@securitysystemuserusersSecuritysystemrolerole.OptimisticLockField" Name="OptimisticLockField" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Security System Role" Component="SecuritySystemRole" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@securitySystemRolesForRoles" TextProperty="Name" ValueProperty="Oid" AllowClear=true
+                         Placeholder="Choose SecuritySystemRole" style="display: block; width: 100%" @bind-Value="@securitysystemuserusersSecuritysystemrolerole.Roles" Name="Roles"
+                        SelectedValue=@securitySystemRolesForRolesValue Count=@securitySystemRolesForRolesCount LoadData=@securitySystemRolesForRolesLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Security System User" Component="SecuritySystemUser" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@securitySystemUsersForUsers" TextProperty="StoredPassword" ValueProperty="Oid" AllowClear=true
+                         Placeholder="Choose SecuritySystemUser" style="display: block; width: 100%" @bind-Value="@securitysystemuserusersSecuritysystemrolerole.Users" Name="Users"
+                        SelectedValue=@securitySystemUsersForUsersValue Count=@securitySystemUsersForUsersCount LoadData=@securitySystemUsersForUsersLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+          <RadzenStack  Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                    <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Submit" Icon="save" Text="Save" Variant="Variant.Flat" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Text="Cancel" Variant="Variant.Flat" Click="@CancelButtonClick"  />
+          </RadzenStack>
+        </RadzenTemplateForm>
+    </RadzenColumn>
+

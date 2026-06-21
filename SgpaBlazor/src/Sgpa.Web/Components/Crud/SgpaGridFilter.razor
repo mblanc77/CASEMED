@@ -1,0 +1,169 @@
+@using DevExpress.Data.Filtering
+@using Sgpa.Domain.Metadata
+@using Sgpa.Data.Crud
+@inject ISavedFilterService Filters
+@inject WebCurrentUser CurrentUser
+
+@*
+    Filtrado interactivo del ListView con DxFilterBuilder (FilterControl de DevExpress) + filtros
+    guardados (equivalente moderno de la tabla VB6 'Seleccion'). Un DxDropDownButton "Filtros"
+    lista los guardados para aplicar de un clic; el criterio se aplica al grid vía SetFilterCriteria
+    (y, como el grid traduce FilterCriteria→SQL, funciona también server-side).
+*@
+<DxDropDownButton Text="Filtros" IconCssClass="fa-solid fa-filter" RenderStyle="ButtonRenderStyle.Secondary">
+    <Items>
+        @foreach (var f in _saved)
+        {
+            <DxDropDownButtonItem Text="@f.Nombre" IconCssClass="@(f.EsSistema ? "fa-solid fa-lock" : "fa-solid fa-bookmark")"
+                                  Click="@(() => ApplySaved(f))" />
+        }
+        <DxDropDownButtonItem Text="Filtro avanzado…" IconCssClass="fa-solid fa-sliders" BeginGroup="true" Click="OpenBuilderAsync" />
+        <DxDropDownButtonItem Text="Guardar filtro actual…" IconCssClass="fa-solid fa-floppy-disk" Click="OpenSaveAsync" />
+        <DxDropDownButtonItem Text="Administrar filtros…" IconCssClass="fa-solid fa-list-check" Click="OpenManageAsync" />
+        <DxDropDownButtonItem Text="Quitar filtro" IconCssClass="fa-solid fa-filter-circle-xmark" BeginGroup="true" Click="ClearFilter" />
+    </Items>
+</DxDropDownButton>
+
+@* ---- Popup: filtro avanzado (FilterBuilder) ---- *@
+<DxPopup @bind-Visible="_builderVisible" HeaderText="Filtro avanzado" Width="640px" CloseOnEscape="true">
+    <BodyContentTemplate>
+        <DxFilterBuilder @bind-FilterCriteria="_builderCriteria">
+            <Fields>
+                @foreach (var col in Meta.ListColumns)
+                {
+                    <DxFilterBuilderField FieldName="@col.Name" Caption="@col.Caption" Type="col.UnderlyingType" />
+                }
+            </Fields>
+        </DxFilterBuilder>
+        <div class="d-flex gap-2 mt-3">
+            <DxButton Text="Aplicar" IconCssClass="fa-solid fa-check" RenderStyle="ButtonRenderStyle.Primary" Click="ApplyBuilderAsync" />
+            <DxButton Text="Limpiar" RenderStyle="ButtonRenderStyle.Link" Click="@(() => _builderCriteria = null)" />
+        </div>
+    </BodyContentTemplate>
+</DxPopup>
+
+@* ---- Popup: guardar filtro actual ---- *@
+<DxPopup @bind-Visible="_saveVisible" HeaderText="Guardar filtro" Width="420px" CloseOnEscape="true">
+    <BodyContentTemplate>
+        @if (_error is not null) { <div class="alert alert-danger py-2">@_error</div> }
+        <p class="text-muted small mb-2">Se guarda el filtro activo del listado con el nombre indicado.</p>
+        <div class="d-flex gap-2 align-items-center">
+            <DxTextBox @bind-Text="_newName" NullText="Nombre del filtro…" />
+            <DxButton Text="Guardar" IconCssClass="fa-solid fa-floppy-disk" RenderStyle="ButtonRenderStyle.Primary" Click="SaveCurrentAsync" />
+        </div>
+    </BodyContentTemplate>
+</DxPopup>
+
+@* ---- Popup: administrar (borrar) ---- *@
+<DxPopup @bind-Visible="_manageVisible" HeaderText="Administrar filtros" Width="520px" CloseOnEscape="true">
+    <BodyContentTemplate>
+        @if (_saved.Count == 0)
+        {
+            <p class="text-muted">No hay filtros guardados para esta lista.</p>
+        }
+        else
+        {
+            <ul class="list-group">
+                @foreach (var f in _saved)
+                {
+                    <li class="list-group-item d-flex align-items-center justify-content-between">
+                        <span><i class="fa-solid @(f.EsSistema ? "fa-lock" : "fa-bookmark") me-2 text-muted"></i>@f.Nombre</span>
+                        <span class="d-flex gap-2">
+                            <DxButton Text="Aplicar" RenderStyle="ButtonRenderStyle.Link" Click="@(() => ApplySaved(f))" />
+                            @if (!f.EsSistema)
+                            {
+                                <DxButton IconCssClass="fa-solid fa-trash" RenderStyle="ButtonRenderStyle.Link" Tooltip="Borrar"
+                                          Click="@(() => DeleteSavedAsync(f))" />
+                            }
+                        </span>
+                    </li>
+                }
+            </ul>
+        }
+    </BodyContentTemplate>
+</DxPopup>
+
+@code {
+    [Parameter] public DxGrid? Grid { get; set; }
+    [Parameter, EditorRequired] public EntityMetadata Meta { get; set; } = default!;
+    /// <summary>Se invoca tras aplicar/limpiar un filtro (para refrescar contadores del padre).</summary>
+    [Parameter] public EventCallback OnChanged { get; set; }
+
+    private bool _builderVisible, _saveVisible, _manageVisible;
+    private CriteriaOperator? _builderCriteria;
+    private IReadOnlyList<SavedFilter> _saved = Array.Empty<SavedFilter>();
+    private string _newName = string.Empty;
+    private string? _error;
+
+    protected override async Task OnInitializedAsync() => await ReloadSavedAsync();
+
+    private async Task ReloadSavedAsync()
+    {
+        await CurrentUser.EnsureLoadedAsync();
+        _saved = await Filters.GetForEntityAsync(Meta.Table, CurrentUser.UserName);
+    }
+
+    private Task OpenBuilderAsync()
+    {
+        _builderCriteria = Grid?.GetFilterCriteria();
+        _builderVisible = true;
+        return Task.CompletedTask;
+    }
+
+    private async Task ApplyBuilderAsync()
+    {
+        Grid?.SetFilterCriteria(_builderCriteria);
+        _builderVisible = false;
+        await OnChanged.InvokeAsync();
+    }
+
+    private async Task ApplySaved(SavedFilter f)
+    {
+        try
+        {
+            Grid?.SetFilterCriteria(CriteriaOperator.Parse(f.Criteria));
+            _manageVisible = false;
+            await OnChanged.InvokeAsync();
+        }
+        catch (Exception ex) { _error = $"No se pudo aplicar el filtro: {ex.Message}"; }
+    }
+
+    private Task OpenSaveAsync()
+    {
+        _error = null;
+        _newName = string.Empty;
+        _saveVisible = true;
+        return Task.CompletedTask;
+    }
+
+    private async Task SaveCurrentAsync()
+    {
+        _error = null;
+        if (string.IsNullOrWhiteSpace(_newName)) { _error = "Indicá un nombre."; return; }
+        var crit = Grid?.GetFilterCriteria();
+        var critText = crit is null ? null : crit.ToString();
+        if (string.IsNullOrWhiteSpace(critText)) { _error = "No hay filtro activo para guardar."; return; }
+
+        await Filters.SaveAsync(Meta.Table, _newName.Trim(), critText, CurrentUser.UserName);
+        _saveVisible = false;
+        await ReloadSavedAsync();
+    }
+
+    private async Task OpenManageAsync()
+    {
+        await ReloadSavedAsync();
+        _manageVisible = true;
+    }
+
+    private async Task DeleteSavedAsync(SavedFilter f)
+    {
+        await Filters.DeleteAsync(f.Id);
+        await ReloadSavedAsync();
+    }
+
+    private async Task ClearFilter()
+    {
+        Grid?.ClearFilter();
+        await OnChanged.InvokeAsync();
+    }
+}

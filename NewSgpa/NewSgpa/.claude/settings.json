@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "defaultMode": "acceptEdits",
+    "allow": [
+      "Bash(*)",
+      "PowerShell(*)",
+      "mcp__ide__getDiagnostics",
+      "Bash(where *)",
+      "PowerShell(dotnet test *)",
+      "PowerShell(dotnet sln *)",
+      "PowerShell(dotnet run *)",
+      "PowerShell(dotnet build *)",
+      "PowerShell(dotnet add *)",
+      "PowerShell(Start-Job *)"
+    ]
+  }
+}

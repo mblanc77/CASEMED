@@ -1,0 +1,93 @@
+@page "/add-ajuste-retroactivo"
+
+<PageTitle>Add AjusteRetroactivo</PageTitle>
+    <RadzenColumn SizeMD=12>
+        <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@errorVisible">Cannot save AjusteRetroactivo</RadzenAlert>
+        <RadzenTemplateForm TItem="SGPA.Server.Models.CMU.AjusteRetroactivo" Data="@ajusteRetroactivo" Visible="@(ajusteRetroactivo != null && canEdit)" Submit="@FormSubmit">
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Tipo" Component="Tipo" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@ajusteRetroactivo.Tipo" Name="Tipo" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Fecha Y Hora" Component="FechaYHora" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDatePicker DateFormat="MM/dd/yyyy" style="display: block; width: 100%" @bind-Value="@ajusteRetroactivo.FechaYHora" Name="FechaYHora" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Fecha Anulado" Component="FechaAnulado" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDatePicker DateFormat="MM/dd/yyyy" style="display: block; width: 100%" @bind-Value="@ajusteRetroactivo.FechaAnulado" Name="FechaAnulado" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Optimistic Lock Field" Component="OptimisticLockField" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@ajusteRetroactivo.OptimisticLockField" Name="OptimisticLockField" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="G C Record" Component="GCRecord" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@ajusteRetroactivo.GCRecord" Name="GCRecord" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Ajuste Retroactivo1" Component="AjusteRetroactivo1" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@ajusteRetroactivosForAnulaA" TextProperty="" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose AjusteRetroactivo1" style="display: block; width: 100%" @bind-Value="@ajusteRetroactivo.AnulaA" Name="AnulaA"
+                        SelectedValue=@ajusteRetroactivosForAnulaAValue Count=@ajusteRetroactivosForAnulaACount LoadData=@ajusteRetroactivosForAnulaALoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Colegiado Cambio Categorium" Component="ColegiadoCambioCategorium" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@colegiadoCambioCategoriaForCambioCategoria" TextProperty="Comentarios" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose ColegiadoCambioCategorium" style="display: block; width: 100%" @bind-Value="@ajusteRetroactivo.CambioCategoria" Name="CambioCategoria"
+                        SelectedValue=@colegiadoCambioCategoriaForCambioCategoriaValue Count=@colegiadoCambioCategoriaForCambioCategoriaCount LoadData=@colegiadoCambioCategoriaForCambioCategoriaLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Colegiado1" Component="Colegiado1" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@colegiadosForColegiado" TextProperty="Nombres" ValueProperty="Documento" AllowClear=true
+                         Placeholder="Choose Colegiado1" style="display: block; width: 100%" @bind-Value="@ajusteRetroactivo.Colegiado" Name="Colegiado"
+                        SelectedValue=@colegiadosForColegiadoValue Count=@colegiadosForColegiadoCount LoadData=@colegiadosForColegiadoLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Colegiado Declaracion Juradum" Component="ColegiadoDeclaracionJuradum" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@colegiadoDeclaracionJuradaForDeclaracionJurada" TextProperty="Comentario" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose ColegiadoDeclaracionJuradum" style="display: block; width: 100%" @bind-Value="@ajusteRetroactivo.DeclaracionJurada" Name="DeclaracionJurada"
+                        SelectedValue=@colegiadoDeclaracionJuradaForDeclaracionJuradaValue Count=@colegiadoDeclaracionJuradaForDeclaracionJuradaCount LoadData=@colegiadoDeclaracionJuradaForDeclaracionJuradaLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+          <RadzenStack  Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                    <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Submit" Icon="save" Text="Save" Variant="Variant.Flat" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Text="Cancel" Variant="Variant.Flat" Click="@CancelButtonClick"  />
+          </RadzenStack>
+        </RadzenTemplateForm>
+    </RadzenColumn>
+

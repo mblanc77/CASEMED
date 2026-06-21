@@ -1,0 +1,65 @@
+@page "/add-declaracion-jurada-adjunto"
+
+<PageTitle>Add DeclaracionJuradaAdjunto</PageTitle>
+    <RadzenColumn SizeMD=12>
+        <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@errorVisible">Cannot save DeclaracionJuradaAdjunto</RadzenAlert>
+        <RadzenTemplateForm TItem="SGPA.Server.Models.CMU.DeclaracionJuradaAdjunto" Data="@declaracionJuradaAdjunto" Visible="@(declaracionJuradaAdjunto != null && canEdit)" Submit="@FormSubmit">
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Comentario" Component="Comentario" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@declaracionJuradaAdjunto.Comentario" Name="Comentario" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Optimistic Lock Field" Component="OptimisticLockField" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@declaracionJuradaAdjunto.OptimisticLockField" Name="OptimisticLockField" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Link" Component="Link" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@declaracionJuradaAdjunto.Link" Name="Link" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Nombre Archivo" Component="NombreArchivo" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@declaracionJuradaAdjunto.NombreArchivo" Name="NombreArchivo" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Colegiado Declaracion Juradum" Component="ColegiadoDeclaracionJuradum" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@colegiadoDeclaracionJuradaForDeclaracion" TextProperty="Comentario" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose ColegiadoDeclaracionJuradum" style="display: block; width: 100%" @bind-Value="@declaracionJuradaAdjunto.Declaracion" Name="Declaracion"
+                        SelectedValue=@colegiadoDeclaracionJuradaForDeclaracionValue Count=@colegiadoDeclaracionJuradaForDeclaracionCount LoadData=@colegiadoDeclaracionJuradaForDeclaracionLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="File Datum" Component="FileDatum" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@fileDataForFileData" TextProperty="FileName" ValueProperty="Oid" AllowClear=true
+                         Placeholder="Choose FileDatum" style="display: block; width: 100%" @bind-Value="@declaracionJuradaAdjunto.FileData" Name="FileData"
+                        SelectedValue=@fileDataForFileDataValue Count=@fileDataForFileDataCount LoadData=@fileDataForFileDataLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+          <RadzenStack  Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                    <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Submit" Icon="save" Text="Save" Variant="Variant.Flat" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Text="Cancel" Variant="Variant.Flat" Click="@CancelButtonClick"  />
+          </RadzenStack>
+        </RadzenTemplateForm>
+    </RadzenColumn>
+

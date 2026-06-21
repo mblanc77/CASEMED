@@ -1,0 +1,296 @@
+@using Sgpa.Business.Retenciones
+@using Sgpa.Data.Errors
+@using Sgpa.Web.Components.Crud
+@inject RetencionService Retenciones
+@inject IToastNotificationService Toasts
+
+@*
+    Retenciones de un préstamo (port de frmRetencion / frmIngRetencion, app SP). Muestra la cuenta corriente
+    de retención, permite ingresar una retención (reteniendo facturas emitidas, con mora si no es directa),
+    amortizarla con pagos mensuales y registrar avisos. Borrar una retención deshace los pagos de sus facturas.
+*@
+
+<div class="p-2">
+    @if (_error is not null)
+    {
+        <div class="alert alert-danger py-2">@_error</div>
+    }
+
+    @* --- Cuenta corriente --- *@
+    <div class="d-flex flex-wrap gap-3 align-items-center mb-3">
+        <span class="text-muted">Cuenta corriente de retención:</span>
+        <span>Importe <strong>@(_cc?.Importe.ToString("N2") ?? "0,00")</strong></span>
+        <span>Pagado <strong>@(_cc?.ImpPago.ToString("N2") ?? "0,00")</strong></span>
+        <span>Saldo <strong class="@((_cc?.Saldo ?? 0) > 0 ? "text-danger" : "")">@(_cc?.Saldo.ToString("N2") ?? "0,00")</strong></span>
+        <div class="ms-auto d-flex gap-2">
+            <DxButton Text="Nueva retención" IconCssClass="fa-solid fa-hand-holding-dollar" RenderStyle="ButtonRenderStyle.Primary" Click="AbrirRetencionAsync" />
+            <DxButton Text="Registrar pago" IconCssClass="fa-solid fa-money-bill" RenderStyle="ButtonRenderStyle.Secondary"
+                      Click="@(() => { _pagoVisible = true; _pagoFecha = DateTime.Today; _pagoMes = DateTime.Today.Month; _pagoAnio = DateTime.Today.Year; _pagoImporte = 0; })"
+                      Enabled="@(_cc is not null)" />
+            <DxButton Text="Aviso" IconCssClass="fa-solid fa-comment" RenderStyle="ButtonRenderStyle.Secondary"
+                      Click="@(() => { _avisoVisible = true; _avisoComentario = string.Empty; })" />
+        </div>
+    </div>
+
+    @* --- Retenciones --- *@
+    <h6>Retenciones</h6>
+    <DxGrid Data="_retenciones" PageSize="6" CssClass="mb-3">
+        <Columns>
+            <DxGridDataColumn FieldName="Fecha" Caption="Fecha" DisplayFormat="d" Width="120px" />
+            <DxGridDataColumn FieldName="Importe" Caption="Importe" DisplayFormat="N2" />
+            <DxGridDataColumn FieldName="TipoCambio" Caption="T/C" DisplayFormat="N2" Width="90px" />
+            <DxGridDataColumn FieldName="Directa" Caption="Directa" Width="90px" />
+            <DxGridDataColumn FieldName="Observaciones" Caption="Obs." />
+            <DxGridDataColumn Caption="" Width="100px" AllowSort="false">
+                <CellDisplayTemplate Context="cell">
+                    @{ var r = (RetencionView)cell.DataItem; }
+                    <DxButton Text="Borrar" IconCssClass="fa-solid fa-trash" RenderStyle="ButtonRenderStyle.Danger" SizeMode="SizeMode.Small"
+                              Click="@(() => BorrarRetencionAsync(r))" />
+                </CellDisplayTemplate>
+            </DxGridDataColumn>
+        </Columns>
+    </DxGrid>
+
+    @* --- Pagos --- *@
+    <h6>Pagos de la cuenta corriente</h6>
+    <DxGrid Data="_pagos" PageSize="6" CssClass="mb-3">
+        <Columns>
+            <DxGridDataColumn FieldName="Fecha" Caption="Fecha" DisplayFormat="d" Width="120px" />
+            <DxGridDataColumn FieldName="Mes" Caption="Mes" Width="80px" />
+            <DxGridDataColumn FieldName="Anio" Caption="Año" Width="80px" />
+            <DxGridDataColumn FieldName="Importe" Caption="Importe" DisplayFormat="N2" />
+            <DxGridDataColumn Caption="" Width="100px" AllowSort="false">
+                <CellDisplayTemplate Context="cell">
+                    @{ var p = (RetencionPagoView)cell.DataItem; }
+                    <DxButton Text="Borrar" IconCssClass="fa-solid fa-trash" RenderStyle="ButtonRenderStyle.Danger" SizeMode="SizeMode.Small"
+                              Click="@(() => BorrarPagoAsync(p))" />
+                </CellDisplayTemplate>
+            </DxGridDataColumn>
+        </Columns>
+    </DxGrid>
+
+    @* --- Avisos --- *@
+    <h6>Avisos</h6>
+    <DxGrid Data="_avisos" PageSize="4">
+        <Columns>
+            <DxGridDataColumn FieldName="Fecha" Caption="Fecha" DisplayFormat="d" Width="120px" />
+            <DxGridDataColumn FieldName="Comentario" Caption="Comentario" />
+        </Columns>
+    </DxGrid>
+</div>
+
+@* --- Diálogo: nueva retención --- *@
+<DxPopup @bind-Visible="_retVisible" HeaderText="Nueva retención" Width="640px" CloseOnEscape="true">
+    <BodyContentTemplate Context="popup">
+        <DxFormLayout>
+            <DxFormLayoutItem Caption="Fecha" ColSpanMd="6">
+                <DxDateEdit @bind-Date="_retFecha" @bind-Date:after="RecargarFacturasAsync" TValue="DateTime" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="Directa (sin mora)" ColSpanMd="6">
+                <DxCheckBox @bind-Checked="_retDirecta" @bind-Checked:after="RecargarFacturasAsync" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="Tipo de cambio" ColSpanMd="6">
+                <DxSpinEdit @bind-Value="_retTipoCambio" MinValue="0" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="Telegrama" ColSpanMd="6">
+                <DxSpinEdit @bind-Value="_retTelegrama" MinValue="0" />
+            </DxFormLayoutItem>
+            <DxFormLayoutItem Caption="Observaciones" ColSpanMd="12">
+                <DxTextBox @bind-Text="_retObs" />
+            </DxFormLayoutItem>
+        </DxFormLayout>
+
+        <p class="mt-2 mb-1 small text-muted">Facturas a retener:</p>
+        <DxGrid Data="_facturasSel" PageSize="6">
+            <Columns>
+                <DxGridDataColumn Caption="" Width="40px" AllowSort="false">
+                    <CellDisplayTemplate Context="cell">
+                        @{ var s = (FacturaSel)cell.DataItem; }
+                        <DxCheckBox @bind-Checked="s.Sel" />
+                    </CellDisplayTemplate>
+                </DxGridDataColumn>
+                <DxGridDataColumn FieldName="F.NroFactura" Caption="Nº" Width="90px" />
+                <DxGridDataColumn FieldName="F.FechaVencimiento" Caption="Vence" DisplayFormat="d" Width="110px" />
+                <DxGridDataColumn FieldName="F.Importe" Caption="Importe" DisplayFormat="N2" />
+                <DxGridDataColumn FieldName="F.ImpMora" Caption="Mora" DisplayFormat="N2" />
+            </Columns>
+        </DxGrid>
+
+        <div class="d-flex justify-content-end gap-2 mt-3">
+            <DxButton Text="Cancelar" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => _retVisible = false)" Enabled="@(!_guardando)" />
+            <DxButton Text="Grabar retención" IconCssClass="fa-solid fa-check" RenderStyle="ButtonRenderStyle.Primary" Click="GrabarRetencionAsync" Enabled="@(!_guardando)" />
+        </div>
+    </BodyContentTemplate>
+</DxPopup>
+
+@* --- Diálogo: registrar pago --- *@
+<DxPopup @bind-Visible="_pagoVisible" HeaderText="Registrar pago de retención" Width="420px" CloseOnEscape="true">
+    <BodyContentTemplate Context="popup">
+        <DxFormLayout>
+            <DxFormLayoutItem Caption="Fecha" ColSpanMd="12"><DxDateEdit @bind-Date="_pagoFecha" TValue="DateTime" /></DxFormLayoutItem>
+            <DxFormLayoutItem Caption="Mes" ColSpanMd="6"><DxSpinEdit @bind-Value="_pagoMes" MinValue="1" MaxValue="12" /></DxFormLayoutItem>
+            <DxFormLayoutItem Caption="Año" ColSpanMd="6"><DxSpinEdit @bind-Value="_pagoAnio" MinValue="2000" MaxValue="2100" /></DxFormLayoutItem>
+            <DxFormLayoutItem Caption="Importe" ColSpanMd="12"><DxSpinEdit @bind-Value="_pagoImporte" MinValue="0" /></DxFormLayoutItem>
+        </DxFormLayout>
+        <div class="d-flex justify-content-end gap-2 mt-3">
+            <DxButton Text="Cancelar" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => _pagoVisible = false)" Enabled="@(!_guardando)" />
+            <DxButton Text="Grabar" RenderStyle="ButtonRenderStyle.Primary" Click="GrabarPagoAsync" Enabled="@(!_guardando)" />
+        </div>
+    </BodyContentTemplate>
+</DxPopup>
+
+@* --- Diálogo: aviso --- *@
+<DxPopup @bind-Visible="_avisoVisible" HeaderText="Nuevo aviso" Width="460px" CloseOnEscape="true">
+    <BodyContentTemplate Context="popup">
+        <DxMemo @bind-Text="_avisoComentario" Rows="3" CssClass="w-100" />
+        <div class="d-flex justify-content-end gap-2 mt-3">
+            <DxButton Text="Cancelar" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => _avisoVisible = false)" Enabled="@(!_guardando)" />
+            <DxButton Text="Grabar" RenderStyle="ButtonRenderStyle.Primary" Click="GrabarAvisoAsync" Enabled="@(!_guardando)" />
+        </div>
+    </BodyContentTemplate>
+</DxPopup>
+
+@code {
+    [Parameter] public int IDPrestamo { get; set; }
+    [Parameter] public long CI { get; set; }
+
+    private sealed class FacturaSel { public bool Sel { get; set; } = true; public FacturaRetencionView F { get; set; } = new(); }
+
+    private string? _error;
+    private bool _guardando;
+
+    private RetencionCuentaCorriente? _cc;
+    private IReadOnlyList<RetencionView> _retenciones = Array.Empty<RetencionView>();
+    private IReadOnlyList<RetencionPagoView> _pagos = Array.Empty<RetencionPagoView>();
+    private IReadOnlyList<RetencionAvisoView> _avisos = Array.Empty<RetencionAvisoView>();
+
+    // Nueva retención.
+    private bool _retVisible;
+    private DateTime _retFecha = DateTime.Today;
+    private bool _retDirecta;
+    private double _retTipoCambio = 1;
+    private double _retTelegrama;
+    private string _retObs = "";
+    private List<FacturaSel> _facturasSel = new();
+
+    // Pago.
+    private bool _pagoVisible;
+    private DateTime _pagoFecha = DateTime.Today;
+    private int _pagoMes, _pagoAnio;
+    private double _pagoImporte;
+
+    // Aviso.
+    private bool _avisoVisible;
+    private string _avisoComentario = "";
+
+    private int _loadedFor = -1;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (IDPrestamo != _loadedFor)
+        {
+            _loadedFor = IDPrestamo;
+            await CargarAsync();
+        }
+    }
+
+    private async Task CargarAsync()
+    {
+        try
+        {
+            _error = null;
+            _cc = await Retenciones.GetCuentaCorrienteAsync(IDPrestamo);
+            _retenciones = await Retenciones.GetRetencionesAsync(IDPrestamo);
+            _pagos = await Retenciones.GetPagosAsync(IDPrestamo);
+            _avisos = await Retenciones.GetAvisosAsync(IDPrestamo);
+        }
+        catch (Exception ex) { _error = ex.Message; }
+    }
+
+    private async Task AbrirRetencionAsync()
+    {
+        _retFecha = DateTime.Today;
+        _retDirecta = false;
+        _retTipoCambio = 1;
+        _retTelegrama = 0;
+        _retObs = "";
+        await RecargarFacturasAsync();
+        _retVisible = true;
+    }
+
+    private async Task RecargarFacturasAsync()
+    {
+        var facturas = await Retenciones.GetFacturasParaRetenerAsync(IDPrestamo, _retFecha, _retDirecta);
+        _facturasSel = facturas.Select(f => new FacturaSel { Sel = true, F = f }).ToList();
+    }
+
+    private async Task GrabarRetencionAsync()
+    {
+        var seleccionadas = _facturasSel.Where(s => s.Sel).Select(s => new FacturaRetencion(s.F.NroFactura, s.F.Importe, s.F.ImpMora)).ToList();
+        if (seleccionadas.Count == 0) { Toasts.Aviso("Seleccioná al menos una factura."); return; }
+
+        _guardando = true;
+        try
+        {
+            await Retenciones.IngresarAsync(new IngresarRetencionRequest(
+                IDPrestamo, CI, _retFecha, CodEmpresa: null, CodMoneda: "$", _retTipoCambio,
+                seleccionadas, _retTelegrama, string.IsNullOrWhiteSpace(_retObs) ? null : _retObs, _retDirecta));
+            Toasts.Exito("Retención registrada.");
+            _retVisible = false;
+            await CargarAsync();
+        }
+        catch (Exception ex) { Toasts.Error(SqlErrorMessages.Amigable(ex)); }
+        finally { _guardando = false; }
+    }
+
+    private async Task GrabarPagoAsync()
+    {
+        _guardando = true;
+        try
+        {
+            await Retenciones.IngresarPagoAsync(IDPrestamo, _pagoFecha, _pagoMes, _pagoAnio, _pagoImporte);
+            Toasts.Exito("Pago registrado.");
+            _pagoVisible = false;
+            await CargarAsync();
+        }
+        catch (Exception ex) { Toasts.Error(SqlErrorMessages.Amigable(ex)); }
+        finally { _guardando = false; }
+    }
+
+    private async Task GrabarAvisoAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_avisoComentario)) { Toasts.Aviso("Ingresá un comentario."); return; }
+        _guardando = true;
+        try
+        {
+            await Retenciones.IngresarAvisoAsync(IDPrestamo, DateTime.Today, _avisoComentario);
+            Toasts.Exito("Aviso registrado.");
+            _avisoVisible = false;
+            await CargarAsync();
+        }
+        catch (Exception ex) { Toasts.Error(SqlErrorMessages.Amigable(ex)); }
+        finally { _guardando = false; }
+    }
+
+    private async Task BorrarRetencionAsync(RetencionView r)
+    {
+        try
+        {
+            await Retenciones.BorrarAsync(IDPrestamo, r.Fecha);
+            Toasts.Exito("Retención eliminada (pagos deshechos).");
+            await CargarAsync();
+        }
+        catch (Exception ex) { Toasts.Error(SqlErrorMessages.Amigable(ex)); }
+    }
+
+    private async Task BorrarPagoAsync(RetencionPagoView p)
+    {
+        try
+        {
+            await Retenciones.BorrarPagoAsync(IDPrestamo, p.Fecha, p.Mes, p.Anio);
+            Toasts.Exito("Pago eliminado.");
+            await CargarAsync();
+        }
+        catch (Exception ex) { Toasts.Error(SqlErrorMessages.Amigable(ex)); }
+    }
+}

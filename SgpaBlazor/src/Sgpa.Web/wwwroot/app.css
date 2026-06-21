@@ -1,0 +1,267 @@
+html, body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+a, .btn-link {
+    color: #006bb7;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+.content {
+    padding-top: 1.1rem;
+}
+
+h1:focus {
+    outline: none;
+}
+
+.valid.modified:not([type=checkbox]) {
+    outline: 1px solid #26b050;
+}
+
+.invalid {
+    outline: 1px solid #e50000;
+}
+
+.validation-message {
+    color: #e50000;
+}
+
+.blazor-error-boundary {
+    background: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTYiIGhlaWdodD0iNDkiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIG92ZXJmbG93PSJoaWRkZW4iPjxkZWZzPjxjbGlwUGF0aCBpZD0iY2xpcDAiPjxyZWN0IHg9IjIzNSIgeT0iNTEiIHdpZHRoPSI1NiIgaGVpZ2h0PSI0OSIvPjwvY2xpcFBhdGg+PC9kZWZzPjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMCkiIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0yMzUgLTUxKSI+PHBhdGggZD0iTTI2My41MDYgNTFDMjY0LjcxNyA1MSAyNjUuODEzIDUxLjQ4MzcgMjY2LjYwNiA1Mi4yNjU4TDI2Ny4wNTIgNTIuNzk4NyAyNjcuNTM5IDUzLjYyODMgMjkwLjE4NSA5Mi4xODMxIDI5MC41NDUgOTIuNzk1IDI5MC42NTYgOTIuOTk2QzI5MC44NzcgOTMuNTEzIDI5MSA5NC4wODE1IDI5MSA5NC42NzgyIDI5MSA5Ny4wNjUxIDI4OS4wMzggOTkgMjg2LjYxNyA5OUwyNDAuMzgzIDk5QzIzNy45NjMgOTkgMjM2IDk3LjA2NTEgMjM2IDk0LjY3ODIgMjM2IDk0LjM3OTkgMjM2LjAzMSA5NC4wODg2IDIzNi4wODkgOTMuODA3MkwyMzYuMzM4IDkzLjAxNjIgMjM2Ljg1OCA5Mi4xMzE0IDI1OS40NzMgNTMuNjI5NCAyNTkuOTYxIDUyLjc5ODUgMjYwLjQwNyA1Mi4yNjU4QzI2MS4yIDUxLjQ4MzcgMjYyLjI5NiA1MSAyNjMuNTA2IDUxWk0yNjMuNTg2IDY2LjAxODNDMjYwLjczNyA2Ni4wMTgzIDI1OS4zMTMgNjcuMTI0NSAyNTkuMzEzIDY5LjMzNyAyNTkuMzEzIDY5LjYxMDIgMjU5LjMzMiA2OS44NjA4IDI1OS4zNzEgNzAuMDg4N0wyNjEuNzk1IDg0LjAxNjEgMjY1LjM4IDg0LjAxNjEgMjY3LjgyMSA2OS43NDc1QzI2Ny44NiA2OS43MzA5IDI2Ny44NzkgNjkuNTg3NyAyNjcuODc5IDY5LjMxNzkgMjY3Ljg3OSA2Ny4xMTgyIDI2Ni40NDggNjYuMDE4MyAyNjMuNTg2IDY2LjAxODNaTTI2My41NzYgODYuMDU0N0MyNjEuMDQ5IDg2LjA1NDcgMjU5Ljc4NiA4Ny4zMDA1IDI1OS43ODYgODkuNzkyMSAyNTkuNzg2IDkyLjI4MzcgMjYxLjA0OSA5My41Mjk1IDI2My41NzYgOTMuNTI5NSAyNjYuMTE2IDkzLjUyOTUgMjY3LjM4NyA5Mi4yODM3IDI2Ny4zODcgODkuNzkyMSAyNjcuMzg3IDg3LjMwMDUgMjY2LjExNiA4Ni4wNTQ3IDI2My41NzYgODYuMDU0N1oiIGZpbGw9IiNGRkU1MDAiIGZpbGwtcnVsZT0iZXZlbm9kZCIvPjwvZz48L3N2Zz4=) no-repeat 1rem/1.8rem, #b32121;
+    padding: 1rem 1rem 1rem 3.7rem;
+    color: white;
+}
+
+    .blazor-error-boundary::after {
+        content: "An error has occurred."
+    }
+
+.darker-border-checkbox.form-check-input {
+    border-color: #929292;
+}
+
+.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+    color: var(--bs-secondary-color);
+    text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+    text-align: start;
+}
+/* Resumen de validación del DetailView genérico (SgpaDetailForm + SgpaMetadataValidator). */
+.sgpa-validation-summary {
+    margin-bottom: .75rem;
+    padding: .5rem .75rem;
+    border: 1px solid #f5c2c7;
+    border-radius: .375rem;
+    background-color: #f8d7da;
+    color: #842029;
+    list-style: none;
+}
+.sgpa-validation-summary:empty {
+    display: none;
+}
+.sgpa-validation-summary li {
+    margin-left: .25rem;
+}
+
+/* Campo con error de validación en el DetailView: barra roja a la izquierda + mensaje en rojo bajo el editor.
+   Se usa box-shadow inset (no border+margin) para no correr el contenido ni recortar el texto del caption. */
+.sgpa-field--invalid {
+    box-shadow: inset 3px 0 0 0 var(--bs-danger, #dc3545);
+    padding-left: .5rem;
+    border-radius: 2px;
+}
+/* Editor con error: borde rojo de 2px. El editor real es .dxbl-text-edit (DxTextBox/DxSpinEdit/combo/fecha),
+   cuyo borde sale de --dxbl-text-edit-border-* (gris por defecto). Pisamos esas variables en el scope inválido.
+   (El caption es .dxbl-fl-cpt.dxbl-text — otro elemento — por eso antes el borde caía en la etiqueta.) */
+.sgpa-field--invalid .dxbl-text-edit {
+    --dxbl-text-edit-border-color: var(--bs-danger, #dc3545);
+    --dxbl-text-edit-border-width: 2px;
+}
+.sgpa-field__error {
+    color: var(--bs-danger, #dc3545);
+    font-size: .8rem;
+    margin-top: .2rem;
+}
+/* Hint de campo FK: descripción del valor elegido (ej. CI → nombre del afiliado). Igual que el error pero en
+   gris tenue, no rojo. */
+.sgpa-field__hint {
+    color: var(--bs-secondary-color, #6c757d);
+    font-size: .6rem;
+    font-weight: 600;
+    margin-top: .2rem;
+    margin-left: .5rem;
+}
+
+/* ===== Dashboard de inicio ===== */
+.sgpa-kpi {
+    display: flex; flex-direction: column; gap: .15rem;
+    padding: 1rem; height: 100%;
+    background: #fff; border: 1px solid #e7e9ef; border-radius: .6rem;
+    text-decoration: none; color: inherit;
+    transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+}
+.sgpa-kpi:hover { transform: translateY(-2px); box-shadow: 0 .4rem 1rem rgba(0,0,0,.08); border-color: #cfeadb; }
+.sgpa-kpi-icon {
+    width: 2.4rem; height: 2.4rem; border-radius: .55rem;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: #e3f4ea; color: #009242; font-size: 1.1rem; margin-bottom: .35rem;
+}
+.sgpa-kpi-val { font-size: 1.7rem; font-weight: 700; line-height: 1.1; color: #1f2937; }
+.sgpa-kpi-lbl { font-size: .82rem; color: #6b7280; }
+.sgpa-kpi-sub { font-size: .76rem; font-weight: 600; color: #009242; margin-top: .15rem; }
+
+/* Accesos directos (tiles) */
+.sgpa-tile {
+    display: flex; align-items: center; gap: .6rem;
+    padding: .7rem .85rem; border: 1px solid #e7e9ef; border-radius: .55rem;
+    text-decoration: none; color: #374151; background: #fff;
+    transition: background .12s ease, border-color .12s ease, color .12s ease;
+}
+.sgpa-tile:hover { background: #e3f4ea; border-color: #009242; color: #0b5d2c; }
+.sgpa-tile i { width: 1.5rem; text-align: center; color: #009242; font-size: 1rem; }
+.sgpa-tile span { font-size: .9rem; font-weight: 500; }
+
+/* Toolbar de las grillas CRUD: buscador con ancho fijo, alineado con los botones de acción. */
+.sgpa-toolbar .sgpa-search { display: inline-block; width: 260px; max-width: 60vw; }
+.sgpa-toolbar .sgpa-search .dxbl-text-edit { width: 100%; }
+
+/* Grupo de herramientas del toolbar (refrescar/seleccionar/columnas/totales/restablecer): botones
+   contiguos y segmentados. Los bordes se SOLAPAN 1px (técnica estándar de btn-group) para que el
+   borde entre dos botones quede en una sola línea sutil, igual que los botones sueltos (Exportar/filtro),
+   y no en una doble línea que se ve más opaca. */
+/* El tema le pone al .btn-group una sombra de elevación (0 2px 6px) que acá no queremos: la anulamos
+   para que el grupo quede plano y sutil como los botones sueltos (Exportar/filtro). */
+.sgpa-toolbar-group { gap: 0; box-shadow: none !important; }
+.sgpa-toolbar-group > .dxbl-btn { border-radius: 0; position: relative; }
+.sgpa-toolbar-group > .dxbl-btn:not(:first-child) { margin-left: -1px; }
+.sgpa-toolbar-group > .dxbl-btn:hover,
+.sgpa-toolbar-group > .dxbl-btn:focus { z-index: 1; }
+.sgpa-toolbar-group > .dxbl-btn:first-child {
+    border-top-left-radius: var(--bs-border-radius, .375rem);
+    border-bottom-left-radius: var(--bs-border-radius, .375rem);
+}
+.sgpa-toolbar-group > .dxbl-btn:last-child {
+    border-top-right-radius: var(--bs-border-radius, .375rem);
+    border-bottom-right-radius: var(--bs-border-radius, .375rem);
+}
+
+/* ===== Marca: fuente Plus Jakarta Sans + color secundario ===== */
+@font-face { font-family:'Plus Jakarta Sans'; font-style:normal; font-weight:400; font-display:swap; src:url('/lib/plusjakarta/pjs-400.woff2') format('woff2'); }
+@font-face { font-family:'Plus Jakarta Sans'; font-style:normal; font-weight:500; font-display:swap; src:url('/lib/plusjakarta/pjs-500.woff2') format('woff2'); }
+@font-face { font-family:'Plus Jakarta Sans'; font-style:normal; font-weight:600; font-display:swap; src:url('/lib/plusjakarta/pjs-600.woff2') format('woff2'); }
+@font-face { font-family:'Plus Jakarta Sans'; font-style:normal; font-weight:700; font-display:swap; src:url('/lib/plusjakarta/pjs-700.woff2') format('woff2'); }
+
+:root {
+    --bs-body-font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --bs-secondary: #009242;
+    --bs-secondary-rgb: 0, 146, 66;
+    /* Un punto más de peso en los textos (400 → 500, medium). El 500 ya está cargado vía @font-face. */
+    --bs-body-font-weight: 500;
+}
+
+body { font-family: var(--bs-body-font-family); font-weight: 500; }
+
+/* Las etiquetas (captions) del DxFormLayout traen su peso fijo del tema (400) vía esta variable;
+   la subimos un punto a 500 para que acompañen al resto del texto. */
+.dxbl-fl { --dxbl-fl-caption-font-weight: 500; }
+
+/* Verde de marca como ACENTO (decisión del usuario): los botones secundarios quedan neutros
+   (look DevExpress). El verde se usa en logo, textos secundarios, links de acento y éxito. */
+.text-secondary { color: #009242 !important; }
+
+/* Botón con el verde de marca (ej. Ingresar del login), para no usar el azul genérico de Bootstrap. */
+.btn-brand { background-color: #009242; border-color: #009242; color: #fff; }
+.btn-brand:hover, .btn-brand:focus { background-color: #007a37; border-color: #007a37; color: #fff; }
+
+/* Alertas de éxito y badges/links de acento alineados al verde de marca. */
+.alert-success {
+    --bs-alert-color: #0b5d2c; --bs-alert-bg: #e3f4ea;
+    --bs-alert-border-color: #b7e2c8; --bs-alert-link-color: #084a23;
+}
+.text-success { color: #009242 !important; }
+
+/* ===== Acentos en verde de marca (#009242): cabezales de grilla e indicador de tab activo ===== */
+.dxbl-grid {
+    --dxbl-grid-header-bg: #009242;
+    --dxbl-grid-header-color: #fff;
+}
+/* Botones del header (orden/filtro) legibles sobre el verde */
+.dxbl-grid-header-content > .dxbl-btn { --dxbl-btn-color: #fff; }
+
+/* Tab activo: texto + indicador (línea inferior) en verde */
+.dxbl-tabs { --dxbl-tabs-tab-selected-color: #009242; }
+.dxbl-tabs-item.dxbl-active::after { background-color: #009242 !important; }
+
+/* Cabezal verde: en hover oscurecemos el verde (efecto similar al hover de un botón verde) y
+   mantenemos texto/íconos en blanco, en vez del fondo gris claro que pinta el tema por defecto. */
+.dxbl-grid-header-row > th.dxbl-grid-header-sortable:hover {
+    background-color: #007a37 !important;
+}
+.dxbl-grid-header-row > th.dxbl-grid-header-sortable:hover,
+.dxbl-grid-header-row > th.dxbl-grid-header-sortable:hover .dxbl-grid-header-content,
+.dxbl-grid-header-row > th.dxbl-grid-header-sortable:hover .dxbl-grid-header-content > span {
+    color: #fff !important;
+}
+.dxbl-grid-header-content > .dxbl-btn {
+    --dxbl-btn-hover-color: #fff;
+    --dxbl-btn-active-color: #fff;
+}
+
+/* Más padding vertical en los botones de acción STANDALONE (Nuevo, Guardar, Exportar, Filtros, Volver…).
+   Sólo standalone: así NO afecta los botones embebidos en la fila de filtros del grid ni los íconos de fila. */
+.dxbl-btn.dxbl-btn-standalone:not(.dxbl-btn-tool):not(.dxbl-btn-link) {
+    --dxbl-btn-padding-y: 0.5rem;
+}
+/* Refuerzo: que la fila de filtros del grid quede compacta (revertir cualquier herencia). */
+.dxbl-grid-filter-row .dxbl-btn { --dxbl-btn-padding-y: 0.1875rem !important; }
+
+/* Wait dialog (SgpaWaitDialog): overlay de espera para operaciones pesadas. */
+.sgpa-wait-backdrop {
+    /* Por encima de TODO, incluidos los DxPopup de DevExpress (z-index alto): el wait dialog tapa la pantalla. */
+    position: fixed; inset: 0; z-index: 100000;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0, 0, 0, .35);
+}
+.sgpa-wait-card {
+    display: flex; flex-direction: column; align-items: center;
+    background: #fff; border-radius: 8px; padding: 24px 32px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, .25); min-width: 220px;
+}
+.sgpa-wait-text { font-weight: 500; color: #333; text-align: center; }
+
+/* Overlay de progreso dentro del popup de liquidación (cubre el cuerpo del popup mientras procesa). */
+.sgpa-liq-overlay {
+    position: absolute; inset: 0; z-index: 30;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(255, 255, 255, .85);
+}
+.sgpa-radial circle { transition: stroke-dashoffset .3s ease; }
+
+/* Visor de reportes dentro del DxPopup: altura fija que entra en el popup + clip; el visor (su hijo directo)
+   se fuerza a llenar el host para que su scroll interno maneje reportes largos en vez de desbordar el popup. */
+.sgpa-report-viewer-host {
+    height: 82vh;
+    overflow: hidden;
+}
+.sgpa-report-viewer-host > * {
+    height: 100%;
+}
+
+/* Fila de grilla atenuada (ej. empleos dados de baja en AbmAfili): SgpaCrudView.RowCssClass la aplica al <tr>. */
+.sgpa-fila-baja, .sgpa-fila-baja td { color: #9ca3af; }
+
+/* Fichas (DxTabs) en varias filas cuando no entran en el ancho: DxTabs no trae modo multi-fila nativo
+   (sólo scroll). Con ScrollMode=NoScroll + flex-wrap, la barra de fichas envuelve en varias líneas. */
+.sgpa-tabs-wrap .dxbl-tabs-container { flex-wrap: wrap; }

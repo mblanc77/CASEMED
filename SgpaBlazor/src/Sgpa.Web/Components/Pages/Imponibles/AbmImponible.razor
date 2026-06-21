@@ -1,0 +1,198 @@
+@page "/imponibles"
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.Components.Forms
+@using DevExpress.Blazor
+@using Sgpa.Data
+@using Sgpa.Data.Crud
+@using Sgpa.Data.Errors
+@using Sgpa.Domain.Entities
+@using Sgpa.Domain.Metadata
+@using Sgpa.Domain.Security
+@using Sgpa.Web.Components.Crud
+@using Sgpa.Web.Security
+@inject IDbExecutor Db
+@inject ISgpaCrudService<Imponible> Service
+@inject WebCurrentUser CurrentUser
+@inject IErrorLog ErrorLog
+@inject IToastNotificationService Toasts
+
+<PageTitle>Imponibles</PageTitle>
+
+@*
+    Listado de imponibles. La lista es solo lectura y server-side (Imponible es grande, ~70k, y CI es FK a
+    Afiliado): une Afiliado (nombre completo) + Empresa. El ABM (alta/edición/baja) se abre por fila con
+    "Abrir" (o "Nuevo") en un popup que reusa el DetailView genérico (SgpaDetailForm) sobre la entidad real.
+*@
+
+<h3 class="mb-2">Imponibles</h3>
+
+@if (_denied)
+{
+    <div class="alert alert-warning">No tenés permiso de lectura sobre <strong>Imponible</strong>.</div>
+}
+else if (_dataSource is not null)
+{
+    <DxGrid @ref="_grid" Data="_dataSource" PageSize="50"
+            PageSizeSelectorVisible="true" PageSizeSelectorItems="@_pageSizes" PageSizeSelectorAllRowsItemVisible="false"
+            ShowSearchBox="false" ColumnResizeMode="GridColumnResizeMode.NextColumn">
+        <ToolbarTemplate>
+            <div class="sgpa-toolbar d-flex align-items-center gap-2 flex-wrap p-1">
+                @if (_perms.HasFlag(PermissionAction.Create))
+                {
+                    <DxButton Text="Nuevo" IconCssClass="fa-solid fa-plus" RenderStyle="ButtonRenderStyle.Primary" Click="Nuevo" />
+                }
+                <span class="sgpa-search">
+                    <DxTextBox @bind-Text="_search" NullText="Buscar (CI, nombre o empresa)…"
+                               ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto" />
+                </span>
+                <DxButton IconCssClass="fa-solid fa-magnifying-glass" Text="Buscar"
+                          RenderStyle="ButtonRenderStyle.Secondary" Click="Buscar" />
+            </div>
+        </ToolbarTemplate>
+        <Columns>
+            @* Columna de comando (no participa de búsqueda/orden): abre el ABM de la fila. *@
+            <DxGridCommandColumn Width="90px" NewButtonVisible="false" EditButtonVisible="false" DeleteButtonVisible="false">
+                <CellDisplayTemplate Context="cell">
+                    <DxButton IconCssClass="fa-solid fa-up-right-from-square" Text="Abrir" RenderStyle="ButtonRenderStyle.Link"
+                              Click="@(() => OpenAsync((ImponibleListadoRow)cell.DataItem))" />
+                </CellDisplayTemplate>
+            </DxGridCommandColumn>
+            <DxGridDataColumn FieldName="CI" Caption="CI" Width="130px" DisplayFormat="0" TextAlignment="GridTextAlignment.Right" />
+            <DxGridDataColumn FieldName="NombreCompleto" Caption="Nombre completo" TextAlignment="GridTextAlignment.Left" />
+            <DxGridDataColumn FieldName="Empresa" Caption="Empresa" TextAlignment="GridTextAlignment.Left" />
+            <DxGridDataColumn FieldName="Anio" Caption="Año" Width="90px" TextAlignment="GridTextAlignment.Right" />
+            <DxGridDataColumn FieldName="Mes" Caption="Mes" Width="80px" TextAlignment="GridTextAlignment.Right" />
+            <DxGridDataColumn FieldName="Concepto" Caption="Concepto" Width="120px" TextAlignment="GridTextAlignment.Left" />
+            <DxGridDataColumn FieldName="Importe" Caption="Importe" DisplayFormat="N2" TextAlignment="GridTextAlignment.Right" />
+        </Columns>
+    </DxGrid>
+}
+
+@* ABM en popup: reusa el DetailView genérico. En edición, la clave compuesta queda de solo lectura. *@
+<DxPopup @bind-Visible="_editVisible" HeaderText="@(_isNew ? "Nuevo imponible" : "Imponible")" Width="680px" CloseOnEscape="true">
+    <BodyContentTemplate Context="popup">
+        @if (_edit is not null)
+        {
+            <EditForm Model="_edit" OnValidSubmit="GuardarAsync">
+                <SgpaDetailForm Model="_edit" Meta="_meta" IsNew="_isNew" ColSpanMd="6"
+                                FieldEditable="@((m, c, isNew) => isNew || !c.IsKey)" />
+                <div class="d-flex justify-content-between mt-3">
+                    <div>
+                        @if (!_isNew && _perms.HasFlag(PermissionAction.Delete))
+                        {
+                            <DxButton Text="Eliminar" IconCssClass="fa-solid fa-trash" RenderStyle="ButtonRenderStyle.Danger"
+                                      Click="@(() => _confirmDelete = true)" Enabled="!_saving" />
+                        }
+                    </div>
+                    <div class="d-flex gap-2">
+                        <DxButton Text="Cerrar" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => _editVisible = false)" Enabled="!_saving" />
+                        @if (_perms.HasFlag(PermissionAction.Write) || (_isNew && _perms.HasFlag(PermissionAction.Create)))
+                        {
+                            <DxButton SubmitFormOnClick="true" IconCssClass="fa-solid fa-floppy-disk"
+                                      Text="@(_saving ? "Guardando…" : "Guardar")" RenderStyle="ButtonRenderStyle.Primary" Enabled="!_saving" />
+                        }
+                    </div>
+                </div>
+            </EditForm>
+        }
+    </BodyContentTemplate>
+</DxPopup>
+
+@* Confirmación de borrado. *@
+<DxPopup @bind-Visible="_confirmDelete" HeaderText="Eliminar imponible" Width="440px" CloseOnEscape="true">
+    <BodyContentTemplate Context="popup">
+        <p>¿Seguro que querés eliminar este imponible? Esta acción no se puede deshacer.</p>
+        <div class="d-flex justify-content-end gap-2">
+            <DxButton Text="No" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => _confirmDelete = false)" />
+            <DxButton Text="Sí, eliminar" RenderStyle="ButtonRenderStyle.Danger" Click="EliminarAsync" Enabled="!_saving" />
+        </div>
+    </BodyContentTemplate>
+</DxPopup>
+
+@code {
+    private static readonly int[] _pageSizes = { 20, 50, 100, 200, 500 };
+    private static readonly EntityMetadata _meta = EntityMetadata.For<Imponible>();
+
+    private DxGrid? _grid;
+    private ImponibleListadoDataSource? _dataSource;
+    private string _search = string.Empty;
+    private bool _denied;
+    private PermissionAction _perms;
+
+    private bool _editVisible, _isNew, _saving, _confirmDelete;
+    private Imponible? _edit;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CurrentUser.EnsureLoadedAsync();
+        _perms = CurrentUser.PermissionsFor("Imponible");
+        if ((_perms & PermissionAction.Read) == 0)
+        {
+            _denied = true;
+            return;
+        }
+        _dataSource = new ImponibleListadoDataSource(Db);
+    }
+
+    private void Buscar()
+    {
+        if (_dataSource is null) return;
+        _dataSource.Search = string.IsNullOrWhiteSpace(_search) ? null : _search.Trim();
+        _grid?.Reload();
+    }
+
+    private void Nuevo()
+    {
+        _edit = new Imponible { Fechaingreso = DateTime.Today };
+        _isNew = true;
+        _editVisible = true;
+    }
+
+    private async Task OpenAsync(ImponibleListadoRow row)
+    {
+        // La clave va en el orden de EntityMetadata.Keys: CI, CodEmpresa, Fechaingreso, Mes, Anio, Concepto.
+        _edit = await Service.GetByKeyAsync(new object?[] { row.CI, row.CodEmpresa, row.Fechaingreso, row.Mes, row.Anio, row.Concepto });
+        if (_edit is null) { Toasts.Error("No se encontró el imponible."); return; }
+        _isNew = false;
+        _editVisible = true;
+    }
+
+    private async Task GuardarAsync()
+    {
+        if (_edit is null) return;
+        _saving = true;
+        try
+        {
+            if (_isNew) await Service.InsertAsync(_edit); else await Service.UpdateAsync(_edit);
+            Toasts.Exito(_isNew ? "Imponible creado." : "Cambios guardados.");
+            _editVisible = false;
+            _grid?.Reload();
+        }
+        catch (Exception ex)
+        {
+            Toasts.Error(SqlErrorMessages.Amigable(ex));
+            await ErrorLog.LogAsync($"Imponible.{(_isNew ? "Insert" : "Update")}", ex, CurrentUser.UserName);
+        }
+        finally { _saving = false; }
+    }
+
+    private async Task EliminarAsync()
+    {
+        if (_edit is null) return;
+        _saving = true;
+        try
+        {
+            await Service.DeleteAsync(_edit);
+            Toasts.Exito("Imponible eliminado.");
+            _confirmDelete = false;
+            _editVisible = false;
+            _grid?.Reload();
+        }
+        catch (Exception ex)
+        {
+            Toasts.Error(SqlErrorMessages.Amigable(ex));
+            await ErrorLog.LogAsync("Imponible.Delete", ex, CurrentUser.UserName);
+        }
+        finally { _saving = false; }
+    }
+}

@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Sgpa.Domain\Sgpa.Domain.csproj" />
+    <ProjectReference Include="..\Sgpa.Data\Sgpa.Data.csproj" />
+    <ProjectReference Include="..\Sgpa.Business\Sgpa.Business.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+  </ItemGroup>
+
+  <!-- DevExpress desde el feed offline local (ver nuget.config): paquetes pre-release 25.2.6-pre-26075.
+       Traen los assets (_content/*) y las dependencias transitivas; fluyen a Sgpa.Web.Tests por ser PackageReference. -->
+  <ItemGroup>
+    <PackageReference Include="DevExpress.Blazor" Version="25.2.6-pre-26075" />
+    <PackageReference Include="DevExpress.Blazor.Themes" Version="25.2.6-pre-26075" />
+    <PackageReference Include="DevExpress.Reporting.Core" Version="25.2.6-pre-26075" />
+    <PackageReference Include="DevExpress.DataAccess" Version="25.2.6-pre-26075" />
+    <PackageReference Include="DevExpress.Blazor.Reporting.Viewer" Version="25.2.6-pre-26075" />
+    <PackageReference Include="DevExpress.Blazor.Reporting.JSBasedControls" Version="25.2.6-pre-26075" />
+    <!-- Backend ASP.NET Core del reporting (lo carga UseDevExpressBlazorReporting por reflexión; no es transitivo). -->
+    <PackageReference Include="DevExpress.AspNetCore.Reporting" Version="25.2.6-pre-26075" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\CrystalReports\" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+</Project>

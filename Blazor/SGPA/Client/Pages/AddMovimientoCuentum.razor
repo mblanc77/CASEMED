@@ -1,0 +1,161 @@
+@page "/add-movimiento-cuentum"
+
+<PageTitle>Add MovimientoCuentum</PageTitle>
+    <RadzenColumn SizeMD=12>
+        <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@errorVisible">Cannot save MovimientoCuentum</RadzenAlert>
+        <RadzenTemplateForm TItem="SGPA.Server.Models.CMU.MovimientoCuentum" Data="@movimientoCuentum" Visible="@(movimientoCuentum != null && canEdit)" Submit="@FormSubmit">
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Fecha" Component="Fecha" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDatePicker DateFormat="MM/dd/yyyy" style="display: block; width: 100%" @bind-Value="@movimientoCuentum.Fecha" Name="Fecha" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Estado" Component="Estado" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@movimientoCuentum.Estado" Name="Estado" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Referencia" Component="Referencia" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@movimientoCuentum.Referencia" Name="Referencia" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Importe" Component="Importe" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@movimientoCuentum.Importe" Name="Importe" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Año" Component="Año" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@movimientoCuentum.Año" Name="Año" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Mes" Component="Mes" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@movimientoCuentum.Mes" Name="Mes" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Optimistic Lock Field" Component="OptimisticLockField" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@movimientoCuentum.OptimisticLockField" Name="OptimisticLockField" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="G C Record" Component="GCRecord" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@movimientoCuentum.GCRecord" Name="GCRecord" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Dummy" Component="Dummy" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@movimientoCuentum.Dummy" Name="Dummy" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Convenio Procesado" Component="ConvenioProcesado" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenCheckBox @bind-Value="@movimientoCuentum.ConvenioProcesado" Name="ConvenioProcesado" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Mes Completo" Component="MesCompleto" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@movimientoCuentum.MesCompleto" Name="MesCompleto" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Ajuste Retroactivo" Component="AjusteRetroactivo" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@ajusteRetroactivosForAjuste" TextProperty="" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose AjusteRetroactivo" style="display: block; width: 100%" @bind-Value="@movimientoCuentum.Ajuste" Name="Ajuste"
+                        SelectedValue=@ajusteRetroactivosForAjusteValue Count=@ajusteRetroactivosForAjusteCount LoadData=@ajusteRetroactivosForAjusteLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Colegiado1" Component="Colegiado1" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@colegiadosForColegiado" TextProperty="Nombres" ValueProperty="Documento" AllowClear=true
+                         Placeholder="Choose Colegiado1" style="display: block; width: 100%" @bind-Value="@movimientoCuentum.Colegiado" Name="Colegiado"
+                        SelectedValue=@colegiadosForColegiadoValue Count=@colegiadosForColegiadoCount LoadData=@colegiadosForColegiadoLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Movimiento Cuentum1" Component="MovimientoCuentum1" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@movimientoCuentaForMovimientoReferencia" TextProperty="Referencia" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose MovimientoCuentum1" style="display: block; width: 100%" @bind-Value="@movimientoCuentum.MovimientoReferencia" Name="MovimientoReferencia"
+                        SelectedValue=@movimientoCuentaForMovimientoReferenciaValue Count=@movimientoCuentaForMovimientoReferenciaCount LoadData=@movimientoCuentaForMovimientoReferenciaLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Movimiento Tipo1" Component="MovimientoTipo1" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@movimientoTiposForMovimientoTipo" TextProperty="Descripcion" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose MovimientoTipo1" style="display: block; width: 100%" @bind-Value="@movimientoCuentum.MovimientoTipo" Name="MovimientoTipo"
+                        SelectedValue=@movimientoTiposForMovimientoTipoValue Count=@movimientoTiposForMovimientoTipoCount LoadData=@movimientoTiposForMovimientoTipoLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Xpobject Type" Component="XpobjectType" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@xpObjectTypesForObjectType" TextProperty="TypeName" ValueProperty="OID" AllowClear=true
+                         Placeholder="Choose XpobjectType" style="display: block; width: 100%" @bind-Value="@movimientoCuentum.ObjectType" Name="ObjectType"
+                        SelectedValue=@xpObjectTypesForObjectTypeValue Count=@xpObjectTypesForObjectTypeCount LoadData=@xpObjectTypesForObjectTypeLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Origen Movimiento" Component="OrigenMovimiento" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@origenMovimientosForOrigen" TextProperty="Descripcion" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose OrigenMovimiento" style="display: block; width: 100%" @bind-Value="@movimientoCuentum.Origen" Name="Origen"
+                        SelectedValue=@origenMovimientosForOrigenValue Count=@origenMovimientosForOrigenCount LoadData=@origenMovimientosForOrigenLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+          <RadzenStack  Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                    <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Submit" Icon="save" Text="Save" Variant="Variant.Flat" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Text="Cancel" Variant="Variant.Flat" Click="@CancelButtonClick"  />
+          </RadzenStack>
+        </RadzenTemplateForm>
+    </RadzenColumn>
+

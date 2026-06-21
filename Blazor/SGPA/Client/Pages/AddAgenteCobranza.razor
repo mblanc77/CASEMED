@@ -1,0 +1,121 @@
+@page "/add-agente-cobranza"
+
+<PageTitle>Add AgenteCobranza</PageTitle>
+    <RadzenColumn SizeMD=12>
+        <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@errorVisible">Cannot save AgenteCobranza</RadzenAlert>
+        <RadzenTemplateForm TItem="SGPA.Server.Models.CMU.AgenteCobranza" Data="@agenteCobranza" Visible="@(agenteCobranza != null && canEdit)" Submit="@FormSubmit">
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Parse Class" Component="ParseClass" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@agenteCobranza.ParseClass" Name="ParseClass" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Nombre Contacto" Component="NombreContacto" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@agenteCobranza.NombreContacto" Name="NombreContacto" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Telefono Contacto" Component="TelefonoContacto" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@agenteCobranza.TelefonoContacto" Name="TelefonoContacto" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="E Mail Contacto" Component="EMailContacto" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@agenteCobranza.EMailContacto" Name="EMailContacto" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Sobrescribe En Colegiado Desde Deposito" Component="SobrescribeEnColegiadoDesdeDeposito" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenCheckBox @bind-Value="@agenteCobranza.SobrescribeEnColegiadoDesdeDeposito" Name="SobrescribeEnColegiadoDesdeDeposito" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Id Externo" Component="IdExterno" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@agenteCobranza.IdExterno" Name="IdExterno" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Agente Cobranza Tipo" Component="AgenteCobranzaTipo" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@agenteCobranzaTiposForAgenteTipo" TextProperty="Descripcion" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose AgenteCobranzaTipo" style="display: block; width: 100%" @bind-Value="@agenteCobranza.AgenteTipo" Name="AgenteTipo"
+                        SelectedValue=@agenteCobranzaTiposForAgenteTipoValue Count=@agenteCobranzaTiposForAgenteTipoCount LoadData=@agenteCobranzaTiposForAgenteTipoLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Cuenta Bancarium" Component="CuentaBancarium" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@cuentaBancariaForCuentaBancaria" TextProperty="" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose CuentaBancarium" style="display: block; width: 100%" @bind-Value="@agenteCobranza.CuentaBancaria" Name="CuentaBancaria"
+                        SelectedValue=@cuentaBancariaForCuentaBancariaValue Count=@cuentaBancariaForCuentaBancariaCount LoadData=@cuentaBancariaForCuentaBancariaLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Departamento1" Component="Departamento1" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@departamentosForDepartamento" TextProperty="Nombre" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose Departamento1" style="display: block; width: 100%" @bind-Value="@agenteCobranza.Departamento" Name="Departamento"
+                        SelectedValue=@departamentosForDepartamentoValue Count=@departamentosForDepartamentoCount LoadData=@departamentosForDepartamentoLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Agente Grupo" Component="AgenteGrupo" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@agenteGruposForGrupo" TextProperty="Descripcion" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose AgenteGrupo" style="display: block; width: 100%" @bind-Value="@agenteCobranza.Grupo" Name="Grupo"
+                        SelectedValue=@agenteGruposForGrupoValue Count=@agenteGruposForGrupoCount LoadData=@agenteGruposForGrupoLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Origen Movimiento" Component="OrigenMovimiento" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@origenMovimientosForId" TextProperty="Descripcion" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose OrigenMovimiento" style="display: block; width: 100%" @bind-Value="@agenteCobranza.Id" Name="Id"
+                        SelectedValue=@origenMovimientosForIdValue Count=@origenMovimientosForIdCount LoadData=@origenMovimientosForIdLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Region1" Component="Region1" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@regionsForRegion" TextProperty="Descripcion" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose Region1" style="display: block; width: 100%" @bind-Value="@agenteCobranza.Region" Name="Region"
+                        SelectedValue=@regionsForRegionValue Count=@regionsForRegionCount LoadData=@regionsForRegionLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+          <RadzenStack  Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                    <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Submit" Icon="save" Text="Save" Variant="Variant.Flat" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Text="Cancel" Variant="Variant.Flat" Click="@CancelButtonClick"  />
+          </RadzenStack>
+        </RadzenTemplateForm>
+    </RadzenColumn>
+

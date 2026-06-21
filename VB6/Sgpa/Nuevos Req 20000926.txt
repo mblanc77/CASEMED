@@ -1,0 +1,14 @@
+- Sacar los activos en los reportes de certificados por edad/sexo/especialidad, etc.
+- Agregar nro de recibo en el msg de certificaciones superpuestas.
+- Listado de haberes pro franjas
+0 - 10000
+10000 - 20000
+20000 - x
+
+- Calculo del promedio en pantalla (no tomar aguinaldo).
+- Agregar campo aclaratorio en los reportes.
+- Arreglar para que funcione el filtro en prestaciones.
+- Filtro de en Abm de funcionarios que de los que tienen < 1.25 SMN en el últimos mes.
+- Agregar campo observaciones en prestaciones.
+- Agregar campo moneda a las prestaciones.
+- Controlar la renovación de prestaciones.

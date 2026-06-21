@@ -1,0 +1,206 @@
+@using Sgpa.Domain.Metadata
+@using Sgpa.Data.Crud
+@inject ISgpaLookupService Lookups
+@implements IDisposable
+@*
+    DetailView genérico (estilo XAF): arma un formulario con un editor por columna.
+    La clave primaria sólo es editable al crear; las columnas read-only y de auditoría
+    se respetan automáticamente. La validación (obligatorio/largo + reglas de negocio
+    FluentValidation) la aporta SgpaMetadataValidator sobre el EditContext; acá se resalta
+    cada campo con error (borde rojo + mensaje) leyendo los mensajes del EditContext.
+*@
+
+<SgpaMetadataValidator Meta="Meta" IsNew="IsNew" />
+
+@* Dos columnas en lg+ (≥992px) y una sola en angosto. El responsive ahora funciona porque el área de
+   contenido (main) puede encoger (min-width:0 en MainLayout); antes desbordaba horizontalmente. *@
+<DxFormLayout>
+    @foreach (var col in DetailColumns)
+    {
+        var errores = MessagesFor(col);
+        var invalido = errores.Count > 0;
+        <DxFormLayoutItem Caption="@Caption(col)" ColSpanXs="12" ColSpanLg="ColSpanMd"
+                          CssClass="@(invalido ? "sgpa-field--invalid" : null)">
+            <SgpaPropertyEditor Model="Model" Column="col" Owner="Meta" ReadOnly="IsReadOnly(col)"
+                                OnFieldCommitted="NotifyFieldCommitted"
+                                AutoFocus="@(col.Property.Name == _ciFieldName && !IsReadOnly(col))" />
+            @foreach (var msg in errores)
+            {
+                <div class="sgpa-field__error">@msg</div>
+            }
+            @* Hint: descripción del valor FK elegido (ej. CI → nombre del afiliado). No se muestra si el campo
+               ya tiene error (ej. cédula inexistente) para no encimar. *@
+            @if (errores.Count == 0 && _fkDescriptions.TryGetValue(col.Property.Name, out var fkDesc) && !string.IsNullOrWhiteSpace(fkDesc))
+            {
+                <div class="sgpa-field__hint">@fkDesc</div>
+            }
+        </DxFormLayoutItem>
+    }
+</DxFormLayout>
+
+@code {
+    [Parameter, EditorRequired] public object Model { get; set; } = default!;
+    [Parameter, EditorRequired] public EntityMetadata Meta { get; set; } = default!;
+    [Parameter] public bool IsNew { get; set; }
+    [Parameter] public int ColSpanMd { get; set; } = 12;
+
+    /// <summary>Columnas (por nombre físico) a no mostrar — ej. la FK fija en una grilla hija.</summary>
+    [Parameter] public IReadOnlyCollection<string>? HiddenColumns { get; set; }
+
+    /// <summary>
+    /// Regla opcional de editabilidad por campo según los datos (paridad VB6 con los <c>.Enabled</c>
+    /// condicionales). Recibe (entidad, columna, esAlta) y devuelve true si el campo es editable.
+    /// Se evalúa por render; si devuelve false el campo queda de sólo lectura.
+    /// </summary>
+    [Parameter] public Func<object, ColumnMetadata, bool, bool>? FieldEditable { get; set; }
+
+    [CascadingParameter] private EditContext? EditContext { get; set; }
+    private EditContext? _subscribed;
+
+    // Store propio sobre el EditContext para el error de existencia de cédula.
+    private ValidationMessageStore? _ciStore;
+    private string? _ciFieldName;   // FK CI con existencia obligatoria (error si no existe en Afiliado)
+
+    // Columnas FK (col → entidad destino) y la descripción resuelta del valor actual de cada una, para el hint.
+    private readonly List<(ColumnMetadata Col, EntityMetadata Target)> _fkCols = new();
+    private readonly Dictionary<string, string?> _fkDescriptions = new();
+    private object? _resolvedModel;   // para re-resolver las descripciones al cambiar de registro
+
+    protected override void OnInitialized()
+    {
+        // Columnas FK por convención (CI→Afiliado, CodEmpresa→Empresa, etc.): se les muestra la descripción.
+        foreach (var col in DetailColumns)
+        {
+            var target = EntityCatalog.LookupDisplayTargetFor(col, Meta);
+            if (target is not null) _fkCols.Add((col, target));
+        }
+        // El CI (FK a Afiliado) además exige existencia: error de validación si la cédula no existe.
+        var ciFk = _fkCols.FirstOrDefault(f =>
+            f.Col.Name.Equals("CI", StringComparison.OrdinalIgnoreCase)
+            && f.Target.Table.Equals("Afiliado", StringComparison.OrdinalIgnoreCase));
+        if (ciFk.Col is not null) _ciFieldName = ciFk.Col.Property.Name;
+    }
+
+    private IEnumerable<ColumnMetadata> DetailColumns =>
+        HiddenColumns is null or { Count: 0 }
+            ? Meta.DetailColumns
+            : Meta.DetailColumns.Where(c => !HiddenColumns.Contains(c.Name));
+
+    // Mensajes de validación del EditContext para una columna (los puebla SgpaMetadataValidator).
+    private IReadOnlyList<string> MessagesFor(ColumnMetadata col)
+    {
+        if (EditContext is null) return Array.Empty<string>();
+        return EditContext.GetValidationMessages(new FieldIdentifier(Model, col.Property.Name)).ToList();
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (!ReferenceEquals(EditContext, _subscribed))
+        {
+            if (_subscribed is not null) _subscribed.OnValidationStateChanged -= OnValidationStateChanged;
+            _subscribed = EditContext;
+            _ciStore = EditContext is null ? null : new ValidationMessageStore(EditContext);
+            if (_subscribed is not null) _subscribed.OnValidationStateChanged += OnValidationStateChanged;
+        }
+        // Al cambiar de registro, resolver las descripciones FK de los valores actuales (para el hint inicial).
+        if (!ReferenceEquals(Model, _resolvedModel))
+        {
+            _resolvedModel = Model;
+            _fkDescriptions.Clear();
+            _ = ResolveAllFkAsync();
+        }
+    }
+
+    private void OnValidationStateChanged(object? sender, ValidationStateChangedEventArgs e) => StateHasChanged();
+
+    // Un editor confirmó su valor (al salir del foco). Dispara la validación por campo del SgpaMetadataValidator
+    // (reglas sync) y, si es una FK, re-resuelve su descripción (y, para CI, valida la existencia).
+    private async Task NotifyFieldCommitted(string fieldName)
+    {
+        EditContext?.NotifyFieldChanged(new FieldIdentifier(Model, fieldName));
+        var fk = _fkCols.FirstOrDefault(f => f.Col.Property.Name == fieldName);
+        if (fk.Col is not null)
+        {
+            await ResolveFkCoreAsync(fk.Col, fk.Target);
+            StateHasChanged();
+        }
+    }
+
+    // Resuelve la descripción de TODAS las FK del registro actual (al cargar/cambiar de registro).
+    private async Task ResolveAllFkAsync()
+    {
+        if (_fkCols.Count == 0) return;
+        foreach (var (col, target) in _fkCols)
+            await ResolveFkCoreAsync(col, target);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    // Resuelve la descripción del valor FK actual de una columna (para el hint). Para el CI, además exige
+    // existencia: si tiene valor y no resuelve descripción ⇒ no existe ⇒ error de validación.
+    private async Task ResolveFkCoreAsync(ColumnMetadata col, EntityMetadata target)
+    {
+        var value = col.GetValue(Model);
+        var name = col.Property.Name;
+
+        // El hint sólo tiene sentido en campos que muestran un CÓDIGO (CI textbox, o FK a tabla grande que cae
+        // a editor numérico). Los combos (FK a tabla chica) ya muestran la descripción → sin hint.
+        var showsCode = IsCedula(col) || await Lookups.GetAsync(target.EntityType) is null;
+
+        string? desc = null;
+        if (showsCode && !IsEmptyKey(value))
+        {
+            try
+            {
+                var map = await Lookups.GetDescriptionsAsync(target.EntityType, new[] { value! });
+                map.TryGetValue(value!.ToString()!, out desc);
+            }
+            catch { /* ante un error de consulta, sin hint */ }
+        }
+        _fkDescriptions[name] = desc;
+
+        if (name == _ciFieldName && _ciStore is not null && EditContext is not null)
+        {
+            var field = new FieldIdentifier(Model, name);
+            _ciStore.Clear(field);
+            if (!IsEmptyKey(value) && desc is null)
+                _ciStore.Add(field, "No existe un afiliado con esa cédula.");
+            EditContext.NotifyValidationStateChanged();
+        }
+    }
+
+    // La cédula se edita como textbox numérico (igual criterio que SgpaPropertyEditor), no como combo.
+    private static bool IsCedula(ColumnMetadata col)
+        => col.Name.Equals("CI", StringComparison.OrdinalIgnoreCase)
+           && (col.UnderlyingType == typeof(long) || col.UnderlyingType == typeof(int));
+
+    // Clave "vacía" (sin elegir): null, string en blanco, o numérico 0.
+    private static bool IsEmptyKey(object? v) => v switch
+    {
+        null => true,
+        string s => string.IsNullOrWhiteSpace(s),
+        IConvertible c => c.ToDouble(System.Globalization.CultureInfo.InvariantCulture) == 0,
+        _ => false
+    };
+
+    public void Dispose()
+    {
+        if (_subscribed is not null) _subscribed.OnValidationStateChanged -= OnValidationStateChanged;
+    }
+
+    private bool IsReadOnly(ColumnMetadata col)
+    {
+        if (col.IsKey)
+            return col.IsIdentity || !IsNew; // editable sólo al crear y si no es identity
+        if (col.ReadOnly) return true;
+        // Regla de negocio data-driven (ej. AdPreJub: ciertos campos editables sólo al crear).
+        if (FieldEditable is not null && !FieldEditable(Model, col, IsNew)) return true;
+        return false;
+    }
+
+    // Agrega un asterisco a las columnas obligatorias editables (no a las read-only/identity que el usuario no toca).
+    private string Caption(ColumnMetadata col)
+    {
+        var required = col.Required && !IsReadOnly(col);
+        return required ? col.Caption + " *" : col.Caption;
+    }
+}

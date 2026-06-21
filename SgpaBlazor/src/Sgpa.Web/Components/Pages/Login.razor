@@ -1,0 +1,43 @@
+@page "/login"
+@layout BlankLayout
+@attribute [AllowAnonymous]
+
+<PageTitle>Ingreso — SGPA</PageTitle>
+
+<div class="d-flex align-items-center justify-content-center" style="min-height:100vh;background:#f3f4f6;">
+    <div class="card shadow-sm" style="width:360px;">
+        <div class="card-body p-4">
+            <div class="text-center mb-3">
+                <img src="img/logo-casemed.svg" alt="CASEMED" style="height:54px;width:auto;" />
+            </div>
+            <p class="text-center text-muted mb-4" style="font-size:.85rem;">Sistema de Gestión de Prestaciones, Aportes y Préstamos</p>
+
+            @if (Error == 1)
+            {
+                <div class="alert alert-danger py-2">Usuario o clave inválidos.</div>
+            }
+
+            <form method="post" action="/auth/login">
+                <div class="mb-3">
+                    <label class="form-label">Usuario</label>
+                    <input name="login" class="form-control" autofocus required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Clave</label>
+                    <input name="password" type="password" class="form-control" required />
+                </div>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" name="remember" value="true" class="form-check-input" id="remember" />
+                    <label class="form-check-label small text-muted" for="remember">Recordarme en este equipo (8 horas)</label>
+                </div>
+                <input type="hidden" name="returnUrl" value="@ReturnUrl" />
+                <button type="submit" class="btn btn-brand w-100">Ingresar</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@code {
+    [SupplyParameterFromQuery] public int Error { get; set; }
+    [SupplyParameterFromQuery] public string? ReturnUrl { get; set; }
+}

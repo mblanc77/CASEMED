@@ -1,0 +1,27 @@
+@*
+    Overlay de espera reutilizable para operaciones pesadas. Por defecto muestra un spinner + texto, pero el
+    texto es configurable y, si se pasa ChildContent, reemplaza el contenido por completo.
+    Uso:  <SgpaWaitDialog Visible="_busy" Text="Generando reporte…" />
+*@
+@if (Visible)
+{
+    <div class="sgpa-wait-backdrop">
+        <div class="sgpa-wait-card">
+            @if (ChildContent is not null)
+            {
+                @ChildContent
+            }
+            else
+            {
+                <div class="spinner-border text-primary mb-2" role="status"></div>
+                <div class="sgpa-wait-text">@Text</div>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool Visible { get; set; }
+    [Parameter] public string Text { get; set; } = "Procesando…";
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

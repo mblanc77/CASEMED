@@ -1,0 +1,43 @@
+Sub ExportSchema()
+    Dim db As DAO.Database, td As DAO.TableDef, fld As DAO.Field, qd As DAO.QueryDef
+    Dim f As Integer: f = FreeFile
+    Open "C:\Personal\Gestion\Sgpa\MigrationSpec.txt" For Output As #f
+    Set db = CurrentDb
+    Print #f, "=== TABLES ==="
+    For Each td In db.TableDefs
+        If Left(td.Name, 4) <> "MSys" Then
+            Print #f, "TABLE: " & td.Name
+            For Each fld In td.Fields
+                Print #f, "  " & fld.Name & " | " & FieldTypeName(fld.Type) & "(" & fld.Size & ") | Required=" & fld.Required
+            Next
+            Print #f, ""
+        End If
+    Next
+    Print #f, "=== QUERIES ==="
+    For Each qd In db.QueryDefs
+        If Left(qd.Name, 1) <> "~" Then
+            Print #f, "QUERY: " & qd.Name
+            Print #f, "  SQL: " & qd.SQL
+            Print #f, ""
+        End If
+    Next
+    Close #f
+End Sub
+
+Function FieldTypeName(t As Integer) As String
+    Select Case t
+        Case 1: FieldTypeName = "Boolean"
+        Case 2: FieldTypeName = "Byte"
+        Case 3: FieldTypeName = "Integer"
+        Case 4: FieldTypeName = "Long"
+        Case 5: FieldTypeName = "Currency"
+        Case 6: FieldTypeName = "Single"
+        Case 7: FieldTypeName = "Double"
+        Case 8: FieldTypeName = "Date"
+        Case 10: FieldTypeName = "Text"
+        Case 11: FieldTypeName = "OLE"
+        Case 12: FieldTypeName = "Memo"
+        Case Else: FieldTypeName = "Type" & t
+    End Select
+End Function
+

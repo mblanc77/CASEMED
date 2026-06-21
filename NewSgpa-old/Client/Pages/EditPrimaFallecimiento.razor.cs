@@ -1,0 +1,114 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.JSInterop;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
+using Radzen;
+using Radzen.Blazor;
+
+namespace SgpaNew.Client.Pages
+{
+    public partial class EditPrimaFallecimiento
+    {
+        [Inject]
+        protected IJSRuntime JSRuntime { get; set; }
+
+        [Inject]
+        protected NavigationManager NavigationManager { get; set; }
+
+        [Inject]
+        protected DialogService DialogService { get; set; }
+
+        [Inject]
+        protected TooltipService TooltipService { get; set; }
+
+        [Inject]
+        protected ContextMenuService ContextMenuService { get; set; }
+
+        [Inject]
+        protected NotificationService NotificationService { get; set; }
+        [Inject]
+        public SgpaService SgpaService { get; set; }
+
+        [Parameter]
+        public int CI { get; set; }
+
+        protected override async Task OnInitializedAsync()
+        {
+            primaFallecimiento = await SgpaService.GetPrimaFallecimientoByCi(ci:CI);
+        }
+        protected bool errorVisible;
+        protected SgpaNew.Server.Models.Sgpa.PrimaFallecimiento primaFallecimiento;
+
+        protected IEnumerable<SgpaNew.Server.Models.Sgpa.Afiliado> afiliadosForCI;
+
+
+        protected int afiliadosForCICount;
+        protected SgpaNew.Server.Models.Sgpa.Afiliado afiliadosForCIValue;
+        protected async Task afiliadosForCILoadData(LoadDataArgs args)
+        {
+            try
+            {
+                var result = await SgpaService.GetAfiliados(top: args.Top, skip: args.Skip, count:args.Top != null && args.Skip != null, filter: $"contains(Nombres, '{(!string.IsNullOrEmpty(args.Filter) ? args.Filter : "")}')", orderby: $"{args.OrderBy}");
+                afiliadosForCI = result.Value.AsODataEnumerable();
+                afiliadosForCICount = result.Count;
+
+                if (!object.Equals(primaFallecimiento.CI, null))
+                {
+                    var valueResult = await SgpaService.GetAfiliados(filter: $"CI eq {primaFallecimiento.CI}");
+                    var firstItem = valueResult.Value.FirstOrDefault();
+                    if (firstItem != null)
+                    {
+                        afiliadosForCIValue = firstItem;
+                    }
+                }
+
+            }
+            catch (System.Exception ex)
+            {
+                NotificationService.Notify(new NotificationMessage(){ Severity = NotificationSeverity.Error, Summary = $"Error", Detail = $"Unable to load Afiliado" });
+            }
+        }
+        protected async Task FormSubmit()
+        {
+            try
+            {
+                var result = await SgpaService.UpdatePrimaFallecimiento(ci:CI, primaFallecimiento);
+                if (result.StatusCode == System.Net.HttpStatusCode.PreconditionFailed)
+                {
+                     hasChanges = true;
+                     canEdit = false;
+                     return;
+                }
+                DialogService.Close(primaFallecimiento);
+            }
+            catch (Exception ex)
+            {
+                errorVisible = true;
+            }
+        }
+
+        protected async Task CancelButtonClick(MouseEventArgs args)
+        {
+            DialogService.Close(null);
+        }
+
+
+        protected bool hasChanges = false;
+        protected bool canEdit = true;
+
+        [Inject]
+        protected SecurityService Security { get; set; }
+
+
+        protected async Task ReloadButtonClick(MouseEventArgs args)
+        {
+            hasChanges = false;
+            canEdit = true;
+
+            primaFallecimiento = await SgpaService.GetPrimaFallecimientoByCi(ci:CI);
+        }
+    }
+}

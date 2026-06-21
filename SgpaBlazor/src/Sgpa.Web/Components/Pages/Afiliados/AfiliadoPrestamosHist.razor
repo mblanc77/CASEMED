@@ -1,0 +1,71 @@
+@using Sgpa.Data
+@inject IDbExecutor Db
+@inject NavigationManager Nav
+
+@*
+    Historial de préstamos del afiliado (port de frmAfiliadoHst, app SP): lista de sólo lectura de los
+    préstamos del afiliado, con acceso al workbench para ver/editar cada uno.
+*@
+
+<div class="p-2">
+    @if (_error is not null)
+    {
+        <div class="alert alert-danger py-2">@_error</div>
+    }
+    <DxGrid Data="_prestamos" PageSize="10">
+        <Columns>
+            <DxGridDataColumn FieldName="IDPrestamo" Caption="Nº" Width="90px" />
+            <DxGridDataColumn FieldName="Fecha" Caption="Fecha" DisplayFormat="d" Width="120px" />
+            <DxGridDataColumn FieldName="CodMoneda" Caption="Moneda" Width="90px" />
+            <DxGridDataColumn FieldName="Importe" Caption="Importe" DisplayFormat="N2" />
+            <DxGridDataColumn FieldName="Cuotas" Caption="Cuotas" Width="90px" />
+            <DxGridDataColumn FieldName="Saldo" Caption="Saldo" DisplayFormat="N2" />
+            <DxGridDataColumn FieldName="CodPrestamoEstado" Caption="Estado" Width="100px" />
+            <DxGridDataColumn Caption="" Width="90px" AllowSort="false">
+                <CellDisplayTemplate Context="cell">
+                    @{ var p = (PrestamoHist)cell.DataItem; }
+                    <DxButton Text="Abrir" IconCssClass="fa-solid fa-up-right-from-square" SizeMode="SizeMode.Small"
+                              RenderStyle="ButtonRenderStyle.Secondary"
+                              Click="@(() => Nav.NavigateTo($"/prestamos/calcular/{p.IDPrestamo}"))" />
+                </CellDisplayTemplate>
+            </DxGridDataColumn>
+        </Columns>
+    </DxGrid>
+</div>
+
+@code {
+    [Parameter] public long CI { get; set; }
+
+    private IReadOnlyList<PrestamoHist> _prestamos = Array.Empty<PrestamoHist>();
+    private string? _error;
+    private long _loadedFor = -1;
+
+    public sealed class PrestamoHist
+    {
+        public int IDPrestamo { get; set; }
+        public DateTime? Fecha { get; set; }
+        public string? CodMoneda { get; set; }
+        public double Importe { get; set; }
+        public int? Cuotas { get; set; }
+        public double Saldo { get; set; }
+        public string? CodPrestamoEstado { get; set; }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (CI != _loadedFor)
+        {
+            _loadedFor = CI;
+            try
+            {
+                _error = null;
+                _prestamos = await Db.QueryAsync<PrestamoHist>(
+                    @"SELECT IDPrestamo, Fecha, CodMoneda, CAST(ISNULL(Importe,0) AS float) Importe, Cuotas,
+                             CAST(ISNULL(Saldo,0) AS float) Saldo, CodPrestamoEstado
+                      FROM dbo.SP_Prestamo WHERE CI=@ci ORDER BY IDPrestamo DESC",
+                    new { ci = CI });
+            }
+            catch (Exception ex) { _error = ex.Message; }
+        }
+    }
+}

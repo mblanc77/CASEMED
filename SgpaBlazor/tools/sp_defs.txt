@@ -1,0 +1,14 @@
+-- ===== WRAPPER PROCEDURE FOR QUERY: 300_JornalAnterior2 =====
+CREATE   PROCEDURE [dbo].[acc_sgpa_300_JornalAnterior2]
+    @pCI INT,
+    @pLiquidar NVARCHAR(MAX),
+    @pMes INT,
+    @pFecha DATETIME2(0)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT SubsidioCabezal.IdSubsidio, SubsidioCabezal.Mes, SubsidioCabezal.Anio, SubsidioCabezal.ValorJornal
+    FROM SubsidioCabezal INNER JOIN SubsidioEnfermedad ON SubsidioCabezal.IdSubsidio = SubsidioEnfermedad.IdSubsidio
+    WHERE ((((YEAR([SubsidioEnfermedad].[FechaIni]) * 100 + MONTH([SubsidioEnfermedad].[FechaIni])))<@pMes) AND (((YEAR([SubsidioEnfermedad].[FechaFin]) * 100 + MONTH([SubsidioEnfermedad].[FechaFin])))>=@pMes) AND ((SubsidioCabezal.Liquidar)=@pLiquidar) AND ((SubsidioCabezal.CI)=@pCI)) OR (((SubsidioCabezal.Liquidar)=@pLiquidar) AND ((SubsidioCabezal.CI)=@pCI) AND ((DATEDIFF(day,[SubsidioEnfermedad].[FechaFin],@pFecha))=1))
+    ORDER BY SubsidioCabezal.Anio DESC , SubsidioCabezal.Mes DESC;
+END;

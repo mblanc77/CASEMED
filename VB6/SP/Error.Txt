@@ -1,0 +1,864 @@
+--------------------------------------------------------
+Usuario    : marce   13/10/2003 19:56:11
+Rutina     : frmDBGRpt_Prestamo - Toolbar1_ButtonClick(salir)
+Comentario : 
+Error VB5  : 3022: Los cambios solicitados en la tabla no se realizaron correctamente porque crearían valores duplicados en el índice, clave principal o relación. Cambie los datos en el campo o los campos que contienen datos duplicados, quite el índice o vuelva a definir el índice para permitir entradas duplicadas e inténtelo de nuevo.
+Error Prog.: 3022: Los cambios solicitados en la tabla no se realizaron correctamente porque crearían valores duplicados en el índice, clave principal o relación. Cambie los datos en el campo o los campos que contienen datos duplicados, quite el índice o vuelva a definir el índice para permitir entradas duplicadas e inténtelo de nuevo.
+--------------------------------------------------------
+Usuario    : marce   11/12/2003 00:07:28
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Gestion\SP\SP.MDB
+Error VB5  : 3061: Too few parameters. Expected 3.
+Error Prog.: 3061: Too few parameters. Expected 3.
+--------------------------------------------------------
+Usuario    : marce   11/12/2003 00:09:32
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Gestion\SP\SP.MDB
+Error VB5  : 3078: The Microsoft Jet database engine cannot find the input table or query 'SP_AfiliadoComentario'.  Make sure it exists and that its name is spelled correctly.
+Error Prog.: 3078: The Microsoft Jet database engine cannot find the input table or query 'SP_AfiliadoComentario'.  Make sure it exists and that its name is spelled correctly.
+--------------------------------------------------------
+Usuario    : marce   11/12/2003 00:15:15
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Gestion\SP\SP.MDB
+Error VB5  : 3315: Field 'SP_Prestamo.Observaciones' can't be a zero-length string.
+Error Prog.: 3315: Field 'SP_Prestamo.Observaciones' can't be a zero-length string.
+--------------------------------------------------------
+Usuario    : marce   16/12/2003 10:04:57
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Personal\Gestion\SP\SP.MDB
+Error VB5  : 3044: 'c:\Gestion\SGPA\Data\Seguserv.mdb' no es una ruta de acceso válida. Asegúrese de que la ruta está escrita correctamente y que está conectado al servidor donde se encuentra el archivo.
+Error Prog.: 3044: 'c:\Gestion\SGPA\Data\Seguserv.mdb' no es una ruta de acceso válida. Asegúrese de que la ruta está escrita correctamente y que está conectado al servidor donde se encuentra el archivo.
+--------------------------------------------------------
+Usuario    : marce   16/12/2003 10:05:07
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Personal\Gestion\SP\SP.MDB
+Error VB5  : 3044: 'c:\Gestion\SP\DATA\spserv.mdb' no es una ruta de acceso válida. Asegúrese de que la ruta está escrita correctamente y que está conectado al servidor donde se encuentra el archivo.
+Error Prog.: 3044: 'c:\Gestion\SP\DATA\spserv.mdb' no es una ruta de acceso válida. Asegúrese de que la ruta está escrita correctamente y que está conectado al servidor donde se encuentra el archivo.
+--------------------------------------------------------
+Usuario    : marce   27/01/2004 18:09:45
+Rutina     : frmDBGRpt_RetencionPrestamo - Toolbar1_ButtonClick(imprimir)
+Comentario : 
+Error VB5  : 0: 
+Error Prog.: 32755: Se ha seleccionado Cancelar.
+--------------------------------------------------------
+Usuario    : marce   05/02/2004 19:02:23
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Personal\Gestion\SP\SP.MDB
+Error VB5  : 3044: 'c:\Gestion\SGPA\Data\Seguserv.mdb' isn't a valid path.  Make sure that the path name is spelled correctly and that you are connected to the server on which the file resides.
+Error Prog.: 3044: 'c:\Gestion\SGPA\Data\Seguserv.mdb' isn't a valid path.  Make sure that the path name is spelled correctly and that you are connected to the server on which the file resides.
+--------------------------------------------------------
+Usuario    : marce   05/02/2004 19:02:25
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Personal\Gestion\SP\SP.MDB
+Error VB5  : 3044: 'c:\Gestion\SP\DATA\spserv.mdb' isn't a valid path.  Make sure that the path name is spelled correctly and that you are connected to the server on which the file resides.
+Error Prog.: 3044: 'c:\Gestion\SP\DATA\spserv.mdb' isn't a valid path.  Make sure that the path name is spelled correctly and that you are connected to the server on which the file resides.
+--------------------------------------------------------
+Usuario    : marce   05/02/2004 19:03:34
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Personal\Gestion\SP\SP.MDB
+Error VB5  : 3044: 'c:\Gestion\SGPA\Data\Seguserv.mdb' isn't a valid path.  Make sure that the path name is spelled correctly and that you are connected to the server on which the file resides.
+Error Prog.: 3044: 'c:\Gestion\SGPA\Data\Seguserv.mdb' isn't a valid path.  Make sure that the path name is spelled correctly and that you are connected to the server on which the file resides.
+--------------------------------------------------------
+Usuario    : marce   05/02/2004 19:03:37
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Personal\Gestion\SP\SP.MDB
+Error VB5  : 3044: 'c:\Gestion\SP\DATA\spserv.mdb' isn't a valid path.  Make sure that the path name is spelled correctly and that you are connected to the server on which the file resides.
+Error Prog.: 3044: 'c:\Gestion\SP\DATA\spserv.mdb' isn't a valid path.  Make sure that the path name is spelled correctly and that you are connected to the server on which the file resides.
+--------------------------------------------------------
+Usuario    : marce   25/03/2004 13:05:03
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Personal\Gestion\SP\SP.MDB
+Error VB5  : 0: 
+Error Prog.: 1004: No se puede asignar la propiedad NumberFormat de la clase Range.
+--------------------------------------------------------
+Usuario    : marce   25/03/2004 13:05:29
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Personal\Gestion\SP\SP.MDB
+Error VB5  : 1004: No se puede asignar la propiedad NumberFormat de la clase Range.
+Error Prog.: 1004: No se puede asignar la propiedad NumberFormat de la clase Range.
+--------------------------------------------------------
+Usuario    : marce   19/04/2004 12:03:26
+Rutina     : frmDBGRpt_Factura - Toolbar1_ButtonClick(seleccion)
+Comentario : 
+Error VB5  : 3129: Instrucción SQL no válida; se esperaba 'DELETE', 'INSERT', 'PROCEDURE', 'SELECT' o 'UPDATE'.
+Error Prog.: 3129: Instrucción SQL no válida; se esperaba 'DELETE', 'INSERT', 'PROCEDURE', 'SELECT' o 'UPDATE'.
+--------------------------------------------------------
+Usuario    : marce   31/05/2004 00:01:03
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Personal\Gestion\SP\SP.MDB
+Error VB5  : -1: No se pueden anular pagos de facturas retenidas, debe anular la retención desde la pantalla de ingreso de retenciones.
+Error Prog.: -1: No se pueden anular pagos de facturas retenidas, debe anular la retención desde la pantalla de ingreso de retenciones.
+--------------------------------------------------------
+Usuario    : marce   31/05/2004 00:01:13
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Personal\Gestion\SP\SP.MDB
+Error VB5  : -1: No se pueden anular pagos de facturas retenidas, debe anular la retención desde la pantalla de ingreso de retenciones.
+Error Prog.: -1: No se pueden anular pagos de facturas retenidas, debe anular la retención desde la pantalla de ingreso de retenciones.
+--------------------------------------------------------
+Usuario    : marce   09/04/2004 00:15:49
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Personal\Gestion\SP\SP.MDB
+Error VB5  : 13: No coinciden los tipos
+Error Prog.: 13: No coinciden los tipos
+--------------------------------------------------------
+Usuario    : marce   09/11/2004 15:07:11
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Opc6\Programas\gestion\SP\SP.MDB
+Error VB5  : 3044: 'c:\opc6\Gestion\sgpa\Data\SgpaServ.mdb' isn't a valid path.  Make sure that the path name is spelled correctly and that you are connected to the server on which the file resides.
+Error Prog.: 3044: 'c:\opc6\Gestion\sgpa\Data\SgpaServ.mdb' isn't a valid path.  Make sure that the path name is spelled correctly and that you are connected to the server on which the file resides.
+--------------------------------------------------------
+Usuario    : marce   09/11/2004 15:07:14
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Opc6\Programas\gestion\SP\SP.MDB
+Error VB5  : 3044: 'c:\personal\Gestion\SP\DATA\spserv.mdb' isn't a valid path.  Make sure that the path name is spelled correctly and that you are connected to the server on which the file resides.
+Error Prog.: 3044: 'c:\personal\Gestion\SP\DATA\spserv.mdb' isn't a valid path.  Make sure that the path name is spelled correctly and that you are connected to the server on which the file resides.
+--------------------------------------------------------
+Usuario    : marce   09/11/2004 15:08:12
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Opc6\Programas\gestion\SP\SP.MDB
+Error VB5  : 3044: 'c:\opc6\Gestion\sgpa\Data\SgpaServ.mdb' isn't a valid path.  Make sure that the path name is spelled correctly and that you are connected to the server on which the file resides.
+Error Prog.: 3044: 'c:\opc6\Gestion\sgpa\Data\SgpaServ.mdb' isn't a valid path.  Make sure that the path name is spelled correctly and that you are connected to the server on which the file resides.
+--------------------------------------------------------
+Usuario    : marce   09/11/2004 15:08:42
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Opc6\Programas\gestion\SP\SP.MDB
+Error VB5  : 3044: 'c:\opc6\Gestion\sgpa\Data\SgpaServ.mdb' isn't a valid path.  Make sure that the path name is spelled correctly and that you are connected to the server on which the file resides.
+Error Prog.: 3044: 'c:\opc6\Gestion\sgpa\Data\SgpaServ.mdb' isn't a valid path.  Make sure that the path name is spelled correctly and that you are connected to the server on which the file resides.
+--------------------------------------------------------
+Usuario    : marce   09/11/2004 15:08:55
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Opc6\Programas\gestion\SP\SP.MDB
+Error VB5  : 20: Resume sin error
+Error Prog.: 20: Resume sin error
+--------------------------------------------------------
+Usuario    : marce   09/11/2004 15:08:56
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Opc6\Programas\gestion\SP\SP.MDB
+Error VB5  : 3044: 'c:\personal\Gestion\SP\DATA\spserv.mdb' isn't a valid path.  Make sure that the path name is spelled correctly and that you are connected to the server on which the file resides.
+Error Prog.: 3044: 'c:\personal\Gestion\SP\DATA\spserv.mdb' isn't a valid path.  Make sure that the path name is spelled correctly and that you are connected to the server on which the file resides.
+--------------------------------------------------------
+Usuario    : marce   29/12/2004 15:35:36
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Opc6\Extras\Programas\gestion\SP\SP.MDB
+Error VB5  : 3265: Item not found in this collection.
+Error Prog.: 3265: Item not found in this collection.
+--------------------------------------------------------
+Usuario    : marce   29/12/2004 20:06:26
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Opc6\Extras\Programas\gestion\SP\SP.MDB
+Error VB5  : 20: Resume sin error
+Error Prog.: 20: Resume sin error
+--------------------------------------------------------
+Usuario    : marce   30/12/2004 12:18:42
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Opc6\Extras\Programas\gestion\SP\SP.MDB
+Error VB5  : 3246: Operation not supported in transactions.
+Error Prog.: 3246: Operation not supported in transactions.
+--------------------------------------------------------
+Usuario    : marce   30/12/2004 12:19:13
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Opc6\Extras\Programas\gestion\SP\SP.MDB
+Error VB5  : 91: Variable de tipo Object o la variable de bloque With no está establecida
+Error Prog.: 91: Variable de tipo Object o la variable de bloque With no está establecida
+--------------------------------------------------------
+Usuario    : marce   30/12/2004 12:19:32
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Opc6\Extras\Programas\gestion\SP\SP.MDB
+Error VB5  : 3246: Operation not supported in transactions.
+Error Prog.: 3246: Operation not supported in transactions.
+--------------------------------------------------------
+Usuario    : marce   30/12/2004 12:27:04
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Opc6\Extras\Programas\gestion\SP\SP.MDB
+Error VB5  : 3265: Item not found in this collection.
+Error Prog.: 3265: Item not found in this collection.
+--------------------------------------------------------
+Usuario    : marce   30/12/2004 12:30:02
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Opc6\Extras\Programas\gestion\SP\SP.MDB
+Error VB5  : -1: El importe ingresado es mayor al saldo restante del prestamo  #2.985,80#.
+Ingrese un importe menor o igual
+Error Prog.: -1: El importe ingresado es mayor al saldo restante del prestamo  #2.985,80#.
+Ingrese un importe menor o igual
+--------------------------------------------------------
+Usuario    : marce   30/12/2004 12:41:48
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Opc6\Extras\Programas\gestion\SP\SP.MDB
+Error VB5  : -1: El importe ingresado es mayor al saldo restante del prestamo  #291,74#.
+Ingrese un importe menor o igual
+Error Prog.: -1: El importe ingresado es mayor al saldo restante del prestamo  #291,74#.
+Ingrese un importe menor o igual
+--------------------------------------------------------
+Usuario    : marce   30/12/2004 12:42:22
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Opc6\Extras\Programas\gestion\SP\SP.MDB
+Error VB5  : -1: El importe ingresado es mayor al saldo restante del prestamo  #2,65#.
+Ingrese un importe menor o igual
+Error Prog.: -1: El importe ingresado es mayor al saldo restante del prestamo  #2,65#.
+Ingrese un importe menor o igual
+--------------------------------------------------------
+Usuario    : marce   30/12/2004 12:43:40
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Opc6\Extras\Programas\gestion\SP\SP.MDB
+Error VB5  : -1: El importe ingresado es mayor al saldo restante del prestamo  #1,82#.
+Ingrese un importe menor o igual
+Error Prog.: -1: El importe ingresado es mayor al saldo restante del prestamo  #1,82#.
+Ingrese un importe menor o igual
+--------------------------------------------------------
+Usuario    : marce   30/12/2004 12:51:46
+Rutina     : frmDBGRpt_Prestamo - Toolbar1_ButtonClick(refrescar)
+Comentario : 
+Error VB5  : -1: No se pudo ingresar el pago para la factura #4019.
+Error Prog.: -1: No se pudo ingresar el pago para la factura #4019.
+--------------------------------------------------------
+Usuario    : marce   30/12/2004 12:52:59
+Rutina     : frmDBGRpt_Prestamo - Toolbar1_ButtonClick(refrescar)
+Comentario : 
+Error VB5  : -1: El importe ingresado es mayor al saldo restante del prestamo  #8.155,07#.
+Ingrese un importe menor o igual
+Error Prog.: -1: El importe ingresado es mayor al saldo restante del prestamo  #8.155,07#.
+Ingrese un importe menor o igual
+--------------------------------------------------------
+Usuario    : marce   30/12/2004 13:02:48
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Opc6\Extras\Programas\gestion\SP\SP.MDB
+Error VB5  : 3022: The changes you requested to the table were not successful because they would create duplicate values in the index, primary key, or relationship.  Change the data in the field or fields that contain duplicate data, remove the index, or redefine the index to permit duplicate entries and try again.
+Error Prog.: 3022: The changes you requested to the table were not successful because they would create duplicate values in the index, primary key, or relationship.  Change the data in the field or fields that contain duplicate data, remove the index, or redefine the index to permit duplicate entries and try again.
+--------------------------------------------------------
+Usuario    : marce   30/12/2004 13:02:48
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Opc6\Extras\Programas\gestion\SP\SP.MDB
+Error VB5  : -1: No se pudo ingresar el pago parcial.
+Error Prog.: -1: No se pudo ingresar el pago parcial.
+--------------------------------------------------------
+Usuario    : marce   30/12/2004 13:03:14
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Opc6\Extras\Programas\gestion\SP\SP.MDB
+Error VB5  : -1: El importe ingresado es mayor al saldo restante del prestamo  #155,07#.
+Ingrese un importe menor o igual
+Error Prog.: -1: El importe ingresado es mayor al saldo restante del prestamo  #155,07#.
+Ingrese un importe menor o igual
+--------------------------------------------------------
+Usuario    : marce   30/12/2004 13:03:53
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Opc6\Extras\Programas\gestion\SP\SP.MDB
+Error VB5  : -1: El importe ingresado es mayor al saldo restante del prestamo  #0,00#.
+Ingrese un importe menor o igual
+Error Prog.: -1: El importe ingresado es mayor al saldo restante del prestamo  #0,00#.
+Ingrese un importe menor o igual
+--------------------------------------------------------
+Usuario    : marce   30/12/2004 13:10:44
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Opc6\Extras\Programas\gestion\SP\SP.MDB
+Error VB5  : -1: El importe ingresado es mayor al saldo restante del prestamo  #18.064,09#.
+Ingrese un importe menor o igual
+Error Prog.: -1: El importe ingresado es mayor al saldo restante del prestamo  #18.064,09#.
+Ingrese un importe menor o igual
+--------------------------------------------------------
+Usuario    : marce   30/12/2004 13:10:53
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Opc6\Extras\Programas\gestion\SP\SP.MDB
+Error VB5  : -1: El importe ingresado es mayor al saldo restante del prestamo  #18.064,09#.
+Ingrese un importe menor o igual
+Error Prog.: -1: El importe ingresado es mayor al saldo restante del prestamo  #18.064,09#.
+Ingrese un importe menor o igual
+--------------------------------------------------------
+Usuario    : marce   30/12/2004 13:30:34
+Rutina     : C:\Opc6\Extras\Programas\gestion\SP\SP - OpenRS()
+Comentario : 
+Error VB5  : 0: 
+Error Prog.: 3070: The Microsoft Jet database engine does not recognize 'fid' as a valid field name or expression.
+--------------------------------------------------------
+Usuario    : marce   02/01/2005 12:18:11
+Rutina     : frmDBGRpt_Prestamo - Toolbar1_ButtonClick(ordenar)
+Comentario : 
+Error VB5  : -1: El importe ingresado es mayor al saldo restante del prestamo  #13.414,80#.
+Ingrese un importe menor o igual
+Error Prog.: -1: El importe ingresado es mayor al saldo restante del prestamo  #13.414,80#.
+Ingrese un importe menor o igual
+--------------------------------------------------------
+Usuario    : marce   02/01/2005 12:18:33
+Rutina     : frmDBGRpt_Prestamo - Toolbar1_ButtonClick(ordenar)
+Comentario : 
+Error VB5  : 3022: Los cambios solicitados en la tabla no se realizaron correctamente porque crearían valores duplicados en el índice, clave principal o relación. Cambie los datos en el campo o los campos que contienen datos duplicados, quite el índice o vuelva a definir el índice para permitir entradas duplicadas e inténtelo de nuevo.
+Error Prog.: 3022: Los cambios solicitados en la tabla no se realizaron correctamente porque crearían valores duplicados en el índice, clave principal o relación. Cambie los datos en el campo o los campos que contienen datos duplicados, quite el índice o vuelva a definir el índice para permitir entradas duplicadas e inténtelo de nuevo.
+--------------------------------------------------------
+Usuario    : marce   02/01/2005 12:18:33
+Rutina     : frmDBGRpt_Prestamo - Toolbar1_ButtonClick(ordenar)
+Comentario : 
+Error VB5  : -1: No se pudo ingresar el pago parcial.
+Error Prog.: -1: No se pudo ingresar el pago parcial.
+--------------------------------------------------------
+Usuario    : marce   04/01/2005 01:19:37
+Rutina     : frmDBGRpt_Prestamo - Toolbar1_ButtonClick(ordenar)
+Comentario : 
+Error VB5  : -1: El importe ingresado es mayor al saldo restante del prestamo  #6.643,24#.
+Ingrese un importe menor o igual
+Error Prog.: -1: El importe ingresado es mayor al saldo restante del prestamo  #6.643,24#.
+Ingrese un importe menor o igual
+--------------------------------------------------------
+Usuario    : marce   04/01/2005 01:21:01
+Rutina     : frmDBGRpt_Prestamo - Toolbar1_ButtonClick(ordenar)
+Comentario : 
+Error VB5  : -1: El importe ingresado es mayor al saldo restante del prestamo  #643,24#.
+Ingrese un importe menor o igual
+Error Prog.: -1: El importe ingresado es mayor al saldo restante del prestamo  #643,24#.
+Ingrese un importe menor o igual
+--------------------------------------------------------
+Usuario    : marce   06/01/2005 17:52:22
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Personal\Gestion\SP\SP.MDB
+Error VB5  : 3265: No se encontró el elemento en esta colección.
+Error Prog.: 3265: No se encontró el elemento en esta colección.
+--------------------------------------------------------
+Usuario    : marce   06/01/2005 17:53:12
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Personal\Gestion\SP\SP.MDB
+Error VB5  : 3265: No se encontró el elemento en esta colección.
+Error Prog.: 3265: No se encontró el elemento en esta colección.
+--------------------------------------------------------
+Usuario    : marce   08/01/2005 23:04:58
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Personal\Gestion\SP\SP.MDB
+Error VB5  : 3021: No hay ningún registro activo.
+Error Prog.: 3021: No hay ningún registro activo.
+--------------------------------------------------------
+Usuario    : marce   08/01/2005 23:05:36
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Personal\Gestion\SP\SP.MDB
+Error VB5  : 3021: No hay ningún registro activo.
+Error Prog.: 3021: No hay ningún registro activo.
+--------------------------------------------------------
+Usuario    : marce   15/03/2005 13:27:20
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Opc6\Extras\Programas\gestion\SP\SP.MDB
+Error VB5  : 3022: The changes you requested to the table were not successful because they would create duplicate values in the index, primary key, or relationship.  Change the data in the field or fields that contain duplicate data, remove the index, or redefine the index to permit duplicate entries and try again.
+Error Prog.: 3022: The changes you requested to the table were not successful because they would create duplicate values in the index, primary key, or relationship.  Change the data in the field or fields that contain duplicate data, remove the index, or redefine the index to permit duplicate entries and try again.
+--------------------------------------------------------
+Usuario    : marce   15/03/2005 13:27:21
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Opc6\Extras\Programas\gestion\SP\SP.MDB
+Error VB5  : -1: No se pudo ingresar el pago parcial.
+Error Prog.: -1: No se pudo ingresar el pago parcial.
+--------------------------------------------------------
+Usuario    : marce   17/03/2005 00:20:47
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Personal\Gestion\SP\SP.MDB
+Error VB5  : 3022: Los cambios solicitados en la tabla no se realizaron correctamente porque crearían valores duplicados en el índice, clave principal o relación. Cambie los datos en el campo o los campos que contienen datos duplicados, quite el índice o vuelva a definir el índice para permitir entradas duplicadas e inténtelo de nuevo.
+Error Prog.: 3022: Los cambios solicitados en la tabla no se realizaron correctamente porque crearían valores duplicados en el índice, clave principal o relación. Cambie los datos en el campo o los campos que contienen datos duplicados, quite el índice o vuelva a definir el índice para permitir entradas duplicadas e inténtelo de nuevo.
+--------------------------------------------------------
+Usuario    : marce   17/03/2005 00:20:48
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Personal\Gestion\SP\SP.MDB
+Error VB5  : -1: No se pudo ingresar el pago parcial.
+Error Prog.: -1: No se pudo ingresar el pago parcial.
+--------------------------------------------------------
+Usuario    : marce   17/03/2005 00:30:49
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Personal\Gestion\SP\SP.MDB
+Error VB5  : 3022: Los cambios solicitados en la tabla no se realizaron correctamente porque crearían valores duplicados en el índice, clave principal o relación. Cambie los datos en el campo o los campos que contienen datos duplicados, quite el índice o vuelva a definir el índice para permitir entradas duplicadas e inténtelo de nuevo.
+Error Prog.: 3022: Los cambios solicitados en la tabla no se realizaron correctamente porque crearían valores duplicados en el índice, clave principal o relación. Cambie los datos en el campo o los campos que contienen datos duplicados, quite el índice o vuelva a definir el índice para permitir entradas duplicadas e inténtelo de nuevo.
+--------------------------------------------------------
+Usuario    : marce   30/10/2005 23:45:18
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Personal\Gestion\SP\SP.MDB
+Error VB5  : 3265: No se encontró el elemento en esta colección.
+Error Prog.: 3265: No se encontró el elemento en esta colección.
+--------------------------------------------------------
+Usuario    : marce   25/11/2005 22:32:14
+Rutina     : frmDBGRpt_Prestamo - Toolbar1_ButtonClick(buscar)
+Comentario : 
+Error VB5  : -1: No se pueden anular pagos de facturas retenidas, debe anular la retención desde la pantalla de ingreso de retenciones.
+Error Prog.: -1: No se pueden anular pagos de facturas retenidas, debe anular la retención desde la pantalla de ingreso de retenciones.
+--------------------------------------------------------
+Usuario    : marce   25/11/2005 22:33:18
+Rutina     : frmDBGRpt_Prestamo - Toolbar1_ButtonClick(buscar)
+Comentario : 
+Error VB5  : -1: No se pueden anular pagos de facturas retenidas, debe anular la retención desde la pantalla de ingreso de retenciones.
+Error Prog.: -1: No se pueden anular pagos de facturas retenidas, debe anular la retención desde la pantalla de ingreso de retenciones.
+--------------------------------------------------------
+Usuario    : marce   25/11/2005 22:35:15
+Rutina     : frmDBGRpt_Prestamo - Toolbar1_ButtonClick(buscar)
+Comentario : 
+Error VB5  : -1: No se pueden anular pagos de facturas retenidas, debe anular la retención desde la pantalla de ingreso de retenciones.
+Error Prog.: -1: No se pueden anular pagos de facturas retenidas, debe anular la retención desde la pantalla de ingreso de retenciones.
+--------------------------------------------------------
+Usuario    : marce   30/11/2006 10:58:45
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Personal\Gestion\SP\SP.MDB
+Error VB5  : -1: El importe ingresado es mayor al saldo restante del prestamo  #3.121,66#.
+Ingrese un importe menor o igual
+Error Prog.: -1: El importe ingresado es mayor al saldo restante del prestamo  #3.121,66#.
+Ingrese un importe menor o igual
+--------------------------------------------------------
+Usuario    : marce   30/11/2006 11:18:10
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Personal\Gestion\SP\SP.MDB
+Error VB5  : -1: El importe ingresado es mayor al saldo restante del prestamo  #3.060,78#.
+Ingrese un importe menor o igual
+Error Prog.: -1: El importe ingresado es mayor al saldo restante del prestamo  #3.060,78#.
+Ingrese un importe menor o igual
+--------------------------------------------------------
+Usuario    : marce   30/11/2006 11:19:21
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Personal\Gestion\SP\SP.MDB
+Error VB5  : -1: El importe ingresado es mayor al saldo restante del prestamo  #3.060,78#.
+Ingrese un importe menor o igual
+Error Prog.: -1: El importe ingresado es mayor al saldo restante del prestamo  #3.060,78#.
+Ingrese un importe menor o igual
+--------------------------------------------------------
+Usuario    : marce   11/03/2007 01:50:24
+Rutina     : C:\personal\Gestion\SP\SP - OpenRS()
+Comentario : 
+Error VB5  : 0: 
+Error Prog.: 3061: Pocos parámetros. Se esperaba 1.
+--------------------------------------------------------
+Usuario    : marce   11/03/2007 01:58:11
+Rutina     : frmDBGRpt_Factura - Toolbar1_ButtonClick(seleccion)
+Comentario : 
+Error VB5  : 3075: Falta ), ] o elemento en la expresión de consulta '([FechaEmitida] >= CDate('01/01/2006') and [FechaEmitida] <= CDate('31/12/2006') and [SP_Factura].[CodFacturaEstado]
+<> 'anu' and [IDPrestamo] in (select idprestamo from sp_prestamo where codprestamotipo='fid') and [SP_'.
+Error Prog.: 3075: Falta ), ] o elemento en la expresión de consulta '([FechaEmitida] >= CDate('01/01/2006') and [FechaEmitida] <= CDate('31/12/2006') and [SP_Factura].[CodFacturaEstado]
+<> 'anu' and [IDPrestamo] in (select idprestamo from sp_prestamo where codprestamotipo='fid') and [SP_'.
+--------------------------------------------------------
+Usuario    : marce   11/03/2007 01:58:38
+Rutina     : frmDBGRpt_Factura - Toolbar1_ButtonClick(seleccion)
+Comentario : 
+Error VB5  : 3075: Falta ), ] o elemento en la expresión de consulta '([FechaEmitida] >= CDate('01/01/2006') and [FechaEmitida] <= CDate('31/12/2006') and [CodFacturaEstado]
+<> 'anu' and [IDPrestamo] in (select idprestamo from sp_prestamo where codprestamotipo='fid') and [CodFacturaTipo]'.
+Error Prog.: 3075: Falta ), ] o elemento en la expresión de consulta '([FechaEmitida] >= CDate('01/01/2006') and [FechaEmitida] <= CDate('31/12/2006') and [CodFacturaEstado]
+<> 'anu' and [IDPrestamo] in (select idprestamo from sp_prestamo where codprestamotipo='fid') and [CodFacturaTipo]'.
+--------------------------------------------------------
+Usuario    : marce   11/03/2007 01:59:08
+Rutina     : frmDBGRpt_Factura - Toolbar1_ButtonClick(seleccion2)
+Comentario : 
+Error VB5  : 3075: Falta ), ] o elemento en la expresión de consulta '([FechaEmitida]>=CDate('01/01/2006') and [FechaEmitida]<=CDate('31/12/2006') and [CodFacturaEstado]<>'anu' and [IDPrestamo] in (select idprestamo from sp_prestamo where codprestamotipo='fid') and [CodFacturaTipo] = 'com''.
+Error Prog.: 3075: Falta ), ] o elemento en la expresión de consulta '([FechaEmitida]>=CDate('01/01/2006') and [FechaEmitida]<=CDate('31/12/2006') and [CodFacturaEstado]<>'anu' and [IDPrestamo] in (select idprestamo from sp_prestamo where codprestamotipo='fid') and [CodFacturaTipo] = 'com''.
+--------------------------------------------------------
+Usuario    : marce   12/03/2007 11:53:00
+Rutina     : C:\personal\Gestion\SP\SP - OpenRS()
+Comentario : 
+Error VB5  : 0: 
+Error Prog.: 3061: Pocos parámetros. Se esperaba 1.
+--------------------------------------------------------
+Usuario    : marce   12/03/2007 11:53:25
+Rutina     : C:\personal\Gestion\SP\SP - OpenRS()
+Comentario : 
+Error VB5  : 0: 
+Error Prog.: 3061: Pocos parámetros. Se esperaba 1.
+--------------------------------------------------------
+Usuario    : marce   14/03/2007 00:12:55
+Rutina     : C:\personal\Gestion\SP\SP - OpenRS()
+Comentario : 
+Error VB5  : 0: 
+Error Prog.: 3078: El motor de base de datos Microsoft Jet no puede encontrar la tabla o consulta de entrada 'SP_FacturaTipo'. Asegúrese de que existe y que su nombre está escrito correctamente.
+--------------------------------------------------------
+Usuario    : fabiana   14/03/2007 23:41:11
+Rutina     : frmDBGRpt_Factura - Toolbar1_ButtonClick(seleccion)
+Comentario : 
+Error VB5  : 32755: Se ha seleccionado Cancelar.
+Error Prog.: 32755: Se ha seleccionado Cancelar.
+--------------------------------------------------------
+Usuario    : fabiana   14/03/2007 23:51:22
+Rutina     : C:\personal\Gestion\SP\SP - OpenRS()
+Comentario : 
+Error VB5  : 0: 
+Error Prog.: 3061: Pocos parámetros. Se esperaba 1.
+--------------------------------------------------------
+Usuario    : fabiana   15/03/2007 09:38:13
+Rutina     : C:\personal\Gestion\SP\SP - OpenRS()
+Comentario : 
+Error VB5  : 0: 
+Error Prog.: 3075: Sobra un paréntesis de cierre ) en la expresión de consulta '(([SP_Factura].[FechaPago] <= CDate('31/12/2006') or [SP_Factura].[FechaPago] Is Null)) and [SP_Factura].[FechaVencimiento] > CDate('31/12/2006')
+and [SP_Factura].[FechaEmitida] <= CDate('31/12/2006') and [SP_Factura].[CodFacturaEstado]
+not in ( 'anu', 'cle')  and idprestamo in (select idprestamo from sp_prestamo where codprestamotipo<>'fid' ) and [SP_Factura].[CodFacturaTipo] = 'com')'.
+--------------------------------------------------------
+Usuario    : marce   15/03/2007 11:40:10
+Rutina     : frmDBGRpt_Factura - Toolbar1_ButtonClick(ordenar)
+Comentario : 
+Error VB5  : 3205: Demasiados encabezados de columna (462) en la tabla de referencias cruzadas.
+Error Prog.: 3205: Demasiados encabezados de columna (462) en la tabla de referencias cruzadas.
+--------------------------------------------------------
+Usuario    : marce   15/03/2007 11:51:56
+Rutina     : frmDBGRpt_Factura - Toolbar1_ButtonClick(seleccion)
+Comentario : 
+Error VB5  : 3205: Demasiados encabezados de columna (462) en la tabla de referencias cruzadas.
+Error Prog.: 3205: Demasiados encabezados de columna (462) en la tabla de referencias cruzadas.
+--------------------------------------------------------
+Usuario    : marce   15/03/2007 11:52:15
+Rutina     : frmDBGRpt_Factura - Toolbar1_ButtonClick(seleccion)
+Comentario : 
+Error VB5  : 3205: Demasiados encabezados de columna (320) en la tabla de referencias cruzadas.
+Error Prog.: 3205: Demasiados encabezados de columna (320) en la tabla de referencias cruzadas.
+--------------------------------------------------------
+Usuario    : marce   15/03/2007 11:52:27
+Rutina     : C:\personal\Gestion\SP\SP - OpenRS()
+Comentario : 
+Error VB5  : 0: 
+Error Prog.: 3464: No coinciden los tipos de datos en la expresión de criterios.
+--------------------------------------------------------
+Usuario    : marce   16/03/2007 12:01:23
+Rutina     : C:\personal\Gestion\SP\SP - OpenRS()
+Comentario : 
+Error VB5  : 0: 
+Error Prog.: 3061: Pocos parámetros. Se esperaba 1.
+--------------------------------------------------------
+Usuario    : marce   16/03/2007 12:02:31
+Rutina     : C:\personal\Gestion\SP\SP - OpenRS()
+Comentario : 
+Error VB5  : 0: 
+Error Prog.: 3079: El campo especificado 'idprestamo' se puede referir a más de una tabla de las enumeradas en la cláusula FROM de la instrucción SQL.
+--------------------------------------------------------
+Usuario    : marce   18/03/2007 13:40:11
+Rutina     : C:\personal\Gestion\SP\SP - OpenRS()
+Comentario : 
+Error VB5  : 0: 
+Error Prog.: 3075: Error de sintaxis (falta operador) en la expresión de consulta '([FechaPago] >= CDate('01/01/2006') and [FechaPago] <= CDate('31/12/2006')[SP_Prestamo].[IDPrestamo] in (select idprestamo from sp_prestamo where cod_prestamoestado='fid'))'.
+--------------------------------------------------------
+Usuario    : marce   18/03/2007 13:40:28
+Rutina     : C:\personal\Gestion\SP\SP - OpenRS()
+Comentario : 
+Error VB5  : 0: 
+Error Prog.: 3061: Pocos parámetros. Se esperaba 1.
+--------------------------------------------------------
+Usuario    : marce   22/03/2007 18:23:20
+Rutina     : frmDBGRpt_Prestamo - Toolbar1_ButtonClick(salir)
+Comentario : 
+Error VB5  : 1004: No se puede hallar "C:\Gestion\SP\Liquidos\Ameu\03-02\LIQUIDOS.DBF". Compruebe la ortografía del nombre del libro y compruebe que la ubicación del archivo es correcta.
+
+Si intenta abrir el archivo desde la lista de los usados recientemente en el menú Archivo, compruebe que no cambió el nombre, eliminó o movió el archivo a otra ubicación.
+Error Prog.: 1004: No se puede hallar "C:\Gestion\SP\Liquidos\Ameu\03-02\LIQUIDOS.DBF". Compruebe la ortografía del nombre del libro y compruebe que la ubicación del archivo es correcta.
+
+Si intenta abrir el archivo desde la lista de los usados recientemente en el menú Archivo, compruebe que no cambió el nombre, eliminó o movió el archivo a otra ubicación.
+--------------------------------------------------------
+Usuario    : marce   29/11/2007 11:54:03
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\personal\Gestion\SP\SP.MDB
+Error VB5  : -1: El importe ingresado es mayor al saldo restante del prestamo  #1.268,67#.
+Ingrese un importe menor o igual
+Error Prog.: -1: El importe ingresado es mayor al saldo restante del prestamo  #1.268,67#.
+Ingrese un importe menor o igual
+--------------------------------------------------------
+Usuario    : marce   29/11/2007 11:54:12
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\personal\Gestion\SP\SP.MDB
+Error VB5  : -1: El importe ingresado es mayor al saldo restante del prestamo  #1.268,67#.
+Ingrese un importe menor o igual
+Error Prog.: -1: El importe ingresado es mayor al saldo restante del prestamo  #1.268,67#.
+Ingrese un importe menor o igual
+--------------------------------------------------------
+Usuario    : marce   29/11/2007 12:26:09
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\personal\Gestion\SP\SP.MDB
+Error VB5  : -1: El importe ingresado es mayor al saldo restante del prestamo  #1.268,67#.
+Ingrese un importe menor o igual
+Error Prog.: -1: El importe ingresado es mayor al saldo restante del prestamo  #1.268,67#.
+Ingrese un importe menor o igual
+--------------------------------------------------------
+Usuario    : marce   29/11/2007 12:43:21
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\personal\Gestion\SP\SP.MDB
+Error VB5  : -1: El importe ingresado es mayor al saldo restante del prestamo  #1.268,67#.
+Ingrese un importe menor o igual
+Error Prog.: -1: El importe ingresado es mayor al saldo restante del prestamo  #1.268,67#.
+Ingrese un importe menor o igual
+--------------------------------------------------------
+Usuario    : marce   29/11/2007 13:04:15
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\personal\Gestion\SP\SP.MDB
+Error VB5  : 3265: No se encontró el elemento en esta colección.
+Error Prog.: 3265: No se encontró el elemento en esta colección.
+--------------------------------------------------------
+Usuario    : marce   29/11/2007 13:04:15
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\personal\Gestion\SP\SP.MDB
+Error VB5  : -1: No se pudo ingresar el pago parcial.
+Error Prog.: -1: No se pudo ingresar el pago parcial.
+--------------------------------------------------------
+Usuario    : marce   29/11/2007 13:04:39
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\personal\Gestion\SP\SP.MDB
+Error VB5  : 3265: No se encontró el elemento en esta colección.
+Error Prog.: 3265: No se encontró el elemento en esta colección.
+--------------------------------------------------------
+Usuario    : marce   29/11/2007 13:04:40
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\personal\Gestion\SP\SP.MDB
+Error VB5  : -1: No se pudo ingresar el pago parcial.
+Error Prog.: -1: No se pudo ingresar el pago parcial.
+--------------------------------------------------------
+Usuario    : marce   29/11/2007 13:04:43
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\personal\Gestion\SP\SP.MDB
+Error VB5  : 3265: No se encontró el elemento en esta colección.
+Error Prog.: 3265: No se encontró el elemento en esta colección.
+--------------------------------------------------------
+Usuario    : marce   29/11/2007 13:04:43
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\personal\Gestion\SP\SP.MDB
+Error VB5  : -1: No se pudo ingresar el pago parcial.
+Error Prog.: -1: No se pudo ingresar el pago parcial.
+--------------------------------------------------------
+Usuario    : marce   29/01/2008 14:39:47
+Rutina     : C:\personal\Gestion\SP\SP - OpenRS()
+Comentario : 
+Error VB5  : 0: 
+Error Prog.: 3078: El motor de base de datos Microsoft Jet no puede encontrar la tabla o consulta de entrada 'SP_FacturaTipo'. Asegúrese de que existe y que su nombre está escrito correctamente.
+--------------------------------------------------------
+Usuario    : marce   29/01/2008 14:40:19
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\personal\Gestion\SP\SP.MDB
+Error VB5  : 3011: El motor de base de datos Microsoft Jet no pudo encontrar el objeto 'SP_FacturaTipo'. Asegúrese de que el objeto existe, y que ha escrito el nombre y la ruta de acceso al objeto correctamente.
+Error Prog.: 3011: El motor de base de datos Microsoft Jet no pudo encontrar el objeto 'SP_FacturaTipo'. Asegúrese de que el objeto existe, y que ha escrito el nombre y la ruta de acceso al objeto correctamente.
+--------------------------------------------------------
+Usuario    : marce   13/03/2008 10:29:38
+Rutina     : frmDBGRpt_Factura - Toolbar1_ButtonClick(seleccion2)
+Comentario : 
+Error VB5  : 1004: No se puede asignar la propiedad Text de la clase Range.
+Error Prog.: 1004: No se puede asignar la propiedad Text de la clase Range.
+--------------------------------------------------------
+Usuario    : marce   13/03/2008 10:31:43
+Rutina     : frmDBGRpt_Factura - Toolbar1_ButtonClick(seleccion2)
+Comentario : 
+Error VB5  : 13: No coinciden los tipos
+Error Prog.: 13: No coinciden los tipos
+--------------------------------------------------------
+Usuario    : marce   25/03/2008 14:57:38
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\personal\Gestion\SP\SP.MDB
+Error VB5  : 3265: No se encontró el elemento en esta colección.
+Error Prog.: 3265: No se encontró el elemento en esta colección.
+--------------------------------------------------------
+Usuario    : marce   25/03/2008 15:00:36
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\personal\Gestion\SP\SP.MDB
+Error VB5  : 3265: No se encontró el elemento en esta colección.
+Error Prog.: 3265: No se encontró el elemento en esta colección.
+--------------------------------------------------------
+Usuario    : marce   25/03/2008 15:00:36
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\personal\Gestion\SP\SP.MDB
+Error VB5  : 3265: No se encontró el elemento en esta colección.
+Error Prog.: 3265: No se encontró el elemento en esta colección.
+--------------------------------------------------------
+Usuario    : marce   10/05/2008 21:54:08
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\personal\Gestion\SP\SPSRM.MDB
+Error VB5  : 94: Uso no válido de Null
+Error Prog.: 94: Uso no válido de Null
+--------------------------------------------------------
+Usuario    : marce   10/05/2008 21:54:21
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\personal\Gestion\SP\SPSRM.MDB
+Error VB5  : 94: Uso no válido de Null
+Error Prog.: 94: Uso no válido de Null
+--------------------------------------------------------
+Usuario    : marce   10/05/2008 21:57:08
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\personal\Gestion\SP\SPSRM.MDB
+Error VB5  : 3622: Debe usar la opción dbSeeChanges con OpenRecordset al tener acceso a una tabla de SQLServer que tenga una columna IDENTITY.
+Error Prog.: 3622: Debe usar la opción dbSeeChanges con OpenRecordset al tener acceso a una tabla de SQLServer que tenga una columna IDENTITY.
+--------------------------------------------------------
+Usuario    : marce   14/05/2008 12:17:32
+Rutina     : C:\Personal\Gestion\SP\SP - OpenRS()
+Comentario : 
+Error VB5  : 0: 
+Error Prog.: 3151: ODBC: falló la conexión a 'SRMMain'.
+--------------------------------------------------------
+Usuario    : marce   24/06/2008 22:45:19
+Rutina     : C:\Personal\Gestion\SP\SP - OpenRS()
+Comentario : 
+Error VB5  : 0: 
+Error Prog.: 3151: ODBC: falló la conexión a 'SRMMain'.
+--------------------------------------------------------
+Usuario    : marce   08/07/2008 19:35:18
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\personal\Gestion\SP\SP.MDB
+Error VB5  : 94: Uso no válido de Null
+Error Prog.: 94: Uso no válido de Null
+--------------------------------------------------------
+Usuario    : marce   08/07/2008 19:36:34
+Rutina     : C:\personal\Gestion\SP\SP - OpenRS()
+Comentario : 
+Error VB5  : 0: 
+Error Prog.: 3078: El motor de base de datos Microsoft Jet no puede encontrar la tabla o consulta de entrada 'SP_Afiliado'. Asegúrese de que existe y que su nombre está escrito correctamente.
+--------------------------------------------------------
+Usuario    : marce   08/07/2008 20:06:05
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\personal\Gestion\SP\SPSRM.MDB
+Error VB5  : 3265: No se encontró el elemento en esta colección.
+Error Prog.: 3265: No se encontró el elemento en esta colección.
+--------------------------------------------------------
+Usuario    : marce   08/07/2008 20:06:11
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\personal\Gestion\SP\SPSRM.MDB
+Error VB5  : 3265: No se encontró el elemento en esta colección.
+Error Prog.: 3265: No se encontró el elemento en esta colección.
+--------------------------------------------------------
+Usuario    : marce   08/07/2008 20:07:33
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\personal\Gestion\SP\SPSRM.MDB
+Error VB5  : 94: Uso no válido de Null
+Error Prog.: 94: Uso no válido de Null
+--------------------------------------------------------
+Usuario    : marce   08/07/2008 20:07:40
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\personal\Gestion\SP\SPSRM.MDB
+Error VB5  : 13: No coinciden los tipos
+Error Prog.: 13: No coinciden los tipos
+--------------------------------------------------------
+Usuario    : marce   08/07/2008 20:08:15
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\personal\Gestion\SP\SPSRM.MDB
+Error VB5  : 13: No coinciden los tipos
+Error Prog.: 13: No coinciden los tipos
+--------------------------------------------------------
+Usuario    : marce   23/07/2008 19:44:37
+Rutina     : C:\personal\Gestion\SP\SP - OpenRS()
+Comentario : 
+Error VB5  : 0: 
+Error Prog.: 3151: ODBC: falló la conexión a 'SRMMain'.
+--------------------------------------------------------
+Usuario    : marce   23/07/2008 19:44:57
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\personal\Gestion\SP\SP.MDB
+Error VB5  : 3265: No se encontró el elemento en esta colección.
+Error Prog.: 3265: No se encontró el elemento en esta colección.
+--------------------------------------------------------
+Usuario    : marce   23/07/2008 19:45:12
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\personal\Gestion\SP\SP.MDB
+Error VB5  : 3265: No se encontró el elemento en esta colección.
+Error Prog.: 3265: No se encontró el elemento en esta colección.
+--------------------------------------------------------
+Usuario    : marce   23/07/2008 19:45:19
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\personal\Gestion\SP\SP.MDB
+Error VB5  : 3265: No se encontró el elemento en esta colección.
+Error Prog.: 3265: No se encontró el elemento en esta colección.
+--------------------------------------------------------
+Usuario    : marce   23/07/2008 19:50:10
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\personal\Gestion\SP\SP.MDB
+Error VB5  : 3265: No se encontró el elemento en esta colección.
+Error Prog.: 3265: No se encontró el elemento en esta colección.
+--------------------------------------------------------
+Usuario    : marce   23/07/2008 19:50:51
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\personal\Gestion\SP\SP.MDB
+Error VB5  : 3265: No se encontró el elemento en esta colección.
+Error Prog.: 3265: No se encontró el elemento en esta colección.
+--------------------------------------------------------
+Usuario    : marce   23/07/2008 19:51:13
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\personal\Gestion\SP\SP.MDB
+Error VB5  : 3265: No se encontró el elemento en esta colección.
+Error Prog.: 3265: No se encontró el elemento en esta colección.
+--------------------------------------------------------
+Usuario    : marce   23/07/2008 19:52:29
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\personal\Gestion\SP\SP.MDB
+Error VB5  : 3265: No se encontró el elemento en esta colección.
+Error Prog.: 3265: No se encontró el elemento en esta colección.
+--------------------------------------------------------
+Usuario    : marce   23/07/2008 21:14:31
+Rutina     : C:\personal\Gestion\SP\SP - OpenRS()
+Comentario : 
+Error VB5  : 0: 
+Error Prog.: 3075: Falta ), ] o elemento en la expresión de consulta '(([SP_Factura].[FechaPago] >= CDate('01/01/2008') and ([SP_Factura].[FechaPago] <= CDate('30/06/2008') and [SP_Factura].[CodFacturaEstado] <> 'anu' and [SP_Factura].[CodFacturaEstado] <> 'cle')'.
+--------------------------------------------------------
+Usuario    : marce   23/07/2008 21:14:52
+Rutina     : C:\personal\Gestion\SP\SP - OpenRS()
+Comentario : 
+Error VB5  : 0: 
+Error Prog.: 3075: Falta ), ] o elemento en la expresión de consulta '([SP_Factura].[FechaPago] >= CDate('01/01/2008') and ([SP_Factura].[FechaPago] <= CDate('30/06/2008') and [SP_Factura].[CodFacturaEstado] <> 'anu' and [SP_Factura].[CodFacturaEstado] <> 'cle')'.
+--------------------------------------------------------
+Usuario    : marce   02/04/2009 14:00:37
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\personal\Gestion\SP\SP.MDB
+Error VB5  : 3061: Pocos parámetros. Se esperaba 5.
+Error Prog.: 3061: Pocos parámetros. Se esperaba 5.
+--------------------------------------------------------
+Usuario    : marce   02/04/2009 14:01:45
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\personal\Gestion\SP\SP.MDB
+Error VB5  : 3061: Pocos parámetros. Se esperaba 4.
+Error Prog.: 3061: Pocos parámetros. Se esperaba 4.
+--------------------------------------------------------
+Usuario    : marce   02/04/2009 14:02:25
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\personal\Gestion\SP\SP.MDB
+Error VB5  : 3061: Pocos parámetros. Se esperaba 4.
+Error Prog.: 3061: Pocos parámetros. Se esperaba 4.
+--------------------------------------------------------
+Usuario    : marce   02/04/2009 14:03:04
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\personal\Gestion\SP\SP.MDB
+Error VB5  : 3061: Pocos parámetros. Se esperaba 4.
+Error Prog.: 3061: Pocos parámetros. Se esperaba 4.
+--------------------------------------------------------
+Usuario    : marce   02/04/2009 14:04:52
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\personal\Gestion\SP\SP.MDB
+Error VB5  : 91: Variable de tipo Object o la variable de bloque With no está establecida
+Error Prog.: 91: Variable de tipo Object o la variable de bloque With no está establecida
+--------------------------------------------------------
+Usuario    : marce   02/04/2009 14:04:57
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\personal\Gestion\SP\SP.MDB
+Error VB5  : 3012: El objeto 'CargaLiquidos' ya existe.
+Error Prog.: 3012: El objeto 'CargaLiquidos' ya existe.
+--------------------------------------------------------
+Usuario    : marce   02/04/2009 14:39:44
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\personal\Gestion\SP\SP.MDB
+Error VB5  : 3265: No se encontró el elemento en esta colección.
+Error Prog.: 3265: No se encontró el elemento en esta colección.
+--------------------------------------------------------
+Usuario    : marce   23/08/2010 10:40:38 p.m.
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Personal\Gestion\SP\SP.MDB
+Error VB5  : 3265: No se encontró el elemento en esta colección.
+Error Prog.: 3265: No se encontró el elemento en esta colección.
+--------------------------------------------------------
+Usuario    : marce   23/08/2010 10:40:55 p.m.
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Personal\Gestion\SP\SP.MDB
+Error VB5  : 3265: No se encontró el elemento en esta colección.
+Error Prog.: 3265: No se encontró el elemento en esta colección.
+--------------------------------------------------------
+Usuario    : marce   15/04/2011 04:22:29 p.m.
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Personal\Gestion\SP\SP.MDB
+Error VB5  : -2147417848: Error de Automatización
+Error Prog.: -2147417848: Error de Automatización
+--------------------------------------------------------
+Usuario    : marce   15/04/2011 04:44:35 p.m.
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Personal\Gestion\SP\SP.MDB
+Error VB5  : -2147417848: Error de Automatización
+Error Prog.: -2147417848: Error de Automatización
+--------------------------------------------------------
+Usuario    : marce   15/04/2011 04:52:27 p.m.
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Personal\Gestion\SP\SP.MDB
+Error VB5  : -2147221080: Error en el método 'Cells' del objeto '_Worksheet'
+Error Prog.: -2147221080: Error en el método 'Cells' del objeto '_Worksheet'
+--------------------------------------------------------
+Usuario    : marce   15/04/2011 04:56:00 p.m.
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Personal\Gestion\SP\SP.MDB
+Error VB5  : -2147221080: Error en el método 'Cells' del objeto '_Worksheet'
+Error Prog.: -2147221080: Error en el método 'Cells' del objeto '_Worksheet'
+--------------------------------------------------------
+Usuario    : marce   06/04/2018 02:20:16 p.m.
+Rutina     : MDIPrin - MdiPrin
+Comentario : Abrir la base C:\Personal\Gestion\SP\SP.MDB
+Error VB5  : 3031: No es una contraseña válida.
+Error Prog.: 3031: No es una contraseña válida.
+--------------------------------------------------------
+Usuario    : marce   28/04/2020 01:15:11 p.m.
+Rutina     : frmDBGRpt_Prestamo - Toolbar1_ButtonClick(imprimir)
+Comentario : 
+Error VB5  : 32755: Se ha seleccionado Cancelar.
+Error Prog.: 32755: Se ha seleccionado Cancelar.

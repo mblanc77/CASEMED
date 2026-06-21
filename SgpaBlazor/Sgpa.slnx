@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Sgpa.Business/Sgpa.Business.csproj" />
+    <Project Path="src/Sgpa.Data/Sgpa.Data.csproj" />
+    <Project Path="src/Sgpa.Domain/Sgpa.Domain.csproj" />
+    <Project Path="src/Sgpa.Web/Sgpa.Web.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Sgpa.Business.Tests/Sgpa.Business.Tests.csproj" />
+    <Project Path="tests/Sgpa.Web.Tests/Sgpa.Web.Tests.csproj" />
+  </Folder>
+  <Folder Name="/tools/">
+    <Project Path="tools/Sgpa.CodeGen/Sgpa.CodeGen.csproj" />
+  </Folder>
+</Solution>

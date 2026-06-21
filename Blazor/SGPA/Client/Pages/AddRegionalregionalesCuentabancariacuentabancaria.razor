@@ -1,0 +1,41 @@
+@page "/add-regionalregionales-cuentabancariacuentabancaria"
+
+<PageTitle>Add RegionalregionalesCuentabancariacuentabancaria</PageTitle>
+    <RadzenColumn SizeMD=12>
+        <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@errorVisible">Cannot save RegionalregionalesCuentabancariacuentabancaria</RadzenAlert>
+        <RadzenTemplateForm TItem="SGPA.Server.Models.CMU.RegionalregionalesCuentabancariacuentabancaria" Data="@regionalregionalesCuentabancariacuentabancaria" Visible="@(regionalregionalesCuentabancariacuentabancaria != null && canEdit)" Submit="@FormSubmit">
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Optimistic Lock Field" Component="OptimisticLockField" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@regionalregionalesCuentabancariacuentabancaria.OptimisticLockField" Name="OptimisticLockField" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Cuenta Bancarium" Component="CuentaBancarium" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@cuentaBancariaForCuentaBancarias" TextProperty="" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose CuentaBancarium" style="display: block; width: 100%" @bind-Value="@regionalregionalesCuentabancariacuentabancaria.CuentaBancarias" Name="CuentaBancarias"
+                        SelectedValue=@cuentaBancariaForCuentaBancariasValue Count=@cuentaBancariaForCuentaBancariasCount LoadData=@cuentaBancariaForCuentaBancariasLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Regional" Component="Regional" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@regionalsForRegionales" TextProperty="Descripcion" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose Regional" style="display: block; width: 100%" @bind-Value="@regionalregionalesCuentabancariacuentabancaria.Regionales" Name="Regionales"
+                        SelectedValue=@regionalsForRegionalesValue Count=@regionalsForRegionalesCount LoadData=@regionalsForRegionalesLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+          <RadzenStack  Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                    <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Submit" Icon="save" Text="Save" Variant="Variant.Flat" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Text="Cancel" Variant="Variant.Flat" Click="@CancelButtonClick"  />
+          </RadzenStack>
+        </RadzenTemplateForm>
+    </RadzenColumn>
+

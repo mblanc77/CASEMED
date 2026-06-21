@@ -1,0 +1,281 @@
+[Root]
+Most Recent Package=Paquete de instalación estándar 1
+
+
+[Package|Paquete de instalación estándar 1|Root]
+SubWizProgID=PDWizard.SetupPkgSubWiz
+BuildFolder=c:\personal\Gestion\SP\Paquete
+
+[Package|Paquete de instalación estándar 1|Configure DAO ISAMs]
+Applicable=Yes
+Xbase=No
+Excel=No
+Text=No
+Jet 2.x=No
+
+[Package|Paquete de instalación estándar 1|Configure DAO ODBC]
+JetWorkspace=
+ODBCDirect=
+
+[Package|Paquete de instalación estándar 1|Files Found]
+
+[Package|Paquete de instalación estándar 1|Files Released]
+
+[Package|Paquete de instalación estándar 1|Missing Dependency Information]
+E:\Archivos de programa\Archivos comunes\Data Dynamics\SharpGrid\sg20.ocx=
+E:\WINDOWS\system32\OpcPBar.ocx=
+E:\WINDOWS\system32\Opccombo.ocx=
+E:\WINDOWS\system32\OPCINPUT.OCX=
+E:\WINDOWS\system32\OPCSCROL.OCX=
+E:\WINDOWS\system\OPC.DLL=
+E:\Archivos de programa\Archivos comunes\Data Dynamics\ActiveReports Pro\arpro2.dll=
+E:\Archivos de programa\Microsoft Office 2000\Office10\EXCEL.EXE=
+C:\WINDOWS\system32\sg20.ocx=
+C:\WINDOWS\system32\OpcPBar.ocx=
+C:\WINDOWS\system32\OPCINPUT.OCX=
+C:\WINDOWS\system32\OPCSCROL.OCX=
+C:\WINDOWS\system32\OPC.DLL=
+C:\Program Files\Microsoft Office 2003\OFFICE11\EXCEL.EXE=
+C:\Program Files\Seagate Software\Report Designer Component\craxdrt.dll=
+
+[Package|Paquete de instalación estándar 1|Out-of-Date Dependency Information]
+E:\Archivos de programa\Microsoft Office 2000\Office10\MSCAL.OCX=
+E:\WINDOWS\system32\MSCOMCTL.OCX=
+E:\WINDOWS\system32\TABCTL32.OCX=
+E:\WINDOWS\system32\scrrun.dll=
+C:\WINDOWS\system32\MSCOMCTL.OCX=
+C:\WINDOWS\system32\scrrun.dll=
+
+[Package|Paquete de instalación estándar 1|Files Added]
+C:\Personal\Gestion\SP\SEGURIDA.MDB=
+C:\Personal\Gestion\SP\sp.mdb=
+C:\Personal\Gestion\SP\Rpt.mdb=
+
+[Package|Paquete de instalación estándar 1|Files Removed]
+
+[Package|Paquete de instalación estándar 1|Files In Project]
+C:\Personal\Gestion\SP\SP.exe=Yes
+C:\WINDOWS\system32\msvbvm60.dll=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\OLEAUT32.DLL=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\OLEPRO32.DLL=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\ASYCFILT.DLL=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\STDOLE2.TLB=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\COMCAT.DLL=Yes
+C:\WINDOWS\system32\VB6ES.DLL=Yes
+C:\Program Files\Common Files\Microsoft Shared\DAO\DAO350.DLL=Yes
+C:\WINDOWS\system32\msjet35.dll=Yes
+C:\WINDOWS\system32\msjter35.dll=Yes
+C:\WINDOWS\system32\Msjint35.dll=Yes
+C:\WINDOWS\system32\vbajet32.dll=Yes
+C:\WINDOWS\system32\expsrv.dll=Yes
+C:\WINDOWS\system32\MSRD2X35.DLL=Yes
+C:\WINDOWS\system32\MSREPL35.DLL=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\MSVCRT40.DLL=Yes
+C:\WINDOWS\system32\VB5DB.DLL=Yes
+C:\WINDOWS\system32\scrrun.dll=Yes
+C:\WINDOWS\system32\msvcrt.dll=Yes
+C:\WINDOWS\system32\ScrrnES.dll=Yes
+C:\Program Files\Seagate Software\Viewers\ActiveXViewer\crviewer.dll=Yes
+C:\Program Files\Seagate Software\Report Designer Component\craxdrt.dll=Yes
+C:\Program Files\Microsoft Office 2003\OFFICE11\EXCEL.EXE=Yes
+C:\Program Files\Seagate Software\Report Designer Component\craxddrt.dll=Yes
+C:\WINDOWS\system32\Implode.dll=Yes
+C:\WINDOWS\system32\Crpaig80.dll=Yes
+C:\WINDOWS\system32\mfc42.dll=Yes
+\program files\seagate software\shared\SSCSDK80.DLL=Yes
+\program files\seagate software\shared\PG32CONV.DLL=Yes
+C:\WINDOWS\system32\P2smon.dll=Yes
+C:\WINDOWS\system32\OPC.DLL=Yes
+C:\WINDOWS\system32\comdlg32.ocx=Yes
+C:\WINDOWS\system32\CMDLGES.DLL=Yes
+C:\WINDOWS\system32\TABCTL32.OCX=Yes
+C:\WINDOWS\system32\TABCTES.DLL=Yes
+C:\WINDOWS\system32\DBLIST32.OCX=Yes
+C:\WINDOWS\system32\DBLSTES.DLL=Yes
+C:\WINDOWS\system32\msmask32.ocx=Yes
+C:\WINDOWS\system32\msmskES.dll=Yes
+C:\WINDOWS\system32\OPCSCROL.OCX=Yes
+C:\WINDOWS\system32\OPCINPUT.OCX=Yes
+C:\WINDOWS\system32\MSCOMCTL.OCX=Yes
+C:\WINDOWS\system32\MSCMCES.DLL=Yes
+C:\WINDOWS\system32\mschrt20.ocx=Yes
+C:\WINDOWS\system32\msch2ES.dll=Yes
+C:\WINDOWS\system32\OpcPBar.ocx=Yes
+C:\WINDOWS\system32\tdbg6.ocx=Yes
+C:\WINDOWS\system32\tdbgpp.dll=Yes
+C:\WINDOWS\system32\mscomct2.ocx=Yes
+C:\WINDOWS\system32\MSCC2ES.DLL=Yes
+C:\WINDOWS\system32\RICHTX32.OCX=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\RICHED32.DLL=Yes
+C:\WINDOWS\system32\RCHTXES.DLL=Yes
+C:\WINDOWS\system32\sg20.ocx=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\SETUP.EXE=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\SETUP1.EXE=Yes
+C:\WINDOWS\system32\VB6STKIT.DLL=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\ST6UNST.EXE=Yes
+C:\Personal\Gestion\SP\SEGURIDA.MDB=Yes
+C:\Personal\Gestion\SP\sp.mdb=Yes
+C:\Personal\Gestion\SP\Rpt.mdb=Yes
+
+[Package|Paquete de instalación estándar 1|Configure Registry Files]
+Applicable=No
+
+[Package|Paquete de instalación estándar 1|Configure Remote Servers]
+Applicable=No
+
+[Package|Paquete de instalación estándar 1|Install Locations]
+D:\Gestion\SP\SP.exe=$(AppPath)
+E:\WINDOWS\system32\msvbvm60.dll=$(WinSysPathSysFile)
+E:\Archivos de programa\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\OLEAUT32.DLL=$(WinSysPathSysFile)
+E:\Archivos de programa\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\OLEPRO32.DLL=$(WinSysPathSysFile)
+E:\Archivos de programa\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\ASYCFILT.DLL=$(WinSysPathSysFile)
+E:\Archivos de programa\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\STDOLE2.TLB=$(WinSysPathSysFile)
+E:\Archivos de programa\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\COMCAT.DLL=$(WinSysPathSysFile)
+E:\WINDOWS\system32\VB6ES.DLL=$(WinSysPath)
+E:\WINDOWS\system32\Dao350.dll=$(MSDAOPath)
+E:\WINDOWS\system32\MSJET35.DLL=$(WinSysPathSysFile)
+E:\WINDOWS\system32\MSJTER35.DLL=$(WinSysPathSysFile)
+E:\WINDOWS\system32\msjint35.dll=$(WinSysPathSysFile)
+E:\WINDOWS\system32\vbajet32.dll=$(WinSysPathSysFile)
+E:\WINDOWS\system32\expsrv.dll=$(WinSysPathSysFile)
+E:\WINDOWS\system32\MSRD2X35.DLL=$(WinSysPathSysFile)
+E:\WINDOWS\system32\MSREPL35.DLL=$(WinSysPathSysFile)
+E:\Archivos de programa\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\MSVCRT40.DLL=$(WinSysPathSysFile)
+E:\WINDOWS\system32\VB5DB.DLL=$(WinSysPath)
+E:\Archivos de programa\Seagate Software\Report Designer Component\craxdrt.dll=$(WinSysPath)
+E:\WINDOWS\system32\scrrun.dll=$(WinSysPath)
+E:\WINDOWS\system32\msvcrt.dll=$(WinSysPathSysFile)
+E:\WINDOWS\system32\scrrnes.dll=$(WinSysPath)
+E:\Archivos de programa\Microsoft Office 2000\Office10\EXCEL.EXE=$(AppPath)
+E:\Archivos de programa\Archivos comunes\Data Dynamics\ActiveReports Pro\arpro2.dll=$(WinSysPath)
+E:\Archivos de programa\Seagate Software\Viewers\ActiveXViewer\crviewer.dll=$(WinSysPath)
+E:\WINDOWS\system\OPC.DLL=$(WinSysPath)
+E:\WINDOWS\system32\comdlg32.ocx=$(WinSysPath)
+E:\WINDOWS\system32\CMDLGES.DLL=$(WinSysPath)
+E:\WINDOWS\system32\TABCTL32.OCX=$(WinSysPath)
+E:\WINDOWS\system32\TABCTES.DLL=$(WinSysPath)
+E:\WINDOWS\system32\DBLIST32.OCX=$(WinSysPath)
+E:\WINDOWS\system32\DBLSTES.DLL=$(WinSysPath)
+E:\WINDOWS\system32\msmask32.ocx=$(WinSysPath)
+E:\WINDOWS\system32\MSMSKES.DLL=$(WinSysPath)
+E:\WINDOWS\system32\OPCSCROL.OCX=$(WinSysPath)
+E:\WINDOWS\system32\OPCINPUT.OCX=$(WinSysPath)
+E:\WINDOWS\system32\Opccombo.ocx=$(WinSysPath)
+E:\WINDOWS\system32\MSCOMCTL.OCX=$(WinSysPath)
+E:\WINDOWS\system32\MSCMCES.DLL=$(WinSysPath)
+E:\WINDOWS\system32\MSCHRT20.OCX=$(WinSysPath)
+E:\WINDOWS\system32\MSCH2ES.DLL=$(WinSysPath)
+E:\WINDOWS\system32\OpcPBar.ocx=$(WinSysPath)
+E:\WINDOWS\system32\tdbg6.ocx=$(WinSysPath)
+E:\WINDOWS\system32\tdbgpp.dll=$(WinSysPathSysFile)
+E:\Archivos de programa\Microsoft Office 2000\Office10\MSCAL.OCX=$(WinSysPath)
+E:\WINDOWS\system32\MSCOMCT2.OCX=$(WinSysPath)
+E:\WINDOWS\system32\MSCC2ES.DLL=$(WinSysPath)
+E:\WINDOWS\system32\RICHTX32.OCX=$(WinSysPath)
+E:\Archivos de programa\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\RICHED32.DLL=$(WinSysPathSysFile)
+E:\WINDOWS\system32\RCHTXES.DLL=$(WinSysPath)
+E:\Archivos de programa\Archivos comunes\Data Dynamics\SharpGrid\sg20.ocx=$(WinSysPath)
+E:\Archivos de programa\Microsoft Visual Studio\VB98\Wizards\PDWizard\SETUP.EXE=$(AppPath)
+E:\Archivos de programa\Microsoft Visual Studio\VB98\Wizards\PDWizard\SETUP1.EXE=$(WinPath)
+E:\WINDOWS\system32\VB6STKIT.DLL=$(WinSysPathSysFile)
+E:\Archivos de programa\Microsoft Visual Studio\VB98\Wizards\PDWizard\ST6UNST.EXE=$(WinPath)
+C:\Personal\Gestion\SP\SP.exe=$(AppPath)
+C:\WINDOWS\system32\msvbvm60.dll=$(WinSysPathSysFile)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\OLEAUT32.DLL=$(WinSysPathSysFile)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\OLEPRO32.DLL=$(WinSysPathSysFile)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\ASYCFILT.DLL=$(WinSysPathSysFile)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\STDOLE2.TLB=$(WinSysPathSysFile)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\COMCAT.DLL=$(WinSysPathSysFile)
+C:\WINDOWS\system32\VB6ES.DLL=$(WinSysPath)
+C:\Program Files\Common Files\Microsoft Shared\DAO\DAO350.DLL=$(MSDAOPath)
+C:\WINDOWS\system32\msjet35.dll=$(WinSysPathSysFile)
+C:\WINDOWS\system32\msjter35.dll=$(WinSysPathSysFile)
+C:\WINDOWS\system32\Msjint35.dll=$(WinSysPathSysFile)
+C:\WINDOWS\system32\vbajet32.dll=$(WinSysPathSysFile)
+C:\WINDOWS\system32\expsrv.dll=$(WinSysPathSysFile)
+C:\WINDOWS\system32\MSRD2X35.DLL=$(WinSysPathSysFile)
+C:\WINDOWS\system32\MSREPL35.DLL=$(WinSysPathSysFile)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\MSVCRT40.DLL=$(WinSysPathSysFile)
+C:\WINDOWS\system32\VB5DB.DLL=$(WinSysPath)
+C:\WINDOWS\system32\scrrun.dll=$(WinSysPath)
+C:\WINDOWS\system32\msvcrt.dll=$(WinSysPathSysFile)
+C:\WINDOWS\system32\ScrrnES.dll=$(WinSysPath)
+C:\Program Files\Seagate Software\Viewers\ActiveXViewer\crviewer.dll=$(WinSysPath)
+C:\Program Files\Seagate Software\Report Designer Component\craxdrt.dll=$(WinSysPath)
+C:\Program Files\Microsoft Office 2003\OFFICE11\EXCEL.EXE=$(AppPath)
+C:\Program Files\Seagate Software\Report Designer Component\craxddrt.dll=$(WinSysPath)
+C:\WINDOWS\system32\Implode.dll=$(AppPath)
+C:\WINDOWS\system32\Crpaig80.dll=$(WinSysPath)
+C:\WINDOWS\system32\mfc42.dll=$(WinSysPath)
+\program files\seagate software\shared\SSCSDK80.DLL=$(WinSysPath)
+\program files\seagate software\shared\PG32CONV.DLL=$(AppPath)
+C:\WINDOWS\system32\P2smon.dll=$(WinSysPath)
+C:\WINDOWS\system32\OPC.DLL=$(WinSysPath)
+C:\WINDOWS\system32\comdlg32.ocx=$(WinSysPath)
+C:\WINDOWS\system32\CMDLGES.DLL=$(WinSysPath)
+C:\WINDOWS\system32\TABCTL32.OCX=$(WinSysPath)
+C:\WINDOWS\system32\TABCTES.DLL=$(WinSysPath)
+C:\WINDOWS\system32\DBLIST32.OCX=$(WinSysPath)
+C:\WINDOWS\system32\DBLSTES.DLL=$(WinSysPath)
+C:\WINDOWS\system32\msmask32.ocx=$(WinSysPath)
+C:\WINDOWS\system32\msmskES.dll=$(WinSysPath)
+C:\WINDOWS\system32\OPCSCROL.OCX=$(WinSysPath)
+C:\WINDOWS\system32\OPCINPUT.OCX=$(WinSysPath)
+C:\WINDOWS\system32\MSCOMCTL.OCX=$(WinSysPath)
+C:\WINDOWS\system32\MSCMCES.DLL=$(WinSysPath)
+C:\WINDOWS\system32\mschrt20.ocx=$(WinSysPath)
+C:\WINDOWS\system32\msch2ES.dll=$(WinSysPath)
+C:\WINDOWS\system32\OpcPBar.ocx=$(WinSysPath)
+C:\WINDOWS\system32\tdbg6.ocx=$(WinSysPath)
+C:\WINDOWS\system32\tdbgpp.dll=$(WinSysPathSysFile)
+C:\WINDOWS\system32\mscomct2.ocx=$(WinSysPath)
+C:\WINDOWS\system32\MSCC2ES.DLL=$(WinSysPath)
+C:\WINDOWS\system32\RICHTX32.OCX=$(WinSysPath)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\RICHED32.DLL=$(WinSysPathSysFile)
+C:\WINDOWS\system32\RCHTXES.DLL=$(WinSysPath)
+C:\WINDOWS\system32\sg20.ocx=$(WinSysPath)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\SETUP.EXE=$(AppPath)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\SETUP1.EXE=$(WinPath)
+C:\WINDOWS\system32\VB6STKIT.DLL=$(WinSysPathSysFile)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\ST6UNST.EXE=$(WinPath)
+C:\Personal\Gestion\SP\SEGURIDA.MDB=$(AppPath)
+C:\Personal\Gestion\SP\sp.mdb=$(AppPath)
+C:\Personal\Gestion\SP\Rpt.mdb=$(AppPath)
+
+[Package|Paquete de instalación estándar 1|Configure Shared Files]
+Applicable=Yes
+D:\Gestion\SP\SP.exe=No
+E:\Archivos de programa\Microsoft Office 2000\Office10\EXCEL.EXE=No
+C:\Personal\Gestion\SP\SP.exe=No
+C:\Program Files\Microsoft Office 2003\OFFICE11\EXCEL.EXE=No
+C:\WINDOWS\system32\Implode.dll=No
+\program files\seagate software\shared\PG32CONV.DLL=No
+C:\Personal\Gestion\SP\SEGURIDA.MDB=No
+C:\Personal\Gestion\SP\sp.mdb=No
+C:\Personal\Gestion\SP\Rpt.mdb=No
+
+[Package|Paquete de instalación estándar 1|Distribution]
+Type=single
+Size=
+Title=Sistema de Préstamos
+
+[Package|Paquete de instalación estándar 1|IconGroups]
+Group0=Sistema de Préstamos
+PrivateGroup0=-1
+Parent0=$(Programs)
+
+[Package|Paquete de instalación estándar 1|Sistema de Préstamos]
+Icon1=SP.exe
+Title1=Sistema de Préstamos
+StartIn1=$(AppPath)
+Key1=Icon1
+
+[Package|Paquete de instalación estándar 1|Package]
+PackageFolder=c:\personal\Gestion\SP\Paquete
+ProjectFolder=C:\Personal\Gestion\SP
+ServerSideCab=
+File1=c:\personal\Gestion\SP\Paquete\setup.exe
+File2=c:\personal\Gestion\SP\Paquete\Setup.Lst
+File3=c:\personal\Gestion\SP\Paquete\SP.CAB
+Handler1=PDWizard.FolderDplySubWiz
+Handler2=PDWizard.WebPostDplySubWiz

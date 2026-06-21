@@ -1,0 +1,57 @@
+@page "/add-tramite-carne-estado-work-flow"
+
+<PageTitle>Add TramiteCarneEstadoWorkFlow</PageTitle>
+    <RadzenColumn SizeMD=12>
+        <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@errorVisible">Cannot save TramiteCarneEstadoWorkFlow</RadzenAlert>
+        <RadzenTemplateForm TItem="SGPA.Server.Models.CMU.TramiteCarneEstadoWorkFlow" Data="@tramiteCarneEstadoWorkFlow" Visible="@(tramiteCarneEstadoWorkFlow != null && canEdit)" Submit="@FormSubmit">
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Optimistic Lock Field" Component="OptimisticLockField" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@tramiteCarneEstadoWorkFlow.OptimisticLockField" Name="OptimisticLockField" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="G C Record" Component="GCRecord" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@tramiteCarneEstadoWorkFlow.GCRecord" Name="GCRecord" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Reverso" Component="Reverso" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenCheckBox @bind-Value="@tramiteCarneEstadoWorkFlow.Reverso" Name="Reverso" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Tramite Carne Estado Codigo" Component="TramiteCarneEstadoCodigo" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@tramiteCarneEstadoCodigosForEstadoActual" TextProperty="Descripcion" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose TramiteCarneEstadoCodigo" style="display: block; width: 100%" @bind-Value="@tramiteCarneEstadoWorkFlow.EstadoActual" Name="EstadoActual"
+                        SelectedValue=@tramiteCarneEstadoCodigosForEstadoActualValue Count=@tramiteCarneEstadoCodigosForEstadoActualCount LoadData=@tramiteCarneEstadoCodigosForEstadoActualLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Tramite Carne Estado Codigo1" Component="TramiteCarneEstadoCodigo1" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@tramiteCarneEstadoCodigosForEstadoSiguiente" TextProperty="Descripcion" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose TramiteCarneEstadoCodigo1" style="display: block; width: 100%" @bind-Value="@tramiteCarneEstadoWorkFlow.EstadoSiguiente" Name="EstadoSiguiente"
+                        SelectedValue=@tramiteCarneEstadoCodigosForEstadoSiguienteValue Count=@tramiteCarneEstadoCodigosForEstadoSiguienteCount LoadData=@tramiteCarneEstadoCodigosForEstadoSiguienteLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+          <RadzenStack  Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                    <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Submit" Icon="save" Text="Save" Variant="Variant.Flat" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Text="Cancel" Variant="Variant.Flat" Click="@CancelButtonClick"  />
+          </RadzenStack>
+        </RadzenTemplateForm>
+    </RadzenColumn>
+

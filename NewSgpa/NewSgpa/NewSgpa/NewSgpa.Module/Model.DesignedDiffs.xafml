@@ -1,0 +1,339 @@
+﻿<?xml version="1.0" ?>
+<Application Title="NewSgpa" Company="CASEMED" Copyright="© CASEMED" Description="Sistema de Gestión de Prestaciones y Aportes">
+  <BOModel>
+    <Class Name="DevExpress.Persistent.BaseImpl.EF.PermissionPolicy.PermissionPolicyUser" Caption="Base User" />
+    <!-- === SGPA Core === -->
+    <Class Name="NewSgpa.Module.BusinessObjects.Sgpa.Afiliado" Caption="Afiliado" ImageName="BO_Contact">
+      <OwnMembers>
+        <Member Name="CI" Caption="Cédula" DisplayFormat="{0:N0}" />
+        <Member Name="Nombres" Caption="Nombres" />
+        <Member Name="Apellido1" Caption="1er Apellido" />
+        <Member Name="Apellido2" Caption="2do Apellido" />
+        <Member Name="FechaNacimiento" Caption="Fecha Nacimiento" DisplayFormat="{0:dd/MM/yyyy}" />
+        <Member Name="Sexo" Caption="Sexo" />
+        <Member Name="Direccion" Caption="Dirección" />
+        <Member Name="Telefono" Caption="Teléfono" />
+        <Member Name="Movil" Caption="Celular" />
+        <Member Name="CodMutualista" Caption="Mutualista" />
+        <Member Name="FechaIngMutualista" Caption="Ingreso Mutualista" DisplayFormat="{0:dd/MM/yyyy}" />
+        <Member Name="FechaBajaMutualista" Caption="Baja Mutualista" DisplayFormat="{0:dd/MM/yyyy}" />
+        <Member Name="NroSocioMutualista" Caption="Nro. Socio" />
+        <Member Name="CodRegimenJubilatorio" Caption="Régimen Jubilatorio" />
+        <Member Name="CodDepartamento" Caption="Departamento" />
+        <Member Name="PagaMutualista" Caption="Paga Mutualista" />
+        <Member Name="CodSituacionMutual" Caption="Sit. Mutual" />
+        <Member Name="CodBanco" Caption="Banco" />
+        <Member Name="NroCuenta" Caption="Nro. Cuenta" />
+        <Member Name="NroFunCuenta" Caption="Nro. Fun. Cuenta" />
+        <Member Name="Usr" Caption="Usuario" />
+        <Member Name="Ts" Caption="Timestamp" DisplayFormat="{0:dd/MM/yyyy HH:mm}" />
+      </OwnMembers>
+    </Class>
+    <Class Name="NewSgpa.Module.BusinessObjects.Sgpa.AfiliadoApunte" Caption="Apunte" ImageName="BO_Note">
+      <OwnMembers>
+        <Member Name="Fecha" Caption="Fecha" DisplayFormat="{0:dd/MM/yyyy}" />
+        <Member Name="Descrip" Caption="Descripción" />
+      </OwnMembers>
+    </Class>
+    <Class Name="NewSgpa.Module.BusinessObjects.Sgpa.Trabaja" Caption="Empleo" ImageName="BO_Organization">
+      <OwnMembers>
+        <Member Name="FechaIngreso" Caption="Fecha Ingreso" DisplayFormat="{0:dd/MM/yyyy}" />
+        <Member Name="FechaBaja" Caption="Fecha Baja" DisplayFormat="{0:dd/MM/yyyy}" />
+        <Member Name="FechaIngCasemed" Caption="Ingreso CASEMED" DisplayFormat="{0:dd/MM/yyyy}" />
+        <Member Name="NroFichaEmpresa" Caption="Nro. Ficha" />
+      </OwnMembers>
+    </Class>
+    <Class Name="NewSgpa.Module.BusinessObjects.Sgpa.Certificacion" Caption="Certificación" ImageName="BO_Audit_ChangeHistory">
+      <OwnMembers>
+        <Member Name="NroLlamado" Caption="Nro. Llamado" />
+        <Member Name="FechaRecibido" Caption="Recibido" DisplayFormat="{0:dd/MM/yyyy}" />
+        <Member Name="FechaCertificacion" Caption="Certificación" DisplayFormat="{0:dd/MM/yyyy}" />
+        <Member Name="FechaIni" Caption="Desde" DisplayFormat="{0:dd/MM/yyyy}" />
+        <Member Name="FechaFin" Caption="Hasta" DisplayFormat="{0:dd/MM/yyyy}" />
+        <Member Name="Efectiva" Caption="Efectiva" />
+        <Member Name="ImporteDeducible" Caption="Imp. Deducible" DisplayFormat="{0:N2}" />
+        <Member Name="TrabajaDuranteCertificacion" Caption="Trabaja" />
+      </OwnMembers>
+    </Class>
+    <Class Name="NewSgpa.Module.BusinessObjects.Sgpa.Prestacion" Caption="Prestación" ImageName="BO_Invoice">
+      <OwnMembers>
+        <Member Name="Fecha" Caption="Fecha" DisplayFormat="{0:dd/MM/yyyy}" />
+        <Member Name="Importe" Caption="Importe" DisplayFormat="{0:N2}" />
+        <Member Name="Moneda" Caption="Moneda" />
+        <Member Name="Boleta" Caption="Boleta" />
+      </OwnMembers>
+    </Class>
+    <Class Name="NewSgpa.Module.BusinessObjects.Sgpa.Receta" Caption="Receta" ImageName="BO_FileAttachment" />
+    <Class Name="NewSgpa.Module.BusinessObjects.Sgpa.Imponible" Caption="Imponible" ImageName="BO_Sale">
+      <OwnMembers>
+        <Member Name="Importe" Caption="Importe" DisplayFormat="{0:N2}" />
+        <Member Name="Concepto" Caption="Concepto" />
+        <Member Name="DiasTrabajados" Caption="Días Trab." />
+        <Member Name="AnioMes" Caption="Período" />
+      </OwnMembers>
+    </Class>
+    <Class Name="NewSgpa.Module.BusinessObjects.Sgpa.ReintegroMutual" Caption="Reintegro Mutual" ImageName="BO_Contract">
+      <OwnMembers>
+        <Member Name="Fecha" Caption="Fecha" DisplayFormat="{0:dd/MM/yyyy}" />
+        <Member Name="Importe" Caption="Importe" DisplayFormat="{0:N2}" />
+      </OwnMembers>
+    </Class>
+    <!-- === Subsidios === -->
+    <Class Name="NewSgpa.Module.BusinessObjects.Sgpa.SubsidioCabezal" Caption="Subsidio" ImageName="BO_Sale">
+      <OwnMembers>
+        <Member Name="IdSubsidio" Caption="ID" />
+        <Member Name="Mes" Caption="Mes" />
+        <Member Name="Anio" Caption="Año" />
+        <Member Name="Liquidar" Caption="Liquidar" />
+        <Member Name="ValorJornal" Caption="Valor Jornal" DisplayFormat="{0:N3}" />
+        <Member Name="Dias" Caption="Días" />
+        <Member Name="ImpNominal" Caption="Nominal" DisplayFormat="{0:N2}" />
+        <Member Name="ImpAguinaldo" Caption="Aguinaldo" DisplayFormat="{0:N2}" />
+        <Member Name="ImpLiquido" Caption="Líquido" DisplayFormat="{0:N2}" />
+        <Member Name="NroRecibo" Caption="Nro. Recibo" />
+        <Member Name="FechaPago" Caption="Fecha Pago" DisplayFormat="{0:dd/MM/yyyy}" />
+      </OwnMembers>
+    </Class>
+    <Class Name="NewSgpa.Module.BusinessObjects.Sgpa.SubsidioCabezalEmpresa" Caption="Subsidio x Empresa" />
+    <Class Name="NewSgpa.Module.BusinessObjects.Sgpa.SubsidioItem" Caption="Ítem Subsidio" />
+    <Class Name="NewSgpa.Module.BusinessObjects.Sgpa.SubsidioEnfermedad" Caption="Enfermedad" />
+    <Class Name="NewSgpa.Module.BusinessObjects.Sgpa.SubsidioCabezalBps" Caption="BPS" />
+    <Class Name="NewSgpa.Module.BusinessObjects.Sgpa.SubsidioItemCod" Caption="Código Ítem" />
+    <Class Name="NewSgpa.Module.BusinessObjects.Sgpa.SubsidioItemCodAfiliado" Caption="Ítem x Afiliado" />
+    <!-- === Lookups === -->
+    <Class Name="NewSgpa.Module.BusinessObjects.Sgpa.Mutualista" Caption="Mutualista" ImageName="BO_Organization" />
+    <Class Name="NewSgpa.Module.BusinessObjects.Sgpa.Empresa" Caption="Empresa" ImageName="BO_Department" />
+    <Class Name="NewSgpa.Module.BusinessObjects.Sgpa.Certificador" Caption="Certificador" ImageName="BO_Employee" />
+    <Class Name="NewSgpa.Module.BusinessObjects.Sgpa.Patologia" Caption="Patología" />
+    <Class Name="NewSgpa.Module.BusinessObjects.Sgpa.AfeccionGrupo" Caption="Grupo Afección" />
+    <Class Name="NewSgpa.Module.BusinessObjects.Sgpa.AfeccionTipo" Caption="Tipo Afección" />
+    <Class Name="NewSgpa.Module.BusinessObjects.Sgpa.SalidaTipo" Caption="Tipo Salida" />
+    <Class Name="NewSgpa.Module.BusinessObjects.Sgpa.BajaMotivo" Caption="Motivo Baja" />
+    <Class Name="NewSgpa.Module.BusinessObjects.Sgpa.Banco" Caption="Banco" />
+    <Class Name="NewSgpa.Module.BusinessObjects.Sgpa.FormaPago" Caption="Forma de Pago" />
+    <Class Name="NewSgpa.Module.BusinessObjects.Sgpa.Especialidad" Caption="Especialidad" />
+    <Class Name="NewSgpa.Module.BusinessObjects.Sgpa.Departamento" Caption="Departamento" />
+    <Class Name="NewSgpa.Module.BusinessObjects.Sgpa.PrestacionTipo" Caption="Tipo Prestación" />
+    <Class Name="NewSgpa.Module.BusinessObjects.Sgpa.Parametros" Caption="Parámetros" ImageName="Action_Inline_Edit" />
+    <!-- === Préstamos === -->
+    <Class Name="NewSgpa.Module.BusinessObjects.Prestamos.SpPrestamo" Caption="Préstamo" ImageName="BO_Sale" />
+    <Class Name="NewSgpa.Module.BusinessObjects.Prestamos.SpFactura" Caption="Factura" ImageName="BO_Invoice" />
+    <Class Name="NewSgpa.Module.BusinessObjects.Prestamos.SpCuota" Caption="Cuota" />
+    <Class Name="NewSgpa.Module.BusinessObjects.Prestamos.SpPago" Caption="Pago" />
+    <Class Name="NewSgpa.Module.BusinessObjects.Prestamos.SpCuadroAmortizacion" Caption="Cuadro Amortización" />
+    <Class Name="NewSgpa.Module.BusinessObjects.Prestamos.SpRetencion" Caption="Retención" />
+    <Class Name="NewSgpa.Module.BusinessObjects.Sgpa.AdPreJubPago" Caption="Pago Pre-Jub.">
+      <OwnMembers>
+        <Member Name="Fecha" Caption="Fecha" DisplayFormat="{0:dd/MM/yyyy}" />
+        <Member Name="Importe" Caption="Importe" DisplayFormat="{0:N2}" />
+      </OwnMembers>
+    </Class>
+  </BOModel>
+  <NavigationItems StartupNavigationItem="Afiliado_ListView">
+    <Items>
+      <Item Id="Afiliados" Caption="Afiliados" ImageName="BO_Contact" Index="0">
+        <Items>
+          <Item Id="Afiliado_ListView" Caption="Afiliados" ViewId="Afiliado_ListView" ImageName="BO_Contact" Index="0" />
+          <Item Id="Trabaja_ListView" Caption="Empleos" ViewId="Trabaja_ListView" ImageName="BO_Organization" Index="1" />
+          <Item Id="AdPreJub_ListView" Caption="Adelantos Pre-Jub." ViewId="AdPreJub_ListView" Index="2" />
+          <Item Id="AdPreJubPago_ListView" Caption="Pagos Pre-Jub." ViewId="AdPreJubPago_ListView" Index="3" />
+          <Item Id="PrimaFallecimiento_ListView" Caption="Primas Fallecimiento" ViewId="PrimaFallecimiento_ListView" Index="4" />
+        </Items>
+      </Item>
+      <Item Id="Certificaciones" Caption="Certificaciones" ImageName="BO_Audit_ChangeHistory" Index="1">
+        <Items>
+          <Item Id="Certificacion_ListView" Caption="Certificaciones" ViewId="Certificacion_ListView" ImageName="BO_Audit_ChangeHistory" Index="0" />
+          <Item Id="CertificacionProrroga_ListView" Caption="Prórrogas" ViewId="CertificacionProrroga_ListView" Index="1" />
+        </Items>
+      </Item>
+      <Item Id="Prestaciones" Caption="Prestaciones" ImageName="BO_Invoice" Index="2">
+        <Items>
+          <Item Id="Prestacion_ListView" Caption="Prestaciones" ViewId="Prestacion_ListView" ImageName="BO_Invoice" Index="0" />
+          <Item Id="Receta_ListView" Caption="Recetas" ViewId="Receta_ListView" ImageName="BO_FileAttachment" Index="1" />
+          <Item Id="ReintegroMutual_ListView" Caption="Reintegros Mutuales" ViewId="ReintegroMutual_ListView" ImageName="BO_Contract" Index="2" />
+        </Items>
+      </Item>
+      <Item Id="Subsidios" Caption="Subsidios" ImageName="BO_Sale" Index="3">
+        <Items>
+          <Item Id="SubsidioCabezal_ListView" Caption="Subsidios" ViewId="SubsidioCabezal_ListView" ImageName="BO_Sale" Index="0" />
+          <Item Id="SubsidioItemCod_ListView" Caption="Códigos Ítem" ViewId="SubsidioItemCod_ListView" Index="1" />
+        </Items>
+      </Item>
+      <Item Id="Aportes" Caption="Aportes" ImageName="BO_Price" Index="4">
+        <Items>
+          <Item Id="Imponible_ListView" Caption="Imponibles" ViewId="Imponible_ListView" ImageName="BO_Sale" Index="0" />
+          <Item Id="EmpresaPago_ListView" Caption="Pagos Empresa" ViewId="EmpresaPago_ListView" Index="1" />
+          <Item Id="Ims_ListView" Caption="IMS" ViewId="Ims_ListView" Index="2" />
+        </Items>
+      </Item>
+      <Item Id="Préstamos" Caption="Préstamos" ImageName="BO_Sale" Index="5">
+        <Items>
+          <Item Id="SpPrestamo_ListView" Caption="Préstamos" ViewId="SpPrestamo_ListView" ImageName="BO_Sale" Index="0" />
+          <Item Id="SpFactura_ListView" Caption="Facturas" ViewId="SpFactura_ListView" ImageName="BO_Invoice" Index="1" />
+          <Item Id="SpCuota_ListView" Caption="Cuotas" ViewId="SpCuota_ListView" Index="2" />
+          <Item Id="SpPago_ListView" Caption="Pagos" ViewId="SpPago_ListView" Index="3" />
+          <Item Id="SpRetencion_ListView" Caption="Retenciones" ViewId="SpRetencion_ListView" Index="4" />
+          <Item Id="SpCuadroAmortizacion_ListView" Caption="Cuadro Amortización" ViewId="SpCuadroAmortizacion_ListView" Index="5" />
+        </Items>
+      </Item>
+      <Item Id="Parámetros" Caption="Parámetros" ImageName="Action_Inline_Edit" Index="6">
+        <Items>
+          <Item Id="Parametros_ListView" Caption="Parámetros" ViewId="Parametros_ListView" ImageName="Action_Inline_Edit" Index="0" />
+          <Item Id="Empresa_ListView" Caption="Empresas" ViewId="Empresa_ListView" ImageName="BO_Department" Index="1" />
+          <Item Id="Mutualista_ListView" Caption="Mutualistas" ViewId="Mutualista_ListView" ImageName="BO_Organization" Index="2" />
+          <Item Id="Certificador_ListView" Caption="Certificadores" ViewId="Certificador_ListView" ImageName="BO_Employee" Index="3" />
+          <Item Id="Patologia_ListView" Caption="Patologías" ViewId="Patologia_ListView" Index="4" />
+          <Item Id="AfeccionGrupo_ListView" Caption="Grupos Afección" ViewId="AfeccionGrupo_ListView" Index="5" />
+          <Item Id="AfeccionTipo_ListView" Caption="Tipos Afección" ViewId="AfeccionTipo_ListView" Index="6" />
+          <Item Id="SalidaTipo_ListView" Caption="Tipos Salida" ViewId="SalidaTipo_ListView" Index="7" />
+          <Item Id="BajaMotivo_ListView" Caption="Motivos Baja" ViewId="BajaMotivo_ListView" Index="8" />
+          <Item Id="Banco_ListView" Caption="Bancos" ViewId="Banco_ListView" Index="9" />
+          <Item Id="FormaPago_ListView" Caption="Formas de Pago" ViewId="FormaPago_ListView" Index="10" />
+          <Item Id="Especialidad_ListView" Caption="Especialidades" ViewId="Especialidad_ListView" Index="11" />
+          <Item Id="Departamento_ListView" Caption="Departamentos" ViewId="Departamento_ListView" Index="12" />
+          <Item Id="PrestacionTipo_ListView" Caption="Tipos Prestación" ViewId="PrestacionTipo_ListView" Index="13" />
+          <Item Id="FranjaIrpf_ListView" Caption="Franjas IRPF" ViewId="FranjaIrpf_ListView" Index="14" />
+          <Item Id="InformeEstadistico_ListView" Caption="Informes Estadísticos" ViewId="InformeEstadistico_ListView" Index="15" />
+        </Items>
+      </Item>
+      <Item Id="Estadísticas" Caption="Estadísticas" ImageName="BO_PivotChart" Index="7">
+        <Items>
+          <Item Id="InformeEstadistico_ListView_Stats" Caption="Informes" ViewId="InformeEstadistico_ListView" ImageName="BO_PivotChart" Index="0" />
+        </Items>
+      </Item>
+    </Items>
+  </NavigationItems>
+  <Options>
+    <LayoutManagerOptions RequiredFieldMark="*" />
+  </Options>
+  <Views>
+    <ListView Id="ApplicationUser_ListView" Caption="Users" />
+    <!-- === Afiliado ListView: Key columns === -->
+    <ListView Id="Afiliado_ListView" Caption="Afiliados" AllowEdit="False">
+      <Columns>
+        <ColumnInfo Id="CI" SortIndex="0" SortOrder="Ascending" Width="100" Index="0" />
+        <ColumnInfo Id="Apellido1" Width="120" Index="1" />
+        <ColumnInfo Id="Apellido2" Width="120" Index="2" />
+        <ColumnInfo Id="Nombres" Width="120" Index="3" />
+        <ColumnInfo Id="Mutualista" Width="150" Index="4" />
+        <ColumnInfo Id="CodSituacionMutual" Width="60" Index="5" Caption="Sit." />
+        <ColumnInfo Id="Telefono" Width="100" Index="6" />
+        <ColumnInfo Id="Movil" Width="100" Index="7" />
+      </Columns>
+    </ListView>
+    <!-- === Certificacion ListView === -->
+    <ListView Id="Certificacion_ListView" Caption="Certificaciones" AllowEdit="False">
+      <Columns>
+        <ColumnInfo Id="CI" Width="90" Index="0" />
+        <ColumnInfo Id="Afiliado" Width="180" Index="1" />
+        <ColumnInfo Id="FechaIni" Width="100" Index="2" />
+        <ColumnInfo Id="FechaFin" Width="100" Index="3" />
+        <ColumnInfo Id="AfeccionTipo" Width="150" Index="4" />
+        <ColumnInfo Id="Certificador" Width="120" Index="5" />
+        <ColumnInfo Id="Efectiva" Width="60" Index="6" />
+        <ColumnInfo Id="SalidaTipo" Width="100" Index="7" />
+      </Columns>
+    </ListView>
+    <!-- === SubsidioCabezal ListView === -->
+    <ListView Id="SubsidioCabezal_ListView" Caption="Subsidios" AllowEdit="False">
+      <Columns>
+        <ColumnInfo Id="IdSubsidio" Width="60" Index="0" />
+        <ColumnInfo Id="CI" Width="90" Index="1" />
+        <ColumnInfo Id="Afiliado" Width="180" Index="2" />
+        <ColumnInfo Id="Anio" Width="50" Index="3" />
+        <ColumnInfo Id="Mes" Width="40" Index="4" />
+        <ColumnInfo Id="Dias" Width="50" Index="5" />
+        <ColumnInfo Id="ValorJornal" Width="90" Index="6" />
+        <ColumnInfo Id="ImpNominal" Width="90" Index="7" />
+        <ColumnInfo Id="ImpAguinaldo" Width="90" Index="8" />
+        <ColumnInfo Id="ImpLiquido" Width="90" Index="9" />
+        <ColumnInfo Id="Liquidar" Width="60" Index="10" />
+        <ColumnInfo Id="NroRecibo" Width="80" Index="11" />
+      </Columns>
+    </ListView>
+    <!-- === Imponible ListView === -->
+    <ListView Id="Imponible_ListView" Caption="Imponibles" AllowEdit="False">
+      <Columns>
+        <ColumnInfo Id="CI" Width="90" Index="0" />
+        <ColumnInfo Id="CodEmpresa" Width="80" Index="1" />
+        <ColumnInfo Id="AnioMes" Width="70" Index="2" SortIndex="0" SortOrder="Descending" />
+        <ColumnInfo Id="Concepto" Width="80" Index="3" />
+        <ColumnInfo Id="DiasTrabajados" Width="60" Index="4" />
+        <ColumnInfo Id="Importe" Width="100" Index="5" />
+      </Columns>
+    </ListView>
+    <!-- === Prestacion ListView === -->
+    <ListView Id="Prestacion_ListView" Caption="Prestaciones" AllowEdit="False">
+      <Columns>
+        <ColumnInfo Id="CI" Width="90" Index="0" />
+        <ColumnInfo Id="Afiliado" Width="180" Index="1" />
+        <ColumnInfo Id="Fecha" Width="100" Index="2" SortIndex="0" SortOrder="Descending" />
+        <ColumnInfo Id="PrestacionTipo" Width="150" Index="3" />
+        <ColumnInfo Id="Moneda" Width="50" Index="4" />
+        <ColumnInfo Id="Importe" Width="100" Index="5" />
+      </Columns>
+    </ListView>
+    <!-- === SpPrestamo ListView === -->
+    <ListView Id="SpPrestamo_ListView" Caption="Préstamos" AllowEdit="False">
+      <Columns>
+        <ColumnInfo Id="IDPrestamo" Width="60" Index="0" />
+        <ColumnInfo Id="CI" Width="90" Index="1" />
+        <ColumnInfo Id="Fecha" Width="100" Index="2" SortIndex="0" SortOrder="Descending" />
+        <ColumnInfo Id="CodMoneda" Width="50" Index="3" />
+        <ColumnInfo Id="Importe" Width="100" Index="4" />
+        <ColumnInfo Id="Cuotas" Width="60" Index="5" />
+        <ColumnInfo Id="ImporteCuota" Width="90" Index="6" />
+        <ColumnInfo Id="PrestamoEstado" Width="100" Index="7" />
+      </Columns>
+    </ListView>
+    <!-- === Afiliado DetailView Layout === -->
+    <DetailView Id="Afiliado_DetailView" Caption="Afiliado">
+      <Layout>
+        <LayoutGroup Id="Main" Direction="Horizontal">
+          <LayoutGroup Id="DatosPersonales" Caption="Datos Personales" Direction="Vertical" RelativeSize="50" ShowCaption="True">
+            <LayoutItem Id="CI" ViewItem="CI" Index="0" />
+            <LayoutItem Id="Nombres" ViewItem="Nombres" Index="1" />
+            <LayoutItem Id="Apellido1" ViewItem="Apellido1" Index="2" />
+            <LayoutItem Id="Apellido2" ViewItem="Apellido2" Index="3" />
+            <LayoutItem Id="FechaNacimiento" ViewItem="FechaNacimiento" Index="4" />
+            <LayoutItem Id="Sexo" ViewItem="Sexo" Index="5" />
+            <LayoutItem Id="Direccion" ViewItem="Direccion" Index="6" />
+            <LayoutItem Id="Telefono" ViewItem="Telefono" Index="7" />
+            <LayoutItem Id="Movil" ViewItem="Movil" Index="8" />
+            <LayoutItem Id="EMail" ViewItem="EMail" Index="9" />
+            <LayoutItem Id="Departamento" ViewItem="Departamento" Index="10" />
+          </LayoutGroup>
+          <LayoutGroup Id="DatosMutualista" Caption="Mutualista y Banco" Direction="Vertical" RelativeSize="50" ShowCaption="True">
+            <LayoutItem Id="Mutualista" ViewItem="Mutualista" Index="0" />
+            <LayoutItem Id="SituacionMutual" ViewItem="SituacionMutual" Index="1" />
+            <LayoutItem Id="PagaMutualista" ViewItem="PagaMutualista" Index="2" />
+            <LayoutItem Id="FechaIngMutualista" ViewItem="FechaIngMutualista" Index="3" />
+            <LayoutItem Id="FechaBajaMutualista" ViewItem="FechaBajaMutualista" Index="4" />
+            <LayoutItem Id="NroSocioMutualista" ViewItem="NroSocioMutualista" Index="5" />
+            <LayoutItem Id="RegimenJubilatorio" ViewItem="RegimenJubilatorio" Index="6" />
+            <LayoutItem Id="Banco" ViewItem="Banco" Index="7" />
+            <LayoutItem Id="NroCuenta" ViewItem="NroCuenta" Index="8" />
+            <LayoutItem Id="NroFunCuenta" ViewItem="NroFunCuenta" Index="9" />
+          </LayoutGroup>
+        </LayoutGroup>
+      </Layout>
+      <Items>
+        <PropertyEditor Id="CI" Caption="Cédula" />
+      </Items>
+    </DetailView>
+    <DetailView Id="ReportDataV2_DetailView">
+      <Layout>
+        <LayoutGroup Id="Main" >
+          <LayoutGroup Id="SimpleEditors" >
+            <LayoutGroup Id="ReportDataV2" >
+              <LayoutItem Id="DisplayName" ViewItem="DisplayName" Index="0" IsNewNode="True" Removed="True" />
+              <LayoutItem Id="ParametersObjectType" ViewItem="ParametersObjectType" Index="1" IsNewNode="True" Removed="True" />
+              <LayoutItem Id="DataTypeCaption" ViewItem="DataTypeCaption" Index="2" IsNewNode="True" Removed="True" />
+              <LayoutItem Id="IsInplaceReport" Index="3" />
+            </LayoutGroup>
+          </LayoutGroup>
+        </LayoutGroup>
+      </Layout>
+    </DetailView>
+  </Views>
+</Application>

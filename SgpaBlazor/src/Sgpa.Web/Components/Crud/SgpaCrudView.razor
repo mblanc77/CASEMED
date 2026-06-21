@@ -1,0 +1,1051 @@
+@typeparam TEntity where TEntity : class, new()
+@using FluentValidation
+@using Microsoft.Extensions.DependencyInjection
+@using Sgpa.Domain.Metadata
+@using Sgpa.Domain.Security
+@using System.Text.Json
+@using Sgpa.Data
+@using Sgpa.Data.Configuracion
+@using Sgpa.Data.Crud
+@using Sgpa.Data.Errors
+@using Sgpa.Data.Preferencias
+@using Sgpa.Web.Reporting
+@using Sgpa.Web.Components.Reportes
+@using System.Globalization
+@inject IServiceProvider Services
+@inject IReporteCatalogo Reportes
+@inject NavigationManager Nav
+@inject ISgpaCrudService<TEntity> Service
+@inject ISgpaLookupService Lookups
+@inject WebCurrentUser CurrentUser
+@inject IDbExecutor Db
+@inject IErrorLog ErrorLog
+@inject IPreferenciaVistaStore VistaStore
+@inject ITablaConfigService TablaConfig
+@inject IToastNotificationService Toasts
+
+@*
+    Componente CRUD genérico (estilo XAF ListView + DetailView en popup).
+    - Grilla con búsqueda, fila de filtros y menú de filtro por columna (FilterControl).
+    - Alta/Edición en popup (DxGrid PopupEditForm) usando el DetailView genérico.
+    - Exportación a Excel.
+    - Botones Nuevo/Editar/Eliminar gobernados por permisos (Fase 5: por tabla).
+*@
+
+@if (!string.IsNullOrEmpty(Title))
+{
+    <h3 class="mb-2">@Title</h3>
+}
+
+@if (_denied)
+{
+    <div class="alert alert-warning">No tenés permiso de lectura sobre <strong>@Meta.Table</strong>.</div>
+}
+else
+{
+@* Sólo errores de carga de la página quedan como banner; los de edición/guardado se muestran como toast. *@
+@if (_error is not null)
+{
+    <div class="alert alert-danger">@_error</div>
+}
+
+@* En tablas grandes (_serverMode) los datos vienen de SgpaGridDataSource: paginado, orden,
+   filtros, menú de filtro, búsqueda y export los resuelve el grid contra la base, no en memoria.
+   La búsqueda usa SearchText (caja propia en el toolbar) en vez del search box nativo. *@
+<DxGrid @ref="_grid" @key="_gridKey" Data="@GridData"
+        KeyFieldName="@_keyFieldName"
+        SearchText="@_search"
+        ShowSearchBox="false"
+        ShowFilterRow="true"
+        ShowGroupPanel="true"
+        AllowGroup="true"
+        FooterDisplayMode="GridFooterDisplayMode.Always"
+        GroupFooterDisplayMode="GridGroupFooterDisplayMode.Always"
+        ContextMenus="GridContextMenus.All"
+        CustomizeGroupValueDisplayText="OnCustomizeGroupValue"
+        FilterMenuButtonDisplayMode="GridFilterMenuButtonDisplayMode.Always"
+        SelectionMode="@(_multiSelect ? GridSelectionMode.Multiple : GridSelectionMode.Single)"
+        SelectAllCheckboxMode="GridSelectAllCheckboxMode.AllPages"
+        AllowSelectRowByClick="true"
+        SelectedDataItems="_selectedItems"
+        SelectedDataItemsChanged="OnSelectionChanged"
+        EditMode="@EffectiveEditMode"
+        @bind-PageSize="_pageSize"
+        PageSizeSelectorVisible="true"
+        PageSizeSelectorItems="_pageSizes"
+        PageSizeSelectorAllRowsItemVisible="false"
+        CustomizeEditModel="OnCustomizeEditModel"
+        EditModelSaving="OnEditModelSavingAsync"
+        CustomizeContextMenu="OnCustomizeContextMenu"
+        CustomizeElement="OnCustomizeElement"
+        DetailRowDisplayMode="@(DetailTemplate is null ? GridDetailRowDisplayMode.Never : GridDetailRowDisplayMode.Auto)"
+        LayoutAutoLoading="OnLayoutAutoLoadingAsync"
+        LayoutAutoSaving="OnLayoutAutoSaving"
+        ColumnResizeMode="GridColumnResizeMode.NextColumn">
+    <ToolbarTemplate>
+        <div class="sgpa-toolbar d-flex align-items-center gap-2 flex-wrap p-1">
+            @if (CanCreate)
+            {
+                <DxButton Text="Nuevo" IconCssClass="fa-solid fa-plus" RenderStyle="ButtonRenderStyle.Primary" Click="NewRowAsync" />
+            }
+            <span class="sgpa-search">
+                <DxTextBox @bind-Text="_search" @bind-Text:after="LimpiarSelTodo" NullText="Buscar…"
+                           ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto" />
+            </span>
+            @* Grupo de herramientas de la vista: refrescar, seleccionar, columnas, totales, restablecer. *@
+            <div class="btn-group sgpa-toolbar-group" role="group">
+                <DxButton IconCssClass="fa-solid fa-arrows-rotate" RenderStyle="ButtonRenderStyle.Secondary"
+                          Click="RefreshAsync" Tooltip="Refrescar" />
+                @if (CanDelete)
+                {
+                    <DxButton IconCssClass="@(_multiSelect ? "fa-solid fa-square-check" : "fa-regular fa-square-check")"
+                              RenderStyle="@(_multiSelect ? ButtonRenderStyle.Primary : ButtonRenderStyle.Secondary)"
+                              Click="ToggleMultiSelect" Tooltip="Seleccionar" />
+                }
+                <DxButton IconCssClass="fa-solid fa-table-columns"
+                          RenderStyle="ButtonRenderStyle.Secondary" Click="ShowColumnChooser" Tooltip="Columnas" />
+                <DxButton IconCssClass="fa-solid fa-calculator"
+                          RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => _summaryEditor = true)" Tooltip="Totales" />
+                <DxButton IconCssClass="fa-solid fa-rotate-left"
+                          RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => _confirmReset = true)" Tooltip="Restablecer vista" />
+            </div>
+            @if (_multiSelect)
+            {
+                <DxButton IconCssClass="@(SelCount > 0 ? "fa-solid fa-square-minus" : "fa-solid fa-list-check")"
+                          RenderStyle="ButtonRenderStyle.Secondary"
+                          Text="@(SelCount > 0 ? "Deseleccionar todo" : "Seleccionar todo")"
+                          Tooltip="@(SelCount > 0 ? "Quita toda la selección" : "Selecciona todos los registros del filtro actual (todas las páginas)")"
+                          Click="ToggleSeleccionTodoAsync" />
+                @if (_keysTodoFiltro is not null)
+                {
+                    <span class="badge rounded-pill text-bg-success d-inline-flex align-items-center gap-1">
+                        <i class="fa-solid fa-circle-check"></i> Todos los del filtro: @_keysTodoFiltro.Count
+                        <a href="#" class="text-white text-decoration-none ms-1" @onclick="DeseleccionarTodo" @onclick:preventDefault title="Quitar">✕</a>
+                    </span>
+                }
+            }
+            @if (CanDelete && _multiSelect && SelCount > 0)
+            {
+                <DxButton Text="@($"({SelCount})")" IconCssClass="fa-solid fa-trash" Tooltip="Eliminar seleccionados"
+                          RenderStyle="ButtonRenderStyle.Danger"
+                          Click="@(() => { _confirmText = string.Empty; _confirmBulkDelete = true; })" />
+            }
+            <DxDropDownButton Text="Exportar" IconCssClass="fa-solid fa-file-export"
+                              RenderStyle="ButtonRenderStyle.Secondary">
+                <Items>
+                    <DxDropDownButtonItem Text="Excel (.xlsx)" IconCssClass="fa-solid fa-file-excel" Click="@(() => ExportAsync("xlsx"))" />
+                    <DxDropDownButtonItem Text="PDF (.pdf)" IconCssClass="fa-solid fa-file-pdf" Click="@(() => ExportAsync("pdf"))" />
+                    <DxDropDownButtonItem Text="CSV (.csv)" IconCssClass="fa-solid fa-file-csv" Click="@(() => ExportAsync("csv"))" />
+                </Items>
+            </DxDropDownButton>
+            @* Reportes DevExpress asociados a esta tabla. Si hay selección, el reporte se filtra por las claves elegidas. *@
+            @if (_reportes.Count > 0)
+            {
+                <DxDropDownButton Text="@($"Reportes ({_reportes.Count})")" IconCssClass="fa-solid fa-file-lines"
+                                  RenderStyle="ButtonRenderStyle.Secondary">
+                    <Items>
+                        @foreach (var r in _reportes)
+                        {
+                            <DxDropDownButtonItem Text="@r.Nombre" IconCssClass="fa-solid fa-file-lines"
+                                                  Click="@(() => LaunchReport(r))" />
+                        }
+                    </Items>
+                </DxDropDownButton>
+            }
+            <span class="vr mx-1"></span>
+            <SgpaGridFilter Grid="_grid" Meta="Meta" />
+        </div>
+    </ToolbarTemplate>
+    <Columns>
+        @if (_multiSelect)
+        {
+            <DxGridSelectionColumn Width="40px" VisibleIndex="0" />
+        }
+        @if (CanWrite || CanDelete || RowActions is not null)
+        {
+            <DxGridCommandColumn Width="@(RowActions is null ? "84px" : "140px")" NewButtonVisible="false" EditButtonVisible="false" DeleteButtonVisible="false">
+                <CellDisplayTemplate Context="ctx">
+                    <div class="d-flex gap-1">
+                        @if (RowActions is not null)
+                        {
+                            @RowActions((TEntity)ctx.DataItem)
+                        }
+                        @if (CanWrite)
+                        {
+                            <DxButton IconCssClass="fa-solid fa-pen" RenderStyle="ButtonRenderStyle.Link" Tooltip="Editar"
+                                      Click="@(() => _grid!.StartEditDataItemAsync(ctx.DataItem))" />
+                        }
+                        @if (CanDelete)
+                        {
+                            <DxButton IconCssClass="fa-solid fa-trash" RenderStyle="ButtonRenderStyle.Link" Tooltip="Eliminar"
+                                      Click="@(() => { _itemToDelete = (TEntity)ctx.DataItem; _confirmText = string.Empty; _confirmDelete = true; })" />
+                        }
+                    </div>
+                </CellDisplayTemplate>
+            </DxGridCommandColumn>
+        }
+        @foreach (var col in ListColumns)
+        {
+            @if (_lookupCaptions.TryGetValue(col.Name, out var lookupCaption))
+            {
+                @* Columna FK: la celda muestra la descripción (texto) → alineada a la izquierda, aunque el
+                   campo sea numérico (si no, DevExpress la alinearía a la derecha por ser int). *@
+                <DxGridDataColumn FieldName="@col.Name" Caption="@lookupCaption" TextAlignment="GridTextAlignment.Left">
+                    <CellDisplayTemplate Context="cell">@LookupTextFor(col.Name, cell.Value)</CellDisplayTemplate>
+                </DxGridDataColumn>
+            }
+            else
+            {
+                <DxGridDataColumn FieldName="@col.Name" Caption="@col.Caption" DisplayFormat="@DisplayFormatFor(col)"
+                                  TextAlignment="@AlignFor(col)" />
+            }
+        }
+    </Columns>
+    @* Panel de pie con funciones agregadas (suma/promedio/etc.), configurable por el usuario y persistido.
+       Funciona en client (DxGrid en memoria) y en server-side (SgpaGridDataSource → GROUP BY/agregados). *@
+    <TotalSummary>
+        @foreach (var s in _summaries)
+        {
+            <DxGridSummaryItem SummaryType="s.Type" FieldName="@s.Column" />
+        }
+    </TotalSummary>
+    @* Mismos sumarios a nivel grupo: aparecen en el pie de cada grupo al agrupar. *@
+    <GroupSummary>
+        @foreach (var s in _summaries)
+        {
+            <DxGridSummaryItem SummaryType="s.Type" FieldName="@s.Column" />
+        }
+    </GroupSummary>
+    <EditFormTemplate Context="ctx">
+        <SgpaDetailForm Model="ctx.EditModel" Meta="Meta" IsNew="_editingIsNew" HiddenColumns="_hiddenColumns"
+                        FieldEditable="FieldEditableAdapter" />
+    </EditFormTemplate>
+    @* Master-detail opcional: el detalle se renderiza sólo al expandir la fila (carga diferida). El botón de
+       expandir aparece sólo si hay DetailTemplate (DetailRowDisplayMode arriba); si no, este template no se invoca. *@
+    <DetailRowTemplate Context="ctx">
+        @DetailTemplate?.Invoke((TEntity)ctx.DataItem)
+    </DetailRowTemplate>
+</DxGrid>
+
+@* Confirmación de borrado en español (reemplaza al diálogo nativo de DevExpress, que está en inglés). *@
+<DxPopup @bind-Visible="_confirmDelete" HeaderText="Eliminar registro" Width="440px" CloseOnEscape="true">
+    <BodyContentTemplate Context="popup">
+        <p>¿Seguro que querés eliminar este registro? Esta acción no se puede deshacer.</p>
+        @if (_requiereTextoEliminar)
+        {
+            <p class="mb-1">Para confirmar, escribí <strong>ELIMINAR</strong> (en mayúsculas):</p>
+            <DxTextBox @bind-Text="_confirmText" BindValueMode="BindValueMode.OnInput"
+                       NullText="ELIMINAR" CssClass="mb-3" />
+        }
+        <div class="d-flex justify-content-end gap-2">
+            <DxButton Text="No" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => _confirmDelete = false)" />
+            <DxButton Text="Sí, eliminar" RenderStyle="ButtonRenderStyle.Danger" Click="ConfirmarBorradoAsync" Enabled="@PuedeEliminar" />
+        </div>
+    </BodyContentTemplate>
+</DxPopup>
+
+@* Confirmación del borrado masivo (filas seleccionadas). *@
+<DxPopup @bind-Visible="_confirmBulkDelete" HeaderText="Eliminar seleccionados" Width="460px" CloseOnEscape="true">
+    <BodyContentTemplate Context="popup">
+        <p>
+            @if (_keysTodoFiltro is not null)
+            {
+                <text>¿Seguro que querés eliminar <strong>todos los @SelCount registro(s) del filtro actual</strong>? Esta acción no se puede deshacer.</text>
+            }
+            else
+            {
+                <text>¿Seguro que querés eliminar los <strong>@SelCount</strong> registro(s) seleccionado(s)? Esta acción no se puede deshacer.</text>
+            }
+        </p>
+        @if (_requiereTextoEliminar)
+        {
+            <p class="mb-1">Para confirmar, escribí <strong>ELIMINAR</strong> (en mayúsculas):</p>
+            <DxTextBox @bind-Text="_confirmText" BindValueMode="BindValueMode.OnInput" NullText="ELIMINAR" CssClass="mb-3" />
+        }
+        <div class="d-flex justify-content-end gap-2">
+            <DxButton Text="No" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => _confirmBulkDelete = false)" />
+            <DxButton Text="Sí, eliminar" RenderStyle="ButtonRenderStyle.Danger" Click="EliminarSeleccionadosAsync" Enabled="@PuedeEliminar" />
+        </div>
+    </BodyContentTemplate>
+</DxPopup>
+
+@* Confirmación de restablecer la vista (descarta la personalización guardada). *@
+<DxPopup @bind-Visible="_confirmReset" HeaderText="Restablecer vista" Width="440px" CloseOnEscape="true">
+    <BodyContentTemplate Context="popup">
+        <p>¿Restablecer la vista al diseño original? Se descarta tu personalización guardada (orden de columnas,
+           agrupación, anchos y totales).</p>
+        <div class="d-flex justify-content-end gap-2">
+            <DxButton Text="No" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => _confirmReset = false)" />
+            <DxButton Text="Sí, restablecer" RenderStyle="ButtonRenderStyle.Primary" Click="RestablecerVistaAsync" />
+        </div>
+    </BodyContentTemplate>
+</DxPopup>
+
+@* Editor de totales del pie: una función agregada por columna. Se persiste con el resto de la vista. *@
+<DxPopup @bind-Visible="_summaryEditor" HeaderText="Totales del pie" Width="480px" CloseOnEscape="true">
+    <BodyContentTemplate Context="popup">
+        <p class="text-muted">Elegí una función agregada por columna; aparece en el pie de la grilla.</p>
+        <table class="table table-sm align-middle mb-2">
+            <tbody>
+                @foreach (var col in ListColumns)
+                {
+                    <tr>
+                        <td>@col.Caption</td>
+                        <td style="width:200px">
+                            <select class="form-select form-select-sm" value="@SummaryTypeOf(col.Name)"
+                                    @onchange="@(e => SetSummary(col.Name, e.Value?.ToString()))">
+                                @foreach (var (val, label) in SummaryOptions)
+                                {
+                                    <option value="@val">@label</option>
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div class="d-flex justify-content-end">
+            <DxButton Text="Cerrar" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => _summaryEditor = false)" />
+        </div>
+    </BodyContentTemplate>
+</DxPopup>
+
+<SgpaReportLauncher @ref="_launcher" />
+}
+
+@code {
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public int PageSize { get; set; } = 20;
+
+    /// <summary>
+    /// Clave de pantalla para persistir la personalización del usuario (columnas, orden, agrupación,
+    /// filtros, sumarios). Si es null se deriva de la tabla (+ la columna de filtro en grillas hijas),
+    /// de modo que la vista se comparte entre todos los padres de una misma pestaña.
+    /// </summary>
+    [Parameter] public string? ViewKey { get; set; }
+
+    /// <summary>Override opcional de permisos. Si es null, se derivan del usuario actual para esta tabla.</summary>
+    [Parameter] public PermissionAction? Permissions { get; set; }
+
+    /// <summary>
+    /// Para grillas hijas de un master-detail: filtra por esta columna = <see cref="FilterValue"/>.
+    /// La columna se oculta y se estampa automáticamente en las altas (el usuario no la edita).
+    /// </summary>
+    [Parameter] public string? FilterColumn { get; set; }
+    [Parameter] public object? FilterValue { get; set; }
+
+    /// <summary>Notifica al padre cuando cambia la cantidad de filas (alta/baja) — para refrescar contadores.</summary>
+    [Parameter] public EventCallback OnChanged { get; set; }
+
+    /// <summary>Inicialización opcional de la entidad al dar de alta (ej. fecha = hoy). Se aplica en la fila nueva.</summary>
+    [Parameter] public Action<TEntity>? OnNew { get; set; }
+
+    /// <summary>
+    /// Regla opcional de editabilidad por campo según los datos (paridad VB6). Recibe
+    /// (entidad, nombre de columna, esAlta) y devuelve true si el campo es editable.
+    /// </summary>
+    [Parameter] public Func<TEntity, string, bool, bool>? FieldEditable { get; set; }
+
+    private Func<object, ColumnMetadata, bool, bool>? FieldEditableAdapter
+        => FieldEditable is null ? null : (m, c, isNew) => FieldEditable((TEntity)m, c.Name, isNew);
+
+    /// <summary>Validación de negocio opcional previa al guardado: devuelve un mensaje de error (aborta) o null.</summary>
+    [Parameter] public Func<TEntity, Task<string?>>? ValidateAsync { get; set; }
+
+    /// <summary>Acción opcional tras guardar (alta o modificación): efectos colaterales del negocio.</summary>
+    [Parameter] public Func<TEntity, Task>? OnAfterSaveAsync { get; set; }
+
+    /// <summary>Avisos no bloqueantes opcionales calculados tras guardar; se muestran como banner informativo.</summary>
+    [Parameter] public Func<TEntity, Task<IReadOnlyList<string>>>? GetWarningsAfterSaveAsync { get; set; }
+
+    /// <summary>Acciones extra por fila (recibe la entidad), ej. abrir un sub-formulario relacionado.</summary>
+    [Parameter] public RenderFragment<TEntity>? RowActions { get; set; }
+
+    /// <summary>
+    /// Orden EXPLÍCITO de columnas de la grilla, por nombre (izq→der). Actúa como whitelist: sólo se muestran
+    /// las columnas nombradas, en ese orden. Si es null, se usan todas las de la metadata (por su Order).
+    /// </summary>
+    [Parameter] public string[]? ColumnOrder { get; set; }
+
+    /// <summary>Clase CSS opcional por fila según los datos (ej. atenuar las dadas de baja). Devuelve null = sin clase.</summary>
+    [Parameter] public Func<TEntity, string?>? RowCssClass { get; set; }
+
+    /// <summary>
+    /// Plantilla opcional de fila de detalle (master-detail). Si se provee, cada fila tiene botón de expandir y el
+    /// contenido se renderiza recién al expandir (carga diferida). Recibe la entidad de la fila.
+    /// </summary>
+    [Parameter] public RenderFragment<TEntity>? DetailTemplate { get; set; }
+
+    /// <summary>
+    /// Modo de edición. Si es null se decide por tabla: los catálogos (port de los Gr*) se editan inline
+    /// (EditRow) y el resto en popup. Pasar un valor explícito fuerza el modo para esta vista.
+    /// </summary>
+    [Parameter] public GridEditMode? EditMode { get; set; }
+
+    private bool _inlineEdit;   // catálogo editable inline (de TablaConfig)
+
+    private GridEditMode EffectiveEditMode =>
+        EditMode ?? (_inlineEdit ? GridEditMode.EditRow : GridEditMode.PopupEditForm);
+
+    // Opciones del selector de tamaño de página (el item "Todo" lo agrega PageSizeSelectorAllRowsItemVisible).
+    private static readonly int[] _pageSizes = { 10, 20, 50, 100, 200, 500, 1000, 5000 };
+
+    // Por encima de este total (ya filtrado), la grilla pasa a modo server-side (DxGrid + SgpaGridDataSource)
+    // en lugar de materializar todo en el cliente. Por debajo carga todo (más simple, set chico).
+    private const int ClientModeMaxRows = 2000;
+
+    private DxGrid? _grid;
+    private IReadOnlyList<object> _selectedItems = Array.Empty<object>();   // filas seleccionadas (multi)
+    private IReadOnlyList<ReporteInfo> _reportes = Array.Empty<ReporteInfo>();   // reportes asociados a esta tabla
+    private bool _multiSelect;          // selección múltiple activa (para borrado masivo)
+    private bool _confirmDelete;
+    private bool _confirmBulkDelete;
+    private TEntity? _itemToDelete;
+    private bool _requiereTextoEliminar = true;   // ¿pide tipear ELIMINAR? (config por tabla)
+    private string _confirmText = string.Empty;
+    private bool PuedeEliminar => !_requiereTextoEliminar
+        || string.Equals(_confirmText, "ELIMINAR", StringComparison.Ordinal);
+
+    // --- Personalización por usuario (paridad XAF): export, totales, layout persistido ---
+    private bool _summaryEditor;
+    private bool _confirmReset;   // popup de confirmación de "Restablecer vista"
+    private int _pageSize;   // tamaño de página persistido (bindeado al grid)
+    private string _viewKey = string.Empty;
+    private List<SummaryDef> _summaries = new();
+    private object _gridKey = new();                // se renueva en "Restablecer" para recrear el grid (vuelve al default)
+    private VistaState? _savedVista;                // personalización guardada, precargada antes del 1er render
+    private CancellationTokenSource? _saveCts;      // debounce del auto-guardado
+
+    // Opciones del editor de totales; con nameof para que el compilador valide los miembros del enum.
+    private static readonly (string Value, string Label)[] SummaryOptions =
+    {
+        (string.Empty, "(ninguno)"),
+        (nameof(GridSummaryItemType.Sum), "Suma"),
+        (nameof(GridSummaryItemType.Count), "Cuenta"),
+        (nameof(GridSummaryItemType.Avg), "Promedio"),
+        (nameof(GridSummaryItemType.Min), "Mínimo"),
+        (nameof(GridSummaryItemType.Max), "Máximo"),
+    };
+    private IReadOnlyList<TEntity> _data = Array.Empty<TEntity>();
+
+    // Modo server-side: la grilla se enlaza a esta fuente y resuelve todo contra la base.
+    private bool _serverMode;
+    private SgpaGridDataSource<TEntity>? _dataSource;
+
+    // Búsqueda (caja propia en el toolbar) — DxGrid la aplica vía SearchText en client y server mode.
+    private string _search = string.Empty;
+
+    // Origen de datos del grid según el modo (lista en memoria o fuente server-side).
+    private object GridData => _serverMode ? _dataSource! : _data;
+
+    // Por columna FK: mapa (código.ToString() → descripción) para mostrar el nombre en la grilla.
+    private readonly Dictionary<string, IReadOnlyDictionary<string, string>> _lookups = new();
+    // Columnas FK detectadas (por convención) y su entidad destino, resueltas una vez (sin base).
+    private readonly List<(ColumnMetadata Col, EntityMetadata Target)> _lookupCols = new();
+    // Cabezal de las columnas FK: el nombre de la tabla referenciada (no "Código de X", ya que se ve la descripción).
+    private readonly Dictionary<string, string> _lookupCaptions = new(StringComparer.OrdinalIgnoreCase);
+    private bool _editingIsNew;
+    private string? _error;
+    private bool _denied;
+    private PermissionAction _perms;
+
+    private static readonly EntityMetadata Meta = EntityMetadata.For<TEntity>();
+
+    // DxGrid usa un único campo clave; en clave compuesta se omite y la grilla identifica por referencia.
+    private static readonly string? _keyFieldName = Meta.Keys.Count == 1 ? Meta.Key.Name : null;
+
+    // Columna de filtro resuelta (cuando es una grilla hija) y columnas a ocultar en el DetailView.
+    private ColumnMetadata? _filterCol;
+    private string[]? _hiddenColumns;
+
+    // En modo hijo, la columna de filtro (FK al padre) se oculta de la grilla. Si se pasó ColumnOrder, actúa
+    // como whitelist + orden explícito (sólo esas columnas, izq→der); si no, todas las de la metadata.
+    private IEnumerable<ColumnMetadata> ListColumns
+    {
+        get
+        {
+            if (ColumnOrder is { Length: > 0 })
+                return ColumnOrder
+                    .Select(n => Meta.ListColumns.FirstOrDefault(c => string.Equals(c.Name, n, StringComparison.OrdinalIgnoreCase)))
+                    .Where(c => c is not null && (_filterCol is null || c.Name != _filterCol.Name))
+                    .Cast<ColumnMetadata>();
+            return _filterCol is null ? Meta.ListColumns : Meta.ListColumns.Where(c => c.Name != _filterCol.Name);
+        }
+    }
+
+    private bool CanCreate => (_perms & PermissionAction.Create) != 0;
+    private bool CanWrite => (_perms & PermissionAction.Write) != 0;
+    private bool CanDelete => (_perms & PermissionAction.Delete) != 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _pageSize = PageSize;
+        await CurrentUser.EnsureLoadedAsync();
+        _perms = Permissions ?? CurrentUser.PermissionsFor(Meta.Table);
+        _viewKey = ViewKey ?? (FilterColumn is null ? Meta.Table : $"{Meta.Table}:{FilterColumn}");
+        await TablaConfig.EnsureLoadedAsync();
+        var cfg = TablaConfig.Get(Meta.Table);
+        _requiereTextoEliminar = cfg.ConfirmarBorrado;
+        _inlineEdit = cfg.EdicionInline;
+        if ((_perms & PermissionAction.Read) == 0)
+        {
+            _denied = true;
+            return;
+        }
+        _reportes = await Reportes.ForTableAsync(Meta.Table);
+
+        // Precarga de la personalización ANTES del primer render: así la columna de selección (si estaba activa)
+        // y el resto de las prefs ya están bien al pintar. La capa de layout se aplica luego en LayoutAutoLoading
+        // (sincrónico, sin await: si se hace async se parte la init del grid y el checkbox queda sin estilar).
+        var savedJson = VistaState.StripLayoutFilter(await VistaStore.GetAsync(CurrentUser.UserName, _viewKey));
+        savedJson = VistaState.NormalizePageSize(savedJson, _pageSizes, PageSize);   // descarta "ver todo"/tamaños inválidos
+        _savedVista = VistaState.FromJson(savedJson);
+        if (_savedVista is not null)
+        {
+            _summaries = _savedVista.Summaries ?? new();
+            if (_savedVista.PageSize is int sps && sps > 0) _pageSize = sps;
+            if (_savedVista.MultiSelect is bool sms) _multiSelect = sms;
+        }
+
+        if (FilterColumn is not null)
+        {
+            _filterCol = Meta.Columns.FirstOrDefault(c =>
+                c.Name.Equals(FilterColumn, StringComparison.OrdinalIgnoreCase)
+                || c.Property.Name.Equals(FilterColumn, StringComparison.OrdinalIgnoreCase));
+            if (_filterCol is not null)
+                _hiddenColumns = new[] { _filterCol.Name };
+        }
+        // Columnas FK por convención (CodEmpresa→Empresa, etc.). El mapa de descripciones se arma luego,
+        // según el modo: dirigido a los códigos presentes (client) o por tabla completa (server).
+        foreach (var col in ListColumns)
+        {
+            var target = EntityCatalog.LookupDisplayTargetFor(col, Meta);
+            if (target is null) continue;
+            _lookupCols.Add((col, target));
+            _lookupCaptions[col.Name] = FriendlyName(target);
+        }
+
+        // Sonda barata (COUNT + 1 fila) para decidir el modo según el tamaño ya filtrado.
+        var probe = await Service.GetPageAsync(new PageQuery(0, 1, FilterColumn: _filterCol?.Name,
+            FilterValue: _filterCol is null ? null : FilterValue));
+        _serverMode = probe.TotalCount > ClientModeMaxRows;
+        if (_serverMode)
+        {
+            // onItemsLoaded resuelve las descripciones FK por página (ej. CI→nombre del afiliado), ya que las
+            // tablas grandes no se materializan en LoadFullTableLookupsAsync.
+            _dataSource = new SgpaGridDataSource<TEntity>(Service, _filterCol?.Name,
+                _filterCol is null ? null : FilterValue,
+                onItemsLoaded: _lookupCols.Count > 0 ? ResolvePageLookupsAsync : null);
+            await LoadFullTableLookupsAsync();
+        }
+        else
+        {
+            await ReloadAsync();
+            await LoadDataLookupsAsync();
+        }
+    }
+
+    // Refresca tras alta/baja/modificación: en server-side recarga la fuente; en client recarga la lista
+    // y reconstruye los lookups (códigos nuevos).
+    private async Task RefreshAsync()
+    {
+        _keysTodoFiltro = null;   // un refresh/cambio de filtro invalida la selección "todo del filtro"
+        if (_serverMode)
+            _grid?.Reload();
+        else
+        {
+            await ReloadAsync();
+            await LoadDataLookupsAsync();
+        }
+    }
+
+    // Client-mode: resuelve sólo las descripciones de los códigos presentes en la grilla (IN), así anda
+    // incluso con tablas destino grandes (Empresa) y sin importar el tipo (clave string).
+    private async Task LoadDataLookupsAsync()
+    {
+        _lookups.Clear();
+        foreach (var (col, target) in _lookupCols)
+        {
+            var codes = _data.Select(e => col.Property.GetValue(e))
+                             .Where(v => v is not null).Select(v => v!).Distinct().ToList();
+            if (codes.Count == 0) continue;
+            _lookups[col.Name] = await Lookups.GetDescriptionsAsync(target.EntityType, codes);
+        }
+    }
+
+    // Server-mode: usa el mapa por tabla completa (acotado a tablas chicas; las grandes devuelven null acá y se
+    // resuelven por página en ResolvePageLookupsAsync).
+    private async Task LoadFullTableLookupsAsync()
+    {
+        _lookups.Clear();
+        foreach (var (col, target) in _lookupCols)
+        {
+            var items = await Lookups.GetAsync(target.EntityType);
+            if (items is null) continue;
+            var map = new Dictionary<string, string>();
+            foreach (var it in items)
+                if (it.Value is not null) map[it.Value.ToString()!] = it.Text;
+            _lookups[col.Name] = map;
+        }
+    }
+
+    // Server-mode, por página: resuelve las descripciones de las FK presentes en las filas de la página que aún
+    // no tengamos (ej. CI→nombre del afiliado; Afiliado es grande y no entra en LoadFullTableLookupsAsync). Lo
+    // llama el data source ANTES de devolver la página, así la grilla ya pinta el nombre (sin parpadeo). Acumula.
+    private async Task ResolvePageLookupsAsync(IReadOnlyList<TEntity> items, CancellationToken ct)
+    {
+        if (items.Count == 0 || _lookupCols.Count == 0) return;
+        foreach (var (col, target) in _lookupCols)
+        {
+            _lookups.TryGetValue(col.Name, out var have);
+            var codes = items.Select(e => col.Property.GetValue(e))
+                             .Where(v => v is not null).Select(v => v!)
+                             .Where(v => have is null || !have.ContainsKey(v.ToString()!))
+                             .Distinct().ToList();
+            if (codes.Count == 0) continue;
+            var map = await Lookups.GetDescriptionsAsync(target.EntityType, codes, ct);
+            if (map.Count == 0) continue;
+            var merged = have is null ? new Dictionary<string, string>() : new Dictionary<string, string>(have);
+            foreach (var kv in map) merged[kv.Key] = kv.Value;
+            _lookups[col.Name] = merged;
+        }
+    }
+
+    // Texto a mostrar para una celda FK: la descripción si está en el mapa; si no (mapa aún sin ese código),
+    // el valor crudo como respaldo.
+    private string LookupTextFor(string colName, object? value)
+        => _lookups.TryGetValue(colName, out var map) && value?.ToString() is { } k && map.TryGetValue(k, out var txt)
+            ? txt
+            : value?.ToString() ?? string.Empty;
+
+    // La cédula (CI) se muestra sin separadores de miles en toda la app; el resto usa su formato de metadata.
+    private static string? DisplayFormatFor(ColumnMetadata col)
+        => string.Equals(col.Name, "CI", StringComparison.OrdinalIgnoreCase) ? "0" : col.DisplayFormat;
+
+    // Alineación por tipo (regla general): texto a la izquierda, fechas y booleanos centrados, números a la
+    // derecha. Las columnas FK (que muestran descripción) se fuerzan a la izquierda en el markup.
+    private static GridTextAlignment AlignFor(ColumnMetadata col)
+    {
+        var t = col.UnderlyingType;
+        if (t == typeof(DateTime) || t == typeof(DateOnly) || t == typeof(bool))
+            return GridTextAlignment.Center;
+        if (t == typeof(int) || t == typeof(long) || t == typeof(short) || t == typeof(byte)
+            || t == typeof(decimal) || t == typeof(double) || t == typeof(float))
+            return GridTextAlignment.Right;
+        return GridTextAlignment.Left;   // texto y cualquier otro
+    }
+
+    // Cabezal amigable para una columna FK: el nombre de la tabla referenciada, sin el prefijo "SP_".
+    private static string FriendlyName(EntityMetadata target)
+        => target.Table.StartsWith("SP_", StringComparison.OrdinalIgnoreCase) ? target.Table[3..] : target.Table;
+
+    private async Task ReloadAsync()
+    {
+        try
+        {
+            _error = null;
+            _data = _filterCol is not null
+                ? await Service.GetByColumnAsync(_filterCol.Name, FilterValue)
+                : await Service.GetAllAsync();
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+    }
+
+    private void OnCustomizeEditModel(GridCustomizeEditModelEventArgs e)
+    {
+        _editingIsNew = e.IsNew;
+        // En una grilla hija, el alta hereda automáticamente la FK del padre (el usuario no la edita).
+        if (e.IsNew && _filterCol is not null && FilterValue is not null)
+            _filterCol.SetValue(e.EditModel, Coerce(FilterValue, _filterCol.UnderlyingType));
+        // Auto-numeración de catálogos: estampa el próximo código calculado en NewRowAsync (la clave es ReadOnly).
+        if (e.IsNew && _pendingNewKey is not null)
+        {
+            Meta.Key.SetValue(e.EditModel, _pendingNewKey);
+            _pendingNewKey = null;
+        }
+        // Defaults de negocio para el alta (ej. fecha = hoy) provistos por el llamador.
+        if (e.IsNew) OnNew?.Invoke((TEntity)e.EditModel);
+    }
+
+    private static object? Coerce(object value, Type underlying)
+    {
+        if (underlying.IsInstanceOfType(value)) return value;
+        try { return Convert.ChangeType(value, underlying); }
+        catch { return value; }
+    }
+
+    private async Task OnEditModelSavingAsync(GridEditModelSavingEventArgs e)
+    {
+        var entity = (TEntity)e.EditModel;
+        if (e.IsNew && !CanCreate) { Toasts.Error("Sin permiso para crear."); e.Cancel = true; return; }
+        if (!e.IsNew && !CanWrite) { Toasts.Error("Sin permiso para modificar."); e.Cancel = true; return; }
+
+        // Backstop de validación por metadata (requeridos/largo). El SgpaMetadataValidator del
+        // DetailView ya bloquea el guardado vía EditContext; esto cubre el caso de que no se dispare.
+        var errors = MetadataValidation.Validate(Meta, entity, e.IsNew);
+        if (errors.Count > 0)
+        {
+            Toasts.Error(string.Join(" ", errors.Select(x => x.Message)));
+            e.Cancel = true;
+            return;
+        }
+
+        if (ValidateAsync is not null)
+        {
+            var validationError = await ValidateAsync(entity);
+            if (validationError is not null) { Toasts.Error(validationError); e.Cancel = true; return; }
+        }
+
+        // Backstop de las reglas de negocio (FluentValidation), incluidas las async. Las síncronas ya se
+        // muestran por campo (SgpaMetadataValidator); acá se garantiza el bloqueo aunque el editor no valide.
+        var fluent = Services.GetService<IValidator<TEntity>>();
+        if (fluent is not null)
+        {
+            var result = await fluent.ValidateAsync(entity);
+            if (!result.IsValid)
+            {
+                Toasts.Error(string.Join(" ", result.Errors.Select(x => x.ErrorMessage)));
+                e.Cancel = true;
+                return;
+            }
+        }
+
+        try
+        {
+            if (e.IsNew)
+                await Service.InsertAsync(entity);
+            else
+                await Service.UpdateAsync(entity);
+
+            if (OnAfterSaveAsync is not null)
+                await OnAfterSaveAsync(entity);
+        }
+        catch (Exception ex)
+        {
+            // Un error de base (clave duplicada, FK, etc.) muestra un toast y se loguea; no corta el circuito.
+            e.Cancel = true;
+            Toasts.Error(SqlErrorMessages.Amigable(ex));
+            await ErrorLog.LogAsync($"{Meta.Table}.{(e.IsNew ? "Insert" : "Update")}", ex, CurrentUser.UserName);
+            return;
+        }
+
+        Toasts.Exito(e.IsNew ? "Registro creado." : "Cambios guardados.");
+        if (GetWarningsAfterSaveAsync is not null)
+            foreach (var w in await GetWarningsAfterSaveAsync(entity))
+                Toasts.Aviso(w);
+
+        await RefreshAsync();
+        await OnChanged.InvokeAsync();
+    }
+
+    private async Task ConfirmarBorradoAsync()
+    {
+        if (!PuedeEliminar) return;   // backstop: el texto de confirmación debe coincidir
+        _confirmDelete = false;
+        if (_itemToDelete is null || !CanDelete) { Toasts.Error("Sin permiso para eliminar."); return; }
+        try
+        {
+            await Service.DeleteAsync(_itemToDelete);
+        }
+        catch (Exception ex)
+        {
+            Toasts.Error(SqlErrorMessages.Amigable(ex));
+            await ErrorLog.LogAsync($"{Meta.Table}.Delete", ex, CurrentUser.UserName);
+            return;
+        }
+        finally
+        {
+            _itemToDelete = null;
+        }
+        Toasts.Exito("Registro eliminado.");
+        await RefreshAsync();
+        await OnChanged.InvokeAsync();
+    }
+
+    // Próximo código a estampar en el alta de un catálogo (se aplica en OnCustomizeEditModel).
+    private object? _pendingNewKey;
+
+    private async Task NewRowAsync()
+    {
+        if (!CanCreate) { Toasts.Error("Sin permiso para crear."); return; }
+        _pendingNewKey = await ProximoCodigoCatalogoAsync();
+        if (_grid is not null)
+            await _grid.StartEditNewRowAsync();
+    }
+
+    // Auto-numeración (port de ProxNro de los Gr*): para catálogos de clave entera simple no identity,
+    // el próximo código = MAX+1. Best-effort: si algo falla, devuelve null y el usuario completa la clave.
+    private async Task<object?> ProximoCodigoCatalogoAsync()
+    {
+        if (!_inlineEdit || Meta.Keys.Count != 1) return null;
+        var key = Meta.Key;
+        if (key.IsIdentity || !EsEntero(key.UnderlyingType)) return null;
+        try
+        {
+            var max = await Db.ExecuteScalarAsync<long>($"SELECT ISNULL(MAX([{key.Name}]),0)+1 FROM {Meta.QualifiedTable}");
+            return Convert.ChangeType(max, key.UnderlyingType);
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    private static bool EsEntero(Type t) =>
+        t == typeof(int) || t == typeof(long) || t == typeof(short) || t == typeof(byte);
+
+    // ---- Personalización: carga / auto-guardado / restablecer (paridad XAF) ----
+    // Se usa el mecanismo NATIVO del DxGrid (LayoutAutoLoading/LayoutAutoSaving): así se persiste cualquier
+    // cambio que el usuario haga DENTRO de la grilla (orden, agrupación, anchos, columnas), no sólo los que
+    // tocan estado del componente. El filtro se descarta a propósito (ver VistaState.StripLayoutFilter).
+
+    // El grid pide su layout al inicializarse: si hay personalización guardada (precargada en OnInitializedAsync),
+    // la devolvemos en e.Layout; si no, el grid usa su default (orden del markup = ColumnOrder). SINCRÓNICO a
+    // propósito: un await acá parte la init del grid y la columna de selección queda sin estilar hasta el 1er click.
+    private Task OnLayoutAutoLoadingAsync(GridPersistentLayoutEventArgs e)
+    {
+        if (_savedVista?.Layout is not null) e.Layout = _savedVista.Layout;   // filtro ya removido del JSON
+        return Task.CompletedTask;
+    }
+
+    // Cualquier cambio de layout (incluido el orden) dispara esto: persistimos con debounce.
+    private async Task OnLayoutAutoSaving(GridPersistentLayoutEventArgs e)
+    {
+        var json = VistaState.StripLayoutFilter(
+            new VistaState { Layout = e.Layout, Summaries = _summaries, PageSize = _pageSize, MultiSelect = _multiSelect }.ToJson());
+        await SaveDebouncedAsync(json);
+    }
+
+    // Guardado de cambios que NO pasan por el layout nativo (sumarios, selección múltiple): toma el layout actual.
+    private Task SaveVistaAsync()
+    {
+        if (_grid is null) return Task.CompletedTask;
+        string? json;
+        try { json = VistaState.StripLayoutFilter(new VistaState { Layout = _grid.SaveLayout(), Summaries = _summaries, PageSize = _pageSize, MultiSelect = _multiSelect }.ToJson()); }
+        catch { return Task.CompletedTask; }
+        return SaveDebouncedAsync(json);
+    }
+
+    private async Task SaveDebouncedAsync(string? json)
+    {
+        if (json is null) return;
+        _saveCts?.Cancel();
+        var cts = new CancellationTokenSource();
+        _saveCts = cts;
+        try
+        {
+            await Task.Delay(800, cts.Token);
+            await VistaStore.SaveAsync(CurrentUser.UserName, _viewKey, json, cts.Token);
+        }
+        catch (TaskCanceledException) { /* lo reemplazó un cambio posterior */ }
+    }
+
+    private async Task RestablecerVistaAsync()
+    {
+        _confirmReset = false;
+        _summaries = new();
+        _pageSize = PageSize;
+        _multiSelect = false;
+        _savedVista = null;                                       // ya no hay personalización a aplicar
+        await VistaStore.ResetAsync(CurrentUser.UserName, _viewKey);   // borra la fila persistida
+        _gridKey = new object();                                 // recrea el grid → LayoutAutoLoading sin guardado → default (ColumnOrder)
+        Toasts.Exito("Vista restablecida al diseño original.");
+        StateHasChanged();
+    }
+
+    private void ShowColumnChooser() => _grid?.ShowColumnChooser();
+
+    private SgpaReportLauncher? _launcher;
+
+    // Abre el launcher (Ver/Imprimir/Exportar) para el reporte, pasando las claves seleccionadas si las hay.
+    private Task LaunchReport(ReporteInfo r) => _launcher!.OpenAsync(r.Id, r.Nombre, Meta.Table, SelectedKeyStrings());
+
+    private List<string>? SelectedKeyStrings()
+    {
+        if (_selectedItems.Count == 0 || Meta.Keys.Count != 1) return null;
+        var keys = _selectedItems.OfType<TEntity>()
+            .Select(e => Convert.ToString(Meta.Key.GetValue(e), CultureInfo.InvariantCulture))
+            .Where(s => !string.IsNullOrEmpty(s))
+            .Select(s => s!)
+            .ToList();
+        return keys.Count > 0 ? keys : null;
+    }
+
+    // ---- "Seleccionar todo lo del filtro" (todas las páginas) ----
+    private List<long>? _keysTodoFiltro;     // claves del filtro (sólo server-mode); las acciones lo usan en vez de _selectedItems
+    private int SelCount => _keysTodoFiltro?.Count ?? _selectedItems.Count;
+    private const int SelTodoCap = 20000;
+
+    private async Task SeleccionarTodoFiltroAsync()
+    {
+        if (_grid is null) return;
+        if (_serverMode && _dataSource is not null && Meta.Keys.Count == 1)
+        {
+            // Server-mode: TODAS las claves del filtro (todas las páginas) para las acciones; visualmente marca la página.
+            var keys = await _dataSource.GetKeyValuesAsync(Meta.Key.Name, SelTodoCap, default);
+            _keysTodoFiltro = keys
+                .Select(k => long.TryParse(Convert.ToString(k, CultureInfo.InvariantCulture), out var v) ? v : (long?)null)
+                .Where(v => v.HasValue).Select(v => v!.Value).ToList();
+            if (_keysTodoFiltro.Count == 0) { _keysTodoFiltro = null; Toasts.Aviso("No hay registros para el filtro actual."); return; }
+            if (_keysTodoFiltro.Count >= SelTodoCap) Toasts.Aviso($"Se tomaron los primeros {SelTodoCap:N0} registros del filtro (tope).");
+            _selectedItems = _dataSource.LastPageItems.Cast<object>().ToList();   // marca la página visible (por referencia)
+        }
+        else
+        {
+            // Client-mode (tabla chica, todo en memoria): selección nativa de todas las filas filtradas.
+            try { await _grid.SelectAllAsync(); } catch { }
+        }
+    }
+
+    // El botón es toggle: si ya hay algo seleccionado, deselecciona todo; si no, selecciona todo el filtro.
+    private async Task ToggleSeleccionTodoAsync()
+    {
+        if (SelCount > 0) { DeseleccionarTodo(); return; }
+        await SeleccionarTodoFiltroAsync();
+    }
+
+    private void DeseleccionarTodo()
+    {
+        _keysTodoFiltro = null;
+        _selectedItems = Array.Empty<object>();
+    }
+
+    private void LimpiarSelTodo() => _keysTodoFiltro = null;
+
+    private async Task ToggleMultiSelect()
+    {
+        _multiSelect = !_multiSelect;
+        _selectedItems = Array.Empty<object>();   // al cambiar de modo, arrancar sin selección
+        _keysTodoFiltro = null;
+        await SaveVistaAsync();                   // persiste la elección (como las demás prefs de la grilla)
+    }
+
+    // El checkbox "deseleccionar todo" del header sólo quita las filas de la página visible (en server-mode el
+    // grid no tiene las otras). Detectamos esa deselección EN LOTE (más de una fila de una) y limpiamos TODO.
+    private void OnSelectionChanged(IReadOnlyList<object> nuevo)
+    {
+        _keysTodoFiltro = null;   // la selección manual reemplaza al "seleccionar todo del filtro"
+        if (nuevo.Count < _selectedItems.Count && _selectedItems.Count - nuevo.Count > 1)
+            _selectedItems = Array.Empty<object>();
+        else
+            _selectedItems = nuevo;
+    }
+
+    // Borrado masivo de las filas seleccionadas (con la misma confirmación por texto si la tabla la exige).
+    private async Task EliminarSeleccionadosAsync()
+    {
+        _confirmBulkDelete = false;
+        if (!PuedeEliminar || !CanDelete || SelCount == 0) return;
+
+        // "Seleccionar todo del filtro" (server-mode) → borra por clave; si no, las entidades seleccionadas.
+        List<TEntity> items;
+        if (_keysTodoFiltro is not null)
+        {
+            items = new List<TEntity>(_keysTodoFiltro.Count);
+            foreach (var k in _keysTodoFiltro)
+            {
+                var e = new TEntity();
+                Meta.Key.SetValue(e, Convert.ChangeType(k, Meta.Key.UnderlyingType, CultureInfo.InvariantCulture));
+                items.Add(e);
+            }
+        }
+        else
+        {
+            items = _selectedItems.OfType<TEntity>().ToList();
+        }
+        int ok = 0, fail = 0;
+        foreach (var it in items)
+        {
+            try { await Service.DeleteAsync(it); ok++; }
+            catch (Exception ex)
+            {
+                fail++;
+                await ErrorLog.LogAsync($"{Meta.Table}.Delete", ex, CurrentUser.UserName);
+            }
+        }
+        _selectedItems = Array.Empty<object>();
+        _keysTodoFiltro = null;
+        if (fail == 0) Toasts.Exito($"{ok:N0} registro(s) eliminado(s).");
+        else Toasts.Aviso($"{ok:N0} eliminado(s); {fail:N0} con error (ver registro de errores).");
+
+        await RefreshAsync();
+        await OnChanged.InvokeAsync();
+    }
+
+    // Menú contextual del DxGrid (right-click). Sobre el pie (total) o el pie de grupo de una columna,
+    // agrega un submenú "Totalizar esta columna" con las funciones agregadas (estilo XAF); el resto de
+    // los menús (cabezal, fila, panel de grupo) quedan con sus items nativos.
+    private void OnCustomizeContextMenu(GridCustomizeContextMenuEventArgs e)
+    {
+        IGridColumn? col = e.Context switch
+        {
+            GridHeaderCommandContext h => h.Column,
+            GridFooterCommandContext f => f.Column,
+            GridGroupFooterCommandContext gf => gf.Column,
+            _ => null
+        };
+        if (col is not IGridDataColumn dataCol || string.IsNullOrEmpty(dataCol.FieldName)) return;
+        AddTotalizarMenu(e.Items, dataCol.FieldName);
+    }
+
+    // Submenú "Totalizar esta columna": marca la opción activa y la aplica vía SetSummary (se auto-guarda).
+    private void AddTotalizarMenu(IContextMenuItemCollection items, string field)
+    {
+        var current = SummaryTypeOf(field);
+        var menu = items.AddCustomItem("Totalizar esta columna");
+        menu.BeginGroup = true;
+        menu.IconCssClass = "fa-solid fa-calculator";
+        foreach (var (val, label) in SummaryOptions.Where(o => o.Value.Length > 0))
+        {
+            var v = val;
+            menu.Items.AddCustomItem((current == v ? "✓ " : "") + label, () => SetSummary(field, v));
+        }
+        menu.Items.AddCustomItem("Quitar total", () => SetSummary(field, null));
+    }
+
+    // Al agrupar por una columna FK, muestra la descripción (no el código) en el encabezado del grupo,
+    // reusando el mapa de lookups que ya alimenta las celdas.
+    private void OnCustomizeGroupValue(GridCustomizeGroupValueDisplayTextEventArgs e)
+    {
+        if (e.Value is not null && _lookupCaptions.ContainsKey(e.FieldName))
+            e.DisplayText = LookupTextFor(e.FieldName, e.Value);
+    }
+
+    // Estilo condicional por fila (ej. atenuar las dadas de baja): el llamador devuelve la clase CSS.
+    private void OnCustomizeElement(GridCustomizeElementEventArgs e)
+    {
+        if (RowCssClass is null || e.ElementType != GridElementType.DataRow) return;
+        if (e.Grid.GetDataItem(e.VisibleIndex) is TEntity row)
+        {
+            var css = RowCssClass(row);
+            if (!string.IsNullOrEmpty(css)) e.CssClass = css;
+        }
+    }
+
+    private async Task ExportAsync(string fmt)
+    {
+        if (_grid is null) return;
+        var name = string.IsNullOrWhiteSpace(Title) ? Meta.Table : Title;
+        switch (fmt)
+        {
+            case "pdf": await _grid.ExportToPdfAsync(name); break;
+            case "csv": await _grid.ExportToCsvAsync(name); break;
+            default: await _grid.ExportToXlsxAsync(name); break;
+        }
+    }
+
+    private string SummaryTypeOf(string col)
+        => _summaries.FirstOrDefault(s => s.Column == col)?.Type.ToString() ?? string.Empty;
+
+    private void SetSummary(string col, string? type)
+    {
+        _summaries.RemoveAll(s => s.Column == col);
+        if (!string.IsNullOrEmpty(type) && Enum.TryParse<GridSummaryItemType>(type, out var t))
+            _summaries.Add(new SummaryDef { Column = col, Type = t });
+        StateHasChanged();
+        _ = SaveVistaAsync();   // los sumarios no son layout nativo: se persisten aparte
+    }
+}

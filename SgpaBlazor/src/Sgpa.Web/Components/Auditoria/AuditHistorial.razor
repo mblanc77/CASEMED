@@ -1,0 +1,55 @@
+@using Sgpa.Data
+@inject IDbExecutor Db
+@*
+    Historial de auditoría de un registro (Tabla + Clave). Se usa en el tab "Historial" del DetailView
+    genérico y se puede reutilizar en cualquier pantalla.
+*@
+
+@if (_rows.Count == 0)
+{
+    <div class="text-muted p-2">Sin cambios registrados para este registro.</div>
+}
+else
+{
+    <DxGrid Data="_rows" PageSize="15" ShowFilterRow="true">
+        <Columns>
+            <DxGridDataColumn FieldName="Fecha" Caption="Fecha" DisplayFormat="g" Width="160px" />
+            <DxGridDataColumn FieldName="Login" Caption="Usuario" Width="110px" />
+            <DxGridDataColumn FieldName="Operacion" Caption="Op." Width="80px">
+                <CellDisplayTemplate Context="cell">@OpLabel(((AuditRow)cell.DataItem).Operacion)</CellDisplayTemplate>
+            </DxGridDataColumn>
+            <DxGridDataColumn FieldName="Campo" Caption="Campo" />
+            <DxGridDataColumn FieldName="ValorAnterior" Caption="Valor anterior" />
+            <DxGridDataColumn FieldName="ValorNuevo" Caption="Valor nuevo" />
+        </Columns>
+    </DxGrid>
+}
+
+@code {
+    [Parameter, EditorRequired] public string Tabla { get; set; } = string.Empty;
+    [Parameter] public string? Clave { get; set; }
+
+    private IReadOnlyList<AuditRow> _rows = Array.Empty<AuditRow>();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (string.IsNullOrEmpty(Tabla)) { _rows = Array.Empty<AuditRow>(); return; }
+        _rows = await Db.QueryAsync<AuditRow>(
+            @"SELECT TOP 500 Id, Fecha, Login, Operacion, Campo, ValorAnterior, ValorNuevo
+              FROM dbo.AuditCambio
+              WHERE Tabla = @t AND Clave = @c
+              ORDER BY Id DESC",
+            new { t = Tabla, c = Clave });
+    }
+
+    public sealed record AuditRow(long Id, DateTime Fecha, string? Login, string Operacion,
+        string? Campo, string? ValorAnterior, string? ValorNuevo);
+
+    private static string OpLabel(string op) => op switch
+    {
+        "I" => "Alta",
+        "U" => "Modif.",
+        "D" => "Baja",
+        _ => op
+    };
+}

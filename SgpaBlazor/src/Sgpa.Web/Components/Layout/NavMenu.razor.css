@@ -1,0 +1,121 @@
+/* Header de marca */
+.sgpa-brand {
+    height: 3.5rem;
+    display: flex;
+    align-items: center;
+    padding: 0 1rem;
+    background-color: #009242; /* verde de marca */
+}
+
+.sgpa-brand-link {
+    color: #fff;
+    font-size: 1.25rem;
+    font-weight: 600;
+    text-decoration: none;
+    letter-spacing: .5px;
+}
+
+.sgpa-brand-link i {
+    margin-right: .5rem;
+    color: #fff; /* sobre el header verde, ícono en blanco para contraste */
+}
+
+.sgpa-brand-logo {
+    height: 2.1rem;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+.nav-scrollable {
+    padding: .5rem;
+    background-color: #f6f7fb;
+    overflow-y: auto;
+    height: calc(100vh - 3.5rem);
+}
+
+/* Buscador del menú: campo medio transparente (verde de marca sutil) con ícono. */
+.sgpa-nav-search {
+    position: relative;
+    margin-bottom: .5rem;
+}
+
+.sgpa-nav-search i {
+    position: absolute;
+    left: .6rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #009242;
+    font-size: .8rem;
+    pointer-events: none;
+}
+
+.sgpa-nav-search input {
+    width: 100%;
+    padding: .4rem .6rem .4rem 1.85rem;
+    border: 1px solid rgba(0, 146, 66, .25);
+    border-radius: .5rem;
+    background-color: rgba(0, 146, 66, .06);
+    font-size: .85rem;
+    outline: none;
+}
+
+.sgpa-nav-search input:focus {
+    background-color: #fff;
+    border-color: #009242;
+    box-shadow: 0 0 0 .15rem rgba(0, 146, 66, .15);
+}
+
+/* Resultados de la búsqueda del menú (lista plana). */
+.sgpa-nav-results {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sgpa-nav-results li a {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .4rem .55rem;
+    border-radius: 6px;
+    color: #3a3a46;
+    text-decoration: none;
+    font-size: .9rem;
+}
+
+.sgpa-nav-results li a:hover {
+    background-color: #e3f4ea;
+    color: #0b5d2c;
+}
+
+.sgpa-nav-results li a i {
+    width: 1.1rem;
+    text-align: center;
+    color: #009242;
+}
+
+.sgpa-nav-empty {
+    padding: .5rem .55rem;
+    color: #8a8a92;
+    font-size: .82rem;
+}
+
+/* DxTreeView */
+.sgpa-nav ::deep .dxbl-treeview-item-container {
+    line-height: 1.5;
+    border-radius: 6px;
+}
+
+.sgpa-nav ::deep .dxbl-treeview-item-icon {
+    width: 1.25rem;
+    text-align: center;
+    margin-right: .4rem;
+    color: #009242;
+}
+
+/* Grupos de primer nivel más marcados */
+.sgpa-nav ::deep > .dxbl-treeview-items > .dxbl-treeview-item > .dxbl-treeview-item-container {
+    font-weight: 600;
+    color: #3a3a46;
+}

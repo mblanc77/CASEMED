@@ -1,0 +1,102 @@
+@page "/prestaciones/receta/{CI:long}/{Fecha:datetime}/{Tipo:int}"
+@rendermode InteractiveServer
+@using Sgpa.Business.Prestaciones
+@using Sgpa.Domain.Entities
+@inject RecetaService Recetas
+@inject NavigationManager Nav
+
+@*
+    Editor de la receta óptica de una prestación (port del cluster Receta de AbmPrest): receta de cerca
+    y/o de lejos, cada una con esférico y cilíndrico por ojo. Al grabar se borran las previas y se reinsertan.
+*@
+
+<PageTitle>Receta</PageTitle>
+
+<div class="d-flex align-items-center justify-content-between mb-2">
+    <h3 class="mb-0">Receta — cédula @CI · @Fecha.ToString("dd/MM/yyyy")</h3>
+    <DxButton Text="Volver" IconCssClass="fa-solid fa-arrow-left" RenderStyle="ButtonRenderStyle.Secondary"
+              Click="@(() => Nav.NavigateTo("/prestaciones"))" />
+</div>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <DxCheckBox @bind-Checked="_tieneCerca">Receta de cerca</DxCheckBox>
+            </div>
+            <div class="card-body @(_tieneCerca ? "" : "opacity-50")">
+                @RecetaCampos(_cerca, _tieneCerca)
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <DxCheckBox @bind-Checked="_tieneLejos">Receta de lejos</DxCheckBox>
+            </div>
+            <div class="card-body @(_tieneLejos ? "" : "opacity-50")">
+                @RecetaCampos(_lejos, _tieneLejos)
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-3">
+    <DxButton Text="Grabar receta" IconCssClass="fa-solid fa-floppy-disk" RenderStyle="ButtonRenderStyle.Primary"
+              Click="GrabarAsync" Enabled="@(!_busy)" />
+    @if (_msg is not null) { <span class="text-success ms-3"><i class="fa-solid fa-check"></i> @_msg</span> }
+    @if (_error is not null) { <span class="text-danger ms-3">@_error</span> }
+</div>
+
+@code {
+    [Parameter] public long CI { get; set; }
+    [Parameter] public DateTime Fecha { get; set; }
+    [Parameter] public int Tipo { get; set; }
+
+    private Receta _cerca = new();
+    private Receta _lejos = new();
+    private bool _tieneCerca, _tieneLejos, _busy;
+    private string? _msg, _error;
+    private bool _loaded;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (_loaded) return;
+        _loaded = true;
+        var recetas = await Recetas.GetAsync(CI, Fecha, Tipo);
+        var c = recetas.FirstOrDefault(r => r.CodRecetaDistancia == RecetaService.Cerca);
+        var l = recetas.FirstOrDefault(r => r.CodRecetaDistancia == RecetaService.Lejos);
+        if (c is not null) { _cerca = c; _tieneCerca = true; }
+        if (l is not null) { _lejos = l; _tieneLejos = true; }
+    }
+
+    private RenderFragment RecetaCampos(Receta r, bool enabled) =>@<DxFormLayout>
+        <DxFormLayoutItem Caption="Esférico ojo izq." ColSpanMd="6">
+            <DxSpinEdit @bind-Value="r.Esf_I" Enabled="enabled" DisplayFormat="N2" />
+        </DxFormLayoutItem>
+        <DxFormLayoutItem Caption="Esférico ojo der." ColSpanMd="6">
+            <DxSpinEdit @bind-Value="r.Esf_D" Enabled="enabled" DisplayFormat="N2" />
+        </DxFormLayoutItem>
+        <DxFormLayoutItem Caption="Cilíndrico ojo izq." ColSpanMd="6">
+            <DxSpinEdit @bind-Value="r.Cil_I" Enabled="enabled" DisplayFormat="N2" />
+        </DxFormLayoutItem>
+        <DxFormLayoutItem Caption="Cilíndrico ojo der." ColSpanMd="6">
+            <DxSpinEdit @bind-Value="r.Cil_D" Enabled="enabled" DisplayFormat="N2" />
+        </DxFormLayoutItem>
+    </DxFormLayout>;
+
+    private async Task GrabarAsync()
+    {
+        _msg = _error = null;
+        _busy = true;
+        try
+        {
+            await Recetas.GrabarAsync(CI, Fecha, Tipo,
+                _tieneCerca ? _cerca : null,
+                _tieneLejos ? _lejos : null);
+            _msg = "Receta guardada.";
+        }
+        catch (Exception ex) { _error = ex.Message; }
+        finally { _busy = false; }
+    }
+}

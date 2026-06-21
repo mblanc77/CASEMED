@@ -1,0 +1,39 @@
+@page "/add-tramite-infoadjuntacedula"
+
+<PageTitle>Add TramiteInfoadjuntacedula</PageTitle>
+    <RadzenColumn SizeMD=12>
+        <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@errorVisible">Cannot save TramiteInfoadjuntacedula</RadzenAlert>
+        <RadzenTemplateForm TItem="SGPA.Server.Models.CMU.TramiteInfoadjuntacedula" Data="@tramiteInfoadjuntacedula" Visible="@(tramiteInfoadjuntacedula != null && canEdit)" Submit="@FormSubmit">
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Identificador Frente" Component="IdentificadorFrente" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@tramiteInfoadjuntacedula.IdentificadorFrente" Name="IdentificadorFrente" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Identificador Reverso" Component="IdentificadorReverso" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@tramiteInfoadjuntacedula.IdentificadorReverso" Name="IdentificadorReverso" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Tramite Info Adjunta Base" Component="TramiteInfoAdjuntaBase" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@tramiteInfoadjuntabasesForOID" TextProperty="" ValueProperty="OID" AllowClear=true
+                         Placeholder="Choose TramiteInfoAdjuntaBase" style="display: block; width: 100%" @bind-Value="@tramiteInfoadjuntacedula.OID" Name="OID"
+                        SelectedValue=@tramiteInfoadjuntabasesForOIDValue Count=@tramiteInfoadjuntabasesForOIDCount LoadData=@tramiteInfoadjuntabasesForOIDLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+          <RadzenStack  Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                    <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Submit" Icon="save" Text="Save" Variant="Variant.Flat" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Text="Cancel" Variant="Variant.Flat" Click="@CancelButtonClick"  />
+          </RadzenStack>
+        </RadzenTemplateForm>
+    </RadzenColumn>
+

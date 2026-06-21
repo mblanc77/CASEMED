@@ -1,0 +1,172 @@
+@*
+    Lanzador de reportes desde el ListView. Al elegir un reporte abre un popup con 3 opciones (Ver/Imprimir/Exportar).
+    - Si la cantidad de registros a procesar supera el umbral (config Reportes:UmbralRegistros, default 500), avisa
+      antes de seguir y recomienda seleccionar menos.
+    - Ver: arma el reporte (wait dialog) y lo muestra en un DxReportViewer en popup grande.
+    - Imprimir/Exportar: trae el PDF del endpoint /reportes/pdf (render fuera del circuito) mostrando el wait dialog
+      hasta que está listo, y recién entonces abre la pestaña (imprimir) o descarga (exportar).
+*@
+@using DevExpress.Blazor.Reporting
+@using DevExpress.XtraReports.UI
+@using Sgpa.Data.Reporting
+@using Sgpa.Domain.Metadata
+@using Sgpa.Web.Components.Shared
+@using Sgpa.Web.Reporting
+@inject IReportRenderService Renderer
+@inject IReporteCatalogo Catalogo
+@inject IReportGraphLoader Loader
+@inject IConfiguration Config
+@inject IJSRuntime JS
+
+@* Elección de modo *@
+<DxPopup @bind-Visible="_choiceVisible" HeaderText="@($"Reporte: {_nombre}")" Width="420px" CloseOnEscape="true">
+    <BodyContentTemplate>
+        <div class="text-muted small mb-2">
+            @if (_keys is { Count: > 0 })
+            {
+                <text>Sobre @_keys.Count registro(s) seleccionado(s).</text>
+            }
+            else
+            {
+                <text>Sobre todos los registros (sin selección).</text>
+            }
+        </div>
+        <div class="d-flex flex-column gap-2">
+            <DxButton Text="Ver en pantalla" IconCssClass="fa-solid fa-eye" RenderStyle="ButtonRenderStyle.Primary" Click="@(() => PickAsync(Accion.Ver))" />
+            <DxButton Text="Imprimir" IconCssClass="fa-solid fa-print" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => PickAsync(Accion.Imprimir))" />
+            <DxButton Text="Exportar a PDF" IconCssClass="fa-solid fa-file-pdf" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => PickAsync(Accion.Exportar))" />
+        </div>
+    </BodyContentTemplate>
+</DxPopup>
+
+@* Advertencia por cantidad alta *@
+<DxPopup @bind-Visible="_warnVisible" HeaderText="Muchos registros" Width="460px" CloseOnEscape="true">
+    <BodyContentTemplate>
+        <p>
+            Vas a procesar <strong>@_count.ToString("N0")</strong> registros. Es una cantidad grande: puede
+            tardar bastante y, en casos extremos, desestabilizar el sistema.
+        </p>
+        <p class="text-muted mb-3">Te recomendamos <strong>seleccionar menos filas</strong> en el listado y volver a intentar.</p>
+        <div class="d-flex gap-2 justify-content-end">
+            <DxButton Text="Cancelar" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => _warnVisible = false)" />
+            <DxButton Text="Continuar igualmente" IconCssClass="fa-solid fa-triangle-exclamation"
+                      RenderStyle="ButtonRenderStyle.Danger" Click="ConfirmarAsync" />
+        </div>
+    </BodyContentTemplate>
+</DxPopup>
+
+@* Visor en popup grande *@
+<DxPopup @bind-Visible="_viewerVisible" HeaderText="@_nombre" Width="95vw" Height="92vh"
+         CloseOnEscape="true" ShowFooter="false">
+    <BodyContentTemplate>
+        @if (_report is not null)
+        {
+            <div style="height: 80vh;">
+                <DxReportViewer Report="_report" />
+            </div>
+        }
+    </BodyContentTemplate>
+</DxPopup>
+
+<SgpaWaitDialog Visible="_busy" Text="@_waitText" />
+
+@code {
+    private enum Accion { Ver, Imprimir, Exportar }
+
+    private bool _choiceVisible;
+    private bool _warnVisible;
+    private bool _viewerVisible;
+    private bool _busy;
+    private string _waitText = "Generando reporte…";
+
+    private int _reportId;
+    private string? _nombre;
+    private string? _tablaRoot;
+    private IReadOnlyCollection<string>? _keys;
+    private XtraReport? _report;
+
+    private Accion _pendiente;
+    private long _count;
+
+    private int Umbral => Config.GetValue("Reportes:UmbralRegistros", 500);
+
+    public Task OpenAsync(int reportId, string nombre, string? tablaRoot, IReadOnlyCollection<string>? keys)
+    {
+        _reportId = reportId;
+        _nombre = nombre;
+        _tablaRoot = tablaRoot;
+        _keys = keys;
+        _report = null;
+        _viewerVisible = false;
+        _warnVisible = false;
+        _choiceVisible = true;
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    // Calcula la cantidad a procesar; si supera el umbral avisa, si no ejecuta directo.
+    private async Task PickAsync(Accion accion)
+    {
+        _choiceVisible = false;
+        _count = await CountAsync();
+        if (_count > Umbral)
+        {
+            _pendiente = accion;
+            _warnVisible = true;
+            StateHasChanged();
+            return;
+        }
+        await EjecutarAsync(accion);
+    }
+
+    private async Task ConfirmarAsync()
+    {
+        _warnVisible = false;
+        await EjecutarAsync(_pendiente);
+    }
+
+    private async Task<long> CountAsync()
+    {
+        if (_keys is { Count: > 0 }) return _keys.Count;
+        var rootType = EntityCatalog.All
+            .FirstOrDefault(m => string.Equals(m.Table, _tablaRoot, StringComparison.OrdinalIgnoreCase))?.EntityType;
+        return rootType is null ? 0 : await Loader.CountAsync(rootType);
+    }
+
+    private async Task EjecutarAsync(Accion accion)
+    {
+        switch (accion)
+        {
+            case Accion.Ver:
+                _busy = true; _waitText = "Generando reporte…"; StateHasChanged();
+                try { _report = await Renderer.BuildAsync(_reportId, _keys); }
+                finally { _busy = false; }
+                _viewerVisible = _report is not null;
+                break;
+
+            case Accion.Imprimir:
+                await PdfAsync(print: true, download: false, fileName: null);
+                break;
+
+            case Accion.Exportar:
+                await PdfAsync(print: false, download: true, fileName: $"{_nombre}.pdf");
+                break;
+        }
+    }
+
+    private async Task PdfAsync(bool print, bool download, string? fileName)
+    {
+        _busy = true; _waitText = "Generando PDF…"; StateHasChanged();
+        try { await JS.InvokeVoidAsync("sgpaOpenPdf", PdfUrl(print), download, fileName); }
+        finally { _busy = false; }
+    }
+
+    private string PdfUrl(bool print)
+    {
+        var qs = new List<string>();
+        if (_keys is { Count: > 0 })
+            qs.Add($"keys={Uri.EscapeDataString(string.Join(",", _keys))}");
+        if (print) qs.Add("print=1");
+        return qs.Count > 0 ? $"/reportes/pdf/{_reportId}?{string.Join("&", qs)}" : $"/reportes/pdf/{_reportId}";
+    }
+}

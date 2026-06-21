@@ -1,0 +1,7 @@
+Agregar el campo Liquidar en SubsidioCabezal.
+Actualizar a True dicho campo.
+Cambiar la desctipcion del reporte "Cantidad de trabajadores (empresa)."
+por "Cantidad de puestos de trabajo (empresa)."
+Cambiar el código de la empresa Casemed.
+Cambiar el valor de campo Value1 en xUsrParam de la clave "CodCasemed".
+Cambiar el nombre del campo Ficticia en Empresa.

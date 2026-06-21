@@ -1,0 +1,58 @@
+@page "/edit-kpiscorecardscorecards-kpiinstanceindicator"
+
+<PageTitle>Edit KpiscorecardscorecardsKpiinstanceindicator</PageTitle>
+<RadzenRow>
+    <RadzenColumn SizeMD="9">
+    <RadzenLabel style="font-weight: bold" Text="Item no longer available." Visible="@(!canEdit)" />
+    </RadzenColumn>
+    <RadzenColumn SizeMD="3">
+    <RadzenButton ButtonStyle="ButtonStyle.Secondary" style="margin-bottom: 20px" Text="Close" Visible="@(!canEdit)" Click="@CancelButtonClick" />
+    </RadzenColumn>
+</RadzenRow>
+<RadzenRow>
+    <RadzenColumn SizeMD="9">
+    <RadzenLabel style="font-weight: bold" Text="Another user has made conflicting changes to one or more of the fields you have modified. Please reload." Visible="@hasChanges" />
+    </RadzenColumn>
+    <RadzenColumn SizeMD="3">
+    <RadzenButton ButtonStyle="ButtonStyle.Secondary" Icon="autorenew" style="margin-bottom: 20px" Text="Reload" Visible="@hasChanges" Click="@ReloadButtonClick" />
+    </RadzenColumn>
+</RadzenRow>
+
+    <RadzenColumn SizeMD=12>
+        <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@errorVisible">Cannot save KpiscorecardscorecardsKpiinstanceindicator</RadzenAlert>
+        <RadzenTemplateForm TItem="SGPA.Server.Models.CMU.KpiscorecardscorecardsKpiinstanceindicator" Data="@kpiscorecardscorecardsKpiinstanceindicator" Visible="@(kpiscorecardscorecardsKpiinstanceindicator != null && canEdit)" Submit="@FormSubmit">
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Optimistic Lock Field" Component="OptimisticLockField" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenNumeric style="display: block; width: 100%" @bind-Value="@kpiscorecardscorecardsKpiinstanceindicator.OptimisticLockField" Name="OptimisticLockField" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Kpi Instance" Component="KpiInstance" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@kpiInstancesForIndicators" TextProperty="Settings" ValueProperty="Oid" AllowClear=true
+                         Placeholder="Choose KpiInstance" style="display: block; width: 100%" @bind-Value="@kpiscorecardscorecardsKpiinstanceindicator.Indicators" Name="Indicators"
+                        SelectedValue=@kpiInstancesForIndicatorsValue Count=@kpiInstancesForIndicatorsCount LoadData=@kpiInstancesForIndicatorsLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Kpi Scorecard" Component="KpiScorecard" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@kpiScorecardsForScorecards" TextProperty="Name" ValueProperty="Oid" AllowClear=true
+                         Placeholder="Choose KpiScorecard" style="display: block; width: 100%" @bind-Value="@kpiscorecardscorecardsKpiinstanceindicator.Scorecards" Name="Scorecards"
+                        SelectedValue=@kpiScorecardsForScorecardsValue Count=@kpiScorecardsForScorecardsCount LoadData=@kpiScorecardsForScorecardsLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+          <RadzenStack  Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                    <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Submit" Icon="save" Text="Save" Variant="Variant.Flat" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Text="Cancel" Variant="Variant.Flat" Click="@CancelButtonClick"  />
+          </RadzenStack>
+        </RadzenTemplateForm>
+    </RadzenColumn>
+

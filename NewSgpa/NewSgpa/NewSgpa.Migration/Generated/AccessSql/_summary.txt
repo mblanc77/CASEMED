@@ -1,0 +1,5 @@
+GeneratedAtUtc=2026-06-15T21:08:03.0269723Z
+SpecsDirectory=C:\Personal\Gestion\CASEMED\NewSgpa\Migration\Access
+TotalSpecFiles=6
+TotalQueries=598
+OutputDirectory=C:\Personal\Gestion\CASEMED\NewSgpa\NewSgpa\NewSgpa.Migration\Generated\AccessSql

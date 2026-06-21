@@ -1,0 +1,3639 @@
+=== TABLES ===
+TABLE: 506_Rpt_Liquidos_Subsidios
+
+TABLE: 600_Afiliado_Certificado
+  CI | Long(4) | Required=Falso
+  Nombres | Text(50) | Required=Falso
+  Apellido1 | Text(30) | Required=Falso
+  Apellido2 | Text(30) | Required=Falso
+  FechaNacimiento | Date(8) | Required=Falso
+  Sexo | Text(1) | Required=Falso
+  CodMutualista | Integer(2) | Required=Falso
+  DescMutualista | Text(50) | Required=Falso
+  Especialidad | Text(255) | Required=Falso
+  Promedio | Single(4) | Required=Falso
+  Empleos | Text(255) | Required=Falso
+  DiaProrroga | Long(4) | Required=Falso
+  DiasUltPro | Long(4) | Required=Falso
+  F_Ult_Prorroga | Date(8) | Required=Falso
+  F_Ult_Certificacion | Date(8) | Required=Falso
+
+TABLE: 600_Afiliado_Certificado_Afeccion
+  CI | Long(4) | Required=Falso
+  CodAfeccionTipo | Integer(2) | Required=Falso
+  DescAfeccionTipo | Text(255) | Required=Falso
+  Cantidad | Long(4) | Required=Falso
+  Dias | Integer(2) | Required=Falso
+
+TABLE: 600_Rpt_<125_Pct
+  Grupo | Text(50) | Required=Falso
+  CI | Long(4) | Required=Falso
+  Nombre | Text(100) | Required=Falso
+  Importe | Long(4) | Required=Falso
+  Especialidad | Text(50) | Required=Falso
+
+TABLE: 600_Rpt_AfiliadoMutualista
+  CI | Text(255) | Required=Falso
+  Nombres | Text(50) | Required=Falso
+  Apellido1 | Text(30) | Required=Falso
+  Apellido2 | Text(30) | Required=Falso
+  FechaNacimiento | Date(8) | Required=Falso
+  Sexo | Text(1) | Required=Falso
+  Telefono | Text(25) | Required=Falso
+  EMail | Text(25) | Required=Falso
+  CodMutualista | Integer(2) | Required=Falso
+  DescMutualista | Text(50) | Required=Falso
+  FechaIngMutualista | Date(8) | Required=Falso
+  NroSocioMutualista | Text(12) | Required=Falso
+  CodRegimenJubilatorio | Byte(1) | Required=Falso
+  DescRegimenJubilatorio | Text(50) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+  DescAfiliado | Text(255) | Required=Falso
+  Cuota | Double(8) | Required=Falso
+  Direccion | Text(100) | Required=Falso
+  PagaMutualista | Boolean(1) | Required=Falso
+  CodDepartamento | Text(3) | Required=Falso
+  CodEmpresa | Integer(2) | Required=Falso
+  DescEmpresa | Text(50) | Required=Falso
+  DescSituacionMutual | Text(50) | Required=Falso
+
+TABLE: 600_Rpt_BPS
+  Mes | Integer(2) | Required=Falso
+  Anio | Long(4) | Required=Falso
+  Cantidad | Long(4) | Required=Falso
+  Monto | Long(4) | Required=Falso
+  TributoMonto | Long(4) | Required=Falso
+  ImpRetPatronal | Long(4) | Required=Falso
+  ImpRetObrero | Long(4) | Required=Falso
+  TotImpRet | Long(4) | Required=Falso
+  TotImpMut | Long(4) | Required=Falso
+  TributoTotImpMut | Long(4) | Required=Falso
+
+TABLE: 600_Rpt_CantidadDescrip
+  Codigo | Long(4) | Required=Falso
+  Cantidad | Long(4) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+
+TABLE: 600_Rpt_CantidadDescrip2
+  Codigo | Long(4) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  Descrip2 | Text(50) | Required=Falso
+  Cantidad | Long(4) | Required=Falso
+
+TABLE: 600_Rpt_Cheque_Tmp
+  CI | Long(4) | Required=Falso
+  Nombre | Text(255) | Required=Falso
+  Fecha | Date(8) | Required=Falso
+  Importe | Single(4) | Required=Falso
+  Letras | Text(255) | Required=Falso
+
+TABLE: 600_Rpt_Recibo
+  IdSubsidio | Long(4) | Required=Falso
+  NroRecibo | Text(50) | Required=Falso
+  Mes | Text(50) | Required=Falso
+  Nombre | Text(50) | Required=Falso
+  CI | Text(50) | Required=Falso
+  Periodo | Text(255) | Required=Falso
+  Item | Text(255) | Required=Falso
+  Importe | Single(4) | Required=Falso
+  Signo | Integer(2) | Required=Falso
+  bANCO | Text(255) | Required=Falso
+
+TABLE: 600_SubsidioFecha_Tmp
+  IDSubsidio | Long(4) | Required=Falso
+  DescFecha | Text(255) | Required=Falso
+
+TABLE: 600_SubsidioResumen_Tmp
+  Anio | Integer(2) | Required=Falso
+  Mes | Byte(1) | Required=Falso
+  CI | Text(255) | Required=Falso
+  DescAfiliado | Text(255) | Required=Falso
+  Dias | Integer(2) | Required=Falso
+  Nombres | Text(50) | Required=Falso
+  Apellido1 | Text(30) | Required=Falso
+  Apellido2 | Text(30) | Required=Falso
+  ImpNominal | Double(8) | Required=Falso
+  ImpAguinaldo | Double(8) | Required=Falso
+  ImpLiquido | Double(8) | Required=Falso
+  Liquidar | Boolean(1) | Required=Falso
+  FechaNacimiento | Date(8) | Required=Falso
+  DescFecha | Text(255) | Required=Falso
+  CIOrig | Long(4) | Required=Falso
+  Baja | Boolean(1) | Required=Falso
+
+TABLE: AdPreJub
+  CI | Long(4) | Required=Falso
+  FechaPresentacion | Date(8) | Required=Falso
+  ImporteMensual | Integer(2) | Required=Falso
+  FechaJubilacion | Date(8) | Required=Falso
+  Observaciones | Memo(0) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: AdPreJubPago
+  CI | Long(4) | Required=Falso
+  Mes | Integer(2) | Required=Falso
+  Anio | Integer(2) | Required=Falso
+  Fecha | Date(8) | Required=Falso
+  Importe | Single(4) | Required=Falso
+  Observaciones | Memo(0) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: AfeccionGrupo
+  CodAfeccionGrupo | Long(4) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  CodPatologia | Long(4) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: AfeccionTipo
+  CodAfeccionTipo | Integer(2) | Required=Falso
+  Descrip | Text(200) | Required=Falso
+  CodAfeccionGrupo | Long(4) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+  CodDiameg | Long(4) | Required=Falso
+
+TABLE: Afiliado
+  CI | Long(4) | Required=Verdadero
+  Nombres | Text(50) | Required=Falso
+  Apellido1 | Text(30) | Required=Falso
+  Apellido2 | Text(30) | Required=Falso
+  FechaNacimiento | Date(8) | Required=Falso
+  Sexo | Text(1) | Required=Falso
+  Direccion | Text(100) | Required=Falso
+  Telefono | Text(25) | Required=Falso
+  EMail | Text(100) | Required=Falso
+  CodMutualista | Integer(2) | Required=Falso
+  FechaIngMutualista | Date(8) | Required=Falso
+  FechaBajaMutualista | Date(8) | Required=Falso
+  NroSocioMutualista | Text(12) | Required=Falso
+  CodRegimenJubilatorio | Byte(1) | Required=Falso
+  CodDepartamento | Text(3) | Required=Falso
+  PagaMutualista | Boolean(1) | Required=Falso
+  CodSituacionMutual | Text(2) | Required=Falso
+  CodBanco | Long(4) | Required=Falso
+  NroCuenta | Text(50) | Required=Falso
+  NroFunCuenta | Text(50) | Required=Falso
+  Movil | Text(50) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: AfiliadoApunte
+  CI | Long(4) | Required=Falso
+  Fecha | Date(8) | Required=Falso
+  Descrip | Memo(0) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: AfiliadoEspecialidad
+  CI | Long(4) | Required=Falso
+  CodEspecialidad | Long(4) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: AporteTipo
+  CodAporteTipo | Text(3) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: Atyro
+
+TABLE: BajaMotivo
+  CodBajaMotivo | Long(4) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: Banco
+  CodBanco | Long(4) | Required=Falso
+  Descripcion | Text(50) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: Bps2
+  TipoReg | Long(4) | Required=Falso
+  CI | Text(255) | Required=Falso
+  Apellido1 | Text(255) | Required=Falso
+  Apellido2 | Text(255) | Required=Falso
+  Nombres | Text(255) | Required=Falso
+  FechaNacimiento | Date(8) | Required=Falso
+  Sexo | Text(255) | Required=Falso
+  Nacionalidad | Text(255) | Required=Falso
+  Reservado1 | Text(255) | Required=Falso
+  Reservado2 | Text(255) | Required=Falso
+  Reservado3 | Text(255) | Required=Falso
+  Reservado4 | Text(255) | Required=Falso
+
+TABLE: Bps2_2
+  TipoReg | Long(4) | Required=Falso
+  Pais | Long(4) | Required=Falso
+  TipoDocumento | Text(255) | Required=Falso
+  CI | Text(255) | Required=Falso
+  PrimerApellido | Text(255) | Required=Falso
+  SegundoApellido | Text(255) | Required=Falso
+  PrimerNombre | Text(255) | Required=Falso
+  SegundoNombre | Text(255) | Required=Falso
+  FechaNacimiento | Date(8) | Required=Falso
+  Sexo | Text(255) | Required=Falso
+  Nacionalidad | Text(255) | Required=Falso
+
+TABLE: Bps3
+  TipoReg | Long(4) | Required=Falso
+  CI | Text(255) | Required=Falso
+  AcumulacionLaboral | Text(255) | Required=Falso
+  FechaIngreso | Date(8) | Required=Falso
+  SeguroSalud | Text(255) | Required=Falso
+  RemuneracionTipo | Text(255) | Required=Falso
+  HorasSemanales | Text(255) | Required=Falso
+  VinculoFuncional | Text(255) | Required=Falso
+  CodigoExoneracion | Text(255) | Required=Falso
+  ComputosEspeciales | Text(255) | Required=Falso
+  CausalBaja | Text(255) | Required=Falso
+  FechaBaja | Date(8) | Required=Falso
+  LocalEmpresa | Text(255) | Required=Falso
+  DiasTrabajados | Long(4) | Required=Falso
+  HorasTrabajadas | Text(255) | Required=Falso
+  Reservado1 | Text(255) | Required=Falso
+  Reservado2 | Text(255) | Required=Falso
+  Reservado3 | Text(255) | Required=Falso
+  Reservado4 | Text(255) | Required=Falso
+  Reservado5 | Text(255) | Required=Falso
+
+TABLE: Bps4
+  TipoReg | Long(4) | Required=Falso
+  CI | Text(255) | Required=Falso
+  AcumulacionLaboral | Text(255) | Required=Falso
+  Concepto | Text(255) | Required=Falso
+  Imponible | Double(8) | Required=Falso
+
+TABLE: Bps4_2
+  TipoReg | Long(4) | Required=Falso
+  MesAño | Long(4) | Required=Falso
+  Pais | Long(4) | Required=Falso
+  TipoDocumento | Text(255) | Required=Falso
+  CI | Text(255) | Required=Falso
+  AcumulacionLaboral | Long(4) | Required=Falso
+  Concepto | Long(4) | Required=Falso
+  Imponible | Double(8) | Required=Falso
+  Jornal | Double(8) | Required=Falso
+  OtrosHaberes | Double(8) | Required=Falso
+
+TABLE: BROU
+
+TABLE: CargarBancos
+  Id | Long(4) | Required=Falso
+  CI | Double(8) | Required=Falso
+  Mes | Double(8) | Required=Falso
+  Nombres | Text(255) | Required=Falso
+  Apellido1 | Text(255) | Required=Falso
+  Reliquidación | Double(8) | Required=Falso
+  Banco | Text(255) | Required=Falso
+  NroCuenta | Text(255) | Required=Falso
+  CodBanco | Double(8) | Required=Falso
+
+TABLE: Certificacion
+  NroLlamado | Long(4) | Required=Falso
+  CI | Long(4) | Required=Falso
+  NroRecibo | Long(4) | Required=Falso
+  FechaRecibido | Date(8) | Required=Falso
+  FechaCertificacion | Date(8) | Required=Falso
+  FechaIni | Date(8) | Required=Falso
+  FechaFin | Date(8) | Required=Falso
+  CodAfeccionTipo | Integer(2) | Required=Falso
+  CodCertificador | Integer(2) | Required=Falso
+  CodSalidaTipo | Integer(2) | Required=Falso
+  Efectiva | Boolean(1) | Required=Falso
+  Indicaciones | Memo(0) | Required=Falso
+  ImporteDeducible | Double(8) | Required=Falso
+  Trabaja | Boolean(1) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: CertificacionesTmp
+  CI | Long(4) | Required=Falso
+  FechaIni | Date(8) | Required=Falso
+  FechaFin | Date(8) | Required=Falso
+  ImporteDeducible | Double(8) | Required=Falso
+  CodSalidaTipo | Long(4) | Required=Falso
+
+TABLE: CertificacionProrroga
+  CI | Long(4) | Required=Falso
+  Fecha | Date(8) | Required=Falso
+  Dias | Long(4) | Required=Falso
+  Observaciones | Memo(0) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: Certificador
+  CodCertificador | Integer(2) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  Direccion | Text(50) | Required=Falso
+  Telefono | Text(25) | Required=Falso
+  Fax | Text(25) | Required=Falso
+  Bip | Text(25) | Required=Falso
+  CobraLlamado | Boolean(1) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: Departamento
+  CodDepartamento | Text(3) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+
+TABLE: Empresa
+  CodEmpresa | Integer(2) | Required=Falso
+  Nombre | Text(50) | Required=Falso
+  Direccion | Text(50) | Required=Falso
+  Telefono | Text(25) | Required=Falso
+  Fax | Text(25) | Required=Falso
+  EMail | Text(25) | Required=Falso
+  AporteCasemed | Single(4) | Required=Falso
+  AporteAguinaldo | Long(4) | Required=Falso
+  PersonaContacto | Text(50) | Required=Falso
+  Autoridades | Text(255) | Required=Falso
+  CodRegimenAporte | Integer(2) | Required=Falso
+  CodSituacionPago | Integer(2) | Required=Falso
+  Liquidar | Boolean(1) | Required=Falso
+  Ficticia | Boolean(1) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: EmpresaPago
+  CodEmpresa | Integer(2) | Required=Falso
+  Mes | Integer(2) | Required=Falso
+  Anio | Long(4) | Required=Falso
+  Importe | Long(4) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: Especialidad
+  CodEspecialidad | Long(4) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: ExportedQueries
+  QueryName | Text(255) | Required=Falso
+  QueryType | Text(50) | Required=Falso
+  Parameters | Memo(0) | Required=Falso
+  SqlText | Memo(0) | Required=Falso
+
+TABLE: FormaPago
+  CodFormaPago | Integer(2) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: FranjaIRPF
+  Desde | Double(8) | Required=Falso
+  Hasta | Double(8) | Required=Falso
+  Porcentaje | Double(8) | Required=Falso
+
+TABLE: Grupo_Usuario
+  Cod_Grupo | Text(8) | Required=Falso
+  Login | Text(8) | Required=Falso
+
+TABLE: GrupoEtario
+  Descrip | Text(50) | Required=Falso
+  EdadIni | Integer(2) | Required=Falso
+  EdadFin | Integer(2) | Required=Falso
+
+TABLE: Imponible
+  CI | Long(4) | Required=Falso
+  CodEmpresa | Integer(2) | Required=Falso
+  Fechaingreso | Date(8) | Required=Falso
+  Mes | Byte(1) | Required=Falso
+  Anio | Integer(2) | Required=Falso
+  Concepto | Text(3) | Required=Falso
+  IdTrabaja | Long(4) | Required=Falso
+  DiasTrabajados | Integer(2) | Required=Falso
+  Importe | Double(8) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+  AnioMes | Long(4) | Required=Falso
+
+TABLE: IMS
+  Mes | Integer(2) | Required=Falso
+  Anio | Integer(2) | Required=Falso
+  Importe | Single(4) | Required=Falso
+  AnioMes | Long(4) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: InformeEstadistico
+  IdRpt | Long(4) | Required=Falso
+  Grupo | Text(50) | Required=Falso
+  Orden | Long(4) | Required=Falso
+  TituloPantalla | Text(255) | Required=Falso
+  TituloRpt | Text(255) | Required=Falso
+  MesAnio | Boolean(1) | Required=Falso
+  Periodo | Boolean(1) | Required=Falso
+  Empresa | Boolean(1) | Required=Falso
+  Fecha | Boolean(1) | Required=Falso
+  GrupoEtario | Boolean(1) | Required=Falso
+  Comentario | Memo(0) | Required=Falso
+  Patologia | Boolean(1) | Required=Falso
+
+TABLE: IRPControl
+  CodIRP | Long(4) | Required=Falso
+  ImpFrjAnt | Single(4) | Required=Falso
+  FranjaAnt | Single(4) | Required=Falso
+  SMNAnt | Single(4) | Required=Falso
+
+TABLE: Liquidacion_BPS
+  Id | Long(4) | Required=Falso
+  CI | Double(8) | Required=Verdadero
+  NOMBRE | Text(255) | Required=Falso
+  APELLIDO | Text(255) | Required=Falso
+  MONTO_TOTAL | Double(8) | Required=Falso
+  MES_DE_CARGO | Long(4) | Required=Verdadero
+  NOM_EMPRESA | Text(255) | Required=Falso
+  PCT_POR_EMPRESA | Double(8) | Required=Verdadero
+  FECHA_PER_DESDE | Date(8) | Required=Falso
+  FECHA_PER_HASTA | Date(8) | Required=Falso
+  N_ ENTREGA | Long(4) | Required=Falso
+  FECHA_DE_ENTREGA | Date(8) | Required=Falso
+  MES | Integer(2) | Required=Falso
+  ANIO | Integer(2) | Required=Falso
+  LIQUIDO | Double(8) | Required=Falso
+
+TABLE: Moneda
+  Moneda | Text(3) | Required=Falso
+
+TABLE: Mutualista
+  CodMutualista | Integer(2) | Required=Falso
+  Nombre | Text(50) | Required=Falso
+  Direccion | Text(50) | Required=Falso
+  Telefono | Text(50) | Required=Falso
+  Fax | Text(25) | Required=Falso
+  EMail | Text(25) | Required=Falso
+  DiaPago | Byte(1) | Required=Falso
+  CodFormaPago | Integer(2) | Required=Falso
+  PersonaContacto | Text(50) | Required=Falso
+  Cuota | Double(8) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+  Ficticia | Boolean(1) | Required=Falso
+
+TABLE: NoCargadoHL
+  CI | Long(4) | Required=Falso
+  Apellido1 | Text(50) | Required=Falso
+  Apellido2 | Text(50) | Required=Falso
+  Nombres | Text(50) | Required=Falso
+  CodEmpresa | Long(4) | Required=Falso
+  Mes | Long(4) | Required=Falso
+  Anio | Long(4) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: Parametros
+  SMN | Double(8) | Required=Falso
+  TopeJubilatorio | Single(4) | Required=Falso
+  TopePrima | Single(4) | Required=Falso
+  UR | Single(4) | Required=Falso
+  PctAdPreJub | Single(4) | Required=Falso
+  BCP | Double(8) | Required=Falso
+  TopeLiquidoBPS | Double(8) | Required=Falso
+  pctBPS | Double(8) | Required=Falso
+
+TABLE: Patologia
+  CodPatologia | Long(4) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: Prestacion
+  CI | Long(4) | Required=Falso
+  Fecha | Date(8) | Required=Falso
+  CodPrestacionTipo | Integer(2) | Required=Falso
+  Moneda | Text(3) | Required=Falso
+  Importe | Double(8) | Required=Falso
+  Boleta | Boolean(1) | Required=Falso
+  Observaciones | Memo(0) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: PrestacionTipo
+  CodPrestacionTipo | Integer(2) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  FechaVigencia | Date(8) | Required=Falso
+  ImporteTopeDISSE | Double(8) | Required=Falso
+  ImporteTopeCASEMED | Double(8) | Required=Falso
+  PeriodoRenovacion | Integer(2) | Required=Falso
+  Receta | Boolean(1) | Required=Falso
+  Obs | Memo(0) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: PrimaFallecimiento
+  CI | Long(4) | Required=Falso
+  FechaFirma | Date(8) | Required=Falso
+  FechaFallecimiento | Date(8) | Required=Falso
+  Importe | Double(8) | Required=Falso
+  FechaPago | Date(8) | Required=Falso
+  Observaciones | Memo(0) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: Receta
+  CI | Long(4) | Required=Falso
+  Fecha | Date(8) | Required=Falso
+  CodPrestacionTipo | Integer(2) | Required=Falso
+  CodRecetaDistancia | Text(3) | Required=Falso
+  Esf_I | Single(4) | Required=Falso
+  Esf_D | Single(4) | Required=Falso
+  Cil_I | Single(4) | Required=Falso
+  Cil_D | Single(4) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: RecetaDistancia
+  CodRecetaDistancia | Text(3) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+
+TABLE: RegimenAporte
+  CodRegimenAporte | Integer(2) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  Porcentaje | Integer(2) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: RegimenJubilatorio
+  CodRegimenJubilatorio | Byte(1) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: ReintegroMutual
+  CI | Long(4) | Required=Falso
+  Mes | Integer(2) | Required=Falso
+  Anio | Integer(2) | Required=Falso
+  Fecha | Date(8) | Required=Falso
+  CodMutualista | Integer(2) | Required=Falso
+  Importe | Single(4) | Required=Falso
+  Observaciones | Memo(0) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SalidaTipo
+  CodSalidaTipo | Integer(2) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: Seleccion
+  Id | Long(4) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Form | Text(255) | Required=Falso
+  Nombre | Text(255) | Required=Falso
+  Txt | Memo(0) | Required=Falso
+  System | Boolean(1) | Required=Falso
+
+TABLE: SituacionMutual
+  CodSituacionMutual | Text(2) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  Pagar | Boolean(1) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SituacionPago
+  CodSituacionPago | Integer(2) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SubsidioCabezal
+  IdSubsidio | Long(4) | Required=Falso
+  Mes | Byte(1) | Required=Falso
+  Anio | Integer(2) | Required=Falso
+  CI | Long(4) | Required=Falso
+  Liquidar | Boolean(1) | Required=Falso
+  ValorJornal | Single(4) | Required=Falso
+  Dias | Integer(2) | Required=Falso
+  ImpNominal | Double(8) | Required=Falso
+  ImpAguinaldo | Double(8) | Required=Falso
+  ImpLiquido | Double(8) | Required=Falso
+  NroRecibo | Long(4) | Required=Falso
+  FechaPago | Date(8) | Required=Falso
+  CodBanco | Long(4) | Required=Falso
+  NroCuenta | Text(50) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SubsidioCabezal_BPS
+  IdSubsidio | Long(4) | Required=Falso
+  DiasBPS | Long(4) | Required=Falso
+  LiquidoBPS | Double(8) | Required=Falso
+  AguinaldoBPS | Double(8) | Required=Falso
+  LiquidoPagar | Double(8) | Required=Falso
+
+TABLE: SubsidioCabezalEmpresa
+  IdSubsidio | Long(4) | Required=Falso
+  CodEmpresa | Integer(2) | Required=Falso
+  ValorJornal | Single(4) | Required=Falso
+  Dias | Integer(2) | Required=Falso
+  ImpNominal | Double(8) | Required=Falso
+  ImpAguinaldo | Double(8) | Required=Falso
+  ImpLiquido | Double(8) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SubsidioEnfermedad
+  IdSubsidio | Long(4) | Required=Falso
+  FechaIni | Date(8) | Required=Falso
+  FechaFin | Date(8) | Required=Falso
+  FechaIniSubsidio | Date(8) | Required=Falso
+  FechaFinSubsidio | Date(8) | Required=Falso
+  NroLlamado | Long(4) | Required=Falso
+  Dias | Byte(1) | Required=Falso
+  Importe | Double(8) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SubsidioImponible
+  IdSubsidio | Long(4) | Required=Falso
+  Mes | Byte(1) | Required=Falso
+  Anio | Integer(2) | Required=Falso
+  CodEmpresa | Integer(2) | Required=Falso
+  Dias | Integer(2) | Required=Falso
+  Importe | Double(8) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SubsidioItem
+  IdSubsidio | Long(4) | Required=Falso
+  CodSubsidioItemCod | Integer(2) | Required=Falso
+  Importe | Double(8) | Required=Falso
+  AbiEmp | Boolean(1) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SubsidioItemCod
+  CodSubsidioItemCod | Integer(2) | Required=Falso
+  Descrip | Text(50) | Required=Falso
+  Tipo | Text(1) | Required=Falso
+  ValorTipo | Text(50) | Required=Falso
+  Signo | Byte(1) | Required=Falso
+  Comparar | Boolean(1) | Required=Falso
+  CompararContra | Byte(1) | Required=Falso
+  Valor | Double(8) | Required=Falso
+  TipoComp | Text(1) | Required=Falso
+  Operador | Text(5) | Required=Falso
+  ValorMin | Double(8) | Required=Falso
+  ValorMax | Double(8) | Required=Falso
+  Procesar | Boolean(1) | Required=Falso
+  FechaVigencia | Date(8) | Required=Falso
+  FechaBaja | Date(8) | Required=Falso
+  AperturaXEmpresa | Boolean(1) | Required=Falso
+  ModificaNominal | Boolean(1) | Required=Falso
+
+TABLE: SubsidioItemCod_Afiliado
+  SubItmCodAfiId | Long(4) | Required=Falso
+  CodSubsidioItemCod | Integer(2) | Required=Falso
+  CI | Long(4) | Required=Falso
+  Valor | Double(8) | Required=Falso
+  Vigencia | Date(8) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: SubsidioItemEmpresa
+  IdSubsidio | Long(4) | Required=Falso
+  CodSubsidioItemCod | Integer(2) | Required=Falso
+  CodEmpresa | Integer(2) | Required=Falso
+  Importe | Single(4) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: tmp_Cantidad_Por_Puesto
+  CodEmpresa | Integer(2) | Required=Falso
+  Nombre | Text(50) | Required=Falso
+  Cantidad | Long(4) | Required=Falso
+  CantidadNo0 | Long(4) | Required=Falso
+
+TABLE: tmp_ReporteBPS_Full
+  CI | Long(4) | Required=Falso
+  Dias | Integer(2) | Required=Falso
+  Nombres | Text(50) | Required=Falso
+  Apellido1 | Text(30) | Required=Falso
+  Apellido2 | Text(30) | Required=Falso
+  FechaNacimiento | Date(8) | Required=Falso
+  IdSubsidio | Long(4) | Required=Falso
+  NroRecibo | Long(4) | Required=Falso
+  FechaIni | Date(8) | Required=Falso
+  FechaFin | Date(8) | Required=Falso
+  FechaIniSubsidio | Date(8) | Required=Falso
+  FechaFinSubsidio | Date(8) | Required=Falso
+  ImpNominal | Double(8) | Required=Falso
+  ImpAguinaldo | Double(8) | Required=Falso
+  ImpLiquido | Double(8) | Required=Falso
+  Jornal70 | Double(8) | Required=Falso
+  Aguinaldo70 | Double(8) | Required=Falso
+  DiasBPS | Long(4) | Required=Falso
+  LiquidoBPS | Double(8) | Required=Falso
+  LiquidoPagar | Double(8) | Required=Falso
+  Banco | Text(50) | Required=Falso
+  NroCuenta | Text(50) | Required=Falso
+  MONTO_TOTAL | Double(8) | Required=Falso
+  MES_DE_CARGO | Long(4) | Required=Falso
+  NOM_EMPRESA | Text(255) | Required=Falso
+  PCT_POR_EMPRESA | Double(8) | Required=Falso
+  FECHA_PER_DESDE | Date(8) | Required=Falso
+  FECHA_PER_HASTA | Date(8) | Required=Falso
+  N_ ENTREGA | Long(4) | Required=Falso
+  FECHA_DE_ENTREGA | Date(8) | Required=Falso
+
+TABLE: Trabaja
+  CI | Long(4) | Required=Falso
+  CodEmpresa | Integer(2) | Required=Falso
+  FechaIngreso | Date(8) | Required=Falso
+  FechaBaja | Date(8) | Required=Falso
+  CodBajaMotivo | Long(4) | Required=Falso
+  NroFichaEmpresa | Text(20) | Required=Falso
+  IdTrabaja | Long(4) | Required=Falso
+  FechaIngCasemed | Date(8) | Required=Falso
+  Usr | Text(8) | Required=Falso
+  Ts | Date(8) | Required=Falso
+
+TABLE: xUsrParam
+  login | Text(8) | Required=Falso
+  clave | Text(100) | Required=Falso
+  orden | Integer(2) | Required=Falso
+  value1 | Text(255) | Required=Falso
+  value2 | Text(255) | Required=Falso
+  value3 | Text(255) | Required=Falso
+  value4 | Text(255) | Required=Falso
+  value5 | Text(255) | Required=Falso
+
+TABLE: xw_Suma_ValorJornal
+  IdSubsidio | Long(4) | Required=Falso
+  SumaDeValorJornal | Double(8) | Required=Falso
+
+=== QUERIES ===
+QUERY: 001_AfeccionGrupo_Max
+  SQL: SELECT Val(Max(CodAfeccionGrupo) & "") + 1 AS Max
+FROM AfeccionGrupo;
+
+
+QUERY: 001_AfeccionTipo_Max
+  SQL: SELECT Iif(Val(Max(CodAfeccionTipo) & "") + 1 = 9999, 10000, Val(Max(CodAfeccionTipo) & "") + 1) AS Max
+FROM AfeccionTipo
+WHERE CodAfeccionTipo <> 9999;
+
+
+QUERY: 001_Certificacion_Max
+  SQL: SELECT Val(Max(NroLlamado) & "") + 1 AS Max
+FROM Certificacion;
+
+
+QUERY: 001_Certificador_Max
+  SQL: SELECT Val(Max(CodCertificador) & "") + 1 AS Max
+FROM Certificador;
+
+
+QUERY: 001_Empresa_Max
+  SQL: SELECT Val(Max(CodEmpresa) & "")+1 AS Max
+FROM Empresa
+WHERE (((Empresa.CodEmpresa)<>900));
+
+
+QUERY: 001_FormaPago_Max
+  SQL: SELECT Val(Max(CodFormaPago) & "") + 1 AS Max
+FROM FormaPago;
+
+
+QUERY: 001_Mutualista_Max
+  SQL: SELECT Val(Max(CodMutualista) & "") + 1 AS Max
+FROM Mutualista;
+
+
+QUERY: 001_Patologia_Max
+  SQL: SELECT Val(Max(CodPatologia) & "") + 1 AS Max
+FROM Patologia;
+
+
+QUERY: 001_PrestacionTipo_Max
+  SQL: SELECT Val(Max(CodPrestacionTipo) & "") + 1 AS Max
+FROM PrestacionTipo;
+
+
+QUERY: 001_Recibo_Max
+  SQL: SELECT Val(Max(NroRecibo) & "")+1 AS Max
+FROM SubsidioCabezal;
+
+
+QUERY: 001_RegimenJubilatorio_Max
+  SQL: SELECT Val(Max(CodRegimenJubilatorio) & "") + 1 AS Max
+FROM RegimenJubilatorio;
+
+
+QUERY: 001_SalidaTipo_Max
+  SQL: SELECT Val(Max(CodSalidaTipo) & "")+1 AS Max
+FROM SalidaTipo;
+
+
+QUERY: 001_SituacionPago_Max
+  SQL: SELECT Val(Max(CodSituacionPago) & "") + 1 AS Max
+FROM SituacionPago;
+
+
+QUERY: 100_Afiliado_CI
+  SQL: PARAMETERS pCI Long;
+SELECT Afiliado.CI, [Afiliado].[Apellido1] & IIf([Afiliado].[Apellido2] & ""<>""," " & [Afiliado].[Apellido2],"") & ", " & [Afiliado].[Nombres] AS DescAfiliado
+FROM Afiliado
+WHERE (((Afiliado.CI)=[pCI]));
+
+
+QUERY: 100_CargadoHL
+  SQL: PARAMETERS pCodEmpresa Short, pMes Short, pAnio Long;
+SELECT Imponible.CI, Imponible.CodEmpresa, Imponible.Mes, Imponible.Anio
+FROM Imponible
+WHERE (((Imponible.CodEmpresa)=[pCodEmpresa]) AND ((Imponible.Mes)=[pMes]) AND ((Imponible.Anio)=[pAnio]));
+
+
+QUERY: 100_CargadosHL
+  SQL: PARAMETERS pMes Byte, pAnio Long, pCodEmpresa Long;
+SELECT Imponible.CI
+FROM Imponible
+WHERE (((Imponible.Mes)=[pMes]) AND ((Imponible.Anio)=[pAnio]) AND ((Imponible.CodEmpresa)=[pCodEmpresa]))
+GROUP BY Imponible.CI;
+
+
+QUERY: 100_Create_Bps4Tmp
+  SQL: SELECT Val(Rs_Bps4.Cedula) AS CI, Rs_Bps4.Concepto, Rs_Bps4.Imponible INTO Bps4Tmp
+FROM Rs_Bps4;
+
+
+QUERY: 100_Delete_Imponible
+  SQL: PARAMETERS pCodEmpresa Long, pMes Byte, pAño Long;
+DELETE Imponible.*, Imponible.CodEmpresa, Imponible.Mes, Imponible.Anio
+FROM Imponible
+WHERE (((Imponible.CodEmpresa)=[pCodEmpresa]) AND ((Imponible.Mes)=[pMes]) AND ((Imponible.Anio)=[pAño]));
+
+
+QUERY: 100_Delete_NocargadoHL
+  SQL: PARAMETERS pCodEmpresa Long, pMes Short, pAnio Long;
+DELETE NoCargadoHL.CodEmpresa, NoCargadoHL.Mes, NoCargadoHL.Anio, NoCargadoHL.*
+FROM NoCargadoHL
+WHERE (((NoCargadoHL.CodEmpresa)=[pCodEmpresa]) AND ((NoCargadoHL.Mes)=[pMes]) AND ((NoCargadoHL.Anio)=[pAnio]));
+
+
+QUERY: 100_Drop_Bps4Tmp
+  SQL: DROP TABLE Bps4Tmp;
+
+
+QUERY: 100_Insert_Imponible
+  SQL: PARAMETERS pCodEmpresa Long, pMes Short, pAño Long, pUsr Text;
+INSERT INTO Imponible ( CI, Concepto, Importe, CodEmpresa, Mes, Anio, DiasTrabajados, Usr, Ts, Fechaingreso, IdTrabaja, AnioMes )
+SELECT Rs_Bps4.Cedula, Rs_Bps4.Concepto, Sum(Rs_Bps4.Imponible) AS SumOfImporte, [pCodEmpresa] AS Expr1, [pMes] AS Expr2, [pAño] AS Expr3, 30 AS DiasTrabajados, [pUsr] AS Usuario, Now() AS Rs, First(T.FechaIngreso) AS PrimeroDeFechaIngreso, First(T.IdTrabaja) AS PrimeroDeIdRs_TrabajaActivo, Val(CStr([pAño]) & Format([pMes],"00")) AS Expr4
+FROM (Rs_Bps4 INNER JOIN Afiliado ON Rs_Bps4.Cedula = Afiliado.CI) INNER JOIN Rs_TrabajaUltimo AS T ON Afiliado.CI = T.CI
+WHERE (((T.CodEmpresa)=[pCodEmpresa]))
+GROUP BY Rs_Bps4.Cedula, Rs_Bps4.Concepto;
+
+
+QUERY: 100_Insert_Imponible_New
+  SQL: PARAMETERS pCodEmpresa Long, pMes Long, pAño Long, pUsr Text;
+INSERT INTO Imponible ( CI, Concepto, Importe, CodEmpresa, Mes, Anio, Fechaingreso, IdTrabaja, DiasTrabajados, Usr, Ts, AnioMes )
+SELECT Rs_Bps4.Cedula, Rs_Bps4.Concepto, Sum(Rs_Bps4.Imponible) AS SumOfImporte, [pCodEmpresa] AS Expr1, [pMes] AS Expr2, [pAño] AS Expr3, First(t.FechaIngreso) AS FirstOfFechaIngreso, First(t.IdTrabaja) AS FirstOfIdRs_TrabajaActivo, 30 AS Expr5, [pUsr] AS Expr6, Now() AS Expr7, Val(CStr([pAño]) & Format([pMes],"00")) AS Expr4
+FROM ((Rs_Bps4 INNER JOIN Afiliado ON Rs_Bps4.Cedula = Afiliado.CI) INNER JOIN Rs_TrabajaUltimo AS t ON Afiliado.CI = t.CI) LEFT JOIN 101_ImponibleMes AS I ON (t.CI = I.CI) AND (t.CodEmpresa = I.CodEmpresa) AND (t.FechaIngreso = I.Fechaingreso)
+WHERE (((t.CodEmpresa)=[pCodEmpresa]) AND ((I.CI) Is Null))
+GROUP BY Rs_Bps4.Cedula, Rs_Bps4.Concepto, Rs_Bps4.Concepto;
+
+
+QUERY: 100_Insert_NoCargadoHL
+  SQL: PARAMETERS pMes Byte, pAnio Long, pCodEmpresa Long;
+INSERT INTO NoCargadoHL ( CI, Apellido1, Apellido2, Nombres, CodEmpresa, Mes, Anio, Usr, Ts )
+SELECT Rs_Bps2.Cedula, First(Rs_Bps2.Apellido1) AS PrimeroDeApellido1, First(Rs_Bps2.Apellido2) AS PrimeroDeApellido2, First(Rs_Bps2.Nombres) AS PrimeroDeNombres, [pCodEmpresa] AS Expr1, [pMes] AS Expr2, [pAnio] AS Expr3, [pUsr] AS Expr4, Now() AS Expr5
+FROM Rs_Bps2 LEFT JOIN 100_CargadosHL ON Rs_Bps2.Cedula = [100_CargadosHL].CI
+WHERE ((([100_CargadosHL].CI) Is Null))
+GROUP BY Rs_Bps2.Cedula;
+
+
+QUERY: 100_TrabajaActivo
+  SQL: PARAMETERS pMes Long, pAño Long;
+SELECT Trabaja.*
+FROM Trabaja
+WHERE (((Trabaja.FechaBaja) Is Null Or (Trabaja.FechaBaja)>=CDate("01/" & [pMes] & "/" & [pAño])));
+
+
+QUERY: 100_Update_Imponible
+  SQL: PARAMETERS pCodEmpresa Long, pMes Long, pAño Long, pUsr Text;
+UPDATE Bps4Tmp INNER JOIN (Rs_TrabajaActivo INNER JOIN Imponible ON (Rs_TrabajaActivo.CI = Imponible.CI) AND (Rs_TrabajaActivo.CodEmpresa = Imponible.CodEmpresa) AND (Rs_TrabajaActivo.FechaIngreso = Imponible.Fechaingreso)) ON Bps4Tmp.CI = Rs_TrabajaActivo.CI SET Imponible.Importe = [Imponible].[Importe]+[Bps4Tmp].[Imponible], Imponible.Usr = [pUsr], Imponible.Ts = Now()
+WHERE (((Rs_TrabajaActivo.CodEmpresa)=[pCodEmpresa]) AND ((Imponible.Mes)=[pMes]) AND ((Imponible.Anio)=[pAño]));
+
+
+QUERY: 101_ImponibleMes
+  SQL: PARAMETERS pMes Long, pAño Long;
+SELECT Imponible.*
+FROM Imponible
+WHERE (((Imponible.Mes)=[pMes]) AND ((Imponible.Anio)=[pAño]));
+
+
+QUERY: 102_DiasCertificados
+  SQL: PARAMETERS pCI Long, pNroLlamado Long;
+SELECT Sum(DateDiff("d",FechaIni,FechaFin)+1) AS Dias, Count(*) AS Cantidad
+FROM Certificacion
+WHERE (((Certificacion.CI)=[pCI]) AND ((Certificacion.Efectiva)=True) AND ((Certificacion.NroLlamado) <= IIf([pNroLlamado] = 0, Certificacion.NroLlamado, [pNroLlamado])));
+
+
+QUERY: 102_Prestacion_Cantidad
+  SQL: PARAMETERS pCI Long, pCodPrestacionTipo Short;
+SELECT Count(*) AS Cantidad
+FROM Prestacion
+WHERE (((Prestacion.CI)=[pCI]) AND ((Prestacion.CodPrestacionTipo)=[pCodPrestacionTipo]));
+
+
+QUERY: 103_PrestacionesAfiliado
+  SQL: PARAMETERS pCI Long;
+SELECT Prestacion.CI, Prestacion.Fecha, PrestacionTipo.Descrip AS Tipo, Prestacion.Moneda, Prestacion.Importe, Prestacion.Boleta
+FROM Prestacion INNER JOIN PrestacionTipo ON Prestacion.CodPrestacionTipo = PrestacionTipo.CodPrestacionTipo
+WHERE (((Prestacion.CI)=[pCI]))
+ORDER BY Prestacion.Fecha DESC;
+
+
+QUERY: 103_ReintegrosAfiliado
+  SQL: PARAMETERS pCI Long;
+SELECT ReintegroMutual.CI, ReintegroMutual.Anio & "/" & Format(ReintegroMutual.Mes,"00") AS AnioMes, ReintegroMutual.Fecha, Mutualista.Nombre AS Mutualista, ReintegroMutual.Importe
+FROM ReintegroMutual INNER JOIN Mutualista ON ReintegroMutual.CodMutualista = Mutualista.CodMutualista
+WHERE (((ReintegroMutual.CI)=[pCI]))
+ORDER BY ReintegroMutual.Anio & "/" & Format(ReintegroMutual.Mes,"00") DESC;
+
+
+QUERY: 110_Borrar_PrimaFallecimiento_CI
+  SQL: PARAMETERS pCI Long;
+DELETE PrimaFallecimiento.*, PrimaFallecimiento.CI
+FROM PrimaFallecimiento
+WHERE (((PrimaFallecimiento.CI)=[pCI]));
+
+
+QUERY: 110_Imponible_Periodo
+  SQL: PARAMETERS pCI Long, pMesIni Long, pMesFin Long;
+SELECT Sum(Imponible.Importe) AS Importe
+FROM Imponible
+WHERE (((Imponible.CI)=[pCI]) AND ((Imponible.AnioMes) Between [pMesIni] And [pMesFin]) AND ((Imponible.Concepto)="1"));
+
+
+QUERY: 110_PrimaFallecimiento_CI
+  SQL: PARAMETERS pCI Long;
+SELECT PrimaFallecimiento.*
+FROM PrimaFallecimiento
+WHERE (((PrimaFallecimiento.CI)=[pCI]));
+
+
+QUERY: 145_AfiliadoXCI
+  SQL: PARAMETERS pCI Long;
+SELECT Afiliado.*
+FROM Afiliado
+WHERE (((Afiliado.CI)=[pCI]));
+
+
+QUERY: 150_5_Mejores_Pagos
+  SQL: SELECT TOP 5 Afiliado.CI, I.Mes, I.Anio, Afiliado.Apellido1, Afiliado.Apellido2, Afiliado.Nombres, Empresa.Nombre, I.Importe
+FROM Empresa INNER JOIN (Rs_MaxImp_Afiliado AS I INNER JOIN Afiliado ON I.CI = Afiliado.CI) ON Empresa.CodEmpresa = I.CodEmpresa
+ORDER BY I.Importe DESC;
+
+
+QUERY: 150_5_Mejores_Pagos_No_Casmu
+  SQL: SELECT TOP 5 Afiliado.CI, I.Mes, I.Anio, Afiliado.Apellido1, Afiliado.Apellido2, Afiliado.Nombres, Empresa.Nombre, I.Importe
+FROM (Imponible AS I INNER JOIN Afiliado ON I.CI = Afiliado.CI) INNER JOIN Empresa ON I.CodEmpresa = Empresa.CodEmpresa
+WHERE (((I.CodEmpresa)<>1))
+ORDER BY I.Importe DESC;
+
+
+QUERY: 160_Trabaja
+  SQL: PARAMETERS pCI Long, pCodEmpresa Long, pFechaIngreso DateTime;
+SELECT Trabaja.*
+FROM Trabaja
+WHERE (((Trabaja.CI)=[pCI]) AND ((Trabaja.CodEmpresa)=[pCodEmpresa]) AND ((Trabaja.FechaIngreso)=[pFechaIngreso]));
+
+
+QUERY: 160_Trabaja_CI
+  SQL: PARAMETERS pCI Long;
+SELECT Trabaja.*
+FROM Trabaja
+WHERE (((Trabaja.CI)=[pCI]));
+
+
+QUERY: 170_Delete_Imponible
+  SQL: PARAMETERS pCI Long, pCodEmpresa Long, pFechaIngreso DateTime, pMes Short, pAnio Long, pConcepto Text;
+DELETE Imponible.*, Imponible.CI, Imponible.CodEmpresa, Imponible.Fechaingreso, Imponible.Mes, Imponible.Anio, Imponible.CodAporteTipo AS Expr1, Imponible.Concepto
+FROM Imponible
+WHERE (((Imponible.CI)=[pCI]) AND ((Imponible.CodEmpresa)=[pCodEmpresa]) AND ((Imponible.Fechaingreso)=[pFechaIngreso]) AND ((Imponible.Mes)=[pMes]) AND ((Imponible.Anio)=[pAnio]) AND ((Imponible.Concepto)=[pConcepto]));
+
+
+QUERY: 170_Insert_Imponible
+  SQL: PARAMETERS pCI Long, pCodEmpresa Long, pFechaIngreso DateTime, pMes Short, pAnio Long, pDiasTrabajados Short, pImporte IEEEDouble, pUsr Text, pConcepto Text;
+INSERT INTO Imponible ( CI, CodEmpresa, Fechaingreso, Mes, Anio, Concepto, IdTrabaja, DiasTrabajados, Importe, Usr, Ts, AnioMes )
+SELECT [pCI] AS Expr1, [pCodEmpresa] AS Expr2, [pFechaIngreso] AS Expr3, [pMes] AS Expr4, [pAnio] AS Expr5, [pConcepto] AS Expr6, [pIdTrabaja] AS Expr7, [pDiasTrabajados] AS Expr8, [pImporte] AS Expr9, [pUsr] AS Expr10, Now() AS Expr11, Val(CStr([pAnio]) & Format([pMes],"00")) AS Expr12;
+
+
+QUERY: 170_Update_Imponible
+  SQL: PARAMETERS pCI Long, pCodEmpresa Long, pFechaIngreso DateTime, pMes Short, pAnio Long, pConcepto Text, pDiasTrabajados Short, pImporte IEEEDouble, pUsr Text;
+UPDATE Imponible SET Imponible.DiasTrabajados = [pDiasTrabajados], Imponible.Importe = [pImporte], Imponible.Usr = [pUsr], Imponible.Ts = Now()
+WHERE (((Imponible.CI)=[pCI]) AND ((Imponible.CodEmpresa)=[pCodEmpresa]) AND ((Imponible.Fechaingreso)=[pFechaIngreso]) AND ((Imponible.Mes)=[pMes]) AND ((Imponible.Anio)=[pAnio]) AND ((Imponible.Concepto)=[pConcepto]));
+
+
+QUERY: 180_GrupoEtario_EdadIni
+  SQL: PARAMETERS pEdadIni Short;
+SELECT GrupoEtario.*
+FROM GrupoEtario
+WHERE (((GrupoEtario.EdadIni)=[pEdadIni]));
+
+
+QUERY: 200_Delete_600_Rpt_AfiliadoMutualista
+  SQL: DELETE [600_Rpt_AfiliadoMutualista].*
+FROM 600_Rpt_AfiliadoMutualista;
+
+
+QUERY: 200_Imponible
+  SQL: PARAMETERS pMes Long;
+SELECT Imponible.*, Trabaja.FechaBaja
+FROM Imponible INNER JOIN Trabaja ON (Imponible.Fechaingreso = Trabaja.FechaIngreso) AND (Imponible.CodEmpresa = Trabaja.CodEmpresa) AND (Imponible.CI = Trabaja.CI)
+WHERE (((Trabaja.FechaBaja) Is Null)) OR (((Val(Format(DateAdd("m", -1, [Trabaja].[FechaBaja]),"yyyymm")))>[pMes]));
+
+
+QUERY: 200_Imponible_6_Meses
+  SQL: PARAMETERS pMes Long, pMesIni Long, pSMN IEEEDouble;
+SELECT [200_Imponible].CI, CLng(Sum([200_Imponible].Importe)/6) AS Importe
+FROM 200_Imponible
+WHERE (((Val(CStr([Anio]) & Format([Mes],"00"))) Between [pMesIni] And [pMes]) AND (([200_Imponible].Concepto)="1"))
+GROUP BY [200_Imponible].CI
+HAVING (((CLng(Sum([200_Imponible].[Importe])/6))>=(1.25*[pSMN])));
+
+
+QUERY: 200_Imponible_Ult_Mes
+  SQL: PARAMETERS pMes Long, pSMN IEEEDouble;
+SELECT [200_Imponible].CI, CLng(Sum([200_Imponible].Importe)) AS Importe
+FROM 200_Imponible
+WHERE (((Val(CStr([Anio]) & Format([Mes],"00")))=[pMes]) AND (([200_Imponible].Concepto)="1"))
+GROUP BY [200_Imponible].CI
+HAVING (((CLng(Sum([200_Imponible].[Importe])))>=(1.25*[pSMN])));
+
+
+QUERY: 200_Insert_600_Rpt_AfiliadoMutualista
+  SQL: INSERT INTO 600_Rpt_AfiliadoMutualista ( CI, DescAfiliado, CodMutualista, DescMutualista, Cuota, Sexo, FechaNacimiento, DescSituacionMutual )
+SELECT [200_PagarMutualista].CI, [200_PagarMutualista].DescAfiliado, [200_PagarMutualista].CodMutualista, Mutualista.Nombre, Mutualista.Cuota, Afiliado.Sexo, Afiliado.FechaNacimiento, SituacionMutual.Descrip
+FROM ((200_PagarMutualista INNER JOIN Mutualista ON [200_PagarMutualista].CodMutualista = Mutualista.CodMutualista) INNER JOIN Afiliado ON [200_PagarMutualista].CI = Afiliado.CI) LEFT JOIN SituacionMutual ON [200_PagarMutualista].CodSituacionMutual = SituacionMutual.CodSituacionMutual;
+
+
+QUERY: 200_PagarMutualista
+  SQL: SELECT Afiliado.*, Afiliado.Nombres & " " & Afiliado.Apellido1 & IIf(Afiliado.Apellido2 & ""<>""," " & Afiliado.Apellido2,"") AS DescAfiliado, SituacionMutual.Pagar
+FROM (Afiliado INNER JOIN 200_Imponible_6_Meses AS I ON Afiliado.CI = I.CI) INNER JOIN SituacionMutual ON Afiliado.CodSituacionMutual = SituacionMutual.CodSituacionMutual
+WHERE (((Afiliado.CodMutualista)>0) AND ((SituacionMutual.Pagar)=True))
+UNION SELECT Afiliado.*, Afiliado.Nombres & " " & Afiliado.Apellido1 & IIf(Afiliado.Apellido2 & ""<>""," " & Afiliado.Apellido2,"") AS DescAfiliado, SituacionMutual.Pagar
+FROM (Afiliado INNER JOIN 200_Imponible_Ult_Mes AS I ON Afiliado.CI = I.CI) INNER JOIN SituacionMutual ON Afiliado.CodSituacionMutual = SituacionMutual.CodSituacionMutual
+WHERE (((Afiliado.CodMutualista)>0) AND ((SituacionMutual.Pagar)=True))
+ORDER BY CI;
+
+
+QUERY: 201_Insert_Rpt_AfiliadoMutualista
+  SQL: INSERT INTO 600_Rpt_AfiliadoMutualista ( CI, Nombres, Apellido1, Apellido2, FechaNacimiento, Sexo, Direccion, Telefono, EMail, CodMutualista, DescMutualista, FechaIngMutualista, NroSocioMutualista, CodRegimenJubilatorio, CodDepartamento, PagaMutualista, Usr, Ts, DescAfiliado, CodEmpresa, DescEmpresa )
+SELECT [500_Rpt_NoPagarMutualista].CI, [500_Rpt_NoPagarMutualista].Nombres, [500_Rpt_NoPagarMutualista].Apellido1, [500_Rpt_NoPagarMutualista].Apellido2, [500_Rpt_NoPagarMutualista].FechaNacimiento, [500_Rpt_NoPagarMutualista].Sexo, [500_Rpt_NoPagarMutualista].Direccion, [500_Rpt_NoPagarMutualista].Telefono, [500_Rpt_NoPagarMutualista].EMail, [500_Rpt_NoPagarMutualista].CodMutualista, [500_Rpt_NoPagarMutualista].DescMutualista, [500_Rpt_NoPagarMutualista].FechaIngMutualista, [500_Rpt_NoPagarMutualista].NroSocioMutualista, [500_Rpt_NoPagarMutualista].CodRegimenJubilatorio, [500_Rpt_NoPagarMutualista].CodDepartamento, [500_Rpt_NoPagarMutualista].PagaMutualista, [500_Rpt_NoPagarMutualista].Usr, [500_Rpt_NoPagarMutualista].Ts, [500_Rpt_NoPagarMutualista].DescAfiliado, [500_Rpt_NoPagarMutualista].CodEmpresa, [500_Rpt_NoPagarMutualista].DescEmpresa
+FROM 500_Rpt_NoPagarMutualista;
+
+
+QUERY: 201_PagarMutualista
+  SQL: SELECT *
+FROM 200_Imponible_6_Meses
+UNION SELECT * FROM 200_Imponible_Ult_Mes;
+
+
+QUERY: 210_Delete_600_Rpt_BPS
+  SQL: DELETE [600_Rpt_BPS].*
+FROM 600_Rpt_BPS;
+
+
+QUERY: 210_ImpRetObrero
+  SQL: PARAMETERS pMes Short, pAnio Long, pLiquidar Bit;
+SELECT SubsidioCabezal.Mes, SubsidioCabezal.Anio, Sum(SubsidioItem.Importe) AS Importe
+FROM SubsidioCabezal INNER JOIN SubsidioItem ON SubsidioCabezal.IdSubsidio = SubsidioItem.IdSubsidio
+WHERE (((SubsidioItem.CodSubsidioItemCod) In (1,2,3,4,5,6,7)) AND ((SubsidioCabezal.Liquidar)=[pLiquidar]))
+GROUP BY SubsidioCabezal.Mes, SubsidioCabezal.Anio
+HAVING (((SubsidioCabezal.Mes)=[pMes]) AND ((SubsidioCabezal.Anio)=[pAnio]));
+
+
+QUERY: 210_ImpRetPatronal
+  SQL: PARAMETERS pMes Short, pAnio Long, pLiquidar Bit;
+SELECT SubsidioCabezal.Mes, SubsidioCabezal.Anio, Sum(SubsidioItem.Importe) AS Importe
+FROM SubsidioCabezal INNER JOIN SubsidioItem ON SubsidioCabezal.IdSubsidio = SubsidioItem.IdSubsidio
+WHERE (((SubsidioItem.CodSubsidioItemCod) In (101, 102)) AND ((SubsidioCabezal.Liquidar)=[pLiquidar]))
+GROUP BY SubsidioCabezal.Mes, SubsidioCabezal.Anio
+HAVING (((SubsidioCabezal.Mes)=[pMes]) AND ((SubsidioCabezal.Anio)=[pAnio]));
+
+
+QUERY: 210_ImpRetTotal
+  SQL: PARAMETERS pMes Short, pAnio Long, pLiquidar Bit;
+SELECT SubsidioCabezal.Mes, SubsidioCabezal.Anio, Sum(SubsidioItem.Importe) AS Importe
+FROM SubsidioCabezal INNER JOIN SubsidioItem ON SubsidioCabezal.IdSubsidio = SubsidioItem.IdSubsidio
+WHERE (((SubsidioItem.CodSubsidioItemCod) In (1,2,3,4,5,6,7,101,102)) AND ((SubsidioCabezal.Liquidar)=[pLiquidar]))
+GROUP BY SubsidioCabezal.Mes, SubsidioCabezal.Anio
+HAVING (((SubsidioCabezal.Mes)=[pMes]) AND ((SubsidioCabezal.Anio)=[pAnio]));
+
+
+QUERY: 210_Insert_600_Rpt_BPS
+  SQL: INSERT INTO 600_Rpt_BPS ( Mes, Anio, ImpRetObrero, ImpRetPatronal, TotImpRet, Monto, TotImpMut, TributoMonto, Cantidad, TributoTotImpMut )
+SELECT [pMes] AS Expr1, [pAnio] AS Expr2, [210_ImpRetObrero].Importe, [210_ImpRetPatronal].Importe, [210_ImpRetTotal].Importe, [210_MontoGrabado].Importe, [210_TotImpEmp].Importe, [210_TotTributo].Importe, S.Cantidad, [210_TotImpEmp].TributoTotImpMut
+FROM 210_TotTributo RIGHT JOIN (210_TotImpEmp RIGHT JOIN (210_MontoGrabado RIGHT JOIN (210_ImpRetTotal RIGHT JOIN (210_ImpRetPatronal RIGHT JOIN (210_ImpRetObrero RIGHT JOIN 210_SubsidioCantidad AS S ON ([210_ImpRetObrero].Mes = S.Mes) AND ([210_ImpRetObrero].Anio = S.Anio)) ON ([210_ImpRetPatronal].Mes = S.Mes) AND ([210_ImpRetPatronal].Anio = S.Anio)) ON ([210_ImpRetTotal].Mes = S.Mes) AND ([210_ImpRetTotal].Anio = S.Anio)) ON ([210_MontoGrabado].Mes = S.Mes) AND ([210_MontoGrabado].Anio = S.Anio)) ON ([210_TotImpEmp].Mes = S.Mes) AND ([210_TotImpEmp].Anio = S.Anio)) ON ([210_TotTributo].Mes = S.Mes) AND ([210_TotTributo].Anio = S.Anio);
+
+
+QUERY: 210_MontoGrabado
+  SQL: PARAMETERS pMes Short, pAnio Long, pLiquidar Bit;
+SELECT SubsidioCabezal.Mes, SubsidioCabezal.Anio, Sum([SubsidioCabezal].[ImpAguinaldo])+Sum([SubsidioCabezal].[ImpNominal]) AS Importe
+FROM SubsidioCabezal
+WHERE (((SubsidioCabezal.Liquidar)=[pLiquidar]))
+GROUP BY SubsidioCabezal.Mes, SubsidioCabezal.Anio
+HAVING (((SubsidioCabezal.Mes)=[pMes]) AND ((SubsidioCabezal.Anio)=[pAnio]));
+
+
+QUERY: 210_SubsidioCantidad
+  SQL: PARAMETERS pMes Short, pAnio Long, pLiquidar Bit;
+SELECT SubsidioCabezal.Mes, SubsidioCabezal.Anio, Count(SubsidioCabezal.CI) AS Cantidad
+FROM SubsidioCabezal
+WHERE (((SubsidioCabezal.Mes)=[pMes]) AND ((SubsidioCabezal.Anio)=[pAnio]) AND ((SubsidioCabezal.Liquidar)=[pLiquidar]))
+GROUP BY SubsidioCabezal.Mes, SubsidioCabezal.Anio;
+
+
+QUERY: 210_TotImpEmp
+  SQL: PARAMETERS pMes Short, pAnio Long;
+SELECT EmpresaPago.Mes, EmpresaPago.Anio, Sum(EmpresaPago.Importe) AS Importe, ((Importe * 0.5) / 100) AS TributoTotImpMut
+FROM EmpresaPago
+GROUP BY EmpresaPago.Mes, EmpresaPago.Anio
+HAVING (((EmpresaPago.Mes)=[pMes]) AND ((EmpresaPago.Anio)=[pAnio]));
+
+
+QUERY: 210_TotTributo
+  SQL: PARAMETERS pMes Short, pAnio Long, pLiquidar Bit;
+SELECT SubsidioCabezal.Mes, SubsidioCabezal.Anio, Sum(SubsidioItem.Importe) AS Importe
+FROM SubsidioCabezal INNER JOIN SubsidioItem ON SubsidioCabezal.IdSubsidio = SubsidioItem.IdSubsidio
+WHERE (((SubsidioItem.CodSubsidioItemCod)=0 Or (SubsidioItem.CodSubsidioItemCod)=100) AND ((SubsidioCabezal.Liquidar)=[pLiquidar]))
+GROUP BY SubsidioCabezal.Mes, SubsidioCabezal.Anio
+HAVING (((SubsidioCabezal.Mes)=[pMes]) AND ((SubsidioCabezal.Anio)=[pAnio]));
+
+
+QUERY: 220_AfiliadoImponibleMes
+  SQL: PARAMETERS pCI Long, pMes Long, pMesIni Long;
+SELECT Sum(Imponible.Importe) AS Importe
+FROM Imponible INNER JOIN Trabaja ON (Imponible.CI = Trabaja.CI) AND (Imponible.CodEmpresa = Trabaja.CodEmpresa) AND (Imponible.Fechaingreso = Trabaja.FechaIngreso)
+WHERE (((Imponible.CI)=[pCI]) AND (AnioMes Between [pMesIni] And [pMes]) AND ((Trabaja.FechaBaja) Is Null) AND ((Imponible.Concepto)="1"))
+GROUP BY Imponible.Anio, Imponible.Mes;
+
+
+QUERY: 220_AfiliadoImponibleMes_Old
+  SQL: PARAMETERS pCI Long, pMes Long, pMesIni Long;
+SELECT Sum(Imponible.Importe) AS Importe
+FROM Imponible INNER JOIN Trabaja ON (Imponible.Fechaingreso = Trabaja.FechaIngreso) AND (Imponible.CodEmpresa = Trabaja.CodEmpresa) AND (Imponible.CI = Trabaja.CI)
+WHERE (((Imponible.CI)=[pCI]) AND ((Val(CStr([Imponible].[Anio]) & Format([Imponible].[Mes],"00"))) Between [pMesIni] And [pMes]) AND ((Trabaja.FechaBaja) Is Null) AND ((Imponible.Concepto)="1"))
+GROUP BY Imponible.Anio, Imponible.Mes;
+
+
+QUERY: 220_AfiliadoPromedio
+  SQL: SELECT Avg([220_AfiliadoImponibleMes].Importe) AS Promedio
+FROM 220_AfiliadoImponibleMes;
+
+
+QUERY: 230_Delete_Receta
+  SQL: PARAMETERS pCI Long, pFecha DateTime, pCodPrestacionTipo Long;
+DELETE Receta.*, Receta.CI, Receta.Fecha, Receta.CodPrestacionTipo
+FROM Receta
+WHERE (((Receta.CI)=[pCI]) AND ((Receta.Fecha)=[pFecha]) AND ((Receta.CodPrestacionTipo)=[pCodPrestacionTipo]));
+
+
+QUERY: 230_PrestacionAnterior
+  SQL: PARAMETERS pCI Long, pCodPrestacionTipo Long;
+SELECT Prestacion.CI, Max(Prestacion.Fecha) AS Fecha, First(PrestacionTipo.PeriodoRenovacion) AS PeriodoRenovacion
+FROM Prestacion INNER JOIN PrestacionTipo ON Prestacion.CodPrestacionTipo = PrestacionTipo.CodPrestacionTipo
+WHERE (((Prestacion.CI)=[pCI]) AND ((Prestacion.CodPrestacionTipo)=[pCodPrestacionTipo]))
+GROUP BY Prestacion.CI;
+
+
+QUERY: 230_PrestacionTipoFromCod
+  SQL: PARAMETERS pCodPrestacionTipo Long;
+SELECT PrestacionTipo.*
+FROM PrestacionTipo
+WHERE (((PrestacionTipo.CodPrestacionTipo)=[pCodPrestacionTipo]));
+
+
+QUERY: 230_Receta
+  SQL: PARAMETERS pCI Long, pFecha DateTime, pCodPrestacionTipo Long;
+SELECT *
+FROM Receta AS R
+WHERE ((([R].[CI])=[pCI]) AND (([R].[Fecha])=[pFecha]) AND (([R].[CodPrestacionTipo])=[pCodPrestacionTipo]));
+
+
+QUERY: 230_Receta_Anterior
+  SQL: PARAMETERS pCI Long, pFecha DateTime, pCodPrestacionTipo Long;
+SELECT *
+FROM Receta AS R
+WHERE R.CI=[pCI] AND R.Fecha<[pFecha] AND R.CodPrestacionTipo=[pCodPrestacionTipo]
+AND EXISTS
+(SELECT 1 FROM Receta AS R2
+WHERE R2.CI=[pCI] AND R2.Fecha<[pFecha] AND R2.CodPrestacionTipo=[pCodPrestacionTipo]
+HAVING MAX(R2.Fecha) = R.Fecha);
+
+
+QUERY: 230_Receta_Ultima
+  SQL: PARAMETERS pCI Long, pCodPrestacionTipo Long;
+SELECT *
+FROM Receta AS RP
+WHERE RP.CI=[pCI] AND RP.CodPrestacionTipo=[pCodPrestacionTipo]
+AND EXISTS
+(SELECT 1 FROM Receta AS RP2
+WHERE RP2.CI=[pCI] AND RP2.CodPrestacionTipo=[pCodPrestacionTipo]
+HAVING MAX(RP2.Fecha) = RP.Fecha);
+
+
+QUERY: 240_Grupos_IE
+  SQL: SELECT DISTINCT InformeEstadistico.Grupo
+FROM InformeEstadistico;
+
+
+QUERY: 240_InformeGrupo
+  SQL: PARAMETERS pGrupo Text;
+SELECT InformeEstadistico.*
+FROM InformeEstadistico
+WHERE (((InformeEstadistico.Grupo)=[pGrupo]))
+ORDER BY InformeEstadistico.Orden;
+
+
+QUERY: 240_InformeIdRpt
+  SQL: PARAMETERS pIdRpt Long;
+SELECT InformeEstadistico.*
+FROM InformeEstadistico
+WHERE (((InformeEstadistico.IdRpt)=[pIdRpt]));
+
+
+QUERY: 250_ActivosXEmpresaAUnaFecha
+  SQL: PARAMETERS pFecha DateTime;
+SELECT Empresa.CodEmpresa, Empresa.Nombre, Count(Trabaja.IdTrabaja) AS Cantidad
+FROM Empresa INNER JOIN Trabaja ON Empresa.CodEmpresa = Trabaja.CodEmpresa
+WHERE (((Trabaja.FechaBaja) Is Null Or (Trabaja.FechaBaja)>[pFecha]) AND ((Empresa.Ficticia)=False) AND ((Trabaja.FechaIngreso)<=[pFecha]))
+GROUP BY Empresa.CodEmpresa, Empresa.Nombre;
+
+
+QUERY: 250_AfiliadoaControlar
+  SQL: PARAMETERS pMesFin Long, pMesIni Long, pSMN Long;
+SELECT Trabaja.CI, Trabaja.CodEmpresa
+FROM (((250_AfiliadoConDerecho INNER JOIN Trabaja ON [250_AfiliadoConDerecho].ci = Trabaja.CI) INNER JOIN Empresa ON Trabaja.CodEmpresa = Empresa.CodEmpresa) INNER JOIN Afiliado ON [250_AfiliadoConDerecho].ci = Afiliado.CI) INNER JOIN Mutualista ON Afiliado.CodMutualista = Mutualista.CodMutualista
+WHERE (Trabaja.FechaBaja Is Null) AND Mutualista.Ficticia=False AND Afiliado.CodSituacionMutual="AF" AND Empresa.Ficticia = False;
+
+
+QUERY: 250_AfiliadoConDerecho
+  SQL: PARAMETERS pMesFin Long, pMesIni Long, pSMN Long;
+select ai.ci from rs_AfiliadoImponibleMes as ai
+where ai.aniomes between [pMesIni] and [pMesFin]
+group by ai.ci
+having (sum(ai.importe)/6) >= (1.25 * [pSMN])
+UNION select ai.ci from rs_AfiliadoImponibleMes as ai
+where ai.aniomes = [pMesFin]
+and ai.importe >= (1.25 * [pSMN])
+group by ai.ci;
+
+
+QUERY: 250_AportantesAUnMes
+  SQL: PARAMETERS pAnioMes Long;
+SELECT Trabaja.CodEmpresa, Empresa.Nombre, Count(Trabaja.IdTrabaja) AS Cantidad
+FROM Empresa INNER JOIN Trabaja ON Empresa.CodEmpresa = Trabaja.CodEmpresa
+WHERE (((Empresa.Ficticia)=False) AND ((Trabaja.IdTrabaja) In (select IdTrabaja From Imponible Where AnioMes = [pAnioMes] AND Importe > 0)))
+GROUP BY Trabaja.CodEmpresa, Empresa.Nombre;
+
+
+QUERY: 250_Control_Aporte
+  SQL: SELECT [250_ActivosXEmpresaAUnaFecha].Nombre, [250_ActivosXEmpresaAUnaFecha].Cantidad AS Activos, [250_AportantesAUnMes].Cantidad AS Aportantes
+FROM 250_ActivosXEmpresaAUnaFecha LEFT JOIN 250_AportantesAUnMes ON [250_ActivosXEmpresaAUnaFecha].CodEmpresa = [250_AportantesAUnMes].CodEmpresa;
+
+
+QUERY: 300_AfiliadoAporteOk
+  SQL: PARAMETERS pMesIniImp Long;
+SELECT Imponible.CI, Imponible.Fechaingreso, Imponible.CodEmpresa, Count(Imponible.CI) AS Cantidad
+FROM Imponible
+WHERE (((Imponible.Concepto)="1") AND ((Imponible.Importe)>0) AND ((Imponible.AnioMes)>=[pMesIniImp] And (Imponible.AnioMes)<=[pMesFin]))
+GROUP BY Imponible.CI, Imponible.Fechaingreso, Imponible.CodEmpresa;
+
+
+QUERY: 300_AfiliadoDiasImporte
+  SQL: PARAMETERS pCI Long, pMesIni Long, pMesFin Long, pLiquidar Bit, pDias Short;
+SELECT Imponible.CI, Sum(Imponible.DiasTrabajados) AS Dias, Imponible.CodEmpresa, Sum(Imponible.Importe) AS Importe, Iif(Dias>0,Importe/Dias,0) AS Promedio
+FROM ((Imponible INNER JOIN 300_TrabajaActivo ON (Imponible.CI = [300_TrabajaActivo].CI) AND (Imponible.CodEmpresa = [300_TrabajaActivo].CodEmpresa) AND (Imponible.Fechaingreso = [300_TrabajaActivo].FechaIngreso)) INNER JOIN Empresa ON Imponible.CodEmpresa = Empresa.CodEmpresa) INNER JOIN 300_AfiliadoAporteOk ON ([300_TrabajaActivo].FechaIngreso = [300_AfiliadoAporteOk].Fechaingreso) AND ([300_TrabajaActivo].CodEmpresa = [300_AfiliadoAporteOk].CodEmpresa) AND ([300_TrabajaActivo].CI = [300_AfiliadoAporteOk].CI) AND (Empresa.CodEmpresa = [300_AfiliadoAporteOk].CodEmpresa)
+WHERE (((Imponible.Concepto)="1") AND ((Val(CStr([Imponible].[Anio]) & Format([Imponible].[Mes],"00"))) Between [pMesIni] And [pMesFin]) AND ((Imponible.CI)=[pCI]) AND ((Empresa.Liquidar)=[pLiquidar]) AND (([300_AfiliadoAporteOk].Cantidad)>=[pDias]))
+GROUP BY Imponible.CI, Imponible.CodEmpresa;
+
+
+QUERY: 300_AfiliadoValorJornal
+  SQL: PARAMETERS pCodCasemed Long;
+SELECT [300_AfiliadoDiasImporte].CI, Sum([300_AfiliadoDiasImporte].Promedio) AS Promedio
+FROM 300_AfiliadoDiasImporte
+WHERE ((([300_AfiliadoDiasImporte].CodEmpresa)<>[pCodCasemed]))
+GROUP BY [300_AfiliadoDiasImporte].CI;
+
+
+QUERY: 300_AfiliadoValorJornalCasemed
+  SQL: PARAMETERS pCodCasemed Long;
+SELECT [300_AfiliadoDiasImporte].CI, Sum(([Importe]/180)) AS Promedio
+FROM 300_AfiliadoDiasImporte
+WHERE ((([300_AfiliadoDiasImporte].CodEmpresa)=[pCodCasemed]))
+GROUP BY [300_AfiliadoDiasImporte].CI;
+
+
+QUERY: 300_AfiliadoValorJornalxEmpresa
+  SQL: PARAMETERS pCodCasemed Long;
+SELECT [300_AfiliadoDiasImporte].CI, [300_AfiliadoDiasImporte].CodEmpresa, Sum([300_AfiliadoDiasImporte].Promedio) AS Promedio
+FROM 300_AfiliadoDiasImporte
+WHERE ((([300_AfiliadoDiasImporte].CodEmpresa)<>[pCodCasemed]))
+GROUP BY [300_AfiliadoDiasImporte].CI, [300_AfiliadoDiasImporte].CodEmpresa;
+
+
+QUERY: 300_CertificacionCIDia
+  SQL: PARAMETERS pCI Long, pFecha DateTime;
+SELECT Certificacion.NroLlamado, Certificacion.CI, Certificacion.FechaRecibido, Certificacion.FechaCertificacion, Certificacion.FechaIni, Certificacion.FechaFin, Certificacion.CI
+FROM Certificacion
+WHERE (((Certificacion.CI)=[pCI]) AND ((Certificacion.FechaFin)=[pFecha]) AND ((Certificacion.Efectiva)=True));
+
+
+QUERY: 300_CertificacionesAfiliadoMes
+  SQL: PARAMETERS pCI Long, pMes Long;
+SELECT Certificacion.FechaIni, Certificacion.FechaFin, Certificacion.ImporteDeducible, Certificacion.CodSalidaTipo
+FROM Certificacion
+WHERE (((Certificacion.CI)=[pCI]) AND (([pMes]) Between Val(Format([FechaIni],"yyyymm")) And Val(Format([FechaFin],"yyyymm"))) AND ((Certificacion.Efectiva)=True))
+ORDER BY Certificacion.FechaIni;
+
+
+QUERY: 300_CertificacionesTmp
+  SQL: SELECT CertificacionesTmp.FechaIni, CertificacionesTmp.FechaFin, CertificacionesTmp.ImporteDeducible, CertificacionesTmp.CodSalidaTipo, CertificacionesTmp.CI
+FROM CertificacionesTmp
+ORDER BY CertificacionesTmp.FechaIni;
+
+
+QUERY: 300_Delete_CertificacionesTmp
+  SQL: DELETE CertificacionesTmp.*
+FROM CertificacionesTmp;
+
+
+QUERY: 300_Delete_SubsidioFecha_Tmp
+  SQL: DELETE [600_SubsidioFecha_Tmp].*
+FROM 600_SubsidioFecha_Tmp;
+
+
+QUERY: 300_EmpresaxIDSubsidio
+  SQL: PARAMETERS pIDSubsidio Long;
+SELECT SubsidioImponible.CodEmpresa, First(Empresa.Nombre) AS DescEmpresa
+FROM SubsidioImponible INNER JOIN Empresa ON SubsidioImponible.CodEmpresa = Empresa.CodEmpresa
+WHERE (((SubsidioImponible.IdSubsidio)=[pIDSubsidio]))
+GROUP BY SubsidioImponible.CodEmpresa;
+
+
+QUERY: 300_Insert_SubsidioFecha_Tmp
+  SQL: PARAMETERS pIDSubsidio Long, pDesc Text;
+INSERT INTO 600_SubsidioFecha_Tmp ( IDSubsidio, DescFecha )
+SELECT [pIDSubsidio] AS Expr1, [pDesc] AS Expr2;
+
+
+QUERY: 300_Insert_SubsidioImponibleAnterior
+  SQL: PARAMETERS pIdSubsidioAnt Long, pIdSubsidio Long, pUsr Text;
+INSERT INTO SubsidioImponible ( IdSubsidio, Mes, Anio, CodEmpresa, Dias, Importe, Usr, Ts )
+SELECT [pIdSubsidio] AS Expr3, SubsidioImponible.Mes, SubsidioImponible.Anio, SubsidioImponible.CodEmpresa, SubsidioImponible.Dias, SubsidioImponible.Importe, [pUsr] AS Expr1, Now() AS Expr2
+FROM SubsidioImponible
+WHERE (((SubsidioImponible.IdSubsidio)=[pIdSubsidioAnt]));
+
+
+QUERY: 300_InsertSubsidioImponible
+  SQL: PARAMETERS pCI Long, pMesIni Long, pMesFin Long, pUsr Text, pIdSubsidio Long, pLiquidar Bit, pDias Short, pCodCasemed Long;
+INSERT INTO SubsidioImponible ( IdSubsidio, Dias, CodEmpresa, Importe, Mes, Anio, Usr, Ts )
+SELECT [pIdSubsidio] AS Expr3, Imponible.DiasTrabajados AS Dias, Imponible.CodEmpresa, Imponible.Importe AS Importe, Imponible.Mes, Imponible.Anio, [pUsr] AS Expr1, Now() AS Expr2
+FROM ((Imponible INNER JOIN 300_TrabajaActivo ON (Imponible.CI = [300_TrabajaActivo].CI) AND (Imponible.CodEmpresa = [300_TrabajaActivo].CodEmpresa) AND (Imponible.Fechaingreso = [300_TrabajaActivo].FechaIngreso)) INNER JOIN Empresa ON Imponible.CodEmpresa = Empresa.CodEmpresa) INNER JOIN 300_AfiliadoAporteOk ON ([300_TrabajaActivo].FechaIngreso = [300_AfiliadoAporteOk].Fechaingreso) AND ([300_TrabajaActivo].CodEmpresa = [300_AfiliadoAporteOk].CodEmpresa) AND ([300_TrabajaActivo].CI = [300_AfiliadoAporteOk].CI)
+WHERE (((Imponible.CodEmpresa)<>[pCodCasemed]) AND ((Imponible.CI)=[pCI]) AND ((Imponible.Concepto)="1") AND ((Val(CStr([Imponible].[Anio]) & Format([Imponible].[Mes],"00"))) Between [pMesIni] And [pMesFin]) AND ((Empresa.Liquidar)=[pLiquidar]) AND (([300_AfiliadoAporteOk].Cantidad)>=[pDias]));
+
+
+QUERY: 300_InsertSubsidioImponibleCasemed
+  SQL: PARAMETERS pCI Long, pMesIni Long, pMesFin Long, pUsr Text, pIdSubsidio Long, pLiquidar Bit, pDias Short, pCodCasemed Long;
+INSERT INTO SubsidioImponible ( IdSubsidio, Dias, CodEmpresa, Importe, Mes, Anio, Usr, Ts )
+SELECT [pIdSubsidio] AS Expr3, Imponible.DiasTrabajados AS Dias, Imponible.CodEmpresa, Imponible.Importe AS Importe, Imponible.Mes, Imponible.Anio, [pUsr] AS Expr1, Now() AS Expr2
+FROM ((Imponible INNER JOIN 300_TrabajaActivo ON (Imponible.CI = [300_TrabajaActivo].CI) AND (Imponible.CodEmpresa = [300_TrabajaActivo].CodEmpresa) AND (Imponible.Fechaingreso = [300_TrabajaActivo].FechaIngreso)) INNER JOIN Empresa ON Imponible.CodEmpresa = Empresa.CodEmpresa) INNER JOIN 300_AfiliadoAporteOk ON ([300_TrabajaActivo].FechaIngreso = [300_AfiliadoAporteOk].Fechaingreso) AND ([300_TrabajaActivo].CodEmpresa = [300_AfiliadoAporteOk].CodEmpresa) AND ([300_TrabajaActivo].CI = [300_AfiliadoAporteOk].CI)
+WHERE (((Imponible.CodEmpresa)=[pCodCasemed]) AND ((Imponible.CI)=[pCI]) AND ((Imponible.Concepto)="1") AND ((Val(CStr([Imponible].[Anio]) & Format([Imponible].[Mes],"00"))) Between [pMesIni] And [pMesFin]) AND ((Empresa.Liquidar)=[pLiquidar]) AND (([300_AfiliadoAporteOk].Cantidad)>=[pDias]));
+
+
+QUERY: 300_JornalAnterior
+  SQL: PARAMETERS pMes Long, pCi Long, pLiquidar Bit;
+SELECT SubsidioCabezal.ValorJornal, SubsidioEnfermedad.IdSubsidio, SubsidioCabezal.Mes, SubsidioCabezal.Anio
+FROM (Certificacion AS C INNER JOIN SubsidioEnfermedad ON C.NroLlamado = SubsidioEnfermedad.NroLlamado) INNER JOIN SubsidioCabezal ON SubsidioEnfermedad.IdSubsidio = SubsidioCabezal.IdSubsidio
+WHERE (((C.Efectiva)=True) AND ((Val(CStr(Year([C].[FechaIni])) & Format(Month([C].[FechaIni]),"00")))<[pMes]) AND ((Val(CStr(Year([C].[FechaFin])) & Format(Month([C].[FechaFin]),"00")))>=[pMes]) AND ((C.CI)=[pCI]) AND ((SubsidioCabezal.Liquidar)=[pLiquidar])) OR (((C.Efectiva)=True) AND ((C.CI)=[pCI]) AND ((SubsidioCabezal.Liquidar)=[pLiquidar]) AND ((Exists (SELECT * FROM Certificacion C1 Where C1.Efectiva = True And C1.CI = [pCI]  And Val(CStr(Year([C1].[FechaIni])) & Format(Month([C1].[FechaIni]),"00")) = [pMes] And DateDiff("d", C.FechaFin, C1.FechaIni) = 1
+))<>False));
+
+
+QUERY: 300_JornalAnterior2
+  SQL: PARAMETERS pCI Long, pLiquidar Bit, pMes Long, pFecha DateTime;
+SELECT SubsidioCabezal.IdSubsidio, SubsidioCabezal.Mes, SubsidioCabezal.Anio, SubsidioCabezal.ValorJornal
+FROM SubsidioCabezal INNER JOIN SubsidioEnfermedad ON SubsidioCabezal.IdSubsidio = SubsidioEnfermedad.IdSubsidio
+WHERE (((Val(Format([SubsidioEnfermedad].[FechaIni],"yyyymm")))<[pMes]) AND ((Val(Format([SubsidioEnfermedad].[FechaFin],"yyyymm")))>=[pMes]) AND ((SubsidioCabezal.Liquidar)=[pLiquidar]) AND ((SubsidioCabezal.CI)=[pCI])) OR (((SubsidioCabezal.Liquidar)=[pLiquidar]) AND ((SubsidioCabezal.CI)=[pCI]) AND ((DateDiff("d",[SubsidioEnfermedad].[FechaFin],[pFecha]))=1))
+ORDER BY SubsidioCabezal.Anio DESC , SubsidioCabezal.Mes DESC;
+
+
+QUERY: 300_JornalAnterior2Ant
+  SQL: PARAMETERS pCI Long, pLiquidar Bit, pFechaIni DateTime, pFechaFin DateTime;
+SELECT SubsidioCabezal.IdSubsidio, SubsidioCabezal.Mes, SubsidioCabezal.Anio, SubsidioCabezal.ValorJornal
+FROM SubsidioCabezal INNER JOIN SubsidioEnfermedad ON SubsidioCabezal.IdSubsidio = SubsidioEnfermedad.IdSubsidio
+WHERE (((SubsidioEnfermedad.FechaIni)=[pFechaIni]) AND ((SubsidioEnfermedad.FechaFin)=[pFechaFin]) AND ((SubsidioCabezal.Liquidar)=[pLiquidar]) AND ((SubsidioCabezal.CI)=[pCI]));
+
+
+QUERY: 300_RegimenJubilatorioAfiliado
+  SQL: PARAMETERS pCI Long;
+SELECT Afiliado.CodRegimenJubilatorio
+FROM Afiliado
+WHERE (((Afiliado.CI)=[pCI]));
+
+
+QUERY: 300_Rpt_PrimaFallecimiento
+  SQL: SELECT Afiliado.CI, Year([FechaFallecimiento]) AS Anio, Month([FechaFallecimiento]) AS Mes, [Afiliado].[Nombres] & " " & [Afiliado].[Apellido1] & IIf([Afiliado].[Apellido2] & ""<>""," " & [Afiliado].[Apellido2],"") AS DescAfiliado, PrimaFallecimiento.Importe AS ImpNominal, 0 AS Importe, PrimaFallecimiento.FechaFallecimiento, CDate("01/" & Format(DateAdd("m",-6,PrimaFallecimiento.FechaFallecimiento),"mm/yyyy")) AS FechaIni, DateAdd("d",-1,CDate("01/" & Format(PrimaFallecimiento.FechaFallecimiento,"mm/yyyy"))) AS FechaFin
+FROM Afiliado INNER JOIN PrimaFallecimiento ON Afiliado.CI = PrimaFallecimiento.CI
+WHERE (((PrimaFallecimiento.FechaFallecimiento) Is Not Null));
+
+
+QUERY: 300_Rpt_Subsidio
+  SQL: SELECT SubsidioCabezal.Mes, SubsidioCabezal.Anio, SubsidioCabezal.CI, [Afiliado].[Nombres] & " " & [Afiliado].[Apellido1] & IIf([Afiliado].[Apellido2] & ""<>""," " & [Afiliado].[Apellido2],"") AS DescAfiliado, SubsidioCabezal.ValorJornal, SubsidioCabezal.Dias, SubsidioCabezal.ImpNominal, SubsidioCabezal.ImpAguinaldo, SubsidioCabezal.ImpLiquido, SubsidioItem.CodSubsidioItemCod, SubsidioItem.Importe, SubsidioItemCod.Descrip AS DescSubsidioItemCod, SubsidioItemCod.Tipo, SubsidioItemCod.Signo, SubsidioCabezal.Liquidar, SubsidioCabezal.IdSubsidio, SubsidioCabezal.NroRecibo, [600_SubsidioFecha_Tmp].DescFecha, Afiliado.CodBanco, Banco.Descripcion AS DescBanco, Afiliado.NroCuenta
+FROM (((SubsidioCabezal INNER JOIN (SubsidioItem INNER JOIN SubsidioItemCod ON SubsidioItem.CodSubsidioItemCod = SubsidioItemCod.CodSubsidioItemCod) ON SubsidioCabezal.IdSubsidio = SubsidioItem.IdSubsidio) INNER JOIN Afiliado ON SubsidioCabezal.CI = Afiliado.CI) INNER JOIN 600_SubsidioFecha_Tmp ON SubsidioCabezal.IdSubsidio = [600_SubsidioFecha_Tmp].IDSubsidio) LEFT JOIN Banco ON Afiliado.CodBanco = Banco.CodBanco
+WHERE (((SubsidioItemCod.Tipo)="O") AND ((CDbl(Format([SubsidioCabezal].[ImpLiquido],"0")))>0));
+
+
+QUERY: 300_Rpt_SubsidioEmpresa
+  SQL: SELECT SubsidioCabezal.Mes, SubsidioCabezal.Anio, SubsidioCabezal.CI, [Afiliado].[Nombres] & " " & [Afiliado].[Apellido1] & IIf([Afiliado].[Apellido2] & ""<>""," " & [Afiliado].[Apellido2],"") AS DescAfiliado, SubsidioCabezal.ValorJornal, SubsidioCabezal.Dias, SubsidioCabezalEmpresa.ImpNominal, SubsidioCabezalEmpresa.ImpAguinaldo, SubsidioCabezalEmpresa.ImpLiquido, SubsidioCabezal.Liquidar, SubsidioCabezal.IdSubsidio, SubsidioCabezal.NroRecibo, [600_SubsidioFecha_Tmp].DescFecha, Empresa.Nombre AS DescEmpresa, SubsidioCabezalEmpresa.ImpNominal, Afiliado.CodBanco, Banco.Descripcion AS DescBanco, Afiliado.NroCuenta
+FROM ((((SubsidioCabezal INNER JOIN Afiliado ON SubsidioCabezal.CI = Afiliado.CI) INNER JOIN 600_SubsidioFecha_Tmp ON SubsidioCabezal.IdSubsidio = [600_SubsidioFecha_Tmp].IDSubsidio) INNER JOIN SubsidioCabezalEmpresa ON SubsidioCabezal.IdSubsidio = SubsidioCabezalEmpresa.IdSubsidio) INNER JOIN Empresa ON SubsidioCabezalEmpresa.CodEmpresa = Empresa.CodEmpresa) LEFT JOIN Banco ON Afiliado.CodBanco = Banco.CodBanco
+WHERE (((CDbl(Format([SubsidioCabezal].[ImpLiquido],"0")))>0));
+
+
+QUERY: 300_SubsidioEmpresaAnterior
+  SQL: PARAMETERS pIdSubsidio Long;
+SELECT SubsidioCabezalEmpresa.*
+FROM SubsidioCabezalEmpresa
+WHERE (((SubsidioCabezalEmpresa.IdSubsidio)=[pIdSubsidio]));
+
+
+QUERY: 300_SubsidioEmpresaAnteriorVacia
+  SQL: PARAMETERS pIdSubsidio Long, pLiquidar Bit, pCodCasemed Short;
+SELECT SubsidioImponible.CodEmpresa, Sum(SubsidioImponible.Dias) AS Dias, Sum(SubsidioImponible.Importe) AS Importe, Iif(Dias>0,Importe/Dias,0) AS Promedio
+FROM SubsidioImponible INNER JOIN SubsidioCabezal ON SubsidioImponible.IdSubsidio = SubsidioCabezal.IdSubsidio
+WHERE (((SubsidioImponible.IdSubsidio)=[pIdSubsidio]) AND ((SubsidioCabezal.Liquidar)=[pLiquidar]) AND ((SubsidioImponible.CodEmpresa)<>[pCodCasemed]))
+GROUP BY SubsidioImponible.CodEmpresa;
+
+
+QUERY: 300_SubsidioEmpresaAnteriorVaciaCasemed
+  SQL: PARAMETERS pIdSubsidio Long, pLiquidar Bit, pCodCasemed Short;
+SELECT SubsidioImponible.CodEmpresa, Sum(SubsidioImponible.Dias) AS Dias, Sum(SubsidioImponible.Importe) AS Importe, Importe/180 AS Promedio
+FROM SubsidioImponible INNER JOIN SubsidioCabezal ON SubsidioImponible.IdSubsidio = SubsidioCabezal.IdSubsidio
+WHERE (((SubsidioImponible.IdSubsidio)=[pIdSubsidio]) AND ((SubsidioCabezal.Liquidar)=[pLiquidar]) AND ((SubsidioImponible.CodEmpresa)=[pCodCasemed]))
+GROUP BY SubsidioImponible.CodEmpresa;
+
+
+QUERY: 300_SubsidioEnfermedadFromMes
+  SQL: PARAMETERS pMes Short, pAnio Short, pLiquidar Bit;
+SELECT SubsidioEnfermedad.IdSubsidio, SubsidioEnfermedad.FechaIniSubsidio, SubsidioEnfermedad.FechaFinSubsidio
+FROM SubsidioEnfermedad INNER JOIN SubsidioCabezal ON SubsidioEnfermedad.IdSubsidio = SubsidioCabezal.IdSubsidio
+WHERE (((SubsidioCabezal.ImpNominal)>0) AND ((SubsidioCabezal.Mes)=[pMes]) AND ((SubsidioCabezal.Anio)=[pAnio]) AND ((SubsidioCabezal.Liquidar)=[pLiquidar]))
+ORDER BY SubsidioEnfermedad.IdSubsidio, SubsidioEnfermedad.FechaIniSubsidio;
+
+
+QUERY: 300_SubsidioFecha
+  SQL: PARAMETERS pMes Long, pAnio Long, pLiquidar Bit;
+SELECT SubsidioEnfermedad.IdSubsidio, SubsidioEnfermedad.FechaIniSubsidio, SubsidioEnfermedad.FechaFinSubsidio
+FROM SubsidioEnfermedad INNER JOIN SubsidioCabezal ON SubsidioEnfermedad.IdSubsidio = SubsidioCabezal.IdSubsidio
+WHERE (((SubsidioCabezal.Liquidar)=[pLiquidar]) AND ((SubsidioCabezal.Mes)=[pMes]) AND ((SubsidioCabezal.Anio)=[pAnio]))
+ORDER BY SubsidioEnfermedad.IdSubsidio, SubsidioEnfermedad.FechaIni;
+
+
+QUERY: 300_SubsidioFranjaAnt
+  SQL: PARAMETERS pCodSubsidioItemCod Long, pImporte IEEEDouble, pSMN IEEEDouble;
+SELECT (IRPControl.SMNAnt*pSMN)-(((IRPControl.SMNAnt*pSMN)*IRPControl.FranjaAnt)/100) AS ImpFrjAnt
+FROM IRPControl
+WHERE ((((IRPControl.SMNAnt*pSMN)-(((IRPControl.SMNAnt*pSMN)*IRPControl.FranjaAnt)/100))>[pImporte]) AND ((IRPControl.CodIRP)=[pCodSubsidioItemCod]));
+
+
+QUERY: 300_SubsidioImporte
+  SQL: PARAMETERS pIdSubsidio Long;
+SELECT Sum(SubsidioItem.Importe * SubsidioItemCod.Signo) AS Importe
+FROM SubsidioItem INNER JOIN SubsidioItemCod ON SubsidioItem.CodSubsidioItemCod = SubsidioItemCod.CodSubsidioItemCod
+WHERE (((SubsidioItem.IdSubsidio)=[pIdSubsidio]) AND ((SubsidioItemCod.Tipo)="O"));
+
+
+QUERY: 300_SubsidioItemCod
+  SQL: PARAMETERS pFecha DateTime;
+SELECT SubsidioItemCod.*
+FROM SubsidioItemCod
+WHERE (((SubsidioItemCod.Procesar)=True) AND ((SubsidioItemCod.FechaVigencia)<=[pFecha]) AND ((SubsidioItemCod.FechaBaja)>[pFecha] Or (SubsidioItemCod.FechaBaja) Is Null));
+
+
+QUERY: 300_SubsidioItemCod_Full
+  SQL: SELECT [300_SubsidioItemCod_Full_Data].*
+FROM 300_SubsidioItemCod_Full_Data
+ORDER BY [300_SubsidioItemCod_Full_Data].ModificaNominal, [300_SubsidioItemCod_Full_Data].CodSubsidioItemCod;
+
+
+QUERY: 300_SubsidioItemCod_Full_Data
+  SQL: PARAMETERS pFecha DateTime, pCI Long;
+SELECT SubsidioItemCod.*,0 As CI
+FROM SubsidioItemCod
+WHERE (((SubsidioItemCod.Procesar)=True) AND ((SubsidioItemCod.FechaVigencia)<=[pFecha]) AND ((SubsidioItemCod.FechaBaja)>[pFecha] Or (SubsidioItemCod.FechaBaja) Is Null)) 
+UNION ALL SELECT *
+FROM Rs_SubsidioItemCodXCI
+WHERE (((Rs_SubsidioItemCodXCI.FechaVigencia)<=[pFecha]) AND ((Rs_SubsidioItemCodXCI.FechaBaja)>[pFecha] Or (Rs_SubsidioItemCodXCI.FechaBaja) Is Null)) and CI = [pCI];
+
+
+QUERY: 300_SubsidioItemId
+  SQL: PARAMETERS pCodSubsidioItemCod Long;
+SELECT SubsidioItemCod.*
+FROM SubsidioItemCod
+WHERE (((SubsidioItemCod.CodSubsidioItemCod)=[pCodSubsidioItemCod]));
+
+
+QUERY: 300_TrabajaActivo
+  SQL: SELECT Trabaja.*
+FROM Trabaja
+WHERE (Trabaja.FechaBaja Is Null OR Val(Format([Trabaja].[FechaBaja],"yyyymm"))>[pMes]) And Val(Format([Trabaja].[FechaIngCasemed],"yyyymm"))<=[pMes];
+
+
+QUERY: 300_Update_ItemIRP
+  SQL: PARAMETERS pIDSubsidio Long, pCodSubsidioItemCod Long, pImporte IEEEDouble;
+UPDATE SubsidioItem SET SubsidioItem.Importe = SubsidioItem.Importe-[pImporte]
+WHERE (((SubsidioItem.CodSubsidioItemCod)=[pCodSubsidioItemCod]) AND ((SubsidioItem.IdSubsidio)=[pIDSubsidio]));
+
+
+QUERY: 310_CertificacionAnterior
+  SQL: PARAMETERS pFechaIni DateTime, pFechaFin DateTime, pCI Long, pNroLlamado Long;
+SELECT Certificacion.NroLlamado, Certificacion.NroRecibo, Certificacion.FechaIni, Certificacion.FechaFin
+FROM Certificacion
+WHERE (((Certificacion.NroLlamado)<>[pNroLlamado]) AND ((Certificacion.Efectiva)=True) AND ((Certificacion.CI)=[pCI]) AND (([Certificacion].[FechaIni]<=[pFechaFin] And [Certificacion].[FechaFin]>=[pFechaIni])=True));
+
+
+QUERY: 320_AfiliadoPromedio
+  SQL: PARAMETERS pCI Long, pMesAnioIni Long, pMesAnioFin Long;
+SELECT Avg(Rs_AfiliadoImponibleMesNoBaja.Importe) AS Importe
+FROM Rs_AfiliadoImponibleMesNoBaja
+WHERE (((Rs_AfiliadoImponibleMesNoBaja.CI)=[pCI]) AND ((Rs_AfiliadoImponibleMesNoBaja.AnioMes) Between [pMesAnioIni] And [pMesAnioFin]));
+
+
+QUERY: 320_AfiliadoUltMes
+  SQL: PARAMETERS pCI Long, pMesAnio Long;
+SELECT Avg(Rs_AfiliadoImponibleMesNoBaja.Importe) AS Importe
+FROM Rs_AfiliadoImponibleMesNoBaja
+WHERE (((Rs_AfiliadoImponibleMesNoBaja.CI)=[pCI]) AND ((Rs_AfiliadoImponibleMesNoBaja.AnioMes)=[pMesAnio]));
+
+
+QUERY: 400_Promedio_Gral
+  SQL: SELECT Avg([400_Promedio_Mes].Importe) AS PromedioDeImporte
+FROM 400_Promedio_Mes;
+
+
+QUERY: 400_Promedio_Gral_Puesto
+  SQL: SELECT Avg([400_Promedio_Mes_Puesto].Importe) AS PromedioDeImporte
+FROM 400_Promedio_Mes_Puesto;
+
+
+QUERY: 400_Promedio_Mes
+  SQL: SELECT [400_Suma_Importe].Mes, [400_Suma_Importe].Anio, Avg([400_Suma_Importe].Importe) AS Importe
+FROM 400_Suma_Importe
+GROUP BY [400_Suma_Importe].Mes, [400_Suma_Importe].Anio
+ORDER BY Val(Anio & Mes);
+
+
+QUERY: 400_Promedio_Mes_Puesto
+  SQL: SELECT [400_Suma_Puestos].Mes, [400_Suma_Puestos].Anio, Avg([400_Suma_Puestos].Importe) AS Importe
+FROM 400_Suma_Puestos
+GROUP BY [400_Suma_Puestos].Mes, [400_Suma_Puestos].Anio
+ORDER BY VAL(Anio & Format(Mes, "00"));
+
+
+QUERY: 400_Suma_Importe
+  SQL: SELECT Imponible.CI, Imponible.Mes, Imponible.Anio, Sum(Imponible.Importe) AS Importe
+FROM Imponible
+GROUP BY Imponible.CI, Imponible.Mes, Imponible.Anio;
+
+
+QUERY: 400_Suma_Puestos
+  SQL: SELECT Imponible.CI, Imponible.CodEmpresa, Imponible.Mes, Imponible.Anio, Sum(Imponible.Importe) AS Importe
+FROM Imponible
+GROUP BY Imponible.CI, Imponible.CodEmpresa, Imponible.Mes, Imponible.Anio;
+
+
+QUERY: 401_TrabajaActivoxCI
+  SQL: PARAMETERS pCI Long;
+SELECT Trabaja.CI
+FROM Trabaja
+WHERE (((Trabaja.CI)=[pCI]) AND ((Trabaja.FechaBaja) Is Null));
+
+
+QUERY: 403_AportesUlt12xCI
+  SQL: PARAMETERS pCI Long;
+SELECT Imponible.CI, Imponible.AnioMes
+FROM Imponible INNER JOIN Trabaja ON (Imponible.Fechaingreso = Trabaja.FechaIngreso) AND (Imponible.CodEmpresa = Trabaja.CodEmpresa) AND (Imponible.CI = Trabaja.CI)
+WHERE (((Imponible.Concepto)="1") AND ((Imponible.CI)=[pCI]) AND ((Imponible.AnioMes)>=Val(Format(DateAdd("m",13,Date())))) AND ((Trabaja.FechaBaja) Is Null))
+GROUP BY Imponible.CI, Imponible.AnioMes;
+
+
+QUERY: 403_UltProxCI
+  SQL: PARAMETERS pCI Long;
+SELECT Max(DateAdd("d",[CertificacionProrroga].[Dias],[CertificacionProrroga].[Fecha])) AS Fecha
+FROM CertificacionProrroga
+WHERE (((CertificacionProrroga.CI)=[pCI]));
+
+
+QUERY: 450_AfiliadoMutualista
+  SQL: PARAMETERS pCI Long;
+SELECT Afiliado.CodMutualista, Mutualista.Cuota
+FROM Afiliado INNER JOIN Mutualista ON Afiliado.CodMutualista = Mutualista.CodMutualista
+WHERE (((Afiliado.CI)=[pCI]));
+
+
+QUERY: 450_UpdateCuotaMutual
+  SQL: PARAMETERS pCodMutualista Short, pImporte IEEEDouble;
+UPDATE Mutualista SET Mutualista.Cuota = [pImporte]
+WHERE (((Mutualista.CodMutualista)=[pCodMutualista]));
+
+
+QUERY: 460_AdPreJubxCI
+  SQL: PARAMETERS pCI Long;
+SELECT AdPreJub.*
+FROM AdPreJub
+WHERE (((AdPreJub.CI)=[pCI]));
+
+
+QUERY: 460_AfiliadoCertificadoxCI
+  SQL: PARAMETERS pCI Long;
+SELECT TOP 1 Certificacion.CI
+FROM Certificacion
+WHERE (((Certificacion.CI)=[pCI]) AND ((Certificacion.Efectiva)=True));
+
+
+QUERY: 460_AfiliadoPromedioxCI
+  SQL: PARAMETERS pCI Long;
+SELECT [460_Imponible].CI, Avg(([460_Imponible].[Importe]*[460_IMS_Actual].[Importe])/[IMS].[Importe]) AS Promedio
+FROM 460_IMS_Actual, IMS INNER JOIN 460_Imponible ON (IMS.Anio = [460_Imponible].Anio) AND (IMS.Mes = [460_Imponible].Mes)
+GROUP BY [460_Imponible].CI
+HAVING ((([460_Imponible].CI)=[pCI]));
+
+
+QUERY: 460_AfiliadoSubsidioxCI
+  SQL: PARAMETERS pCI Long;
+SELECT TOP 1 SubsidioCabezal.CI
+FROM SubsidioCabezal
+WHERE (((SubsidioCabezal.CI)=[pCI]));
+
+
+QUERY: 460_DeleteAdPreJubxCI
+  SQL: PARAMETERS pCI Long;
+DELETE AdPreJub.*, AdPreJub.CI
+FROM AdPreJub
+WHERE (((AdPreJub.CI)=[pCI]));
+
+
+QUERY: 460_Imponible
+  SQL: SELECT Imponible.CI, Imponible.Mes, Imponible.Anio, Sum(Imponible.Importe) AS Importe
+FROM Imponible INNER JOIN Trabaja ON (Imponible.Fechaingreso = Trabaja.FechaIngreso) AND (Imponible.CodEmpresa = Trabaja.CodEmpresa) AND (Imponible.CI = Trabaja.CI)
+WHERE (((Imponible.Concepto)="1") AND ((Imponible.AnioMes)>=Val(Format([Trabaja].[FechaIngCasemed],"yyyymm"))))
+GROUP BY Imponible.CI, Imponible.Mes, Imponible.Anio;
+
+
+QUERY: 460_IMS_Actual
+  SQL: PARAMETERS pAnioMes Long;
+SELECT IMS.Importe
+FROM IMS
+WHERE (((IMS.AnioMes)=[pAnioMes]));
+
+
+QUERY: 460_IMSxAnioMes
+  SQL: PARAMETERS pAnioMes Long;
+SELECT IMS.Importe
+FROM IMS
+WHERE (((IMS.AnioMes)=[pAnioMes]));
+
+
+QUERY: 460_RegimenJubilatorioxCod
+  SQL: PARAMETERS pCodRegimenJubilatorio Short;
+SELECT RegimenJubilatorio.*
+FROM RegimenJubilatorio
+WHERE (((RegimenJubilatorio.CodRegimenJubilatorio)=[pCodRegimenJubilatorio]));
+
+
+QUERY: 460_TrabajaActivoxCI
+  SQL: PARAMETERS pCI Long;
+SELECT Trabaja.CodEmpresa
+FROM Trabaja
+WHERE (((Trabaja.CI)=[pCI]) AND ((Trabaja.FechaBaja) Is Null));
+
+
+QUERY: 460_UltSMN
+  SQL: PARAMETERS pAnioMes Long;
+SELECT I.Importe, I.AnioMes
+FROM IMS AS I
+WHERE (((I.AnioMes) In (SELECT  MAX(AnioMes) FROM IMS AS I2
+WHERE AnioMes <= [pAnioMes])));
+
+
+QUERY: 460_UltSubsidioxCI
+  SQL: PARAMETERS pCI Long;
+SELECT S.CI, Sum(S.ValorJornal*30) AS Importe
+FROM SubsidioCabezal AS S
+WHERE (((S.CI)=[pCI]) AND ((Val(CStr([S].[Anio]) & Format([S].[Mes],"00")))>=All (SELECT MAX(Val(CStr(S1.Anio) & Format(S1.Mes, "00"))) FROM SubsidioCabezal S1
+WHERE S.CI = S1.CI)))
+GROUP BY S.CI;
+
+
+QUERY: 470_AdPreJubPagoxCI
+  SQL: PARAMETERS pCI Long;
+SELECT AdPreJubPago.*, [Afiliado].[Nombres] & " " & [Afiliado].[Apellido1] & IIf([Afiliado].[Apellido2] & ""<>""," " & [Afiliado].[Apellido2],"") AS DescAfiliado
+FROM AdPreJubPago INNER JOIN Afiliado ON AdPreJubPago.CI = Afiliado.CI
+WHERE (((AdPreJubPago.CI)=[pCI]) AND ((AdPreJubPago.Fecha) Is Null))
+ORDER BY AdPreJubPago.Anio, AdPreJubPago.Mes;
+
+
+QUERY: 470_AdPreJubPagoxCI-Mes
+  SQL: PARAMETERS pCI Long, pMes Short, pAnio Short;
+SELECT AdPreJubPago.*, [Afiliado].[Nombres] & " " & [Afiliado].[Apellido1] & IIf([Afiliado].[Apellido2] & ""<>""," " & [Afiliado].[Apellido2],"") AS DescAfiliado
+FROM AdPreJubPago INNER JOIN Afiliado ON AdPreJubPago.CI = Afiliado.CI
+WHERE (((AdPreJubPago.Mes)=[pMes]) AND ((AdPreJubPago.Anio)=[pAnio]) AND ((AdPreJubPago.CI)=[pCI]) AND ((AdPreJubPago.Fecha) Is Null));
+
+
+QUERY: 470_DeleteAdPreJubPagoxMes
+  SQL: PARAMETERS pMes Short, pAnio Short;
+DELETE AdPreJubPago.*, AdPreJubPago.Mes, AdPreJubPago.Anio, AdPreJubPago.Fecha
+FROM AdPreJubPago
+WHERE (((AdPreJubPago.Mes)=[pMes]) AND ((AdPreJubPago.Anio)=[pAnio]) AND ((AdPreJubPago.Fecha) Is Null));
+
+
+QUERY: 470_InsertAdPreJubPagoxMes
+  SQL: PARAMETERS pMes Short, pAnio Short, pUsr Text, pFechaIni DateTime, pFechaFin DateTime;
+INSERT INTO AdPreJubPago ( CI, Importe, Mes, Anio, Usr, Ts )
+SELECT AdPreJub.CI, (AdPreJub.ImporteMensual * DateDiff("d", Iif([pFechaIni] > AdPreJub.FechaPresentacion, [pFechaIni], AdPreJub.FechaPresentacion), Iif([pFechaFin] < Iif(IsNull(AdPreJub.FechaJubilacion), [pFechaFin], AdPreJub.FechaJubilacion), [pFechaFin], Iif(IsNull(AdPreJub.FechaJubilacion), [pFechaFin], AdPreJub.FechaJubilacion)) + 1)  / (DateDiff("d", pFechaIni, pFechaFin) + 1)), [pMes] AS Expr1, [pAnio] AS Expr2, [pUsr] AS Expr3, Now() AS Expr4
+FROM AdPreJub
+WHERE AdPreJub.CI Not In (SELECT CI FROM AdPreJubPago Where Mes = [pMes] And Anio = [pAnio] And Fecha Is Not Null) AND [pFechaIni] <= Iif(IsNull(AdPreJub.FechaJubilacion), [pFechaFin], AdPreJub.FechaJubilacion) AND pFechaFin >= Iif(AdPreJub.FechaPresentacion > [pFechaIni], AdPreJub.FechaPresentacion, [pFechaIni]);
+
+
+QUERY: 480_Certificacion
+  SQL: SELECT *
+FROM Rs_Certificacion_Nombre
+WHERE ( Certificacion.[CI] = 11391501 );
+
+
+QUERY: 480_Delete_Afiliado_Certificado
+  SQL: DELETE [600_Afiliado_Certificado].*
+FROM 600_Afiliado_Certificado;
+
+
+QUERY: 480_F_Ult_Certif
+  SQL: SELECT Certificacion.CI, Max(Certificacion.FechaFin) AS F_Ult_Certificacion
+FROM Certificacion
+WHERE (((Certificacion.Efectiva)=True))
+GROUP BY Certificacion.CI;
+
+
+QUERY: 480_Insert_Afiliado_Certificado
+  SQL: INSERT INTO 600_Afiliado_Certificado ( CI, Nombres, Apellido1, Apellido2, FechaNacimiento, Sexo, CodMutualista, DescMutualista, Promedio, F_Ult_Prorroga, DiaProrroga, DiasUltPro )
+SELECT Afiliado.CI, First(Afiliado.Nombres) AS FirstOfNombres, First(Afiliado.Apellido1) AS FirstOfApellido1, First(Afiliado.Apellido2) AS FirstOfApellido2, First(Afiliado.FechaNacimiento) AS FirstOfFechaNacimiento, First(Afiliado.Sexo) AS FirstOfSexo, First(Afiliado.CodMutualista) AS FirstOfCodMutualista, First(Mutualista.Nombre) AS FirstOfNombre, First([480_Promedio].Promedio) AS FirstOfPromedio, First([480_Prorrogas].F_Ult_Prorroga) AS FirstOfF_Ult_Prorroga, First([480_Prorrogas].Dias) AS FirstOfDias, [480_Prorrogas].DiasUltPro
+FROM (((480_Certificacion INNER JOIN Afiliado ON [480_Certificacion].CI = Afiliado.CI) INNER JOIN Mutualista ON Afiliado.CodMutualista = Mutualista.CodMutualista) LEFT JOIN 480_Prorrogas ON Afiliado.CI = [480_Prorrogas].CI) LEFT JOIN 480_Promedio ON Afiliado.CI = [480_Promedio].CI
+GROUP BY Afiliado.CI, [480_Prorrogas].DiasUltPro;
+
+
+QUERY: 480_Insert_Certificacion_Afeccion
+  SQL: INSERT INTO 600_Afiliado_Certificado_Afeccion ( CI, CodAfeccionTipo, DescAfeccionTipo, Cantidad, Dias )
+SELECT [480_Certificacion].CI, [480_Certificacion].CodAfeccionTipo, First(AfeccionTipo.Descrip) AS FirstOfDescrip, Count(*) AS Cantidad, Sum(DateDiff("d",[480_Certificacion].[FechaIni],[480_Certificacion].[FechaFin])+1) AS SumOfCI
+FROM 480_Certificacion INNER JOIN AfeccionTipo ON [480_Certificacion].CodAfeccionTipo = AfeccionTipo.CodAfeccionTipo
+WHERE ((([480_Certificacion].Efectiva)=True))
+GROUP BY [480_Certificacion].CI, [480_Certificacion].CodAfeccionTipo;
+
+
+QUERY: 480_Promedio
+  SQL: SELECT Rs_AfiliadoImponibleMes.CI, Avg(Rs_AfiliadoImponibleMes.Importe) AS Promedio
+FROM Rs_AfiliadoImponibleMes
+WHERE (((Rs_AfiliadoImponibleMes.AnioMes) Between Val(Format(DateAdd("m",-7,Date()),"yyyymm")) And Val(Format(DateAdd("m",-2,Date()),"yyyymm"))))
+GROUP BY Rs_AfiliadoImponibleMes.CI;
+
+
+QUERY: 480_Prorrogas
+  SQL: SELECT CP.CI, CP.Fecha AS F_Ult_Prorroga, [480_SumaProrrogas].Dias, CP.Dias AS DiasUltPro
+FROM CertificacionProrroga AS CP INNER JOIN 480_SumaProrrogas ON CP.CI = [480_SumaProrrogas].CI
+WHERE (((Exists (SELECT 1 FROM CertificacionProrroga AS CP2
+WHERE CP.CI = CP2.CI
+GROUP BY CP2.CI HAVING MAX(CP2.Fecha) = CP.Fecha))<>False));
+
+
+QUERY: 480_Rpt_Ficha_Certificacion
+  SQL: SELECT [600_Afiliado_Certificado].CI, [600_Afiliado_Certificado].Nombres, [600_Afiliado_Certificado].Apellido1, [600_Afiliado_Certificado].Apellido2, [600_Afiliado_Certificado].FechaNacimiento, [600_Afiliado_Certificado].Sexo, [600_Afiliado_Certificado].CodMutualista, [600_Afiliado_Certificado].DescMutualista, [600_Afiliado_Certificado].Especialidad, [600_Afiliado_Certificado].Promedio, [600_Afiliado_Certificado].Empleos, [600_Afiliado_Certificado].DiaProrroga, [600_Afiliado_Certificado].F_Ult_Prorroga +[600_Afiliado_Certificado].DiasUltPro AS F_Ult_Prorroga, [600_Afiliado_Certificado_Afeccion].CodAfeccionTipo, [600_Afiliado_Certificado_Afeccion].DescAfeccionTipo, [600_Afiliado_Certificado_Afeccion].Cantidad, [600_Afiliado_Certificado_Afeccion].Dias, [480_F_Ult_Certif].F_Ult_Certificacion
+FROM (600_Afiliado_Certificado INNER JOIN 480_F_Ult_Certif ON [600_Afiliado_Certificado].CI = [480_F_Ult_Certif].CI) INNER JOIN 600_Afiliado_Certificado_Afeccion ON [600_Afiliado_Certificado].CI = [600_Afiliado_Certificado_Afeccion].CI;
+
+
+QUERY: 480_SumaProrrogas
+  SQL: SELECT CertificacionProrroga.CI, Sum(CertificacionProrroga.Dias) AS Dias
+FROM CertificacionProrroga
+GROUP BY CertificacionProrroga.CI;
+
+
+QUERY: 480_Update_Empleos
+  SQL: UPDATE (Trabaja INNER JOIN 600_Afiliado_Certificado AS A ON Trabaja.CI = A.CI) INNER JOIN Empresa ON Trabaja.CodEmpresa = Empresa.CodEmpresa SET A.Empleos = A.Empleos & IIf(Not IsNull(A.Empleos)," - ","") & [Empresa].[Nombre]
+WHERE (((Empresa.Ficticia)=False));
+
+
+QUERY: 480_Update_Especialidad
+  SQL: UPDATE Especialidad INNER JOIN (600_Afiliado_Certificado AS A INNER JOIN AfiliadoEspecialidad ON A.CI = AfiliadoEspecialidad.CI) ON Especialidad.CodEspecialidad = AfiliadoEspecialidad.CodEspecialidad SET A.Especialidad = A.Especialidad & IIf(Not IsNull(A.Especialidad), " - ", "") & [Especialidad].[Descrip];
+
+
+QUERY: 480_Update_Prorroga
+  SQL: UPDATE 600_Afiliado_Certificado AS A INNER JOIN 480_Prorrogas ON A.CI = [480_Prorrogas].CI SET A.DiaProrroga = [480_Prorrogas].[Dias], A.F_Ult_Prorroga = [480_Prorrogas].[F_Ult_Prorroga];
+
+
+QUERY: 490_Delete_Cheque_Tmp
+  SQL: DELETE [600_Rpt_Cheque_Tmp].*
+FROM 600_Rpt_Cheque_Tmp;
+
+
+QUERY: 490_Subsidio
+  SQL: SELECT *
+FROM SubsidioCabezal
+WHERE (( [Mes] = 7 And [Anio] = 2007 And [Liquidar] = True And CI = 8142038 ));
+
+
+QUERY: 490_SubsidioImporte
+  SQL: SELECT Afiliado.CI AS CI, [Afiliado].[Nombres] & " " & [Afiliado].[Apellido1] & IIf([Afiliado].[Apellido2] & ""<>""," ","") & [Afiliado].[Apellido2] AS DescAfiliado, [490_Subsidio].ImpLiquido AS Importe
+FROM Afiliado INNER JOIN 490_Subsidio ON Afiliado.CI = [490_Subsidio].CI;
+
+
+QUERY: 500_Delete_Rpt_ResumenSubsidio_Tmp
+  SQL: DELETE [600_SubsidioResumen_Tmp].*
+FROM 600_SubsidioResumen_Tmp;
+
+
+QUERY: 500_Insert_Rpt_ResumenSubsidio_Tmp
+  SQL: PARAMETERS pMes Short, pAnio Short, pLiquidar Bit;
+INSERT INTO 600_SubsidioResumen_Tmp ( Baja, Mes, Anio, Liquidar, CI, DescAfiliado, Dias, Nombres, Apellido1, Apellido2, ImpNominal, ImpAguinaldo, ImpLiquido, FechaNacimiento, DescFecha, CIOrig )
+SELECT IsNull([756_NoBaja].CI) AS Baja, [500_Rpt_ResumenSubsidio].Mes, [500_Rpt_ResumenSubsidio].Anio, [500_Rpt_ResumenSubsidio].Liquidar, [500_Rpt_ResumenSubsidio].CI, [500_Rpt_ResumenSubsidio].DescAfiliado, [500_Rpt_ResumenSubsidio].Dias, [500_Rpt_ResumenSubsidio].Nombres, [500_Rpt_ResumenSubsidio].Apellido1, [500_Rpt_ResumenSubsidio].Apellido2, [500_Rpt_ResumenSubsidio].ImpNominal, [500_Rpt_ResumenSubsidio].ImpAguinaldo, [500_Rpt_ResumenSubsidio].ImpLiquido, [500_Rpt_ResumenSubsidio].FechaNacimiento, [500_Rpt_ResumenSubsidio].DescFecha, [500_Rpt_ResumenSubsidio].CIOrig
+FROM 500_Rpt_ResumenSubsidio LEFT JOIN 756_NoBaja ON [500_Rpt_ResumenSubsidio].CIOrig = [756_NoBaja].CI
+WHERE ((([500_Rpt_ResumenSubsidio].Mes)=[pMes]) AND (([500_Rpt_ResumenSubsidio].Anio)=[pAnio]) AND (([500_Rpt_ResumenSubsidio].Liquidar)=[pLiquidar]));
+
+
+QUERY: 500_Prorrogas
+  SQL: SELECT CertificacionProrroga.CI, Sum(CertificacionProrroga.Dias) AS Dias, Max(DateAdd("d", CertificacionProrroga.Dias, CertificacionProrroga.Fecha)) AS Fecha
+FROM CertificacionProrroga
+GROUP BY CertificacionProrroga.CI;
+
+
+QUERY: 500_Rpt_Afiliado_Tmp
+  SQL: SELECT Iif(Len(Rpt_Afiliado.CI)>=8,Format(Rpt_Afiliado.CI,"@\.@@@\.@@@-@"),Format(Rpt_Afiliado.CI,"@@@\.@@@-@")) AS CI, Rpt_Afiliado.Nombres, Rpt_Afiliado.Apellido1, Rpt_Afiliado.Apellido2, Rpt_Afiliado.FechaNacimiento, Rpt_Afiliado.Sexo, Rpt_Afiliado.Telefono, Rpt_Afiliado.EMail, Rpt_Afiliado.CodMutualista, Rpt_Afiliado.DescMutualista, Rpt_Afiliado.FechaIngMutualista, Rpt_Afiliado.NroSocioMutualista, Rpt_Afiliado.CodRegimenJubilatorio, Rpt_Afiliado.DescRegimenJubilatorio, Rpt_Afiliado.Usr, Rpt_Afiliado.Ts, Rpt_Afiliado.DescAfiliado, Rpt_Afiliado.Cuota, Rpt_Afiliado.Direccion, Rpt_Afiliado.PagaMutualista, Rpt_Afiliado.CodDepartamento, Rpt_Afiliado.DescDepartamento, Rpt_Afiliado.Movil
+FROM Rpt_Afiliado
+WHERE ( [Afiliado].[CI] IN (SELECT CI FROM Trabaja Where FechaBaja Between CDate("01/05/2014") And CDate("31/05/2014") And CodBajaMotivo IN (5,12,22,3)) )
+ORDER BY [CI];
+
+
+QUERY: 500_Rpt_Aporte_Tmp
+  SQL: SELECT Imponible.Mes, Imponible.Anio, Format(Imponible.Mes,"00") & "/" & Imponible.Anio AS MesFormat, Empresa.CodEmpresa, Empresa.Nombre AS DescEmpresa, IIf(Imponible.Concepto="1",Imponible.Importe,0) AS ImporteAporte, IIf(Imponible.Concepto="2",Imponible.Importe,0) AS ImporteAguinaldo, IIf(Imponible.Importe=0 And Imponible.Concepto="1",1) AS CantCero, Empresa.AporteCasemed, Empresa.AporteAguinaldo, Imponible.Importe, Imponible.CI
+FROM Imponible INNER JOIN Empresa ON Imponible.CodEmpresa = Empresa.CodEmpresa
+WHERE Imponible.CodEmpresa = 900 AND Imponible.Mes = 02 AND Imponible.Anio = 2008;
+
+
+QUERY: 500_Rpt_Cargado_HL
+  SQL: SELECT *
+FROM 500_Rpt_Cargado_HL_Det
+WHERE Mes = 07 AND Anio = 2013 AND Imponible.CodEmpresa = 900;
+
+
+QUERY: 500_Rpt_Cargado_HL_Det
+  SQL: SELECT Afiliado.CI, [Afiliado].[Nombres] & " " & [Afiliado].[Apellido1] & IIf([Afiliado].[Apellido2] & ""<>""," " & [Afiliado].[Apellido2],"") AS DescAfiliado, Sum(IIf(Concepto="1",Imponible.Importe,0)) AS Sueldo, Sum(IIf(Concepto="2",Imponible.Importe,0)) AS Aguinaldo, Imponible.CodEmpresa, Imponible.Mes, Imponible.Anio
+FROM (Afiliado INNER JOIN Trabaja ON Afiliado.CI = Trabaja.CI) INNER JOIN Imponible ON (Trabaja.FechaIngreso = Imponible.Fechaingreso) AND (Trabaja.CodEmpresa = Imponible.CodEmpresa) AND (Afiliado.CI = Imponible.CI)
+GROUP BY Afiliado.CI, [Afiliado].[Nombres] & " " & [Afiliado].[Apellido1] & IIf([Afiliado].[Apellido2] & ""<>""," " & [Afiliado].[Apellido2],""), Imponible.CodEmpresa, Imponible.Mes, Imponible.Anio;
+
+
+QUERY: 500_Rpt_Certificacion_UltFecha
+  SQL: SELECT Certificacion.CI, Max(Certificacion.FechaFin) AS FechaFin
+FROM Certificacion
+GROUP BY Certificacion.CI;
+
+
+QUERY: 500_Rpt_Certificado_Tmp
+  SQL: SELECT Rpt_Certificacion.NroLlamado, IIf(Len(Rpt_Certificacion.CI)>=8,Format(Rpt_Certificacion.CI,"@\.@@@\.@@@-@"),Format(Rpt_Certificacion.CI,"@@@\.@@@-@")) AS CI, Rpt_Certificacion.NroRecibo, Rpt_Certificacion.FechaRecibido, Rpt_Certificacion.FechaCertificacion, Rpt_Certificacion.FechaIni, Rpt_Certificacion.FechaFin, Rpt_Certificacion.CodAfeccionTipo, Rpt_Certificacion.DescAfeccionTipo, Rpt_Certificacion.CodCertificador, Rpt_Certificacion.DescCertificador, Rpt_Certificacion.CodSalidaTipo, Rpt_Certificacion.DescSalidaTipo, Rpt_Certificacion.Efectiva, Rpt_Certificacion.Indicaciones, Rpt_Certificacion.ImporteDeducible, Rpt_Certificacion.Usr, Rpt_Certificacion.Ts, Rpt_Certificacion.Nombres, Rpt_Certificacion.Apellido1, Rpt_Certificacion.Apellido2, Rpt_Certificacion.DescAfiliado
+FROM Rpt_Certificacion
+WHERE [NroLlamado] = 4240;
+
+
+QUERY: 500_Rpt_CertificadoEmpresa
+  SQL: SELECT [500_Rpt_CertificadoEmpresa_S].NroLlamado, IIf(Len([Rpt_Certificacion].[CI])>=8,Format([Rpt_Certificacion].[CI],"@\.@@@\.@@@-@"),Format([Rpt_Certificacion].[CI],"@@@\.@@@-@")) AS CI, [500_Rpt_CertificadoEmpresa_S].NroRecibo, [500_Rpt_CertificadoEmpresa_S].FechaRecibido, [500_Rpt_CertificadoEmpresa_S].FechaCertificacion, [500_Rpt_CertificadoEmpresa_S].FechaIni, [500_Rpt_CertificadoEmpresa_S].FechaFin, [500_Rpt_CertificadoEmpresa_S].CodAfeccionTipo, [500_Rpt_CertificadoEmpresa_S].DescAfeccionTipo, [500_Rpt_CertificadoEmpresa_S].CodCertificador, [500_Rpt_CertificadoEmpresa_S].DescCertificador, [500_Rpt_CertificadoEmpresa_S].CodSalidaTipo, [500_Rpt_CertificadoEmpresa_S].DescSalidaTipo, [500_Rpt_CertificadoEmpresa_S].Efectiva, [500_Rpt_CertificadoEmpresa_S].Indicaciones, [500_Rpt_CertificadoEmpresa_S].ImporteDeducible, [500_Rpt_CertificadoEmpresa_S].Usr, [500_Rpt_CertificadoEmpresa_S].Ts, [500_Rpt_CertificadoEmpresa_S].Nombres, [500_Rpt_CertificadoEmpresa_S].Apellido1, [500_Rpt_CertificadoEmpresa_S].Apellido2, [500_Rpt_CertificadoEmpresa_S].DescAfiliado, [500_Rpt_CertificadoEmpresa_S].CodEmpresa, [500_Rpt_CertificadoEmpresa_S].DescEmpresa
+FROM 500_Rpt_CertificadoEmpresa_S
+WHERE (Certificacion.[CI] = 13606922)
+ORDER BY [NroLlamado];
+
+
+QUERY: 500_Rpt_CertificadoEmpresa_S
+  SQL: SELECT Rpt_Certificacion.NroLlamado, Rpt_Certificacion.CI, Rpt_Certificacion.NroRecibo, Rpt_Certificacion.FechaRecibido, Rpt_Certificacion.FechaCertificacion, Rpt_Certificacion.FechaIni, Rpt_Certificacion.FechaFin, Rpt_Certificacion.CodAfeccionTipo, Rpt_Certificacion.DescAfeccionTipo, Rpt_Certificacion.CodCertificador, Rpt_Certificacion.DescCertificador, Rpt_Certificacion.CodSalidaTipo, Rpt_Certificacion.DescSalidaTipo, Rpt_Certificacion.Efectiva, Rpt_Certificacion.Indicaciones, Rpt_Certificacion.ImporteDeducible, Rpt_Certificacion.Usr, Rpt_Certificacion.Ts, Rpt_Certificacion.Nombres, Rpt_Certificacion.Apellido1, Rpt_Certificacion.Apellido2, Rpt_Certificacion.DescAfiliado, Rs_TrabajaActivo.CodEmpresa, Empresa.Nombre AS DescEmpresa
+FROM (Rpt_Certificacion INNER JOIN Rs_TrabajaActivo ON Rpt_Certificacion.CI = Rs_TrabajaActivo.CI) INNER JOIN Empresa ON Rs_TrabajaActivo.CodEmpresa = Empresa.CodEmpresa;
+
+
+QUERY: 500_Rpt_DetalleSubsidio
+  SQL: SELECT SubsidioCabezal.CI, [Afiliado].[Nombres] & " " & [Afiliado].[Apellido1] & IIf([Afiliado].[Apellido2] & ""<>""," " & [Afiliado].[Apellido2],"") AS DescAfiliado, SubsidioImponible.Mes, SubsidioImponible.Anio, SubsidioImponible.CodEmpresa, Empresa.Nombre AS DescEmpresa, SubsidioImponible.Dias, SubsidioImponible.Importe, SubsidioCabezal.Mes AS MesCabezal, SubsidioCabezal.Anio AS AnioCabezal, SubsidioCabezal.Dias AS DiasSubsidio, SubsidioCabezal.Liquidar, SubsidioCabezal.IdSubsidio
+FROM (SubsidioCabezal INNER JOIN Afiliado ON SubsidioCabezal.CI = Afiliado.CI) INNER JOIN (SubsidioImponible INNER JOIN Empresa ON SubsidioImponible.CodEmpresa = Empresa.CodEmpresa) ON SubsidioCabezal.IdSubsidio = SubsidioImponible.IdSubsidio
+ORDER BY SubsidioCabezal.CI;
+
+
+QUERY: 500_Rpt_DetalleSubsidio_Tmp
+  SQL: SELECT Iif(Len(CStr([D].[CI]))>7,Format([D].[CI],"@\.@@@\.@@@-@"),Format([D].[CI],"@@@\.@@@-@")) AS CIFormat, D.CI, D.DescAfiliado, D.Mes, D.Anio, D.CodEmpresa, D.DescEmpresa, D.Dias, D.Importe, D.MesCabezal, D.AnioCabezal, D.DiasSubsidio, D.IdSubsidio
+FROM 500_Rpt_DetalleSubsidio AS D
+WHERE [MesCabezal] = 08 And [AnioCabezal] = 2013 And Liquidar = True;
+
+
+QUERY: 500_Rpt_DiasCertificacion
+  SQL: SELECT Certificacion.CI, AfeccionTipo.CodAfeccionTipo, First(AfeccionTipo.Descrip) AS DescAfeccionTipo, First(Afiliado.Nombres & " " & Afiliado.Apellido1 & IIf(Afiliado.Apellido2 & ""<>""," " & Afiliado.Apellido2,"")) AS DescAfiliado, Sum(DateDiff("d",Certificacion.[FechaIni],Certificacion.[FechaFin])+1) AS Dias, Count(*) AS Cantidad, First([500_Prorrogas].Dias) AS Prorrogas, Last([500_Rpt_Certificacion_UltFecha].FechaFin) AS F_Ult_Certif, Last([500_Prorrogas].Fecha) AS F_Ult_Pro
+FROM (((((Certificacion INNER JOIN AfeccionTipo ON Certificacion.CodAfeccionTipo = AfeccionTipo.CodAfeccionTipo) INNER JOIN Certificador ON Certificacion.CodCertificador = Certificador.CodCertificador) INNER JOIN Afiliado ON Certificacion.CI = Afiliado.CI) INNER JOIN SalidaTipo ON Certificacion.CodSalidaTipo = SalidaTipo.CodSalidaTipo) LEFT JOIN 500_Prorrogas ON Certificacion.CI = [500_Prorrogas].CI) INNER JOIN 500_Rpt_Certificacion_UltFecha ON Afiliado.CI = [500_Rpt_Certificacion_UltFecha].CI
+WHERE ( Certificacion.[CI] = 11391501 )
+GROUP BY Certificacion.CI, AfeccionTipo.CodAfeccionTipo;
+
+
+QUERY: 500_Rpt_DiasCertificacion_S
+  SQL: SELECT Certificacion.CI, AfeccionTipo.CodAfeccionTipo, First(AfeccionTipo.Descrip) AS DescAfeccionTipo, First(Afiliado.Nombres & " " & Afiliado.Apellido1 & IIf(Afiliado.Apellido2 & ""<>""," " & Afiliado.Apellido2,"")) AS DescAfiliado, Sum(DateDiff("d",Certificacion.[FechaIni],Certificacion.[FechaFin])+1) AS Dias, Count(*) AS Cantidad, First([500_Prorrogas].Dias) AS Prorrogas, Last([500_Rpt_Certificacion_UltFecha].FechaFin) AS F_Ult_Certif, Last([500_Prorrogas].Fecha) AS F_Ult_Pro
+FROM (((((Certificacion INNER JOIN AfeccionTipo ON Certificacion.CodAfeccionTipo = AfeccionTipo.CodAfeccionTipo) INNER JOIN Certificador ON Certificacion.CodCertificador = Certificador.CodCertificador) INNER JOIN Afiliado ON Certificacion.CI = Afiliado.CI) INNER JOIN SalidaTipo ON Certificacion.CodSalidaTipo = SalidaTipo.CodSalidaTipo) LEFT JOIN 500_Prorrogas ON Certificacion.CI = [500_Prorrogas].CI) INNER JOIN 500_Rpt_Certificacion_UltFecha ON Afiliado.CI = [500_Rpt_Certificacion_UltFecha].CI
+GROUP BY Certificacion.CI, AfeccionTipo.CodAfeccionTipo;
+
+
+QUERY: 500_Rpt_DiasCertificacion_Tmp
+  SQL: SELECT Rpt_Certificacion.CI, Iif(Len(Rpt_Certificacion.CI)>=8,Format(Rpt_Certificacion.CI,"@\.@@@\.@@@-@"),Format(Rpt_Certificacion.CI,"@@@\.@@@-@")) AS CIFormat, First(Rpt_Certificacion.DescAfiliado) AS DescAfiliado, Rpt_Certificacion.CodAfeccionTipo, First(Rpt_Certificacion.DescAfeccionTipo) AS DescAfeccionTipo, Sum(DateDiff("d",[FechaIni],[FechaFin])+1) AS Dias, Count(*) AS Cantidad
+FROM Rpt_Certificacion
+GROUP BY Rpt_Certificacion.CI, Rpt_Certificacion.CodAfeccionTipo
+ORDER BY [FechaIni];
+
+
+QUERY: 500_Rpt_Imponible_Tmp
+  SQL: SELECT Imponible.CI, IIf(Len(Imponible.CI)>=8,Format(Imponible.CI,"@\.@@@\.@@@-@"),Format(Imponible.CI,"@@@\.@@@-@")) AS CIFormat, [Afiliado].[Nombres] & " " & [Afiliado].[Apellido1] & IIf([Afiliado].[Apellido2] & ""<>""," " & [Afiliado].[Apellido2],"") AS DescAfiliado, Imponible.CodEmpresa, Empresa.Nombre AS DescEmpresa, Imponible.Mes, Imponible.Anio, Imponible.Concepto, Imponible.DiasTrabajados, Imponible.Importe, Afiliado.FechaNacimiento
+FROM ((Imponible INNER JOIN Empresa ON Imponible.CodEmpresa = Empresa.CodEmpresa) INNER JOIN Afiliado ON Imponible.CI = Afiliado.CI) INNER JOIN Trabaja ON (Imponible.Fechaingreso = Trabaja.FechaIngreso) AND (Imponible.CodEmpresa = Trabaja.CodEmpresa) AND (Imponible.CI = Trabaja.CI)
+WHERE (((Trabaja.FechaBaja) Is Null) AND ((Val(Format([Imponible].[Anio]) & Format([Imponible].[Mes],"00"))) Between 200507 And 201404))
+ AND Imponible.CI = 11127168;
+
+
+QUERY: 500_Rpt_Mutualista_Tmp
+  SQL: SELECT *
+FROM Rpt_Mutualista;
+
+
+QUERY: 500_Rpt_NoCargadoHL
+  SQL: SELECT Afiliado.CI, [Afiliado].[Nombres] & " " & [Afiliado].[Apellido1] & IIf([Afiliado].[Apellido2] & "" <> ""," " & [Afiliado].[Apellido2],"") AS DescAfiliado
+FROM Afiliado
+WHERE (((Afiliado.CI) Not In (Select CI FROM Imponible Where [CodEmpresa]  = 900  And [Mes] = 05 And [Anio] = 2013)  And (Afiliado.CI) In (SELECT CI From Trabaja Where [CodEmpresa] = 900 And ([FechaBaja] Is Null Or Val(Format([FechaBaja], 'yyyymm')) >= 201305))))
+ORDER BY [CI];
+
+
+QUERY: 500_Rpt_NoPagarMutualista
+  SQL: SELECT IIf(Len([Rpt_NoPagarMutualista].[CI])>=8,Format([Rpt_NoPagarMutualista].[CI],"@\.@@@\.@@@-@"),Format([Rpt_NoPagarMutualista].[CI],"@@@\.@@@-@")) AS CI, Rpt_NoPagarMutualista.Nombres, Rpt_NoPagarMutualista.Apellido1, Rpt_NoPagarMutualista.Apellido2, Rpt_NoPagarMutualista.FechaNacimiento, Rpt_NoPagarMutualista.Sexo, Rpt_NoPagarMutualista.Direccion, Rpt_NoPagarMutualista.Telefono, Rpt_NoPagarMutualista.EMail, Rpt_NoPagarMutualista.CodMutualista, Rpt_NoPagarMutualista.FechaIngMutualista, Rpt_NoPagarMutualista.NroSocioMutualista, Rpt_NoPagarMutualista.CodRegimenJubilatorio, Rpt_NoPagarMutualista.CodDepartamento, Rpt_NoPagarMutualista.PagaMutualista, Rpt_NoPagarMutualista.Usr, Rpt_NoPagarMutualista.Ts, Rpt_NoPagarMutualista.DescAfiliado, Rpt_NoPagarMutualista.CodEmpresa, Rpt_NoPagarMutualista.DescEmpresa, Rpt_NoPagarMutualista.DescMutualista
+FROM Rpt_NoPagarMutualista;
+
+
+QUERY: 500_Rpt_Prestacion
+  SQL: SELECT Prestacion.CI, Prestacion.Fecha, Afiliado.Nombres, Afiliado.Apellido1, Afiliado.Apellido2, Afiliado.Nombres & " " & Afiliado.Apellido1 &iif(Afiliado.Apellido2 & "" <> "", " " & Afiliado.Apellido2, "") AS DescAfiliado, Prestacion.CodPrestacionTipo, PrestacionTipo.Descrip AS DescPrestacionTipo, Prestacion.Moneda, Prestacion.Importe, Prestacion.Boleta, Prestacion.Observaciones, Prestacion.Usr, Prestacion.Ts
+FROM (Prestacion INNER JOIN Afiliado ON Prestacion.CI = Afiliado.CI) INNER JOIN PrestacionTipo ON Prestacion.CodPrestacionTipo = PrestacionTipo.CodPrestacionTipo
+ORDER BY [Prestacion].[Fecha], [Prestacion].[CI], [Prestacion].[CodPrestacionTipo];
+
+
+QUERY: 500_Rpt_PrimaFallecimiento_Tmp
+  SQL: SELECT Afiliado.CI, Year([FechaFallecimiento]) AS Anio, Month([FechaFallecimiento]) AS Mes, [Afiliado].[Nombres] & " " & [Afiliado].[Apellido1] & IIf([Afiliado].[Apellido2] & ""<>""," " & [Afiliado].[Apellido2],"") AS DescAfiliado, PrimaFallecimiento.Importe AS ImpNominal, 0 AS Importe, PrimaFallecimiento.FechaFallecimiento, CDate("01/" & Format(DateAdd("m",-6,PrimaFallecimiento.FechaFallecimiento),"mm/yyyy")) AS FechaIni, DateAdd("d",-1,CDate("01/" & Format(PrimaFallecimiento.FechaFallecimiento,"mm/yyyy"))) AS FechaFin
+FROM Afiliado INNER JOIN PrimaFallecimiento ON Afiliado.CI = PrimaFallecimiento.CI
+WHERE (((PrimaFallecimiento.FechaFallecimiento) Is Not Null)) AND Afiliado.[CI]= 18752605;
+
+
+QUERY: 500_Rpt_ReintegroMutual
+  SQL: SELECT ReintegroMutual.CI, Afiliado.Nombres & " " & Afiliado.Apellido1 & IIf(Afiliado.Apellido2 & ""<>""," " & Afiliado.Apellido2,"") AS DescAfiliado, ReintegroMutual.Mes, ReintegroMutual.Anio, ReintegroMutual.Fecha, ReintegroMutual.CodMutualista, Mutualista.Nombre AS DescMutualista, ReintegroMutual.Importe, ReintegroMutual.Observaciones, ReintegroMutual.Usr, ReintegroMutual.Ts
+FROM (ReintegroMutual INNER JOIN Afiliado ON ReintegroMutual.CI = Afiliado.CI) INNER JOIN Mutualista ON ReintegroMutual.CodMutualista = Mutualista.CodMutualista
+WHERE ( [ReintegroMutual].[Mes] = 7 and [ReintegroMutual].[Anio] = 2003 )
+ORDER BY [ReintegroMutual].[Anio], [ReintegroMutual].[Mes];
+
+
+QUERY: 500_Rpt_ResumenSubsidio
+  SQL: SELECT SubsidioCabezal.Anio, SubsidioCabezal.Mes, iIF(LEN(CStr(SubsidioCabezal.CI))>7,Format(SubsidioCabezal.CI,"@\.@@@\.@@@-@"),Format(SubsidioCabezal.CI,"@@@\.@@@-@")) AS CI, [Afiliado].[Nombres] & " " & [Afiliado].[Apellido1] & IIf([Afiliado].[Apellido2] & ""<>""," " & [Afiliado].[Apellido2],"") AS DescAfiliado, SubsidioCabezal.Dias, Afiliado.Nombres, Afiliado.Apellido1, Afiliado.Apellido2, SubsidioCabezal.ImpNominal, SubsidioCabezal.ImpAguinaldo, SubsidioCabezal.ImpLiquido, SubsidioCabezal.Liquidar, Afiliado.FechaNacimiento, [600_SubsidioFecha_Tmp].DescFecha, SubsidioCabezal.CI AS CIOrig
+FROM (SubsidioCabezal INNER JOIN Afiliado ON SubsidioCabezal.CI = Afiliado.CI) LEFT JOIN 600_SubsidioFecha_Tmp ON SubsidioCabezal.IdSubsidio = [600_SubsidioFecha_Tmp].IDSubsidio
+WHERE (((SubsidioCabezal.ImpLiquido)>0))
+ORDER BY SubsidioCabezal.CI;
+
+
+QUERY: 500_Rpt_Subsidio
+  SQL: SELECT *
+FROM 300_Rpt_Subsidio
+WHERE [Mes] = 7 And [Anio] = 2007 And [CI] = 41856014 And Liquidar = True;
+
+
+QUERY: 500_Rpt_Trabaja_Tmp
+  SQL: SELECT Afiliado.CI, IIf(Len(Afiliado.CI)>=8,Format(Afiliado.CI,"@\.@@@\.@@@-@"),Format(Afiliado.CI,"@@@\.@@@-@")) AS CIFormat, Afiliado.Nombres, Afiliado.Apellido1, Afiliado.Apellido2, Afiliado.FechaNacimiento, Afiliado.Sexo, Afiliado.Direccion, Afiliado.Telefono, Afiliado.EMail, Afiliado.CodMutualista, Afiliado.FechaIngMutualista, Afiliado.NroSocioMutualista, Afiliado.CodRegimenJubilatorio, Afiliado.CodDepartamento, Afiliado.PagaMutualista, Afiliado.Usr, Afiliado.Ts, Trabaja.CodEmpresa, Empresa.Nombre AS DescEmpresa, [Afiliado].[Nombres] & " " & [Afiliado].[Apellido1] & IIf([Afiliado].[Apellido2] & ""<>""," " & [Afiliado].[Apellido2],"") AS DescAfiliado
+FROM (Afiliado INNER JOIN Trabaja ON Afiliado.CI = Trabaja.CI) INNER JOIN Empresa ON Trabaja.CodEmpresa = Empresa.CodEmpresa
+WHERE (((Trabaja.FechaBaja) Is Null) AND ((Empresa.Ficticia)=False)) AND Afiliado.[CI]= 36168331;
+
+
+QUERY: 505_DeleteImponibleXMes
+  SQL: PARAMETERS pCodEmpresa Long, pMes Long, pAño Long;
+DELETE Imponible.CodEmpresa, Imponible.Mes, Imponible.Anio, *
+FROM Imponible
+WHERE (((Imponible.CodEmpresa)=[pCodEmpresa]) AND ((Imponible.Mes)=[pMes]) AND ((Imponible.Anio)=[pAño]));
+
+
+QUERY: 505_Insert_SubsidioEnfermedadMes
+  SQL: PARAMETERS pMes Long, pAño Long;
+INSERT INTO Imponible ( CI, DiasTrabajados, CodEmpresa, Importe, Anio, Mes, IdTrabaja, Fechaingreso, Concepto, AnioMes )
+SELECT Rs_SubsidioXMes.CI, 30 AS Expr2, Rs_TrabajaActivo.CodEmpresa, Rs_SubsidioXMes.ImpNominal, Rs_SubsidioXMes.Anio, Rs_SubsidioXMes.Mes, Rs_TrabajaActivo.IdTrabaja, Rs_TrabajaActivo.FechaIngreso, "1" AS Expr1, (Rs_SubsidioXMes.Anio*100)+Rs_SubsidioXMes.Mes AS AnioMes
+FROM Rs_SubsidioXMes INNER JOIN Rs_TrabajaActivo ON Rs_SubsidioXMes.CI = Rs_TrabajaActivo.CI
+WHERE (((Rs_TrabajaActivo.CodEmpresa)=900) AND ((Rs_SubsidioXMes.Anio)=[pAño]) AND ((Rs_SubsidioXMes.Mes)=[pMes]));
+
+
+QUERY: 505_Temporal
+  SQL: PARAMETERS pMes Short, pAño Short;
+SELECT Rs_TrabajaActivo.IdTrabaja, "1" AS Expr1, 30 AS Expr2, Rs_TrabajaActivo.CodEmpresa, Rs_SubsidioXMes.ImpNominal, Rs_SubsidioXMes.Anio, Rs_SubsidioXMes.Mes
+FROM Rs_SubsidioXMes INNER JOIN Rs_TrabajaActivo ON Rs_SubsidioXMes.CI = Rs_TrabajaActivo.CI
+WHERE (((Rs_TrabajaActivo.CodEmpresa)=900) AND ((Rs_SubsidioXMes.Anio)=[pAño]) AND ((Rs_SubsidioXMes.Mes)=[pMes]));
+
+
+QUERY: 506_Delete_Liquidacion_BPSXEntrega
+  SQL: PARAMETERS pNroEntrega Long;
+DELETE Liquidacion_BPS.*, Liquidacion_BPS.[N_ ENTREGA]
+FROM Liquidacion_BPS
+WHERE (((Liquidacion_BPS.[N_ ENTREGA])=[pNroEntrega]));
+
+
+QUERY: 506_Export_SubsidioConBPS
+  SQL: PARAMETERS pMes Long, pAnio Long;
+SELECT [506_Rpt_Subsidio].CI, [506_Rpt_Subsidio].Dias, [506_Rpt_Subsidio].Nombres, [506_Rpt_Subsidio].Apellido1, [506_Rpt_Subsidio].Apellido2, [506_Rpt_Subsidio].FechaNacimiento, [506_Rpt_Subsidio].IdSubsidio, [506_Rpt_Subsidio].NroRecibo, [506_Rpt_Subsidio].FechaIni, [506_Rpt_Subsidio].FechaFin, [506_Rpt_Subsidio].FechaIniSubsidio, [506_Rpt_Subsidio].FechaFinSubsidio, [506_Rpt_Subsidio].ImpNominal, [506_Rpt_Subsidio].ImpAguinaldo, [506_Rpt_Subsidio].ImpLiquido, [506_Rpt_Subsidio].Jornal70, [506_Rpt_Subsidio].Aguinaldo70, [506_Rpt_Subsidio].DiasBPS, [506_Rpt_Subsidio].LiquidoBPS, [506_Rpt_Subsidio].LiquidoPagar, [506_Rpt_Subsidio].Banco, [506_Rpt_Subsidio].NroCuenta, [506_Rpt_LiquidacionBPS].MONTO_TOTAL, [506_Rpt_LiquidacionBPS].LIQUIDO, [506_Rpt_LiquidacionBPS].MES_DE_CARGO, [506_Rpt_LiquidacionBPS].NOM_EMPRESA, [506_Rpt_LiquidacionBPS].PCT_POR_EMPRESA, [506_Rpt_LiquidacionBPS].FECHA_PER_DESDE, [506_Rpt_LiquidacionBPS].FECHA_PER_HASTA, [506_Rpt_LiquidacionBPS].[N_ ENTREGA], [506_Rpt_LiquidacionBPS].FECHA_DE_ENTREGA, [506_Rpt_Subsidio].EMail INTO DATOS IN 'C:\Documents and Settings\casemed\Escritorio\Liq_2603.xls'[Excel 8.0;]
+FROM 506_Rpt_Subsidio LEFT JOIN 506_Rpt_LiquidacionBPS ON [506_Rpt_Subsidio].CI = [506_Rpt_LiquidacionBPS].CI
+WHERE ((([506_Rpt_Subsidio].Mes)=[pMes]) AND (([506_Rpt_Subsidio].Anio)=[pAnio]));
+
+
+QUERY: 506_Insert_LiquidacionBPS
+  SQL: INSERT INTO Liquidacion_BPS ( CI, NOMBRE, APELLIDO, MONTO_TOTAL, MES_DE_CARGO, NOM_EMPRESA, PCT_POR_EMPRESA, FECHA_PER_DESDE, FECHA_PER_HASTA, [N_ ENTREGA], FECHA_DE_ENTREGA, MES, ANIO, LIQUIDO )
+SELECT [506_Rpt_BPS].CI, [506_Rpt_BPS].NOMBRE, [506_Rpt_BPS].APELLIDO, [506_Rpt_BPS].[MONTO TOTAL], [506_Rpt_BPS].[MES DE CARGO], [506_Rpt_BPS].NOM_EMPRESA, [506_Rpt_BPS].[% POR EMPRESA], [506_Rpt_BPS].FECHA_PER_DESDE, [506_Rpt_BPS].FECHA_PER_HASTA, [506_Rpt_BPS].[Nº ENTREGA], [506_Rpt_BPS].[FECHA DE ENTREGA], [506_Rpt_BPS].[MES DE CARGO] Mod 100 AS Expr1, [506_Rpt_BPS].[MES DE CARGO]\100 AS Expr2, [506_Rpt_BPS].[LÍQUIDO BPS]
+FROM 506_Rpt_BPS
+WHERE ((([506_Rpt_BPS].CI) Is Not Null));
+
+
+QUERY: 506_Rpt_LiquidacionBPS
+  SQL: PARAMETERS pMes Long, pAnio Long;
+SELECT Liquidacion_BPS.*
+FROM Liquidacion_BPS
+WHERE (((Liquidacion_BPS.MES)=[pMes]) AND ((Liquidacion_BPS.ANIO)=[pAnio]));
+
+
+QUERY: 506_Rpt_Subsidio
+  SQL: SELECT SubsidioCabezal.CI, SubsidioCabezal.Dias, Afiliado.Nombres, Afiliado.Apellido1, Afiliado.Apellido2, Afiliado.FechaNacimiento, SubsidioCabezal_BPS.IdSubsidio, SubsidioCabezal.NroRecibo, SubsidioEnfermedad.FechaIni, SubsidioEnfermedad.FechaFin, SubsidioEnfermedad.FechaIniSubsidio, SubsidioEnfermedad.FechaFinSubsidio, SubsidioCabezal.ImpNominal, SubsidioCabezal.ImpAguinaldo, SubsidioCabezal.ImpLiquido, IIf([SubsidioCabezal].Dias>0,[SubsidioCabezal].[ImpNominal]/SubsidioCabezal.Dias*0.7,0) AS Jornal70, IIf([SubsidioCabezal].Dias>0,SubsidioCabezal.ImpAguinaldo/SubsidioCabezal.Dias*0.7,0) AS Aguinaldo70, SubsidioCabezal_BPS.DiasBPS, SubsidioCabezal_BPS.LiquidoBPS, SubsidioCabezal_BPS.LiquidoPagar, Banco.Descripcion AS Banco, Afiliado.NroCuenta, SubsidioCabezal.Mes, SubsidioCabezal.Anio, Afiliado.EMail
+FROM (SubsidioEnfermedad INNER JOIN ((SubsidioCabezal INNER JOIN Afiliado ON SubsidioCabezal.CI = Afiliado.CI) LEFT JOIN SubsidioCabezal_BPS ON SubsidioCabezal.IdSubsidio = SubsidioCabezal_BPS.IdSubsidio) ON SubsidioEnfermedad.IdSubsidio = SubsidioCabezal.IdSubsidio) LEFT JOIN Banco ON Afiliado.CodBanco = Banco.CodBanco;
+
+
+QUERY: 506_TotalLiquidoBPSCIMes
+  SQL: PARAMETERS pCI Long, pMes Short, pAnio Short;
+SELECT Sum(SubsidioCabezal_BPS.LiquidoBPS) AS LiquidoBPS
+FROM SubsidioCabezal INNER JOIN SubsidioCabezal_BPS ON SubsidioCabezal.IdSubsidio = SubsidioCabezal_BPS.IdSubsidio
+WHERE (((SubsidioCabezal.Mes)=[pMes]) AND ((SubsidioCabezal.Anio)=[pAnio]) AND ((SubsidioCabezal.CI)=[pCI]));
+
+
+QUERY: 506_Update_Liquidos
+  SQL: UPDATE 506_Rpt_Liquidos_Subsidios INNER JOIN SubsidioCabezal ON [506_Rpt_Liquidos_Subsidios].IdSubsidio = SubsidioCabezal.IdSubsidio SET SubsidioCabezal.ImpLiquido = [506_Rpt_Liquidos_Subsidios].[LiquidoPagar];
+
+
+QUERY: 510_Rpt_Trabaja
+  SQL: SELECT Afiliado.CI, IIf(Len(Afiliado.CI)>=8,Format(Afiliado.CI,"@\.@@@\.@@@-@"),Format(Afiliado.CI,"@@@\.@@@-@")) AS CIFormat, Afiliado.Nombres, Afiliado.Apellido1, Afiliado.Apellido2, Afiliado.FechaNacimiento, Afiliado.Sexo, Afiliado.Direccion, Afiliado.Telefono, Afiliado.EMail, Afiliado.CodMutualista, Afiliado.FechaIngMutualista, Afiliado.NroSocioMutualista, Afiliado.CodRegimenJubilatorio, Afiliado.CodDepartamento, Afiliado.PagaMutualista, Afiliado.Usr, Afiliado.Ts, Trabaja.CodEmpresa, Empresa.Nombre AS DescEmpresa, [Afiliado].[Nombres] & " " & [Afiliado].[Apellido1] & IIf([Afiliado].[Apellido2] & ""<>""," " & [Afiliado].[Apellido2],"") AS DescAfiliado, Trabaja.NroFichaEmpresa, Rs_Imponible_Ult.Importe
+FROM ((Afiliado INNER JOIN Trabaja ON Afiliado.CI = Trabaja.CI) INNER JOIN Empresa ON Trabaja.CodEmpresa = Empresa.CodEmpresa) LEFT JOIN Rs_Imponible_Ult ON (Trabaja.CI = Rs_Imponible_Ult.CI) AND (Trabaja.CodEmpresa = Rs_Imponible_Ult.CodEmpresa)
+WHERE ( [Trabaja].[CodEmpresa] = 1 );
+
+
+QUERY: 601_Rpt_Recibo
+  SQL: SELECT [600_Rpt_Recibo].*, SubsidioCabezal.FechaPago
+FROM 600_Rpt_Recibo INNER JOIN SubsidioCabezal ON [600_Rpt_Recibo].IdSubsidio = SubsidioCabezal.IdSubsidio;
+
+
+QUERY: 756_NoBaja
+  SQL: SELECT CI from 765_CertificacionContinua
+UNION SELECT CI FROM 765_CertificacionEmpalma;
+
+
+QUERY: 765_CertificacionContinua
+  SQL: PARAMETERS pFecha DateTime;
+SELECT DISTINCT Certificacion.CI
+FROM Certificacion
+WHERE (((Certificacion.Efectiva)=True) AND ((Certificacion.FechaIni)<=[pFecha]) AND ((Certificacion.FechaFin)>[pFecha]));
+
+
+QUERY: 765_CertificacionEmpalma
+  SQL: PARAMETERS pFecha DateTime;
+SELECT DISTINCT Certificacion.CI
+FROM Certificacion
+WHERE (((Certificacion.Efectiva)=True) AND ((Certificacion.FechaIni)=DateAdd("d", 1, [pFecha])))
+and Certificacion.CI In (select CI from certificacion where efectiva=true and FechaFin=[pFecha]);
+
+
+QUERY: 790_Delete_Rpt_Recibo
+  SQL: DELETE [600_Rpt_Recibo].*
+FROM 600_Rpt_Recibo;
+
+
+QUERY: 800_Afiliado_Imponible_Mes_Fecha
+  SQL: PARAMETERS pCodEmpresa Long;
+SELECT Imponible.CI, Imponible.Mes, Imponible.Anio, Sum(Imponible.Importe) AS Importe
+FROM Imponible INNER JOIN Trabaja ON (Imponible.CI = Trabaja.CI) AND (Imponible.CodEmpresa = Trabaja.CodEmpresa) AND (Imponible.Fechaingreso = Trabaja.FechaIngreso)
+WHERE (((Imponible.Concepto)="1") AND (((Trabaja.FechaBaja) Is Null) Or Val(Format(Trabaja.FechaBaja, "yyyymm")) > [pMes])
+AND ((Imponible.CodEmpresa)=IIf([pCodEmpresa]=0,[Imponible].[CodEmpresa],[pCodEmpresa])))
+GROUP BY Imponible.CI, Imponible.Mes, Imponible.Anio;
+
+
+QUERY: 800_AfiliadoImponible_Mes
+  SQL: PARAMETERS pCodEmpresa Long;
+SELECT Imponible.CI, Imponible.Mes, Imponible.Anio, Sum(Imponible.Importe) AS Importe
+FROM Imponible INNER JOIN Trabaja ON (Imponible.Fechaingreso = Trabaja.FechaIngreso) AND (Imponible.CodEmpresa = Trabaja.CodEmpresa) AND (Imponible.CI = Trabaja.CI)
+WHERE (((Imponible.Concepto)="1") AND ((Trabaja.FechaBaja) Is Null) AND ((Imponible.CodEmpresa)=IIf([pCodEmpresa]=0,[Imponible].[CodEmpresa],[pCodEmpresa])))
+GROUP BY Imponible.CI, Imponible.Mes, Imponible.Anio;
+
+
+QUERY: 800_AfiliadoImponible_Mes_Fecha
+  SQL: PARAMETERS pCodEmpresa Long;
+SELECT Imponible.CI, Imponible.Mes, Imponible.Anio, Sum(Imponible.Importe) AS Importe
+FROM Imponible INNER JOIN Trabaja ON (Imponible.Fechaingreso = Trabaja.FechaIngreso) AND (Imponible.CodEmpresa = Trabaja.CodEmpresa) AND (Imponible.CI = Trabaja.CI)
+WHERE (((Trabaja.FechaBaja) Is Null) AND ((Imponible.Concepto)="1") AND ((Val(Format([Trabaja].[FechaIngCasemed],"yyyymm")))<=[pMes]) AND ((Imponible.CodEmpresa)=IIf([pCodEmpresa]=0,[Imponible].[CodEmpresa],[pCodEmpresa]))) OR (((Imponible.Concepto)="1") AND ((Val(Format([Trabaja].[FechaIngCasemed],"yyyymm")))<=[pMes]) AND ((Imponible.CodEmpresa)=IIf([pCodEmpresa]=0,[Imponible].[CodEmpresa],[pCodEmpresa])) AND ((Val(Format([Trabaja].[FechaBaja],"yyyymm")))>[pMes]))
+GROUP BY Imponible.CI, Imponible.Mes, Imponible.Anio;
+
+
+QUERY: 800_AfiliadoImponible_Mes_Todos
+  SQL: SELECT Imponible.CI, Imponible.Mes, Imponible.Anio, Sum(Imponible.Importe) AS Importe
+FROM Imponible
+WHERE (((Imponible.Concepto)="1"))
+GROUP BY Imponible.CI, Imponible.Mes, Imponible.Anio;
+
+
+QUERY: 800_Borrar_Rpt_CantidadDescrip
+  SQL: DELETE [600_Rpt_CantidadDescrip].*
+FROM 600_Rpt_CantidadDescrip;
+
+
+QUERY: 800_Borrar_Rpt_CantidadDescrip2
+  SQL: DELETE [600_Rpt_CantidadDescrip2].*
+FROM 600_Rpt_CantidadDescrip2;
+
+
+QUERY: 800_Cantidad_Empresa
+  SQL: PARAMETERS pCodEmpresa Long, pFecha DateTime;
+SELECT Count(*) AS Cantidad
+FROM Trabaja INNER JOIN Empresa ON Trabaja.CodEmpresa = Empresa.CodEmpresa
+WHERE (((Trabaja.CodEmpresa)=IIf([pCodEmpresa]>0,[pCodEmpresa],[Trabaja].[CodEmpresa])) AND ((Empresa.Ficticia)=False) AND ((Trabaja.FechaIngCasemed)<=IIf(IsNull([pFecha]),Date(),[pFecha])) AND ((Trabaja.FechaBaja) Is Null Or (Trabaja.FechaBaja)>IIf(IsNull([pFecha]),Date(),[pFecha])));
+
+
+QUERY: 800_Cantidad_Otras
+  SQL: PARAMETERS pCodEmpresa Long;
+SELECT Count(*) AS Cantidad
+FROM Trabaja INNER JOIN Empresa ON Trabaja.CodEmpresa = Empresa.CodEmpresa
+WHERE (((Empresa.Ficticia)=False) AND ((Trabaja.CodEmpresa)<>IIf([pCodEmpresa]>0,[pCodEmpresa],[Trabaja].[CodEmpresa])) AND ((Trabaja.FechaIngCasemed)<=IIf(IsNull([pFecha]),Date(),[pFecha])) AND ((Trabaja.FechaBaja) Is Null Or (Trabaja.FechaBaja)>IIf(IsNull([pFecha]),Date(),[pFecha])));
+
+
+QUERY: 800_Insert_Cantidad_Empresa_Todas
+  SQL: PARAMETERS pFecha DateTime;
+INSERT INTO 600_Rpt_CantidadDescrip ( Cantidad, Descrip )
+SELECT Count(*) AS Cantidad, First(Empresa.Nombre) AS FirstOfNombre
+FROM Empresa INNER JOIN Trabaja ON Empresa.CodEmpresa = Trabaja.CodEmpresa
+WHERE (((Empresa.Ficticia)=False) AND ((Trabaja.FechaIngCasemed)<=IIf(IsNull([pFecha]),Date(),[pFecha])) AND ((Trabaja.FechaBaja) Is Null Or (Trabaja.FechaBaja)>IIf(IsNull([pFecha]),Date(),[pFecha])))
+GROUP BY Trabaja.CodEmpresa;
+
+
+QUERY: 801_Cantidad_Todos
+  SQL: PARAMETERS pMes Long;
+SELECT Count(*) AS Cantidad
+FROM 801_CI_Todos;
+
+
+QUERY: 801_CI_Todos
+  SQL: PARAMETERS pMes Long, pMesIni Long, pCodEmpresa Long;
+SELECT I.CI AS Cantidad
+FROM 800_AfiliadoImponible_Mes_Fecha AS I
+WHERE Val(CStr([I].[Anio]) & Format([I].[Mes],"00")) Between [pMesIni] And [pMes]
+GROUP BY I.CI;
+
+
+QUERY: 801_Promedio_Ult6
+  SQL: PARAMETERS pMes Long, pMesIni Long, pCodEmpresa Long;
+SELECT I.CI, Val(Avg(I.Importe)) AS Promedio
+FROM 800_AfiliadoImponible_Mes_Fecha AS I
+WHERE Val(CStr([I].[Anio]) & Format([I].[Mes],"00")) Between [pMesIni] And [pMes]
+GROUP BY I.CI
+HAVING (((Val(Avg([I].[Importe])))=0));
+
+
+QUERY: 801_Promedio_Ult6_Todos
+  SQL: PARAMETERS pMes Long, pMesIni Long, pCodEmpresa Long;
+SELECT I.CI, Val(Avg(I.Importe)) AS Promedio
+FROM 800_AfiliadoImponible_Mes AS I INNER JOIN Rs_TrabajaActivo ON (I.CI = Rs_TrabajaActivo.CI) AND (I.Fechaingreso = Rs_TrabajaActivo.FechaIngreso)
+WHERE ( ((Val(CStr([I].[Anio]) & Format([I].[Mes],"00"))) Between [pMesIni] And [pMes]) AND Rs_TrabajaActivo.CodEmpresa)=IIf([pCodEmpresa]>0, [pCodEmpresa],[Rs_TrabajaActivo].[CodEmpresa])
+GROUP BY I.CI
+HAVING (((Val(Avg([I].[Importe])))=0));
+
+
+QUERY: 801_Promedio_UltMes
+  SQL: PARAMETERS pMes Long, pCodEmpresa Long;
+SELECT I.CI, Val(Sum(I.Importe)) AS Promedio
+FROM 800_AfiliadoImponible_Mes_Fecha AS I
+WHERE (((Val(CStr([I].[Anio]) & Format([I].[Mes],"00")))=[pMes]))
+GROUP BY I.CI
+HAVING (((Val(Sum([I].[Importe])))=0));
+
+
+QUERY: 801_Ult6_Cantidad
+  SQL: SELECT Count(*) AS Cantidad
+FROM 801_Promedio_Ult6;
+
+
+QUERY: 801_UltMes_Cantidad
+  SQL: SELECT Count(*) AS Cantidad
+FROM 801_Promedio_UltMes;
+
+
+QUERY: 802_>0_Cantidad_Ult6
+  SQL: SELECT Count(*) AS Cantidad
+FROM [802_>0_Ult6];
+
+
+QUERY: 802_>0_Cantidad_UltMes
+  SQL: SELECT Count(*) AS Cantidad
+FROM [802_>0_UltMes];
+
+
+QUERY: 802_>0_Ult6
+  SQL: PARAMETERS pMes Long, pMesIni Long, pCodEmpresa Long;
+SELECT I.CI, Val(Avg([I].[Importe])) AS Promedio
+FROM 800_AfiliadoImponible_Mes_Fecha AS I
+WHERE (((Val(CStr([I].[Anio]) & Format([I].[Mes],"00"))) Between [pMesIni] And [pMes]))
+GROUP BY I.CI
+HAVING (((Val(Avg([I].[Importe])))>0));
+
+
+QUERY: 802_>0_UltMes
+  SQL: PARAMETERS pMes Long, pCodEmpresa Long;
+SELECT I.CI, Val(Sum([I].[Importe])) AS Promedio
+FROM 800_AfiliadoImponible_Mes_Fecha AS I
+WHERE (((Val(CStr([I].[Anio]) & Format([I].[Mes],"00")))=[pMes]))
+GROUP BY I.CI
+HAVING (((Val(Sum([I].[Importe])))>0));
+
+
+QUERY: 802_>125_Cantidad_Ult6
+  SQL: SELECT Count(*) AS Cantidad
+FROM 802_Ult6;
+
+
+QUERY: 802_>125_Cantidad_UltMes
+  SQL: SELECT Count(*) AS Cantidad
+FROM 802_UltMes;
+
+
+QUERY: 802_Ult6
+  SQL: PARAMETERS pMes Long, pMesIni Long, pSMN IEEEDouble, pCodEmpresa Long;
+SELECT I.CI
+FROM 800_AfiliadoImponible_Mes_Fecha AS I
+WHERE (((Val(CStr([I].[Anio]) & Format([I].[Mes],"00"))) Between [pMesIni] And [pMes]))
+GROUP BY I.CI
+HAVING (((Val(Avg([I].[Importe])))>=(1.25*[pSMN])));
+
+
+QUERY: 802_UltMes
+  SQL: PARAMETERS pMes Long, pSMN IEEEDouble, pCodEmpresa Long;
+SELECT I.CI
+FROM 800_AfiliadoImponible_Mes_Fecha AS I
+WHERE (((Val(CStr([I].[Anio]) & Format([I].[Mes],"00")))=[pMes]))
+GROUP BY I.CI
+HAVING (((Val(Sum([I].[Importe])))>=(1.25*[pSMN])));
+
+
+QUERY: 803_>20_Cantidad_Ult6
+  SQL: SELECT Count(*) AS Cantidad
+FROM 803_Ult6;
+
+
+QUERY: 803_>20_Cantidad_UltMes
+  SQL: SELECT Count(*) AS Cantidad
+FROM 803_UltMes;
+
+
+QUERY: 803_Ult6
+  SQL: PARAMETERS pMes Long, pMesIni Long, pSMN IEEEDouble, pCodEmpresa Long;
+SELECT I.CI
+FROM 800_AfiliadoImponible_Mes_Fecha AS I
+WHERE (((Val(CStr([I].[Anio]) & Format([I].[Mes],"00"))) Between [pMesIni] And [pMes]))
+GROUP BY I.CI
+HAVING (((Val(Avg([I].[Importe])))>=(20*[pSMN])));
+
+
+QUERY: 803_UltMes
+  SQL: PARAMETERS pMes Long, pSMN IEEEDouble, pCodEmpresa Long;
+SELECT I.CI
+FROM 800_AfiliadoImponible_Mes_Fecha AS I
+WHERE (((Val(CStr([I].[Anio]) & Format([I].[Mes],"00")))=[pMes]))
+GROUP BY I.CI
+HAVING (((Val(Sum([I].[Importe])))>=(20*[pSMN])));
+
+
+QUERY: 804_>0_Masa_Ult6
+  SQL: SELECT Sum([804_>0_Ult6].Promedio) AS Masa
+FROM [804_>0_Ult6];
+
+
+QUERY: 804_>0_Masa_UltMes
+  SQL: SELECT Sum([804_>0_UltMes].Promedio) AS Masa
+FROM [804_>0_UltMes];
+
+
+QUERY: 804_>0_Ult6
+  SQL: PARAMETERS pMes Long, pMesIni Long, pCodEmpresa Long;
+SELECT I.CI, Val(Avg([I].[Importe])) AS Promedio
+FROM 800_AfiliadoImponible_Mes_Fecha AS I
+WHERE (((Val(CStr([I].[Anio]) & Format([I].[Mes],"00"))) Between [pMesIni] And [pMes]))
+GROUP BY I.CI
+HAVING (((Val(Avg([I].[Importe])))>0));
+
+
+QUERY: 804_>0_UltMes
+  SQL: PARAMETERS pMes Long, pCodEmpresa Long;
+SELECT I.CI, Val(Avg([I].[Importe])) AS Promedio
+FROM 800_AfiliadoImponible_Mes_Fecha AS I
+WHERE (((Val(CStr([I].[Anio]) & Format([I].[Mes],"00")))  =  [pMes]))
+GROUP BY I.CI
+HAVING (((Val(Avg([I].[Importe])))>0));
+
+
+QUERY: 804_>20_Masa_Ult6
+  SQL: SELECT Sum([804_Ult6].Promedio) AS Masa
+FROM 804_Ult6;
+
+
+QUERY: 804_>20_Masa_UltMes
+  SQL: SELECT Sum([804_UltMes].Promedio) AS Masa
+FROM 804_UltMes;
+
+
+QUERY: 804_Ult6
+  SQL: PARAMETERS pMes Long, pMesIni Long, pSMN IEEEDouble, pCodEmpresa Long;
+SELECT I.CI, Val(Avg([I].[Importe])) AS Promedio
+FROM 800_AfiliadoImponible_Mes_Fecha AS I
+WHERE (((Val(CStr([I].[Anio]) & Format([I].[Mes],"00"))) Between [pMesIni] And [pMes]))
+GROUP BY I.CI
+HAVING (((Val(Avg([I].[Importe])))>=(20*[pSMN])));
+
+
+QUERY: 804_UltMes
+  SQL: PARAMETERS pMes Long, pSMN IEEEDouble, pCodEmpresa Long;
+SELECT I.CI, Val(Avg([I].[Importe])) AS Promedio
+FROM 800_AfiliadoImponible_Mes_Fecha AS I
+WHERE (((Val(CStr([I].[Anio]) & Format([I].[Mes],"00"))) = [pMes]))
+GROUP BY I.CI
+HAVING (((Val(Avg([I].[Importe])))>=(20*[pSMN])));
+
+
+QUERY: 805_Activos
+  SQL: SELECT Count(*) AS Cantidad
+FROM Afiliado
+WHERE (Afiliado.CI) In (Select CI From Trabaja Where FechaBaja is Null);
+
+
+QUERY: 805_CertificacionesxAño
+  SQL: PARAMETERS pFechaIni DateTime, pFechaFin DateTime;
+SELECT Year(Certificacion.FechaCertificacion) AS Año, Count(*) AS Cantidad
+FROM Certificacion
+WHERE (((Certificacion.FechaCertificacion) Between IIf([pFechaIni] Is Not Null,[pFechaIni],[FechaCertificacion]) And IIf([pFechaFin] Is Not Null,[pFechaFin],[FechaCertificacion])) AND ((Certificacion.Efectiva)=True))
+GROUP BY Year(Certificacion.FechaCertificacion);
+
+
+QUERY: 805_Certificados_AñoCI
+  SQL: PARAMETERS pFechaIni DateTime, pFechaFin DateTime;
+SELECT DISTINCT Certificacion.CI, Year(Certificacion.FechaCertificacion) AS Año
+FROM Certificacion
+WHERE (((Certificacion.FechaCertificacion) Between IIf([pFechaIni] Is Not Null,[pFechaIni],[FechaCertificacion]) And IIf([pFechaFin] Is Not Null,[pFechaFin],[FechaCertificacion])) AND ((Certificacion.Efectiva)=True));
+
+
+QUERY: 805_CertificadosActivos
+  SQL: PARAMETERS pFechaIni DateTime, pFechaFin DateTime;
+SELECT Count(*) AS Cantidad
+FROM Afiliado
+WHERE (((Afiliado.CI) In (Select Ci From Certificacion Where Efectiva = True And FechaCertificacion Between Iif([pFechaIni] Is Not Null, [pFechaIni], FechaCertificacion) And Iif([pFechaFin] Is Not Null, [pFechaFin], FechaCertificacion)
+)));
+
+
+QUERY: 805_CertificadosActivos_Original
+  SQL: PARAMETERS pFechaIni DateTime, pFechaFin DateTime;
+SELECT Count(*) AS Cantidad
+FROM Afiliado
+WHERE (((Afiliado.CI) In (Select CI From Trabaja Where FechaBaja Is Null) And (Afiliado.CI) In (Select Ci From Certificacion Where Efectiva = True And FechaCertificacion Between Iif([pFechaIni] Is Not Null, [pFechaIni], FechaCertificacion) And Iif([pFechaFin] Is Not Null, [pFechaFin], FechaCertificacion)
+)));
+
+
+QUERY: 805_Insert_CertificacionesxAño
+  SQL: INSERT INTO 600_Rpt_CantidadDescrip ( Codigo, Cantidad, Descrip )
+SELECT [805_CertificacionesxAño].Año, [805_CertificacionesxAño].Cantidad, [805_CertificacionesxAño].Año
+FROM 805_CertificacionesxAño;
+
+
+QUERY: 805_Insert_CertificadosxAño
+  SQL: INSERT INTO 600_Rpt_CantidadDescrip ( Descrip, Cantidad, Codigo )
+SELECT [805_Certificados_AñoCI].Año, Count(*) AS Expr1, [805_Certificados_AñoCI].Año
+FROM 805_Certificados_AñoCI
+GROUP BY [805_Certificados_AñoCI].Año
+ORDER BY [805_Certificados_AñoCI].Año;
+
+
+QUERY: 806_CertificadosCantidad
+  SQL: PARAMETERS pFechaIni DateTime, pFechaFin DateTime;
+SELECT GE.Descrip AS GE, Count(*) AS Cantidad
+FROM 822_AfiliadoGE AS A, GrupoEtario AS GE
+WHERE (((A.CI) In (Select CI From Certificacion Where Efectiva = True And FechaCertificacion Between Iif([pFechaIni] Is Not Null, [pFechaIni], FechaCertificacion) And Iif([pFechaFin] Is Not Null, [pFechaFin], FechaCertificacion))) AND ((A.Edad)>=IIf([GE].[EdadIni]=0,[A].[Edad],[GE].[EdadIni]) And (A.Edad)<=IIf([GE].[EdadFin]=0,[A].[Edad],[GE].[EdadFin])))
+GROUP BY GE.Descrip;
+
+
+QUERY: 806_CertificadosEntre
+  SQL: PARAMETERS pAnioIni Short, pAnioFin Short, pFechaIni DateTime, pFechaFin DateTime;
+SELECT Count(*) AS Cantidad
+FROM Afiliado
+WHERE (((Afiliado.CI) In (Select Ci From Certificacion Where Efectiva = True And FechaCertificacion Between Iif([pFechaIni] Is Not Null, [pFechaIni], FechaCertificacion) And Iif([pFechaFin] Is Not Null, [pFechaFin], FechaCertificacion))) AND ((DateDiff("yyyy",[Afiliado].[FechaNacimiento],Date())) Between [pAnioIni] And [pAnioFin]));
+
+
+QUERY: 806_CertificadosMayores
+  SQL: PARAMETERS pAnioIni Short;
+SELECT Count(*) AS Cantidad
+FROM Afiliado
+WHERE (((Afiliado.CI) In (Select Ci From Certificacion Where Efectiva = True And FechaCertificacion Between Iif([pFechaIni] Is Not Null, [pFechaIni], FechaCertificacion) And Iif([pFechaFin] Is Not Null, [pFechaFin], FechaCertificacion))) AND ((DateDiff("yyyy",[Afiliado].[FechaNacimiento],Date()))>=[pAnioIni]));
+
+
+QUERY: 806_CertificadosMenores
+  SQL: PARAMETERS pAnioIni Short;
+SELECT Count(*) AS Cantidad
+FROM Afiliado
+WHERE (((Afiliado.CI) In (Select Ci From Certificacion Where Efectiva = True And FechaCertificacion Between Iif([pFechaIni] Is Not Null, [pFechaIni], FechaCertificacion) And Iif([pFechaFin] Is Not Null, [pFechaFin], FechaCertificacion))) AND ((DateDiff("yyyy",[Afiliado].[FechaNacimiento],Date()))<=[pAnioIni]));
+
+
+QUERY: 806_CertificadosSexo
+  SQL: PARAMETERS pFechaIni DateTime, pFechaFin DateTime;
+SELECT Count(*) AS Cantidad, Afiliado.Sexo
+FROM Afiliado
+WHERE (((Afiliado.CI) In (Select Ci From Certificacion Where Efectiva = True And FechaCertificacion Between Iif([pFechaIni] Is Not Null, [pFechaIni], FechaCertificacion) And Iif([pFechaFin] Is Not Null, [pFechaFin], FechaCertificacion))))
+GROUP BY Afiliado.Sexo
+HAVING (((Afiliado.Sexo) Is Not Null));
+
+
+QUERY: 806_Insert_Certificados_Cantidad
+  SQL: INSERT INTO 600_Rpt_CantidadDescrip ( Cantidad, Descrip )
+SELECT [806_CertificadosCantidad].Cantidad, [806_CertificadosCantidad].GE
+FROM 806_CertificadosCantidad;
+
+
+QUERY: 807_CertificadosEspecialidad
+  SQL: PARAMETERS pFechaIni DateTime, pFechaFin DateTime;
+SELECT AfiliadoEspecialidad.CodEspecialidad AS Codigo, First(Especialidad.Descrip) AS Descripcion, Count(*) AS Cantidad
+FROM (Afiliado INNER JOIN AfiliadoEspecialidad ON Afiliado.CI = AfiliadoEspecialidad.CI) INNER JOIN Especialidad ON AfiliadoEspecialidad.CodEspecialidad = Especialidad.CodEspecialidad
+WHERE (((Afiliado.CI) In (Select Ci From Certificacion Where Efectiva = True And FechaCertificacion Between Iif([pFechaIni] Is Not Null, [pFechaIni], FechaCertificacion) And Iif([pFechaFin] Is Not Null, [pFechaFin], FechaCertificacion))))
+GROUP BY AfiliadoEspecialidad.CodEspecialidad;
+
+
+QUERY: 807_Insert_CertificadosEspecialidad
+  SQL: INSERT INTO 600_Rpt_CantidadDescrip ( Cantidad, Descrip, Codigo )
+SELECT [807_CertificadosEspecialidad].Cantidad, [807_CertificadosEspecialidad].Descripcion, [807_CertificadosEspecialidad].Codigo
+FROM 807_CertificadosEspecialidad
+ORDER BY [807_CertificadosEspecialidad].Cantidad DESC;
+
+
+QUERY: 808_Certificados_Cantidad
+  SQL: PARAMETERS pFechaIni DateTime, pFechaFin DateTime;
+SELECT Count(*) AS Cantidad
+FROM Certificacion
+WHERE (((Certificacion.Efectiva)=True) AND FechaCertificacion Between Iif([pFechaIni] Is Not Null, [pFechaIni], FechaCertificacion) And Iif([pFechaFin] Is Not Null, [pFechaFin], FechaCertificacion));
+
+
+QUERY: 808_CertificadosAfecciones
+  SQL: PARAMETERS pFechaIni DateTime, pFechaFin DateTime, pCodPatologia Long;
+SELECT Certificacion.CodAfeccionTipo AS Codigo, First(AfeccionTipo.Descrip) AS Descripcion, Count(*) AS Cantidad
+FROM (AfeccionTipo INNER JOIN (Afiliado INNER JOIN Certificacion ON Afiliado.CI = Certificacion.CI) ON AfeccionTipo.CodAfeccionTipo = Certificacion.CodAfeccionTipo) INNER JOIN AfeccionGrupo ON AfeccionTipo.CodAfeccionGrupo = AfeccionGrupo.CodAfeccionGrupo
+WHERE (((Certificacion.Efectiva)=True) AND ((Certificacion.FechaCertificacion) Between IIf([pFechaIni] Is Not Null,[pFechaIni],[FechaCertificacion]) And IIf([pFechaFin] Is Not Null,[pFechaFin],[FechaCertificacion])) AND ((AfeccionGrupo.CodPatologia)= Iif([pCodPatologia] is Not Null, [pCodPatologia], AfeccionGrupo.CodPatologia)  ))
+GROUP BY Certificacion.CodAfeccionTipo;
+
+
+QUERY: 808_Insert_CertificadosAfeccion
+  SQL: INSERT INTO 600_Rpt_CantidadDescrip ( Cantidad, Descrip, Codigo )
+SELECT [808_CertificadosAfecciones].Cantidad, [808_CertificadosAfecciones].Descripcion, [808_CertificadosAfecciones].Codigo
+FROM 808_CertificadosAfecciones
+ORDER BY [808_CertificadosAfecciones].Cantidad DESC;
+
+
+QUERY: 809_Afiliado_Cantidad
+  SQL: SELECT Count(*) AS Cantidad
+FROM Afiliado;
+
+
+QUERY: 809_AfiliadoActivo_Cantidad
+  SQL: SELECT Count(*) AS Cantidad
+FROM Afiliado
+WHERE (((Afiliado.CI) In (Select CI From Trabaja where FechaIngCasemed<= Date() And (fechabaja is null Or FechaBaja > Date()))));
+
+
+QUERY: 809_AfiliadoActivoFecha_Cantidad
+  SQL: PARAMETERS pFecha DateTime;
+SELECT Count(*) AS Cantidad
+FROM Afiliado
+WHERE (((Afiliado.CI) In (Select CI From Trabaja Where FechaIngCasemed <= [pFecha] And
+((FechaBaja Is Null Or FechaBaja > [pFecha]) AND
+FechaIngreso <= [pFecha]))));
+
+
+QUERY: 809_AfiliadoFecha_Cantidad
+  SQL: PARAMETERS pFecha DateTime;
+SELECT Count(*) AS Cantidad
+FROM Afiliado
+WHERE (((Afiliado.CI) In (SELECT CI FROM TRABAJA WHERE FechaIngreso <= [pFecha])));
+
+
+QUERY: 810_AfiliadoActivoEntre
+  SQL: PARAMETERS pAnioIni Short, pAnioFin Short;
+SELECT Count(*) AS Cantidad
+FROM Afiliado
+WHERE (((Afiliado.CI) In (Select CI From Trabaja Where FechaBaja Is Null) AND (DateDiff("yyyy",[Afiliado].[FechaNacimiento],Date())) Between [pAnioIni] And [pAnioFin]));
+
+
+QUERY: 810_AfiliadoActivoMayores
+  SQL: PARAMETERS pAnioIni Short;
+SELECT Count(*) AS Cantidad
+FROM Afiliado
+WHERE (((Afiliado.CI) In (Select CI From Trabaja Where FechaBaja Is Null) AND (DateDiff("yyyy",[Afiliado].[FechaNacimiento],Date()))>=[pAnioIni]));
+
+
+QUERY: 810_AfiliadoActivoMenores
+  SQL: PARAMETERS pAnioIni Short;
+SELECT Count(*) AS Cantidad
+FROM Afiliado
+WHERE (((Afiliado.CI) In (Select CI From Trabaja Where FechaBaja Is Null) AND (DateDiff("yyyy",[Afiliado].[FechaNacimiento],Date()))<=[pAnioIni]));
+
+
+QUERY: 810_AfiliadosActivos_GE
+  SQL: SELECT A.CI, GE.Descrip AS DescGrupoEtario
+FROM 822_AfiliadoGE AS A, GrupoEtario AS GE
+WHERE (((A.CI) In (Select CI From Trabaja Where 
+FechaIngreso <= Iif(IsNull([pFecha]), Date(), [pFecha]) AND (FechaBaja Is Null Or FechaBaja > Iif(IsNull([pFecha]), Date(), [pFecha]))
+)) AND ((A.Edad)>=IIf([GE].[EdadIni]=0,[A].[Edad],[GE].[EdadIni]) And (A.Edad)<=IIf([GE].[EdadFin]=0,[A].[Edad],[GE].[EdadFin])));
+
+
+QUERY: 810_AfiliadosActivos_GE2
+  SQL: SELECT A.CI, A.Edad, GrupoEtario.Descrip AS DescGrupoEtario
+FROM 822_AfiliadoGE AS A, GrupoEtario
+WHERE (((A.CI) In (Select CI From Trabaja Where 
+FechaIngreso <= Iif(IsNull([pFecha]), FechaIngreso, [pFecha]) AND (FechaBaja Is Null Or FechaBaja > Iif(IsNull([pFecha]), FechaBaja-1, FechaBaja))
+)) AND ((A.Edad) Between [GrupoEtario].[EdadIni] And IIf([GrupoEtario].[EdadFin]=0,[A].[Edad],[GrupoEtario].[EdadIni])));
+
+
+QUERY: 810_AfiliadosActivoSexo
+  SQL: SELECT Afiliado.Sexo, Count(*) AS Cantidad
+FROM Afiliado
+WHERE (((Afiliado.CI) In (Select CI FROM Trabaja WHERE FechaBaja is Null)))
+GROUP BY Afiliado.Sexo;
+
+
+QUERY: 810_AfiliadosEntre
+  SQL: PARAMETERS pAnioIni Short, pAnioFin Short, pFecha DateTime;
+SELECT Count(*) AS Cantidad
+FROM Afiliado
+WHERE (((Afiliado.CI) In (Select CI From Trabaja Where (FechaBaja Is Null Or FechaBaja > [pFecha]) And FechaIngreso <= [pFecha])) AND ((DateDiff("yyyy",[Afiliado].[FechaNacimiento],Date())) Between [pAnioIni] And [pAnioFin]));
+
+
+QUERY: 810_AfiliadosMayores
+  SQL: PARAMETERS pAnioIni Short;
+SELECT Count(*) AS Cantidad
+FROM Afiliado
+WHERE (((Afiliado.CI) In (Select CI From Trabaja Where (FechaBaja Is Null Or FechaBaja > [pFecha]) And FechaIngreso <= [pFecha]) AND (DateDiff("yyyy",[Afiliado].[FechaNacimiento],Date()))>=[pAnioIni]));
+
+
+QUERY: 810_AfiliadosMenores
+  SQL: PARAMETERS pAnioIni Short, pFecha DateTime;
+SELECT Count(*) AS Cantidad
+FROM Afiliado
+WHERE (((Afiliado.CI) In (Select CI From Trabaja Where (FechaBaja Is Null Or FechaBaja > [pFecha]) And FechaIngreso <= [pFecha])) AND ((DateDiff("yyyy",[Afiliado].[FechaNacimiento],Date()))<=[pAnioIni]));
+
+
+QUERY: 810_AfiliadosSexo
+  SQL: PARAMETERS pFecha DateTime;
+SELECT Afiliado.Sexo, Count(*) AS Cantidad
+FROM Afiliado
+WHERE (((Afiliado.CI) In (Select CI FROM Trabaja WHERE (FechaBaja is Null Or FechaBaja > [pFecha]) And FechaIngCasemed <= [pFecha])))
+GROUP BY Afiliado.Sexo;
+
+
+QUERY: 810_Insert_AfiliadoActivoCantidad_GE
+  SQL: INSERT INTO 600_Rpt_CantidadDescrip ( Descrip, Cantidad )
+SELECT [810_AfiliadosActivos_GE].DescGrupoEtario, Count(*) AS Cantidad
+FROM 810_AfiliadosActivos_GE
+GROUP BY [810_AfiliadosActivos_GE].DescGrupoEtario;
+
+
+QUERY: 811_Afiliado<125_Pct_Ult6
+  SQL: PARAMETERS pMes Long, pMesIni Long, pSMN IEEEDouble, pCodEmpresa Long;
+SELECT I.CI, Val(Avg([I].[Importe])) AS Importe, Switch(
+Importe > 0 And Importe <= ((1.25 * [pSMN] * 10)/100), "Mayor que 0 hasta 10%",
+Importe > ((1.25 * [pSMN] * 10)/100) And Importe <= ((1.25 * [pSMN] * 20)/100), "Mayor que 10% hasta 20%",
+Importe > ((1.25 * [pSMN] * 20)/100) And Importe <= ((1.25 * [pSMN] * 30)/100), "Mayor que 20% hasta 30%",
+Importe > ((1.25 * [pSMN] * 30)/100) And Importe <= ((1.25 * [pSMN] * 40)/100), "Mayor que 30% hasta 40%",
+Importe > ((1.25 * [pSMN] * 40)/100) And Importe <= ((1.25 * [pSMN] * 50)/100), "Mayor que 40% hasta 50%",
+Importe > ((1.25 * [pSMN] * 50)/100) And Importe <= ((1.25 * [pSMN] * 60)/100), "Mayor que 50% hasta 60%",
+Importe > ((1.25 * [pSMN] * 60)/100) And Importe <= ((1.25 * [pSMN] * 70)/100), "Mayor que 60% hasta 70%",
+Importe > ((1.25 * [pSMN] * 70)/100) And Importe <= ((1.25 * [pSMN] * 80)/100), "Mayor que 70% hasta 80%",
+Importe > ((1.25 * [pSMN] * 80)/100) And Importe <= ((1.25 * [pSMN] * 90)/100), "Mayor que 80% hasta 90%",
+Importe > ((1.25 * [pSMN] * 90)/100) And Importe <= ((1.25 * [pSMN] * 100)/100), "Mayor que 90% hasta 100%") AS Grupo
+FROM 800_AfiliadoImponible_Mes_Fecha AS I
+WHERE (((Val(CStr([I].[Anio]) & Format([I].[Mes],"00"))) Between [pMesIni] And [pMes]))
+GROUP BY I.CI
+HAVING Val(Avg([I].[Importe]))>0 And Val(Avg([I].[Importe]))<((1.25*[pSMN]));
+
+
+QUERY: 811_Afiliado<125_Pct_UltMes
+  SQL: PARAMETERS pMes Long, pSMN IEEEDouble, pCodEmpresa Long;
+SELECT I.CI, Val(Avg([I].[Importe])) AS Importe, Switch(
+Importe > 0 And Importe <= ((1.25 * [pSMN] * 10)/100), "Mayor que 0 hasta 10%",
+Importe > ((1.25 * [pSMN] * 10)/100) And Importe <= ((1.25 * [pSMN] * 20)/100), "Mayor que 10% hasta 20%",
+Importe > ((1.25 * [pSMN] * 20)/100) And Importe <= ((1.25 * [pSMN] * 30)/100), "Mayor que 20% hasta 30%",
+Importe > ((1.25 * [pSMN] * 30)/100) And Importe <= ((1.25 * [pSMN] * 40)/100), "Mayor que 30% hasta 40%",
+Importe > ((1.25 * [pSMN] * 40)/100) And Importe <= ((1.25 * [pSMN] * 50)/100), "Mayor que 40% hasta 50%",
+Importe > ((1.25 * [pSMN] * 50)/100) And Importe <= ((1.25 * [pSMN] * 60)/100), "Mayor que 50% hasta 60%",
+Importe > ((1.25 * [pSMN] * 60)/100) And Importe <= ((1.25 * [pSMN] * 70)/100), "Mayor que 60% hasta 70%",
+Importe > ((1.25 * [pSMN] * 70)/100) And Importe <= ((1.25 * [pSMN] * 80)/100), "Mayor que 70% hasta 80%",
+Importe > ((1.25 * [pSMN] * 80)/100) And Importe <= ((1.25 * [pSMN] * 90)/100), "Mayor que 80% hasta 90%",
+Importe > ((1.25 * [pSMN] * 90)/100) And Importe <= ((1.25 * [pSMN] * 100)/100), "Mayor que 90% hasta 100%") AS Grupo
+FROM 800_AfiliadoImponible_Mes_Fecha AS I
+WHERE (((Val(CStr([I].[Anio]) & Format([I].[Mes],"00")))=[pMes]))
+GROUP BY I.CI
+HAVING Val(Avg([I].[Importe]))>0 And Val(Avg([I].[Importe]))<((1.25*[pSMN]));
+
+
+QUERY: 811_AfiliadoCantidad
+  SQL: SELECT Count([811_Afiliado<125_Pct_Ult6].CI) AS CountOfCI
+FROM [811_Afiliado<125_Pct_Ult6];
+
+
+QUERY: 811_Delete_Rpt_<125_Pct
+  SQL: DELETE [600_Rpt_<125_Pct].*
+FROM [600_Rpt_<125_Pct];
+
+
+QUERY: 811_Insert_Afiliados<125_Ult6
+  SQL: INSERT INTO [600_Rpt_<125_Pct] ( CI, Nombre, Grupo, Importe )
+SELECT [811_Afiliado<125_Pct_Ult6].CI, [Afiliado].[Nombres] & " " & [Afiliado].[Apellido1] & IIf([Afiliado].[Apellido2] & ""<>""," " & [Afiliado].[Apellido2],"") AS DescAfiliado, [811_Afiliado<125_Pct_Ult6].Grupo, [811_Afiliado<125_Pct_Ult6].Importe
+FROM [811_Afiliado<125_Pct_Ult6] INNER JOIN Afiliado ON [811_Afiliado<125_Pct_Ult6].CI = Afiliado.CI;
+
+
+QUERY: 811_Insert_Afiliados<125_UltMes
+  SQL: INSERT INTO [600_Rpt_<125_Pct] ( CI, Nombre, Grupo, Importe )
+SELECT [811_Afiliado<125_Pct_UltMes].CI, [Afiliado].[Nombres] & " " & [Afiliado].[Apellido1] & IIf([Afiliado].[Apellido2] & ""<>""," " & [Afiliado].[Apellido2],"") AS DescAfiliado, [811_Afiliado<125_Pct_UltMes].Grupo, [811_Afiliado<125_Pct_UltMes].Importe
+FROM [811_Afiliado<125_Pct_UltMes] INNER JOIN Afiliado ON [811_Afiliado<125_Pct_UltMes].CI = Afiliado.CI;
+
+
+QUERY: 812_AfiliadoActivoEspecialidad
+  SQL: SELECT AfiliadoEspecialidad.CodEspecialidad AS Codigo, First(Especialidad.Descrip) AS Descripcion, Count(*) AS Cantidad
+FROM (Afiliado INNER JOIN AfiliadoEspecialidad ON Afiliado.CI = AfiliadoEspecialidad.CI) INNER JOIN Especialidad ON AfiliadoEspecialidad.CodEspecialidad = Especialidad.CodEspecialidad
+WHERE (((Afiliado.CI) In (Select CI From Trabaja Where FechaBaja Is Null)))
+GROUP BY AfiliadoEspecialidad.CodEspecialidad;
+
+
+QUERY: 812_AfiliadosEspecialidad
+  SQL: PARAMETERS pFecha DateTime;
+SELECT AfiliadoEspecialidad.CodEspecialidad AS Codigo, First(Especialidad.Descrip) AS Descripcion, Count(*) AS Cantidad
+FROM (Afiliado INNER JOIN AfiliadoEspecialidad ON Afiliado.CI = AfiliadoEspecialidad.CI) INNER JOIN Especialidad ON AfiliadoEspecialidad.CodEspecialidad = Especialidad.CodEspecialidad
+WHERE (((Afiliado.CI) In (Select CI From Trabaja Where (FechaBaja Is Null Or FechaBaja > [pFecha]) And FechaIngCasemed <= [pFecha])))
+GROUP BY AfiliadoEspecialidad.CodEspecialidad;
+
+
+QUERY: 812_Insert_AfiliadoActivoEspecialidad
+  SQL: INSERT INTO 600_Rpt_CantidadDescrip ( Codigo, Cantidad, Descrip )
+SELECT [812_AfiliadoActivoEspecialidad].Codigo, [812_AfiliadoActivoEspecialidad].Cantidad, [812_AfiliadoActivoEspecialidad].Descripcion
+FROM 812_AfiliadoActivoEspecialidad;
+
+
+QUERY: 812_Insert_AfiliadosEspecialidad
+  SQL: INSERT INTO 600_Rpt_CantidadDescrip ( Codigo, Descrip, Cantidad )
+SELECT [812_AfiliadosEspecialidad].Codigo, [812_AfiliadosEspecialidad].Descripcion, [812_AfiliadosEspecialidad].Cantidad
+FROM 812_AfiliadosEspecialidad;
+
+
+QUERY: 813_CertificacionAfeccionDistintas
+  SQL: PARAMETERS pFechaIni DateTime, pFechaFin DateTime;
+SELECT DISTINCT Certificacion.CI, Certificacion.CodAfeccionTipo
+FROM Certificacion
+WHERE (((Certificacion.Efectiva)=True) AND ((Certificacion.FechaCertificacion) Between Iif([pFechaIni] Is Not Null, [pFechaIni], FechaCertificacion) And Iif([pFechaFin] Is Not Null, [pFechaFin], FechaCertificacion)));
+
+
+QUERY: 813_CertificadosAfeccion
+  SQL: SELECT [813_CertificacionAfeccionDistintas].CodAfeccionTipo AS Codigo, First(AfeccionTipo.Descrip) AS Descrip, Count(*) AS Cantidad
+FROM ((Afiliado INNER JOIN 813_CertificacionAfeccionDistintas ON Afiliado.CI = [813_CertificacionAfeccionDistintas].CI) INNER JOIN AfeccionTipo ON [813_CertificacionAfeccionDistintas].CodAfeccionTipo = AfeccionTipo.CodAfeccionTipo) INNER JOIN AfeccionGrupo ON AfeccionTipo.CodAfeccionGrupo = AfeccionGrupo.CodAfeccionGrupo
+WHERE (((AfeccionGrupo.CodPatologia)=IIf([pCodPatologia] Is Not Null,[pCodPatologia],[AfeccionGrupo].[CodPatologia])))
+GROUP BY [813_CertificacionAfeccionDistintas].CodAfeccionTipo;
+
+
+QUERY: 813_Insert_CertificadosAfeccion
+  SQL: INSERT INTO 600_Rpt_CantidadDescrip ( Codigo, Descrip, Cantidad )
+SELECT [813_CertificadosAfeccion].Codigo, [813_CertificadosAfeccion].Descrip, [813_CertificadosAfeccion].Cantidad
+FROM 813_CertificadosAfeccion;
+
+
+QUERY: 814_AfiliadoImponibleFranja
+  SQL: PARAMETERS pMes Long, pSMN IEEEDouble, pCodEmpresa Long;
+SELECT Switch(Importe<=10000,"Mas de 0 hasta 10.000",Importe>10000 And Importe<=20000,"Mas de 10.000 hasta 20.000",Importe>20000,"Mas de 20.000") AS Grupo, I.CI, Val(Avg([I].[Importe])) AS Importe
+FROM 800_AfiliadoImponible_Mes_Fecha AS I
+WHERE (((Val(CStr([I].[Anio]) & Format([I].[Mes],"00")))=[pMes]))
+GROUP BY I.CI
+HAVING (((Val(Avg([I].[Importe])))>0));
+
+
+QUERY: 814_Insert_AfiliadoImponibleFranja
+  SQL: INSERT INTO [600_Rpt_<125_Pct] ( Grupo, CI, Importe, Nombre )
+SELECT [814_AfiliadoImponibleFranja].Grupo, [814_AfiliadoImponibleFranja].CI, [814_AfiliadoImponibleFranja].Importe, [Afiliado].[Nombres] & " " & [Afiliado].[Apellido1] & IIf([Afiliado].[Apellido2] & ""<>""," " & [Afiliado].[Apellido2],"") AS DescAfiliado
+FROM 814_AfiliadoImponibleFranja INNER JOIN Afiliado ON [814_AfiliadoImponibleFranja].CI = Afiliado.CI;
+
+
+QUERY: 814_Update_Especialidad
+  SQL: UPDATE Rs_AfiliadoEspecialidadDesc INNER JOIN [600_Rpt_<125_Pct] ON Rs_AfiliadoEspecialidadDesc.CI = [600_Rpt_<125_Pct].CI SET [600_Rpt_<125_Pct].Especialidad = [600_Rpt_<125_Pct].Especialidad & Iif([600_Rpt_<125_Pct].Especialidad & "" <> "", " - " , "") & Rs_AfiliadoEspecialidadDesc.Descrip;
+
+
+QUERY: 815_AfiliadoImponible
+  SQL: PARAMETERS pMes Long, pSMN IEEEDouble, pCodEmpresa Long;
+SELECT I.CI, Val(Avg([I].[Importe])) AS Importe
+FROM 800_AfiliadoImponible_Mes AS I
+WHERE (((Val(CStr([I].[Anio]) & Format([I].[Mes],"00")))=[pMes]))
+GROUP BY I.CI
+HAVING (((Val(Avg([I].[Importe])))>0));
+
+
+QUERY: 815_Insert_AfiliadoEspecialidad
+  SQL: INSERT INTO [600_Rpt_<125_Pct] ( Grupo, CI, Importe, Nombre )
+SELECT Iif(Especialidad.Descrip & "" <> "", Especialidad.Descrip, "(Sin Especialidad)") AS Grupo, [815_AfiliadoImponible].CI, [815_AfiliadoImponible].Importe, [Afiliado].[Nombres] & " " & [Afiliado].[Apellido1] & IIf([Afiliado].[Apellido2] & ""<>""," " & [Afiliado].[Apellido2],"") AS DescAfiliado
+FROM ((815_AfiliadoImponible INNER JOIN Afiliado ON [815_AfiliadoImponible].CI = Afiliado.CI) LEFT JOIN AfiliadoEspecialidad ON Afiliado.CI = AfiliadoEspecialidad.CI) LEFT JOIN Especialidad ON AfiliadoEspecialidad.CodEspecialidad = Especialidad.CodEspecialidad;
+
+
+QUERY: 816_Certificados_GrupoAfeccion
+  SQL: PARAMETERS pFechaIni DateTime, pFechaFin DateTime;
+SELECT AfeccionGrupo.CodAfeccionGrupo AS Codigo, First(AfeccionGrupo.Descrip) AS Descripcion, Count(*) AS Cantidad
+FROM (AfeccionTipo INNER JOIN (Afiliado INNER JOIN Certificacion ON Afiliado.CI = Certificacion.CI) ON AfeccionTipo.CodAfeccionTipo = Certificacion.CodAfeccionTipo) INNER JOIN AfeccionGrupo ON AfeccionTipo.CodAfeccionGrupo = AfeccionGrupo.CodAfeccionGrupo
+WHERE (((Certificacion.Efectiva)=True) AND ((Certificacion.FechaCertificacion) Between IIf([pFechaIni] Is Not Null,[pFechaIni],[FechaCertificacion]) And IIf([pFechaFin] Is Not Null,[pFechaFin],[FechaCertificacion])) AND ((AfeccionGrupo.CodPatologia)=IIf([pCodPatologia] Is Not Null,[pCodPatologia],[AfeccionGrupo].[CodPatologia])))
+GROUP BY AfeccionGrupo.CodAfeccionGrupo;
+
+
+QUERY: 816_Insert_Certificados_GrupoAfeccion
+  SQL: INSERT INTO 600_Rpt_CantidadDescrip ( Cantidad, Descrip, Codigo )
+SELECT [816_Certificados_GrupoAfeccion].Cantidad, [816_Certificados_GrupoAfeccion].Descripcion, [816_Certificados_GrupoAfeccion].Codigo
+FROM 816_Certificados_GrupoAfeccion
+ORDER BY [816_Certificados_GrupoAfeccion].Cantidad DESC;
+
+
+QUERY: 817_Certificados_Patologia
+  SQL: PARAMETERS pFechaIni DateTime, pFechaFin DateTime;
+SELECT Patologia.CodPatologia AS Codigo, First(Patologia.Descrip) AS Descripcion, Count(*) AS Cantidad
+FROM ((AfeccionTipo INNER JOIN (Afiliado INNER JOIN Certificacion ON Afiliado.CI = Certificacion.CI) ON AfeccionTipo.CodAfeccionTipo = Certificacion.CodAfeccionTipo) INNER JOIN AfeccionGrupo ON AfeccionTipo.CodAfeccionGrupo = AfeccionGrupo.CodAfeccionGrupo) INNER JOIN Patologia ON AfeccionGrupo.CodPatologia = Patologia.CodPatologia
+WHERE (((Certificacion.Efectiva)=True) AND ((Certificacion.FechaCertificacion) Between IIf([pFechaIni] Is Not Null,[pFechaIni],[FechaCertificacion]) And IIf([pFechaFin] Is Not Null,[pFechaFin],[FechaCertificacion])))
+GROUP BY Patologia.CodPatologia;
+
+
+QUERY: 817_Insert_Certificados_Patologia
+  SQL: INSERT INTO 600_Rpt_CantidadDescrip ( Cantidad, Descrip, Codigo )
+SELECT [817_Certificados_Patologia].Cantidad, [817_Certificados_Patologia].Descripcion, [817_Certificados_Patologia].Codigo
+FROM 817_Certificados_Patologia
+ORDER BY [817_Certificados_Patologia].Cantidad DESC;
+
+
+QUERY: 818_Certificados_Patologia
+  SQL: PARAMETERS pFechaIni DateTime, pFechaFin DateTime;
+SELECT Patologia.CodPatologia AS Codigo, First(Patologia.Descrip) AS Descripcion, Sum(DateDiff("d", Certificacion.FechaIni, Certificacion.FechaFin) + 1) AS Cantidad
+FROM ((AfeccionTipo INNER JOIN (Afiliado INNER JOIN Certificacion ON Afiliado.CI = Certificacion.CI) ON AfeccionTipo.CodAfeccionTipo = Certificacion.CodAfeccionTipo) INNER JOIN AfeccionGrupo ON AfeccionTipo.CodAfeccionGrupo = AfeccionGrupo.CodAfeccionGrupo) INNER JOIN Patologia ON AfeccionGrupo.CodPatologia = Patologia.CodPatologia
+WHERE (((Certificacion.Efectiva)=True) AND ((Certificacion.FechaCertificacion) Between IIf([pFechaIni] Is Not Null,[pFechaIni],[FechaCertificacion]) And IIf([pFechaFin] Is Not Null,[pFechaFin],[FechaCertificacion])))
+GROUP BY Patologia.CodPatologia;
+
+
+QUERY: 818_Insert_Certificados_Patologia
+  SQL: INSERT INTO 600_Rpt_CantidadDescrip ( Codigo, Descrip, Cantidad )
+SELECT [818_Certificados_Patologia].Codigo, [818_Certificados_Patologia].Descripcion, [818_Certificados_Patologia].Cantidad
+FROM 818_Certificados_Patologia;
+
+
+QUERY: 819_Certificados_AfeccionGrupo
+  SQL: PARAMETERS pFechaIni DateTime, pFechaFin DateTime;
+SELECT AfeccionGrupo.CodAfeccionGrupo AS Codigo, First(AfeccionGrupo.Descrip) AS Descrip, Sum(DateDiff("d",Certificacion.FechaIni,Certificacion.FechaFin)+1) AS Cantidad
+FROM (AfeccionTipo INNER JOIN (Afiliado INNER JOIN Certificacion ON Afiliado.CI = Certificacion.CI) ON AfeccionTipo.CodAfeccionTipo = Certificacion.CodAfeccionTipo) INNER JOIN AfeccionGrupo ON AfeccionTipo.CodAfeccionGrupo = AfeccionGrupo.CodAfeccionGrupo
+WHERE (((Certificacion.Efectiva)=True) AND ((Certificacion.FechaCertificacion) Between IIf([pFechaIni] Is Not Null,[pFechaIni],[FechaCertificacion]) And IIf([pFechaFin] Is Not Null,[pFechaFin],[FechaCertificacion])) AND ((AfeccionGrupo.CodPatologia)=IIf([pCodPatologia] Is Not Null,[pCodPatologia],[AfeccionGrupo].[CodPatologia])))
+GROUP BY AfeccionGrupo.CodAfeccionGrupo;
+
+
+QUERY: 819_Insert_Certificados_AfeccionGrupo
+  SQL: INSERT INTO 600_Rpt_CantidadDescrip ( Codigo, Descrip, Cantidad )
+SELECT [819_Certificados_AfeccionGrupo].Codigo, [819_Certificados_AfeccionGrupo].Descrip, [819_Certificados_AfeccionGrupo].Cantidad
+FROM 819_Certificados_AfeccionGrupo;
+
+
+QUERY: 820_Certificados_AfeccionTipo
+  SQL: PARAMETERS pFechaIni DateTime, pFechaFin DateTime;
+SELECT AfeccionTipo.CodAfeccionTipo AS Codigo, First(AfeccionTipo.Descrip) AS Descrip, Sum(DateDiff("d",Certificacion.FechaIni,Certificacion.FechaFin)+1) AS Cantidad
+FROM (AfeccionTipo INNER JOIN (Afiliado INNER JOIN Certificacion ON Afiliado.CI = Certificacion.CI) ON AfeccionTipo.CodAfeccionTipo = Certificacion.CodAfeccionTipo) INNER JOIN AfeccionGrupo ON AfeccionTipo.CodAfeccionGrupo = AfeccionGrupo.CodAfeccionGrupo
+WHERE (((Certificacion.Efectiva)=True) AND ((Certificacion.FechaCertificacion) Between IIf([pFechaIni] Is Not Null,[pFechaIni],[FechaCertificacion]) And IIf([pFechaFin] Is Not Null,[pFechaFin],[FechaCertificacion])) AND (([AfeccionGrupo].[CodPatologia])=IIf([pCodPatologia] Is Not Null,[pCodPatologia],[AfeccionGrupo].[CodPatologia])))
+GROUP BY AfeccionTipo.CodAfeccionTipo;
+
+
+QUERY: 820_Insert_Certificados_AfeccionTipo
+  SQL: INSERT INTO 600_Rpt_CantidadDescrip ( Codigo, Descrip, Cantidad )
+SELECT [820_Certificados_AfeccionTipo].Codigo, [820_Certificados_AfeccionTipo].Descrip, [820_Certificados_AfeccionTipo].Cantidad
+FROM 820_Certificados_AfeccionTipo;
+
+
+QUERY: 821_Insert_SexoPatologia_Cantidad
+  SQL: PARAMETERS pFechaIni DateTime, pFechaFin DateTime;
+INSERT INTO 600_Rpt_CantidadDescrip2 ( Descrip, Descrip2, Cantidad )
+SELECT Afiliado.Sexo, First(Patologia.Descrip) AS FirstOfDescrip, Count(*) AS Expr1
+FROM (((Certificacion INNER JOIN AfeccionTipo ON Certificacion.CodAfeccionTipo = AfeccionTipo.CodAfeccionTipo) INNER JOIN AfeccionGrupo ON AfeccionTipo.CodAfeccionGrupo = AfeccionGrupo.CodAfeccionGrupo) INNER JOIN Patologia ON AfeccionGrupo.CodPatologia = Patologia.CodPatologia) INNER JOIN Afiliado ON Certificacion.CI = Afiliado.CI
+WHERE (((Certificacion.Efectiva)=True) AND ((Certificacion.FechaCertificacion) Between IIf([pFechaIni] Is Not Null,[pFechaIni],[FechaCertificacion]) And IIf([pFechaFin] Is Not Null,[pFechaFin],[FechaCertificacion])))
+GROUP BY Afiliado.Sexo, AfeccionGrupo.CodPatologia;
+
+
+QUERY: 821_Insert_SexoPatologia_Dias
+  SQL: PARAMETERS pFechaIni DateTime, pFechaFin DateTime;
+INSERT INTO 600_Rpt_CantidadDescrip2 ( Descrip, Descrip2, Cantidad )
+SELECT Afiliado.Sexo, First(Patologia.Descrip) AS FirstOfDescrip, Sum(Datediff("d", FechaIni, FechaFin)+1) AS Expr1
+FROM (((Certificacion INNER JOIN AfeccionTipo ON Certificacion.CodAfeccionTipo = AfeccionTipo.CodAfeccionTipo) INNER JOIN AfeccionGrupo ON AfeccionTipo.CodAfeccionGrupo = AfeccionGrupo.CodAfeccionGrupo) INNER JOIN Patologia ON AfeccionGrupo.CodPatologia = Patologia.CodPatologia) INNER JOIN Afiliado ON Certificacion.CI = Afiliado.CI
+WHERE (((Certificacion.Efectiva)=True) AND ((Certificacion.FechaCertificacion) Between IIf([pFechaIni] Is Not Null,[pFechaIni],[FechaCertificacion]) And IIf([pFechaFin] Is Not Null,[pFechaFin],[FechaCertificacion])))
+GROUP BY Afiliado.Sexo, AfeccionGrupo.CodPatologia;
+
+
+QUERY: 822_AfiliadoGE
+  SQL: SELECT Afiliado.CI, CDate(CStr(IIf(Format(FechaNacimiento,"dd/mm")="29/02" And Year(Date()) Mod 4<>0,28,Day(FechaNacimiento))) & Format(FechaNacimiento,"/mm/") & Year(Date())) AS FechaHoy, DateDiff("yyyy",FechaNacimiento,Date())-IIf(FechaHoy<=Date(),0,1) AS Edad, Afiliado.FechaNacimiento, Afiliado.Sexo
+FROM Afiliado
+WHERE (((Afiliado.FechaNacimiento) Is Not Null));
+
+
+QUERY: 822_Insert_GEPatologia_Cantidad
+  SQL: PARAMETERS pFechaIni DateTime, pFechaFin DateTime;
+INSERT INTO 600_Rpt_CantidadDescrip2 ( Descrip, Descrip2, Cantidad )
+SELECT GE.Descrip, First(Patologia.Descrip) AS FirstOfDescrip, Count(*) AS Expr1
+FROM GrupoEtario AS GE, (((Certificacion INNER JOIN AfeccionTipo ON Certificacion.CodAfeccionTipo = AfeccionTipo.CodAfeccionTipo) INNER JOIN AfeccionGrupo ON AfeccionTipo.CodAfeccionGrupo = AfeccionGrupo.CodAfeccionGrupo) INNER JOIN Patologia ON AfeccionGrupo.CodPatologia = Patologia.CodPatologia) INNER JOIN 822_AfiliadoGE AS A ON Certificacion.CI = A.CI
+WHERE (((Certificacion.Efectiva)=True) AND ((Certificacion.FechaCertificacion) Between IIf([pFechaIni] Is Not Null,[pFechaIni],[FechaCertificacion]) And IIf([pFechaFin] Is Not Null,[pFechaFin],[FechaCertificacion])) AND ((A.Edad)>=Iif([GE].[EdadIni]=0, A.Edad, GE.EdadIni) And (A.Edad)<=Iif([GE].[EdadFin]=0, A.Edad, GE.EdadFin)))
+GROUP BY GE.Descrip, AfeccionGrupo.CodPatologia;
+
+
+QUERY: 823_Insert_GE_Patologia_Cantidad
+  SQL: PARAMETERS pFechaIni DateTime, pFechaFin DateTime, pEdadIni Short, pEdadFin Short;
+INSERT INTO 600_Rpt_CantidadDescrip ( Descrip, Cantidad )
+SELECT First(Patologia.Descrip) AS FirstOfDescrip, Count(*) AS Expr1
+FROM (((Certificacion INNER JOIN AfeccionTipo ON Certificacion.CodAfeccionTipo = AfeccionTipo.CodAfeccionTipo) INNER JOIN AfeccionGrupo ON AfeccionTipo.CodAfeccionGrupo = AfeccionGrupo.CodAfeccionGrupo) INNER JOIN Patologia ON AfeccionGrupo.CodPatologia = Patologia.CodPatologia) INNER JOIN 822_AfiliadoGE AS A ON Certificacion.CI = A.CI
+WHERE (((Certificacion.Efectiva)=True) AND ((Certificacion.FechaCertificacion) Between IIf([pFechaIni] Is Not Null,[pFechaIni],[FechaCertificacion]) And IIf([pFechaFin] Is Not Null,[pFechaFin],[FechaCertificacion])) AND ((A.Edad) >= IIf(IsNull([pEdadIni]),[A].[Edad],[pEdadIni]) And (A.Edad) <=IIf(IsNull([pEdadFin]),[A].[Edad],[pEdadFin])))
+GROUP BY AfeccionGrupo.CodPatologia;
+
+
+QUERY: 824_Insert_PrestacionesCantidad
+  SQL: INSERT INTO 600_Rpt_CantidadDescrip ( Codigo, Descrip, Cantidad )
+SELECT [824_PrestacionesCantidad].CodPrestacionTipo, [824_PrestacionesCantidad].DescPrestacionTipo, [824_PrestacionesCantidad].Cantidad
+FROM 824_PrestacionesCantidad;
+
+
+QUERY: 824_PrestacionesCantidad
+  SQL: PARAMETERS pFechaIni DateTime, pFechaFin DateTime;
+SELECT Prestacion.CodPrestacionTipo, First(PrestacionTipo.Descrip) AS DescPrestacionTipo, Count(*) AS Cantidad
+FROM (Afiliado INNER JOIN Prestacion ON Afiliado.CI = Prestacion.CI) INNER JOIN PrestacionTipo ON Prestacion.CodPrestacionTipo = PrestacionTipo.CodPrestacionTipo
+WHERE (((Prestacion.Fecha) Between IIf([pFechaIni] Is Not Null,[pFechaIni],[Fecha]) And IIf([pFechaFin] Is Not Null,[pFechaFin],[Fecha])))
+GROUP BY Prestacion.CodPrestacionTipo;
+
+
+QUERY: 825_Insert_PrestacionesImporte_Pesos
+  SQL: INSERT INTO 600_Rpt_CantidadDescrip ( Codigo, Descrip, Cantidad )
+SELECT [825_PrestacionesImporte_Pesos].CodPrestacionTipo, [825_PrestacionesImporte_Pesos].DescPrestacionTipo, [825_PrestacionesImporte_Pesos].Importe
+FROM 825_PrestacionesImporte_Pesos;
+
+
+QUERY: 825_PrestacionesImporte_Pesos
+  SQL: PARAMETERS pFechaIni DateTime, pFechaFin DateTime;
+SELECT Prestacion.CodPrestacionTipo, First(PrestacionTipo.Descrip) AS DescPrestacionTipo, Sum(Prestacion.Importe) AS Importe
+FROM (Afiliado INNER JOIN Prestacion ON Afiliado.CI = Prestacion.CI) INNER JOIN PrestacionTipo ON Prestacion.CodPrestacionTipo = PrestacionTipo.CodPrestacionTipo
+WHERE (((Prestacion.Fecha) Between IIf([pFechaIni] Is Not Null,[pFechaIni],[Fecha]) And IIf([pFechaFin] Is Not Null,[pFechaFin],[Fecha])) AND ((Prestacion.Moneda)="$"))
+GROUP BY Prestacion.CodPrestacionTipo;
+
+
+QUERY: 826_Insert_PrestacionesImporte_Dolares
+  SQL: INSERT INTO 600_Rpt_CantidadDescrip ( Codigo, Descrip, Cantidad )
+SELECT [826_PrestacionesImporte_Dolares].CodPrestacionTipo, [826_PrestacionesImporte_Dolares].DescPrestacionTipo, [826_PrestacionesImporte_Dolares].Importe
+FROM 826_PrestacionesImporte_Dolares;
+
+
+QUERY: 826_PrestacionesImporte_Dolares
+  SQL: PARAMETERS pFechaIni DateTime, pFechaFin DateTime;
+SELECT Prestacion.CodPrestacionTipo, First(PrestacionTipo.Descrip) AS DescPrestacionTipo, Sum(Prestacion.Importe) AS Importe
+FROM (Afiliado INNER JOIN Prestacion ON Afiliado.CI = Prestacion.CI) INNER JOIN PrestacionTipo ON Prestacion.CodPrestacionTipo = PrestacionTipo.CodPrestacionTipo
+WHERE (((Prestacion.Fecha) Between IIf([pFechaIni] Is Not Null,[pFechaIni],[Fecha]) And IIf([pFechaFin] Is Not Null,[pFechaFin],[Fecha])) AND ((Prestacion.Moneda)="U$S"))
+GROUP BY Prestacion.CodPrestacionTipo;
+
+
+QUERY: 827_AfiliadosActivos_GE_Sexo
+  SQL: SELECT A.CI, GE.Descrip AS DescGrupoEtario, A.Sexo
+FROM 822_AfiliadoGE AS A, GrupoEtario AS GE
+WHERE (((A.CI) In (Select CI From Trabaja Where 
+FechaIngCasemed <= Iif(IsNull([pFecha]), Date(), [pFecha]) AND (FechaBaja Is Null Or FechaBaja > Iif(IsNull([pFecha]), Date(), [pFecha]))
+)) AND ((A.Edad)>=IIf([GE].[EdadIni]=0,[A].[Edad],[GE].[EdadIni]) And (A.Edad)<=IIf([GE].[EdadFin]=0,[A].[Edad],[GE].[EdadFin])));
+
+
+QUERY: 827_Insert_AfiliadosActivos_GE_Sexo
+  SQL: INSERT INTO 600_Rpt_CantidadDescrip2 ( Descrip, Descrip2, Cantidad )
+SELECT [827_AfiliadosActivos_GE_Sexo].Sexo, [827_AfiliadosActivos_GE_Sexo].DescGrupoEtario, Count(*) AS Expr1
+FROM 827_AfiliadosActivos_GE_Sexo
+GROUP BY [827_AfiliadosActivos_GE_Sexo].Sexo, [827_AfiliadosActivos_GE_Sexo].DescGrupoEtario;
+
+
+QUERY: 828_Cantidad_Empresa
+  SQL: SELECT Count(*) AS Cantidad
+FROM Trabaja INNER JOIN Empresa ON Trabaja.CodEmpresa = Empresa.CodEmpresa
+WHERE (((Trabaja.CodEmpresa)=IIf([pCodEmpresa]>0,[pCodEmpresa],[Trabaja].[CodEmpresa])) AND ((Empresa.Ficticia)=False) AND ((Trabaja.FechaIngCasemed)<=IIf(IsNull([pFecha]),Date(),[pFecha])) AND ((Trabaja.FechaBaja) Is Null Or (Trabaja.FechaBaja)>IIf(IsNull([pFecha]),Date(),[pFecha])) AND ((Exists (SELECT * FROM Imponible Where Trabaja.CI = Imponible.CI And Trabaja.FechaIngreso = Imponible.FechaIngreso And Imponible.CodEmpresa = Trabaja.CodEmpresa AND Concepto = "1" AND AnioMes = IIf(IsNull([pFecha]), Val(Format(DateAdd("m", -2, Date()), "yyyymm")), Val(Format(DateAdd("m", -2, [pFecha]), "yyyymm"))) And Importe > 0
+  ))<>False));
+
+
+QUERY: 828_Cantidad_Otras
+  SQL: PARAMETERS pCodEmpresa Long;
+SELECT Count(*) AS Cantidad
+FROM Trabaja INNER JOIN Empresa ON Trabaja.CodEmpresa = Empresa.CodEmpresa
+WHERE (((Empresa.Ficticia)=False) AND ((Trabaja.CodEmpresa)<>IIf([pCodEmpresa]>0,[pCodEmpresa],[Trabaja].[CodEmpresa])) AND ((Trabaja.FechaIngCasemed)<=IIf(IsNull([pFecha]),Date(),[pFecha])) AND ((Trabaja.FechaBaja) Is Null Or (Trabaja.FechaBaja)>IIf(IsNull([pFecha]),Date(),[pFecha])) AND ((Exists (SELECT * FROM Imponible Where Trabaja.CI = Imponible.CI And Trabaja.FechaIngreso = Imponible.FechaIngreso And Imponible.CodEmpresa = Trabaja.CodEmpresa AND Concepto = "1" AND AnioMes = IIf(IsNull([pFecha]), Val(Format(DateAdd("m", -2, Date()), "yyyymm")), Val(Format(DateAdd("m", -2, [pFecha]), "yyyymm"))) And Importe > 0
+  ))<>False));
+
+
+QUERY: 828_Insert_Cantidad_Empresa_Todas
+  SQL: PARAMETERS pFecha DateTime;
+INSERT INTO 600_Rpt_CantidadDescrip ( Cantidad, Descrip )
+SELECT Count(*) AS Cantidad, First(Empresa.Nombre) AS FirstOfNombre
+FROM Empresa INNER JOIN Trabaja ON Empresa.CodEmpresa = Trabaja.CodEmpresa
+WHERE (((Empresa.Ficticia)=False) AND ((Trabaja.FechaIngCasemed)<=IIf(IsNull([pFecha]),Date(),[pFecha])) AND ((Trabaja.FechaBaja) Is Null Or (Trabaja.FechaBaja)>IIf(IsNull([pFecha]),Date(),[pFecha])) AND (EXISTS (SELECT * FROM Imponible Where Trabaja.CI = Imponible.CI And Trabaja.FechaIngreso = Imponible.FechaIngreso And Imponible.CodEmpresa = Trabaja.CodEmpresa AND Concepto = "1" AND AnioMes = IIf(IsNull([pFecha]), Val(Format(DateAdd("m", -2, Date()), "yyyymm")), Val(Format(DateAdd("m", -2, [pFecha]), "yyyymm"))) And Importe > 0
+  )))
+GROUP BY Trabaja.CodEmpresa;
+
+
+QUERY: 830_CantidadPorPuesto
+  SQL: PARAMETERS pFecha DateTime;
+SELECT Trabaja.CodEmpresa, Count(Trabaja.CI) AS Cantidad
+FROM Trabaja
+WHERE (((Trabaja.FechaBaja) Is Null Or (Trabaja.FechaBaja)>[pFecha]))
+GROUP BY Trabaja.CodEmpresa;
+
+
+QUERY: 830_CantidadPorPuestoNo0
+  SQL: PARAMETERS pFecha DateTime, pMes Long;
+SELECT t.CodEmpresa, Count(t.CI) AS Cantidad
+FROM Trabaja AS t
+WHERE (((t.FechaBaja) Is Null Or (t.FechaBaja)>[pFecha])) AND EXISTS (SELECT 1 FROM Imponible i WHERE t.CI=i.CI and i.CodEmpresa = t.CodEmpresa AND i.AnioMes = [pMes] AND i.Importe>0 And i.Concepto="1")
+GROUP BY t.CodEmpresa;
+
+
+QUERY: 830_Rpt_Cantidad_Por_Puesto
+  SQL: SELECT Empresa.CodEmpresa, Empresa.Nombre, [830_CantidadPorPuesto].Cantidad, [830_CantidadPorPuestoNo0].Cantidad AS CantidadNo0
+FROM (Empresa LEFT JOIN 830_CantidadPorPuesto ON Empresa.CodEmpresa = [830_CantidadPorPuesto].CodEmpresa) LEFT JOIN 830_CantidadPorPuestoNo0 ON Empresa.CodEmpresa = [830_CantidadPorPuestoNo0].CodEmpresa
+WHERE (((Empresa.Ficticia)=False));
+
+
+QUERY: 999_Excel_Tmp
+  SQL: SELECT *
+FROM Rpt_Historia_Vandalismo_S;
+
+
+QUERY: 999_Parametros
+  SQL: PARAMETERS pLogin Text, pClave Text;
+SELECT xPar.login, xPar.Clave, xPar.orden, xPar.value1, xPar.value2, xPar.value3, xPar.value4, xPar.value5
+FROM xUsrParam AS xPar
+WHERE (((xPar.login)=[pLogin]) AND ((xPar.Clave)=[pClave]))
+ORDER BY xPar.orden;
+
+
+QUERY: 999_Parametros_Delete
+  SQL: PARAMETERS pLogin Text, pClave Text;
+DELETE *
+FROM xUsrParam AS xPar
+WHERE (((xPar.login)=[pLogin]) AND ((xPar.Clave)=[pClave]));
+
+
+QUERY: 999_Parametros_Insert
+  SQL: PARAMETERS pLogin Text, pClave Text, pOrden Long, pValue1 Text, pValue2 Text, pValue3 Text, pValue4 Text, pValue5 Text;
+INSERT INTO xUsrParam ( login, clave, orden, value1, value2, value3, value4, value5 )
+SELECT pLogin AS Expr1, pClave AS Expr2, pOrden AS Expr3, pValue1 AS Expr4, pValue2 AS Expr5, pValue3 AS Expr6, pValue4 AS Expr7, pValue5 AS Expr8;
+
+
+QUERY: BpsMutualista
+  SQL: SELECT BpsFormat.Mutualista
+FROM BpsFormat
+GROUP BY BpsFormat.Mutualista;
+
+
+QUERY: Buscar duplicados por Bps4
+  SQL: SELECT DISTINCTROW [CI], [TipoReg], [AcumulacionLaboral], [Concepto], [Imponible]
+FROM Bps4
+WHERE [CI] In (SELECT [CI] FROM [Bps4] As Tmp GROUP BY [CI] HAVING Count(*)>1 )
+ORDER BY [CI];
+
+
+QUERY: Buscar duplicados por zRs_AEsp
+  SQL: SELECT DISTINCTROW [CI], [EspNom1], [EspNom2], [EspNom3]
+FROM zRs_AEsp
+WHERE [CI] In (SELECT [CI] FROM [zRs_AEsp] As Tmp GROUP BY [CI] HAVING Count(*)>1 )
+ORDER BY [CI];
+
+
+QUERY: Rpt_Afiliado
+  SQL: SELECT Afiliado.CI, Afiliado.Nombres, Afiliado.Apellido1, Afiliado.Apellido2, Afiliado.FechaNacimiento, Afiliado.Sexo, Afiliado.Telefono, Afiliado.EMail, Afiliado.CodMutualista, Mutualista.Nombre AS DescMutualista, Afiliado.FechaIngMutualista, Afiliado.NroSocioMutualista, Afiliado.CodRegimenJubilatorio, RegimenJubilatorio.Descrip AS DescRegimenJubilatorio, Afiliado.Usr, Afiliado.Ts, Afiliado.Nombres & " " & Afiliado.Apellido1 & IIf(Afiliado.Apellido2 & ""<>""," " & Afiliado.Apellido2,"") AS DescAfiliado, Mutualista.Cuota, Afiliado.Direccion, Afiliado.PagaMutualista, Afiliado.CodDepartamento, Departamento.Descrip AS DescDepartamento, Afiliado.Movil
+FROM ((Afiliado INNER JOIN Mutualista ON Afiliado.CodMutualista = Mutualista.CodMutualista) INNER JOIN RegimenJubilatorio ON Afiliado.CodRegimenJubilatorio = RegimenJubilatorio.CodRegimenJubilatorio) LEFT JOIN Departamento ON Afiliado.CodDepartamento = Departamento.CodDepartamento;
+
+
+QUERY: Rpt_AfiliadoFormatCI
+  SQL: SELECT Iif(Len(Rpt_Afiliado.CI)>=8,Format(Rpt_Afiliado.CI,"@\.@@@\.@@@-@"),Format(Rpt_Afiliado.CI,"@@@\.@@@-@")) AS CI, Rpt_Afiliado.Nombres, Rpt_Afiliado.Apellido1, Rpt_Afiliado.Apellido2, Rpt_Afiliado.FechaNacimiento, Rpt_Afiliado.Sexo, Rpt_Afiliado.Telefono, Rpt_Afiliado.EMail, Rpt_Afiliado.CodMutualista, Rpt_Afiliado.DescMutualista, Rpt_Afiliado.FechaIngMutualista, Rpt_Afiliado.NroSocioMutualista, Rpt_Afiliado.CodRegimenJubilatorio, Rpt_Afiliado.DescRegimenJubilatorio, Rpt_Afiliado.Usr, Rpt_Afiliado.Ts, Rpt_Afiliado.DescAfiliado, Rpt_Afiliado.Cuota, Rpt_Afiliado.Direccion, Rpt_Afiliado.PagaMutualista, Rpt_Afiliado.CodDepartamento, Rpt_Afiliado.DescDepartamento, Rpt_Afiliado.Movil
+FROM Rpt_Afiliado;
+
+
+QUERY: Rpt_AfiliadoNOFormatCI
+  SQL: SELECT CStr(Rpt_Afiliado.CI) AS CI, Rpt_Afiliado.Nombres, Rpt_Afiliado.Apellido1, Rpt_Afiliado.Apellido2, Rpt_Afiliado.FechaNacimiento, Rpt_Afiliado.Sexo, Rpt_Afiliado.Telefono, Rpt_Afiliado.EMail, Rpt_Afiliado.CodMutualista, Rpt_Afiliado.DescMutualista, Rpt_Afiliado.FechaIngMutualista, Rpt_Afiliado.NroSocioMutualista, Rpt_Afiliado.CodRegimenJubilatorio, Rpt_Afiliado.DescRegimenJubilatorio, Rpt_Afiliado.Usr, Rpt_Afiliado.Ts, Rpt_Afiliado.DescAfiliado, Rpt_Afiliado.Cuota, Rpt_Afiliado.Direccion, Rpt_Afiliado.PagaMutualista, Rpt_Afiliado.CodDepartamento, Rpt_Afiliado.DescDepartamento
+FROM Rpt_Afiliado;
+
+
+QUERY: Rpt_Aporte
+  SQL: SELECT Imponible.Mes, Imponible.Anio, Format(Imponible.Mes,"00") & "/" & Imponible.Anio AS MesFormat, Empresa.CodEmpresa, Empresa.Nombre AS DescEmpresa, IIf(Imponible.Concepto="1",Imponible.Importe,0) AS ImporteAporte, IIf(Imponible.Concepto="2",Imponible.Importe,0) AS ImporteAguinaldo, IIf(Imponible.Importe=0 And Imponible.Concepto="1",1) AS CantCero, Empresa.AporteCasemed, Empresa.AporteAguinaldo, Imponible.Importe, Imponible.CI
+FROM Imponible INNER JOIN Empresa ON Imponible.CodEmpresa = Empresa.CodEmpresa;
+
+
+QUERY: Rpt_Certificacion
+  SQL: SELECT Certificacion.NroLlamado, Certificacion.CI, Certificacion.NroRecibo, Certificacion.FechaRecibido, Certificacion.FechaCertificacion, Certificacion.FechaIni, Certificacion.FechaFin, Certificacion.CodAfeccionTipo, AfeccionTipo.Descrip AS DescAfeccionTipo, Certificacion.CodCertificador, Certificador.Descrip AS DescCertificador, Certificacion.CodSalidaTipo, SalidaTipo.Descrip AS DescSalidaTipo, Certificacion.Efectiva, Certificacion.Indicaciones, Certificacion.ImporteDeducible, Certificacion.Usr, Certificacion.Ts, Afiliado.Nombres, Afiliado.Apellido1, Afiliado.Apellido2, Afiliado.Nombres & " " & Afiliado.Apellido1 & IIf(Afiliado.Apellido2 & ""<>""," " & Afiliado.Apellido2,"") AS DescAfiliado
+FROM (((Certificacion INNER JOIN AfeccionTipo ON Certificacion.CodAfeccionTipo = AfeccionTipo.CodAfeccionTipo) INNER JOIN Certificador ON Certificacion.CodCertificador = Certificador.CodCertificador) INNER JOIN Afiliado ON Certificacion.CI = Afiliado.CI) INNER JOIN SalidaTipo ON Certificacion.CodSalidaTipo = SalidaTipo.CodSalidaTipo;
+
+
+QUERY: Rpt_Certificacion2
+  SQL: SELECT Certificacion.NroLlamado, Iif(Len(Certificacion.CI)>=8, Format(Certificacion.CI, "@.@@@.@@@-@"), Format(Certificacion.CI, "@@@.@@@-@")) AS CI, Certificacion.NroRecibo, Certificacion.FechaRecibido, Certificacion.FechaCertificacion, Certificacion.FechaIni, Certificacion.FechaFin, Certificacion.CodAfeccionTipo, AfeccionTipo.Descrip AS DescAfeccionTipo, Certificacion.CodCertificador, Certificador.Descrip AS DescCertificador, Certificacion.Salir, Certificacion.Efectiva, Certificacion.Indicaciones, Certificacion.ImporteDeducible, Certificacion.Usr, Certificacion.Ts, Afiliado.Nombres, Afiliado.Apellido1, Afiliado.Apellido2, Afiliado.Nombres & " " & Afiliado.Apellido1 &iif(Afiliado.Apellido2 & "" <> "", " " & Afiliado.Apellido2, "") AS DescAfiliado
+FROM ((Certificacion INNER JOIN AfeccionTipo ON Certificacion.CodAfeccionTipo = AfeccionTipo.CodAfeccionTipo) INNER JOIN Certificador ON Certificacion.CodCertificador = Certificador.CodCertificador) INNER JOIN Afiliado ON Certificacion.CI = Afiliado.CI;
+
+
+QUERY: Rpt_Discount
+  SQL: PARAMETERS pCodDiscount Short, pLiquidar Bit, pMes Short, pAnio Short, pFecha DateTime;
+SELECT Afiliado.NroFunCuenta, Afiliado.NroCuenta, [pFecha] AS Fecha, SubsidioCabezal.ImpLiquido
+FROM SubsidioCabezal INNER JOIN Afiliado ON SubsidioCabezal.CI = Afiliado.CI
+WHERE (((SubsidioCabezal.Mes)=[pMes]) AND ((SubsidioCabezal.Anio)=[pAnio]) AND ((SubsidioCabezal.Liquidar)=[pLiquidar]) AND ((Afiliado.CodBanco)=[pCodBanco]));
+
+
+QUERY: Rpt_Imponible
+  SQL: SELECT Imponible.CI, iif(Len(Imponible.CI)>=8,Format(Imponible.CI,"@\.@@@\.@@@-@"),Format(Imponible.CI,"@@@\.@@@-@")) AS CIFormat, [Afiliado].[Nombres] & " " & [Afiliado].[Apellido1] & IIf([Afiliado].[Apellido2] & ""<>""," " & [Afiliado].[Apellido2],"") AS DescAfiliado, Imponible.CodEmpresa, Empresa.Nombre AS DescEmpresa, Imponible.Mes, Imponible.Anio, Imponible.Concepto, Imponible.DiasTrabajados, Imponible.Importe
+FROM (Imponible INNER JOIN Empresa ON Imponible.CodEmpresa = Empresa.CodEmpresa) INNER JOIN Afiliado ON Imponible.CI = Afiliado.CI;
+
+
+QUERY: Rpt_Imponible_Activo
+  SQL: SELECT Imponible.CI, IIf(Len(Imponible.CI)>=8,Format(Imponible.CI,"@\.@@@\.@@@-@"),Format(Imponible.CI,"@@@\.@@@-@")) AS CIFormat, [Afiliado].[Nombres] & " " & [Afiliado].[Apellido1] & IIf([Afiliado].[Apellido2] & ""<>""," " & [Afiliado].[Apellido2],"") AS DescAfiliado, Imponible.CodEmpresa, Empresa.Nombre AS DescEmpresa, Imponible.Mes, Imponible.Anio, Imponible.Concepto, Imponible.DiasTrabajados, Imponible.Importe, Afiliado.FechaNacimiento
+FROM ((Imponible INNER JOIN Empresa ON Imponible.CodEmpresa = Empresa.CodEmpresa) INNER JOIN Afiliado ON Imponible.CI = Afiliado.CI) INNER JOIN Trabaja ON (Imponible.CI = Trabaja.CI) AND (Imponible.CodEmpresa = Trabaja.CodEmpresa) AND (Imponible.Fechaingreso = Trabaja.FechaIngreso)
+WHERE (((Trabaja.FechaBaja) Is Null) AND ((Val(Format([Imponible].[Anio]) & Format([Imponible].[Mes],"00"))) Between [pMesIni] And [pMesFin]));
+
+
+QUERY: Rpt_Mutualista
+  SQL: SELECT Mutualista.CodMutualista, Mutualista.Nombre, Mutualista.Direccion, Mutualista.Telefono, Mutualista.Fax, Mutualista.EMail, Mutualista.DiaPago, Mutualista.CodFormaPago, FormaPago.Descrip AS DescFormaPago, Mutualista.PersonaContacto, Mutualista.Cuota, Mutualista.Usr, Mutualista.Ts
+FROM Mutualista INNER JOIN FormaPago ON Mutualista.CodFormaPago = FormaPago.CodFormaPago;
+
+
+QUERY: Rpt_NoPagarMutualista
+  SQL: SELECT Afiliado.*, Afiliado.Nombres & " " & Afiliado.Apellido1 & IIf(Afiliado.Apellido2 & ""<>""," " & Afiliado.Apellido2,"") AS DescAfiliado, Rs_TrabajaActivo.CodEmpresa, Empresa.Nombre AS DescEmpresa, Mutualista.Nombre AS DescMutualista
+FROM (((Afiliado LEFT JOIN 201_PagarMutualista ON Afiliado.CI = [201_PagarMutualista].CI) INNER JOIN Rs_TrabajaActivo ON Afiliado.CI = Rs_TrabajaActivo.CI) INNER JOIN Empresa ON Rs_TrabajaActivo.CodEmpresa = Empresa.CodEmpresa) INNER JOIN Mutualista ON Afiliado.CodMutualista = Mutualista.CodMutualista
+WHERE ((([201_PagarMutualista].CI) Is Null) AND ((Afiliado.CodMutualista)>0))
+ORDER BY [201_PagarMutualista].CI;
+
+
+QUERY: Rpt_Prestacion
+  SQL: SELECT Prestacion.CI, Prestacion.Fecha, Afiliado.Nombres, Afiliado.Apellido1, Afiliado.Apellido2, Afiliado.Nombres & " " & Afiliado.Apellido1 &iif(Afiliado.Apellido2 & "" <> "", " " & Afiliado.Apellido2, "") AS DescAfiliado, Prestacion.CodPrestacionTipo, PrestacionTipo.Descrip AS DescPrestacionTipo, Prestacion.Moneda, Prestacion.Importe, Prestacion.Boleta, Prestacion.Observaciones, Prestacion.Usr, Prestacion.Ts
+FROM (Prestacion INNER JOIN Afiliado ON Prestacion.CI = Afiliado.CI) INNER JOIN PrestacionTipo ON Prestacion.CodPrestacionTipo = PrestacionTipo.CodPrestacionTipo;
+
+
+QUERY: Rpt_ReintegroMutual
+  SQL: SELECT ReintegroMutual.CI, Afiliado.Nombres & " " & Afiliado.Apellido1 & IIf(Afiliado.Apellido2 & ""<>""," " & Afiliado.Apellido2,"") AS DescAfiliado, ReintegroMutual.Mes, ReintegroMutual.Anio, ReintegroMutual.Fecha, ReintegroMutual.CodMutualista, Mutualista.Nombre AS DescMutualista, ReintegroMutual.Importe, ReintegroMutual.Observaciones, ReintegroMutual.Usr, ReintegroMutual.Ts
+FROM (ReintegroMutual INNER JOIN Afiliado ON ReintegroMutual.CI = Afiliado.CI) INNER JOIN Mutualista ON ReintegroMutual.CodMutualista = Mutualista.CodMutualista;
+
+
+QUERY: Rpt_SubsidioCabezal
+  SQL: SELECT SubsidioCabezal.IdSubsidio, SubsidioCabezal.Mes, SubsidioCabezal.Anio, SubsidioCabezal.CI, SubsidioCabezal.Liquidar, SubsidioCabezal.ValorJornal, SubsidioCabezal.Dias, SubsidioCabezal.ImpNominal, SubsidioCabezal.ImpAguinaldo, SubsidioCabezal.ImpLiquido, SubsidioCabezal.NroRecibo, SubsidioCabezal.FechaPago, SubsidioCabezal.Usr, SubsidioCabezal.Ts, [Afiliado].[Nombres] & " " & [Afiliado].[Apellido1] & IIf([Afiliado].[Apellido2] & ""<>""," " & [Afiliado].[Apellido2],"") AS DescAfiliado, [600_SubsidioFecha_Tmp].DescFecha, Banco.Descripcion AS DescBanco, Afiliado.NroCuenta, Afiliado.NroFunCuenta, Afiliado.CodBanco
+FROM ((SubsidioCabezal INNER JOIN Afiliado ON SubsidioCabezal.CI = Afiliado.CI) INNER JOIN 600_SubsidioFecha_Tmp ON SubsidioCabezal.IdSubsidio = [600_SubsidioFecha_Tmp].IDSubsidio) LEFT JOIN Banco ON Afiliado.CodBanco = Banco.CodBanco;
+
+
+QUERY: Rpt_Trabaja
+  SQL: SELECT Afiliado.CI, Iif(Len(Afiliado.CI)>=8,Format(Afiliado.CI,"@\.@@@\.@@@-@"),Format(Afiliado.CI,"@@@\.@@@-@")) AS CIFormat, Afiliado.Nombres, Afiliado.Apellido1, Afiliado.Apellido2, Afiliado.FechaNacimiento, Afiliado.Sexo, Afiliado.Direccion, Afiliado.Telefono, Afiliado.EMail, Afiliado.CodMutualista, Afiliado.FechaIngMutualista, Afiliado.NroSocioMutualista, Afiliado.CodRegimenJubilatorio, Afiliado.CodDepartamento, Afiliado.PagaMutualista, Afiliado.Usr, Afiliado.Ts, Trabaja.CodEmpresa, Empresa.Nombre AS DescEmpresa, [Afiliado].[Nombres] & " " & [Afiliado].[Apellido1] & IIf([Afiliado].[Apellido2] & ""<>""," " & [Afiliado].[Apellido2],"") AS DescAfiliado, Trabaja.NroFichaEmpresa
+FROM (Afiliado INNER JOIN Trabaja ON Afiliado.CI = Trabaja.CI) INNER JOIN Empresa ON Trabaja.CodEmpresa = Empresa.CodEmpresa
+WHERE (((Trabaja.FechaBaja) Is Null) AND ((Empresa.Ficticia)=False));
+
+
+QUERY: Rpt_Trabaja_DBG
+  SQL: SELECT Afiliado.CI, IIf(Len(Afiliado.CI)>=8,Format(Afiliado.CI,"@\.@@@\.@@@-@"),Format(Afiliado.CI,"@@@\.@@@-@")) AS CIFormat, Afiliado.Nombres, Afiliado.Apellido1, Afiliado.Apellido2, Afiliado.FechaNacimiento, Afiliado.Sexo, Afiliado.Direccion, Afiliado.Telefono, Afiliado.EMail, Afiliado.CodMutualista, Afiliado.FechaIngMutualista, Afiliado.NroSocioMutualista, Afiliado.CodRegimenJubilatorio, Afiliado.CodDepartamento, Afiliado.PagaMutualista, Afiliado.Usr, Afiliado.Ts, Trabaja.CodEmpresa, Empresa.Nombre AS DescEmpresa, [Afiliado].[Nombres] & " " & [Afiliado].[Apellido1] & IIf([Afiliado].[Apellido2] & ""<>""," " & [Afiliado].[Apellido2],"") AS DescAfiliado, Trabaja.NroFichaEmpresa, Rs_Imponible_Ult.Importe
+FROM ((Afiliado INNER JOIN Trabaja ON Afiliado.CI = Trabaja.CI) INNER JOIN Empresa ON Trabaja.CodEmpresa = Empresa.CodEmpresa) LEFT JOIN Rs_Imponible_Ult ON (Trabaja.CI = Rs_Imponible_Ult.CI) AND (Trabaja.CodEmpresa = Rs_Imponible_Ult.CodEmpresa)
+WHERE (((Trabaja.FechaBaja) Is Null));
+
+
+QUERY: Rpt_Trabaja_Rpt
+  SQL: SELECT Afiliado.CI, Afiliado.CI, Afiliado.Nombres, Afiliado.Apellido1, Afiliado.Apellido2, Afiliado.FechaNacimiento, Afiliado.Sexo, Afiliado.Direccion, Afiliado.Telefono, Afiliado.EMail, Afiliado.CodMutualista, Afiliado.FechaIngMutualista, Afiliado.NroSocioMutualista, Afiliado.CodRegimenJubilatorio, Afiliado.CodDepartamento, Afiliado.PagaMutualista, Afiliado.Usr, Afiliado.Ts, Trabaja.CodEmpresa, Empresa.Nombre AS DescEmpresa, [Afiliado].[Nombres] & " " & [Afiliado].[Apellido1] & IIf([Afiliado].[Apellido2] & ""<>""," " & [Afiliado].[Apellido2],"") AS DescAfiliado, Trabaja.NroFichaEmpresa, Trabaja.FechaBaja
+FROM (Afiliado INNER JOIN Trabaja ON Afiliado.CI = Trabaja.CI) INNER JOIN Empresa ON Trabaja.CodEmpresa = Empresa.CodEmpresa;
+
+
+QUERY: Rs_AfeccionGrupo
+  SQL: SELECT AfeccionGrupo.*
+FROM AfeccionGrupo;
+
+
+QUERY: Rs_AfeccionGrupo_Desc
+  SQL: SELECT AfeccionGrupo.CodAfeccionGrupo, AfeccionGrupo.Descrip
+FROM AfeccionGrupo
+ORDER BY AfeccionGrupo.Descrip;
+
+
+QUERY: Rs_AfeccionTipo
+  SQL: SELECT AfeccionTipo.*
+FROM AfeccionTipo;
+
+
+QUERY: Rs_AfeccionTipo_Desc
+  SQL: SELECT AfeccionTipo.CodAfeccionTipo, AfeccionTipo.Descrip
+FROM AfeccionTipo
+ORDER BY AfeccionTipo.Descrip;
+
+
+QUERY: Rs_Afiliado
+  SQL: SELECT Afiliado.*
+FROM Afiliado;
+
+
+QUERY: Rs_Afiliado_Desc
+  SQL: SELECT Afiliado.CI, [Nombres] & " " & [Apellido1] & " " & [Apellido2] AS Descrip
+FROM Afiliado;
+
+
+QUERY: Rs_Afiliado_FechaNacimiento
+  SQL: SELECT Afiliado.*
+FROM Afiliado
+WHERE (((Afiliado.FechaNacimiento) Is Not Null));
+
+
+QUERY: Rs_AfiliadoApunte
+  SQL: SELECT AfiliadoApunte.CI, AfiliadoApunte.Fecha, AfiliadoApunte.Descrip, AfiliadoApunte.Usr, AfiliadoApunte.Ts
+FROM AfiliadoApunte
+ORDER BY AfiliadoApunte.Fecha DESC;
+
+
+QUERY: Rs_AfiliadoApunteFromPeriodo
+  SQL: SELECT afiliado.ci, nombres, apellido1, apellido2, fecha, descrip
+FROM afiliado INNER JOIN afiliadoapunte ON afiliado.ci=afiliadoapunte.ci;
+
+
+QUERY: Rs_AfiliadoCristalin
+  SQL: SELECT Afiliado.*
+FROM Afiliado
+WHERE (((Afiliado.CI) In (Select CI From Trabaja where CodEmpresa=7)));
+
+
+QUERY: Rs_AfiliadoEspecialidad
+  SQL: SELECT AfiliadoEspecialidad.*
+FROM AfiliadoEspecialidad;
+
+
+QUERY: Rs_AfiliadoEspecialidad_Desc
+  SQL: SELECT AfiliadoEspecialidad.CI, AfiliadoEspecialidad.CodEspecialidad
+FROM AfiliadoEspecialidad
+ORDER BY AfiliadoEspecialidad.CodEspecialidad;
+
+
+QUERY: Rs_AfiliadoEspecialidadDesc
+  SQL: SELECT AfiliadoEspecialidad.CI, Especialidad.Descrip
+FROM AfiliadoEspecialidad INNER JOIN Especialidad ON AfiliadoEspecialidad.CodEspecialidad = Especialidad.CodEspecialidad;
+
+
+QUERY: Rs_AfiliadoImponibleMes
+  SQL: SELECT Imponible.CI, Imponible.Mes, Imponible.Anio, Sum(Imponible.Importe) AS Importe, First(Imponible.AnioMes) AS AnioMes
+FROM Imponible INNER JOIN Trabaja ON (Imponible.CI = Trabaja.CI) AND (Imponible.CodEmpresa = Trabaja.CodEmpresa) AND (Imponible.Fechaingreso = Trabaja.FechaIngreso)
+WHERE (((Imponible.Concepto)="1") AND ((Trabaja.FechaBaja) Is Null))
+GROUP BY Imponible.CI, Imponible.Mes, Imponible.Anio;
+
+
+QUERY: Rs_AfiliadoImponibleMesNoBaja
+  SQL: SELECT Imponible.CI, Imponible.AnioMes, Sum(Imponible.Importe) AS Importe, First(Imponible.AnioMes) AS FirstOfAnioMes
+FROM Imponible INNER JOIN Trabaja ON (Imponible.CI = Trabaja.CI) AND (Imponible.CodEmpresa = Trabaja.CodEmpresa) AND (Imponible.Fechaingreso = Trabaja.FechaIngreso)
+WHERE (((Imponible.Concepto)="1"))
+GROUP BY Imponible.CI, Imponible.AnioMes;
+
+
+QUERY: Rs_AporteTipo
+  SQL: SELECT AporteTipo.*
+FROM AporteTipo;
+
+
+QUERY: Rs_AporteTipo_Desc
+  SQL: SELECT AporteTipo.CodAporteTipo, AporteTipo.Descrip
+FROM AporteTipo
+ORDER BY AporteTipo.Descrip;
+
+
+QUERY: Rs_BajaMotivo
+  SQL: SELECT BajaMotivo.*
+FROM BajaMotivo;
+
+
+QUERY: Rs_BajaMotivo_Desc
+  SQL: SELECT BajaMotivo.CodBajaMotivo, BajaMotivo.Descrip
+FROM BajaMotivo
+ORDER BY BajaMotivo.Descrip;
+
+
+QUERY: Rs_Banco_Desc
+  SQL: SELECT Banco.CodBanco, Banco.Descripcion
+FROM Banco
+ORDER BY Banco.Descripcion;
+
+
+QUERY: Rs_Bps2
+  SQL: SELECT InStr(CI,"-") AS iCol, Val(IIf(iCol>0,Left(Bps2.CI,iCol-1) & Mid(Bps2.CI,iCol+1,1),Bps2.CI)) AS Cedula, Bps2.Apellido1, Bps2.Apellido2, Bps2.Nombres, Bps2.FechaNacimiento, Bps2.Sexo, Bps2.Nacionalidad, Bps2.Reservado1, Bps2.Reservado2, Bps2.Reservado3, Bps2.Reservado4
+FROM Bps2;
+
+
+QUERY: Rs_Bps3
+  SQL: SELECT InStr(CI,"-") AS iCol, Val(IIf(iCol>0,Left(Bps3.CI,iCol-1) & Mid(Bps3.CI,iCol+1,1),Bps3.CI)) AS Cedula, Bps3.AcumulacionLaboral, Bps3.FechaIngreso, Bps3.SeguroSalud, Bps3.RemuneracionTipo, Bps3.HorasSemanales, Bps3.VinculoFuncional, Bps3.CodigoExoneracion, Bps3.ComputosEspeciales, Bps3.CausalBaja, Bps3.FechaBaja, Bps3.LocalEmpresa, Bps3.DiasTrabajados, Bps3.HorasTrabajadas, Bps3.Reservado1, Bps3.Reservado2, Bps3.Reservado3, Bps3.Reservado4, Bps3.Reservado5
+FROM Bps3;
+
+
+QUERY: Rs_Bps4
+  SQL: SELECT InStr(CI,"-") AS iCol, Val(IIf(iCol>0,Left(Bps4.CI,iCol-1) & Mid(Bps4.CI,iCol+1,1),Bps4.CI)) AS Cedula, IIf(Bps4.Concepto="2","2","1") AS Concepto, Bps4.Imponible
+FROM Bps4
+WHERE (((Bps4.Concepto)="1" Or (Bps4.Concepto)="2"));
+
+
+QUERY: Rs_CaseCasm
+  SQL: SELECT FormatCI(Casecasm.Campo1) AS CI, Casecasm.Campo2, Casecasm.Campo3, Casecasm.Campo4, Casecasm.Campo5
+FROM Casecasm
+WHERE (((Casecasm.Campo5) Like "D.*"));
+
+
+QUERY: Rs_Certificacion
+  SQL: SELECT Certificacion.*
+FROM Certificacion;
+
+
+QUERY: Rs_Certificacion_Nombre
+  SQL: SELECT Certificacion.*, Afiliado.Apellido1 & Iif(Afiliado.Apellido2  & "" <> "", " " & Afiliado.Apellido2, "") & ", " & Afiliado.Nombres AS Nombre
+FROM Certificacion INNER JOIN Afiliado ON Certificacion.CI = Afiliado.CI;
+
+
+QUERY: Rs_Certificador
+  SQL: SELECT Certificador.*
+FROM Certificador;
+
+
+QUERY: Rs_Certificador_Desc
+  SQL: SELECT Certificador.CodCertificador, Certificador.Descrip
+FROM Certificador
+ORDER BY Certificador.Descrip;
+
+
+QUERY: Rs_Cristalin
+  SQL: SELECT Val(FormatCI([Cristalin].[DOCUMENTO])) AS CI, Cristalin.[1ER APELLIDO], Cristalin.[2DO APELLIDO], Cristalin.[1ER NOMBRE], Cristalin.[2DO NOMBRE]
+FROM Cristalin;
+
+
+QUERY: Rs_Departamento_Desc
+  SQL: SELECT Departamento.CodDepartamento, Departamento.Descrip
+FROM Departamento
+ORDER BY Departamento.Descrip;
+
+
+QUERY: Rs_Empleo
+  SQL: SELECT Trabaja.CI, Trabaja.CodEmpresa, Empresa.Nombre AS DescEmpresa, Trabaja.FechaIngreso, Trabaja.FechaIngCasemed, Trabaja.FechaBaja, Trabaja.CodBajaMotivo, Trabaja.NroFichaEmpresa, Trabaja.IdTrabaja, Trabaja.Usr, Trabaja.Ts
+FROM Empresa INNER JOIN Trabaja ON Empresa.CodEmpresa = Trabaja.CodEmpresa;
+
+
+QUERY: Rs_Empresa
+  SQL: SELECT Empresa.*
+FROM Empresa;
+
+
+QUERY: Rs_Empresa_Desc
+  SQL: SELECT Empresa.CodEmpresa, Empresa.Nombre
+FROM Empresa
+ORDER BY Empresa.Nombre;
+
+
+QUERY: Rs_Empresa_Desc_Real
+  SQL: SELECT Empresa.CodEmpresa, Empresa.Nombre
+FROM Empresa
+WHERE (((Empresa.Ficticia)=False))
+ORDER BY Empresa.Nombre;
+
+
+QUERY: Rs_EmpresaPago
+  SQL: SELECT EmpresaPago.*
+FROM EmpresaPago;
+
+
+QUERY: Rs_Especialidad_Desc
+  SQL: SELECT Especialidad.CodEspecialidad, Especialidad.Descrip
+FROM Especialidad
+ORDER BY Especialidad.Descrip;
+
+
+QUERY: Rs_Export_BROU
+  SQL: PARAMETERS pMes Short, pAnio Short, pLiquidar Bit, pFecha DateTime;
+SELECT SubsidioCabezal.CI, SubsidioCabezal.ImpLiquido, SubsidioCabezal.ImpNominal, SubsidioCabezal.ImpAguinaldo, Afiliado.CodBanco, Afiliado.NroCuenta, [pFecha] AS Fecha
+FROM SubsidioCabezal INNER JOIN Afiliado ON SubsidioCabezal.CI = Afiliado.CI
+WHERE (((Afiliado.CodBanco)=5) AND ((SubsidioCabezal.Mes)=[pMes]) AND ((SubsidioCabezal.Anio)=[pAnio]) AND ((SubsidioCabezal.Liquidar)=[pLiquidar]) AND ((SubsidioCabezal.ImpLiquido)>0));
+
+
+QUERY: Rs_Export_BROU_Excel
+  SQL: SELECT BROU.CI, BROU.NroCuenta, BROU.ImpLiquido, BROU.Fecha
+FROM BROU;
+
+
+QUERY: Rs_Export_NBC
+  SQL: PARAMETERS pMes Short, pAnio Short, pLiquidar Bit, pFecha DateTime;
+SELECT SubsidioCabezal.CI, SubsidioCabezal.ImpLiquido, SubsidioCabezal.ImpNominal, SubsidioCabezal.ImpAguinaldo, Afiliado.CodBanco, Afiliado.NroCuenta, [pFecha] AS Fecha
+FROM SubsidioCabezal INNER JOIN Afiliado ON SubsidioCabezal.CI = Afiliado.CI
+WHERE (((Afiliado.CodBanco)=1) AND ((SubsidioCabezal.Mes)=[pMes]) AND ((SubsidioCabezal.Anio)=[pAnio]) AND ((SubsidioCabezal.Liquidar)=[pLiquidar]));
+
+
+QUERY: Rs_FormaPago
+  SQL: SELECT FormaPago.*
+FROM FormaPago;
+
+
+QUERY: Rs_FormaPago_Desc
+  SQL: SELECT FormaPago.CodFormaPago, FormaPago.Descrip
+FROM FormaPago
+ORDER BY FormaPago.Descrip;
+
+
+QUERY: Rs_GrupoEtario_Descrip
+  SQL: SELECT GrupoEtario.EdadIni, GrupoEtario.Descrip
+FROM GrupoEtario
+ORDER BY GrupoEtario.EdadIni;
+
+
+QUERY: Rs_ImpMax
+  SQL: SELECT Imponible.CI, Max(Imponible.Importe) AS Importe
+FROM Imponible
+GROUP BY Imponible.CI;
+
+
+QUERY: Rs_Imponible
+  SQL: SELECT Imponible.CI, Imponible.CodEmpresa, Empresa.Nombre AS DescEmpresa, Imponible.Fechaingreso, ([Imponible].[Anio] & "/" & Format([Imponible].[Mes],"00")) AS MesDbg, Imponible.Concepto, Imponible.DiasTrabajados, Imponible.Importe, Imponible.IdTrabaja, Imponible.Mes, Imponible.Anio, Imponible.Usr, Imponible.Ts
+FROM Imponible INNER JOIN Empresa ON Imponible.CodEmpresa = Empresa.CodEmpresa
+ORDER BY ([Imponible].[Anio] & "/" & Format([Imponible].[Mes],"00")) DESC;
+
+
+QUERY: Rs_Imponible_Ult
+  SQL: SELECT I.CI, I.CodEmpresa, I.Mes, I.Anio, I.Importe
+FROM Imponible AS I
+WHERE I.Concepto="1"
+AND I.Mes = Val(Format(DateAdd("m", -2, Date()), "mm"))
+AND I.Anio = Val(Format(DateAdd("m", -2, Date()), "yyyy"));
+
+
+QUERY: Rs_Imponible_Ult_Ant
+  SQL: SELECT I.CI, I.CodEmpresa, I.Mes, I.Anio, I.Importe
+FROM Imponible AS I
+WHERE (((I.Concepto)="1") AND ((Exists (SELECT 1 FROM Imponible I1
+WHERE I1.CI = I.CI AND I1.CodEmpresa = I.CodEmpresa AND I1.Concepto = "1"
+GROUP BY I1.CI, I1.CodEmpresa
+HAVING MAX(I1.ANIOMES) = I.AnioMes))<>False));
+
+
+QUERY: Rs_InformeEstadistico
+  SQL: SELECT InformeEstadistico.*
+FROM InformeEstadistico
+ORDER BY InformeEstadistico.Orden;
+
+
+QUERY: Rs_MaxImp_Afiliado
+  SQL: SELECT Imponible.CI, First(Imponible.CodEmpresa) AS CodEmpresa, First(Imponible.Mes) AS Mes, First(Imponible.Anio) AS Anio, Max(Imponible.Importe) AS Importe
+FROM Imponible
+GROUP BY Imponible.CI;
+
+
+QUERY: Rs_Mutualista
+  SQL: SELECT Mutualista.*
+FROM Mutualista
+WHERE (((Mutualista.CodMutualista)>0));
+
+
+QUERY: Rs_Mutualista_Desc
+  SQL: SELECT Mutualista.CodMutualista, Mutualista.Nombre
+FROM Mutualista
+ORDER BY Mutualista.Nombre;
+
+
+QUERY: Rs_MutualistaBps
+  SQL: SELECT Val(BpsFormat.Cedula) AS Cedula, BpsFormat.Mutualista, Mutu.Codigo
+FROM BpsFormat INNER JOIN Mutu ON BpsFormat.Mutualista = Mutu.Mutualista;
+
+
+QUERY: Rs_Patologia
+  SQL: SELECT Patologia.*
+FROM Patologia;
+
+
+QUERY: Rs_Patologia_Desc
+  SQL: SELECT Patologia.CodPatologia, Patologia.Descrip
+FROM Patologia
+ORDER BY Patologia.Descrip;
+
+
+QUERY: Rs_Prestacion
+  SQL: SELECT Prestacion.*, [Afiliado].[Apellido1] & IIf([Afiliado].[Apellido2] & ""<>""," " & [Afiliado].[Apellido2],"") & ", " & [Afiliado].[Nombres] AS DescAfiliado
+FROM Prestacion INNER JOIN Afiliado ON Prestacion.CI = Afiliado.CI;
+
+
+QUERY: Rs_PrestacionTipo
+  SQL: SELECT PrestacionTipo.*
+FROM PrestacionTipo;
+
+
+QUERY: Rs_PrestacionTipo_Desc
+  SQL: SELECT PrestacionTipo.CodPrestacionTipo, PrestacionTipo.Descrip
+FROM PrestacionTipo
+ORDER BY PrestacionTipo.Descrip;
+
+
+QUERY: Rs_RegimenAporte_Desc
+  SQL: SELECT RegimenAporte.CodRegimenAporte, RegimenAporte.Descrip
+FROM RegimenAporte
+ORDER BY RegimenAporte.Descrip;
+
+
+QUERY: Rs_RegimenJubilatorio
+  SQL: SELECT RegimenJubilatorio.*
+FROM RegimenJubilatorio;
+
+
+QUERY: Rs_RegimenJubilatorio_Desc
+  SQL: SELECT RegimenJubilatorio.CodRegimenJubilatorio, RegimenJubilatorio.Descrip
+FROM RegimenJubilatorio
+ORDER BY RegimenJubilatorio.Descrip;
+
+
+QUERY: Rs_ReintegroMutual
+  SQL: SELECT ReintegroMutual.*, [Afiliado].[Apellido1] & IIf([Afiliado].[Apellido2] & ""<>""," " & [Afiliado].[Apellido2],"") & ", " & [Afiliado].[Nombres] AS DescAfiliado
+FROM ReintegroMutual INNER JOIN Afiliado ON ReintegroMutual.CI = Afiliado.CI;
+
+
+QUERY: Rs_SalidaTipo
+  SQL: SELECT SalidaTipo.*
+FROM SalidaTipo;
+
+
+QUERY: Rs_SalidaTipo_Desc
+  SQL: SELECT SalidaTipo.CodSalidaTipo, SalidaTipo.Descrip
+FROM SalidaTipo
+ORDER BY SalidaTipo.Descrip;
+
+
+QUERY: Rs_SituacionMutual
+  SQL: SELECT SituacionMutual.*
+FROM SituacionMutual;
+
+
+QUERY: Rs_SituacionMutual_Desc
+  SQL: SELECT SituacionMutual.CodSituacionMutual, SituacionMutual.Descrip
+FROM SituacionMutual
+ORDER BY SituacionMutual.Descrip;
+
+
+QUERY: Rs_SituacionPago
+  SQL: SELECT SituacionPago.*
+FROM SituacionPago;
+
+
+QUERY: Rs_SituacionPago_Desc
+  SQL: SELECT SituacionPago.CodSituacionPago, SituacionPago.Descrip
+FROM SituacionPago
+ORDER BY SituacionPago.Descrip;
+
+
+QUERY: Rs_SubsidioItem
+  SQL: SELECT SubsidioItem.*, SubsidioItemCod.Tipo
+FROM SubsidioItem INNER JOIN SubsidioItemCod ON SubsidioItem.CodSubsidioItemCod = SubsidioItemCod.CodSubsidioItemCod;
+
+
+QUERY: Rs_SubsidioItemCod_Afiliado
+  SQL: SELECT SubsidioItemCod_Afiliado.*, Afiliado.Apellido1 & ", " & Afiliado.Nombres AS Nombre
+FROM SubsidioItemCod_Afiliado INNER JOIN Afiliado ON SubsidioItemCod_Afiliado.CI = Afiliado.CI;
+
+
+QUERY: Rs_SubsidioItemCod_Desc
+  SQL: SELECT SubsidioItemCod.CodSubsidioItemCod, SubsidioItemCod.Descrip
+FROM SubsidioItemCod
+ORDER BY SubsidioItemCod.Descrip;
+
+
+QUERY: Rs_SubsidioItemCodXCI
+  SQL: SELECT SubsidioItemCod.CodSubsidioItemCod, SubsidioItemCod.Descrip, SubsidioItemCod.Tipo, SubsidioItemCod.ValorTipo, SubsidioItemCod.Signo, SubsidioItemCod.Comparar, SubsidioItemCod.CompararContra, SubsidioItemCod_Afiliado.Valor, SubsidioItemCod.TipoComp, SubsidioItemCod.Operador, SubsidioItemCod.ValorMin, SubsidioItemCod.ValorMax, SubsidioItemCod.Procesar, SubsidioItemCod.FechaVigencia, SubsidioItemCod_Afiliado.Vigencia AS FechaBaja, SubsidioItemCod.ModificaNominal, SubsidioItemCod_Afiliado.CI, SubsidioItemCod.ModificaNominal
+FROM SubsidioItemCod INNER JOIN SubsidioItemCod_Afiliado ON SubsidioItemCod.CodSubsidioItemCod = SubsidioItemCod_Afiliado.CodSubsidioItemCod;
+
+
+QUERY: Rs_SubsidioXMes
+  SQL: SELECT SubsidioCabezal.CI, SubsidioCabezal.Anio, SubsidioCabezal.Mes, Sum(SubsidioCabezal.ImpNominal) AS ImpNominal, Sum(SubsidioCabezal.ImpAguinaldo) AS ImpAguinaldo
+FROM SubsidioCabezal
+GROUP BY SubsidioCabezal.CI, SubsidioCabezal.Anio, SubsidioCabezal.Mes;
+
+
+QUERY: Rs_TrabajaActivo
+  SQL: SELECT Trabaja.*
+FROM Trabaja
+WHERE (((Trabaja.FechaBaja) Is Null));
+
+
+QUERY: Rs_TrabajaUltimo
+  SQL: SELECT Trabaja.CI, Trabaja.CodEmpresa, Last(Trabaja.FechaIngreso) AS FechaIngreso, Last(Trabaja.FechaBaja) AS FechaBaja, Last(Trabaja.CodBajaMotivo) AS CodBajaMotivo, Last(Trabaja.NroFichaEmpresa) AS NroFichaEmpresa, Last(Trabaja.IdTrabaja) AS IdTrabaja, Last(Trabaja.FechaIngCasemed) AS FechaIngCasemed, Last(Trabaja.Usr) AS Usr, Last(Trabaja.Ts) AS Ts
+FROM Trabaja
+GROUP BY Trabaja.CI, Trabaja.CodEmpresa;
+
+
+QUERY: rsAfiliadoActivo
+  SQL: SELECT Afiliado.*
+FROM Afiliado
+WHERE (((Afiliado.CI) In (select ci from trabaja where fechabaja is null)));
+
+
+QUERY: Update_Bps_Mutualista
+  SQL: UPDATE Mutualista INNER JOIN (BpsFormat INNER JOIN Afiliado ON BpsFormat.Cedula = Afiliado.CI) ON Mutualista.Nombre = BpsFormat.Mutualista SET Afiliado.CodMutualista = [Mutualista].[CodMutualista];
+
+
+QUERY: wx_Update_ValorJornal
+  SQL: UPDATE SubsidioCabezal INNER JOIN xw_Suma_ValorJornal AS s ON SubsidioCabezal.IdSubsidio = s.IdSubsidio SET SubsidioCabezal.ValorJornal = [s].[SumaDeValorJornal];
+
+
+QUERY: xEmpresaCantidad
+  SQL: SELECT Trabaja.CodEmpresa, Count(*) AS Cantidad
+FROM Trabaja
+GROUP BY Trabaja.CodEmpresa;
+
+
+QUERY: xEmpresaPromedio
+  SQL: SELECT Imponible.CodEmpresa, Format(Avg(Imponible.Importe), "0.00") AS PromedioDeImporte
+FROM Imponible
+WHERE Val(Anio & Format(Mes, "00")) Between 199906 And 199911
+GROUP BY Imponible.CodEmpresa;
+
+
+QUERY: xEmpresaPromedioNo0
+  SQL: SELECT Imponible.CodEmpresa, Format(Avg(Imponible.Importe), "0.00") AS PromedioDeImporte
+FROM Imponible LEFT JOIN xSinImponiblexEmpresa ON (Imponible.CodEmpresa = xSinImponiblexEmpresa.CodEmpresa) AND (Imponible.CI = xSinImponiblexEmpresa.CI)
+WHERE (((Val([Anio] & Format([Mes],"00"))) Between 199906 And 199911) AND ((xSinImponiblexEmpresa.CI) Is Null))
+GROUP BY Imponible.CodEmpresa;
+
+
+QUERY: xEmpresaPromedioTodo
+  SQL: SELECT Imponible.CodEmpresa, Avg(Imponible.Importe) AS PromedioDeImporte
+FROM Imponible
+GROUP BY Imponible.CodEmpresa;
+
+
+QUERY: xMutualistaCantidad
+  SQL: SELECT Afiliado.CodMutualista, Count(*) AS Cantidad
+FROM Afiliado
+GROUP BY Afiliado.CodMutualista;
+
+
+QUERY: xRptEmpresaCantidad
+  SQL: SELECT Empresa.Nombre, xEmpresaCantidad.Cantidad
+FROM xEmpresaCantidad INNER JOIN Empresa ON xEmpresaCantidad.CodEmpresa = Empresa.CodEmpresa;
+
+
+QUERY: xRptEmpresaPromedioNo0
+  SQL: SELECT Empresa.Nombre, xEmpresaPromedioNo0.PromedioDeImporte AS Promedio
+FROM xEmpresaPromedioNo0 INNER JOIN Empresa ON xEmpresaPromedioNo0.CodEmpresa = Empresa.CodEmpresa;
+
+
+QUERY: xRptEmpresaPromedioTodo
+  SQL: SELECT Empresa.Nombre, Format(xEmpresaPromedioTodo.PromedioDeImporte,"0.00") AS Promedio
+FROM xEmpresaPromedioTodo INNER JOIN Empresa ON xEmpresaPromedioTodo.CodEmpresa = Empresa.CodEmpresa;
+
+
+QUERY: xRptMutualistaCantidad
+  SQL: SELECT Mutualista.Nombre, xMutualistaCantidad.Cantidad
+FROM xMutualistaCantidad INNER JOIN Mutualista ON xMutualistaCantidad.CodMutualista = Mutualista.CodMutualista;
+
+
+QUERY: xRptPromedioEmpresa
+  SQL: SELECT Empresa.Nombre, Format(xEmpresaPromedio.PromedioDeImporte, "0.00") AS Promedio
+FROM xEmpresaPromedio INNER JOIN Empresa ON xEmpresaPromedio.CodEmpresa = Empresa.CodEmpresa;
+
+
+QUERY: xSinImponiblexEmpresa
+  SQL: SELECT Imponible.CI, Imponible.CodEmpresa
+FROM Imponible
+GROUP BY Imponible.CI, Imponible.CodEmpresa
+HAVING (((Sum(Imponible.Importe))=0));
+
+
+QUERY: xw_Suma_ValorJornal1
+  SQL: SELECT SubsidioCabezalEmpresa.IdSubsidio, Sum(SubsidioCabezalEmpresa.ValorJornal) AS SumaDeValorJornal
+FROM SubsidioCabezalEmpresa
+GROUP BY SubsidioCabezalEmpresa.IdSubsidio;
+
+
+QUERY: zConsulta1
+  SQL: SELECT [200_PagarMutualista].CI, Trabaja.CodEmpresa
+FROM ((200_PagarMutualista INNER JOIN Afiliado ON [200_PagarMutualista].CI = Afiliado.CI) INNER JOIN Trabaja ON Afiliado.CI = Trabaja.CI) INNER JOIN Empresa ON Trabaja.CodEmpresa = Empresa.CodEmpresa
+WHERE (((Afiliado.CodSituacionMutual)="AF") AND ((Afiliado.CodMutualista) Not In (0,38,40)) AND ((Trabaja.FechaBaja) Is Null));
+
+
+QUERY: zConsulta2
+  SQL: PARAMETERS pMesFin Long, pMesIni Long, pSMN Long;
+SELECT Trabaja.CI, Trabaja.CodEmpresa
+FROM (((250_AfiliadoConDerecho INNER JOIN Trabaja ON [250_AfiliadoConDerecho].ci = Trabaja.CI) INNER JOIN Empresa ON Trabaja.CodEmpresa = Empresa.CodEmpresa) INNER JOIN Afiliado ON [250_AfiliadoConDerecho].ci = Afiliado.CI) INNER JOIN Mutualista ON Afiliado.CodMutualista = Mutualista.CodMutualista
+WHERE (Trabaja.FechaBaja Is Null) AND Mutualista.Ficticia=False AND Afiliado.CodSituacionMutual="AF" AND Empresa.Ficticia = False;
+
+
+QUERY: zGrupoSubsidio
+  SQL: SELECT Anio, Switch(
+ValorJornal*30<=5000,"0:5",
+ValorJornal*30>5000 And ValorJornal*30<=10000,"5:10",
+ValorJornal*30>10000 And ValorJornal*30<=20000,"10:20",
+ValorJornal*30>20000 And ValorJornal*30<=30000,"20:30",
+ValorJornal*30>30000 And ValorJornal*30<=40000,"30:40",
+ValorJornal*30>40000 And ValorJornal*30<=50000,"40:50",
+ValorJornal*30>50000 And ValorJornal*30<=60000,"50:60",
+ValorJornal*30>60000,"60:") AS Sueldo, Dias
+FROM SubsidioCabezal
+WHERE Liquidar=false;
+
+

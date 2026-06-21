@@ -1,0 +1,64 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    @* Tema DevExpress blazing-berry recoloreado a la marca (primario #1C3680) — ver wwwroot/css/sgpa-theme.css *@
+    <link rel="stylesheet" href="css/sgpa-theme.css" />
+    @* DevExpress Reporting (visor/diseñador): CSS cableado a mano desde el install local (no NuGet). *@
+    <link rel="stylesheet" href="_content/DevExpress.Blazor.Viewer/css/dx-blazor-viewer-components.bs5.css" />
+    <link rel="stylesheet" href="_content/DevExpress.Blazor.Reporting.Viewer/css/dx-blazor-reporting-components.bs5.css" />
+    <link rel="stylesheet" href="lib/fontawesome/css/all.min.css" />
+    <link rel="stylesheet" href="@Assets["app.css"]" />
+    <link rel="stylesheet" href="@Assets["Sgpa.Web.styles.css"]" />
+    <ImportMap />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <HeadOutlet />
+</head>
+
+<body>
+    <Routes />
+    <script src="_framework/blazor.web.js"></script>
+    <script>
+        window.sgpaDownloadText = (fileName, content) => {
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = fileName;
+            document.body.appendChild(a); a.click();
+            document.body.removeChild(a); URL.revokeObjectURL(url);
+        };
+        // Zoom por defecto del visor de reportes en 100% (no hay propiedad .NET; se hace en el cliente vía el
+        // callback CustomizeElements del DxReportViewer). Se aplica una sola vez por instancia del visor.
+        window.sgpaViewerDefaultZoom = function (s, e) {
+            try {
+                if (!s || s.__sgpaZoomSet) return;
+                var model = s.GetPreviewModel ? s.GetPreviewModel() : null;
+                if (model && typeof model.zoom === 'function') {
+                    model.zoom(1);          // 1 = 100%
+                    s.__sgpaZoomSet = true;
+                }
+            } catch (err) { }
+        };
+
+        // Trae el PDF del endpoint (que lo genera fuera del circuito) y recién entonces lo abre/descarga.
+        // Devuelve cuando termina, así Blazor puede mostrar el wait dialog mientras tanto.
+        window.sgpaOpenPdf = async (url, download, fileName) => {
+            const resp = await fetch(url, { credentials: 'same-origin' });
+            if (!resp.ok) { alert('No se pudo generar el PDF.'); return; }
+            const blobUrl = URL.createObjectURL(await resp.blob());
+            if (download) {
+                const a = document.createElement('a');
+                a.href = blobUrl; a.download = fileName || 'reporte.pdf';
+                document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            } else {
+                window.open(blobUrl, '_blank');
+            }
+            setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
+        };
+    </script>
+</body>
+
+</html>

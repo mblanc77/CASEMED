@@ -1,0 +1,34 @@
+@page "/prestaciones"
+@rendermode InteractiveServer
+@using Sgpa.Domain.Entities
+@using Sgpa.Web.Components.Crud
+@using Sgpa.Business.Prestaciones
+@inject PrestacionService Prestacion
+@inject RecetaService Recetas
+@inject NavigationManager Nav
+
+<PageTitle>Prestaciones</PageTitle>
+
+@*
+    Prestacion tiene clave compuesta (CI+Fecha+CodPrestacionTipo) y no tiene tablas hijas → ABM = CRUD
+    genérico. Lógica de negocio portada de AbmPrest.frm: avisos al grabar por período de renovación (con el
+    PeriodoRenovacion real, no el 0 que hardcodea la query migrada) y por elegibilidad 1,25 SMN; y acceso a
+    la receta óptica (cerca/lejos) para los tipos de prestación que la llevan.
+*@
+<SgpaCrudView TEntity="Prestacion" Title="Prestaciones"
+              GetWarningsAfterSaveAsync="@(p => Prestacion.GetAvisosAsync(p))">
+    <RowActions Context="p">
+        @if (_tiposConReceta.Contains(p.CodPrestacionTipo))
+        {
+            <DxButton IconCssClass="fa-solid fa-glasses" RenderStyle="ButtonRenderStyle.Link" Tooltip="Receta"
+                      Click="@(() => Nav.NavigateTo($"/prestaciones/receta/{p.CI}/{p.Fecha:yyyy-MM-dd}/{p.CodPrestacionTipo}"))" />
+        }
+    </RowActions>
+</SgpaCrudView>
+
+@code {
+    private HashSet<int> _tiposConReceta = new();
+
+    protected override async Task OnInitializedAsync()
+        => _tiposConReceta = (await Recetas.GetTiposConRecetaAsync()).ToHashSet();
+}

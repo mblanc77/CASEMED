@@ -1,0 +1,145 @@
+@page "/reportes"
+@rendermode InteractiveServer
+@using Sgpa.Domain.Metadata
+@using Sgpa.Data.Configuracion
+@using Sgpa.Web.Reporting
+@inject IReporteCatalogo Catalogo
+@inject ITablaConfigService TablaConfig
+@inject WebCurrentUser CurrentUser
+@inject NavigationManager Nav
+
+<PageTitle>Reportes</PageTitle>
+
+<h3 class="mb-2">Reportes</h3>
+<p class="text-muted">
+    Reportes diseñados desde el sistema. Asigná cada uno a su <strong>tabla root</strong> para que aparezca
+    en el botón <em>Reportes</em> del ListView de esa tabla.
+</p>
+
+@if (!CurrentUser.IsAdmin)
+{
+    <div class="alert alert-warning">La gestión de reportes es sólo para administradores.</div>
+}
+else
+{
+    <div class="mb-2">
+        <DxButton Text="Nuevo reporte" IconCssClass="fa-solid fa-plus" RenderStyle="ButtonRenderStyle.Primary"
+                  Click="OpenNew" />
+    </div>
+
+    @* Alta estilo XAF: se define Nombre + Tabla root; el reporte se crea con el data source ya bindeado. *@
+    <DxPopup @bind-Visible="_showNew" HeaderText="Nuevo reporte" Width="440px" CloseOnEscape="true">
+        <BodyContentTemplate>
+            <div class="mb-3">
+                <label class="form-label">Nombre</label>
+                <DxTextBox @bind-Text="_newNombre" NullText="Nombre del reporte" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Tabla root</label>
+                <DxComboBox TData="TablaItem" TValue="string" Data="_disponibles"
+                            NullText="Elegí una tabla…" CssClass="w-100"
+                            TextFieldName="@nameof(TablaItem.Display)" ValueFieldName="@nameof(TablaItem.Tabla)"
+                            @bind-Value="_newTabla" />
+            </div>
+            @if (_newError is not null)
+            {
+                <div class="text-danger small mb-2">@_newError</div>
+            }
+            <div class="d-flex gap-2 justify-content-end">
+                <DxButton Text="Cancelar" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => _showNew = false)" />
+                <DxButton Text="Crear" IconCssClass="fa-solid fa-check" RenderStyle="ButtonRenderStyle.Primary" Click="CreateNewAsync" />
+            </div>
+        </BodyContentTemplate>
+    </DxPopup>
+
+    <DxGrid Data="_items" PageSize="25" ShowFilterRow="true" ShowSearchBox="true">
+        <Columns>
+            <DxGridDataColumn FieldName="Nombre" Caption="Nombre" MinWidth="180" />
+            <DxGridDataColumn Caption="Tabla root" Width="260px">
+                <CellDisplayTemplate Context="c">
+                    @{ var vm = (ReporteInfo)c.DataItem; }
+                    <DxComboBox TData="TablaItem" TValue="string" Data="_tablas"
+                                NullText="(sin asignar)" ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto"
+                                TextFieldName="@nameof(TablaItem.Display)" ValueFieldName="@nameof(TablaItem.Tabla)"
+                                Value="@vm.TablaRoot" ValueChanged="@((string? v) => OnRootChangedAsync(vm, v))"
+                                SizeMode="SizeMode.Small" />
+                </CellDisplayTemplate>
+            </DxGridDataColumn>
+            <DxGridDataColumn FieldName="Fecha" Caption="Modificado" DisplayFormat="g" Width="150px" />
+            <DxGridDataColumn Caption="" Width="200px" AllowSort="false">
+                <CellDisplayTemplate Context="c">
+                    @{ var vm = (ReporteInfo)c.DataItem; }
+                    <DxButton Text="Diseñar" IconCssClass="fa-solid fa-pen-ruler" SizeMode="SizeMode.Small"
+                              RenderStyle="ButtonRenderStyle.Secondary"
+                              Click="@(() => Nav.NavigateTo($"/reportes/disenar/{vm.Id}"))" />
+                    <DxButton Text="Ver" IconCssClass="fa-solid fa-eye" SizeMode="SizeMode.Small"
+                              RenderStyle="ButtonRenderStyle.Secondary"
+                              Click="@(() => Nav.NavigateTo($"/reportes/ver/{vm.Id}"))" />
+                    <DxButton IconCssClass="fa-solid fa-trash" SizeMode="SizeMode.Small"
+                              RenderStyle="ButtonRenderStyle.Danger" Click="@(() => DeleteAsync(vm))" />
+                </CellDisplayTemplate>
+            </DxGridDataColumn>
+        </Columns>
+    </DxGrid>
+}
+
+@code {
+    private List<ReporteInfo> _items = new();
+    private List<TablaItem> _tablas = new();        // todas (para resolver el alias de cualquier root ya asignado)
+    private List<TablaItem> _disponibles = new();   // sólo las marcadas "disponible p/ reportes" (para el alta)
+
+    private bool _showNew;
+    private string _newNombre = string.Empty;
+    private string? _newTabla;
+    private string? _newError;
+
+    private void OpenNew()
+    {
+        _newNombre = string.Empty;
+        _newTabla = null;
+        _newError = null;
+        _showNew = true;
+    }
+
+    private async Task CreateNewAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_newNombre)) { _newError = "Ingresá un nombre."; return; }
+        if (string.IsNullOrWhiteSpace(_newTabla)) { _newError = "Elegí una tabla root."; return; }
+
+        await Catalogo.CreateAsync(_newNombre.Trim(), _newTabla!, CurrentUser.UserName);
+        _showNew = false;
+        await ReloadAsync();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CurrentUser.EnsureLoadedAsync();
+        if (!CurrentUser.IsAdmin) return;
+
+        await TablaConfig.EnsureLoadedAsync();
+        _tablas = EntityCatalog.CrudCapable
+            .Select(m => m.Table)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Select(t => new TablaItem(t, TablaConfig.DisplayName(t)))
+            .OrderBy(t => t.Display, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+        _disponibles = _tablas.Where(t => TablaConfig.DisponibleReportes(t.Tabla)).ToList();
+        await ReloadAsync();
+    }
+
+    private async Task ReloadAsync() => _items = (await Catalogo.AllAsync()).ToList();
+
+    private async Task OnRootChangedAsync(ReporteInfo vm, string? tablaRoot)
+    {
+        await Catalogo.SetTablaRootAsync(vm.Id, tablaRoot);
+        await ReloadAsync();
+    }
+
+    private async Task DeleteAsync(ReporteInfo vm)
+    {
+        await Catalogo.DeleteAsync(vm.Id);
+        await ReloadAsync();
+    }
+
+    public sealed record TablaItem(string Tabla, string Display);
+}

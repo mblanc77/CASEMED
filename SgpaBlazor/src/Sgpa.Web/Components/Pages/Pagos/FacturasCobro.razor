@@ -1,0 +1,174 @@
+@using Sgpa.Business.Pagos
+@using Sgpa.Data.Errors
+@using Sgpa.Web.Components.Crud
+@inject PagoService Pagos
+@inject IToastNotificationService Toasts
+
+@*
+    Cobro de facturas de un préstamo (port de frmCargaPago + frmIngPago, app SP).
+    Lista las facturas del préstamo; cada factura EMITIDA se puede cobrar desde un diálogo que muestra
+    el importe, calcula la mora a la fecha de pago (port de ImportexMora) y registra el pago vía
+    PagoService.IngresarPagoAsync (que cancela la factura/cuota y ajusta saldo/estado del préstamo).
+*@
+
+<div class="p-2">
+    @if (_error is not null)
+    {
+        <div class="alert alert-danger py-2">@_error</div>
+    }
+
+    <DxGrid Data="_facturas" PageSize="12" CssClass="mb-1">
+        <Columns>
+            <DxGridDataColumn FieldName="NroFactura" Caption="Nº factura" Width="120px" />
+            <DxGridDataColumn FieldName="FechaVencimiento" Caption="Vence" DisplayFormat="d" Width="120px" />
+            <DxGridDataColumn FieldName="Importe" Caption="Importe" DisplayFormat="N2" />
+            <DxGridDataColumn FieldName="DescFacturaEstado" Caption="Estado" Width="130px" />
+            <DxGridDataColumn FieldName="FechaPago" Caption="Pagada" DisplayFormat="d" Width="120px" />
+            <DxGridDataColumn Caption="" Width="110px" AllowSort="false">
+                <CellDisplayTemplate Context="cell">
+                    @{ var f = (FacturaPagoView)cell.DataItem; }
+                    @if (f.CodFacturaEstado == "emi")
+                    {
+                        <DxButton Text="Cobrar" IconCssClass="fa-solid fa-cash-register"
+                                  RenderStyle="ButtonRenderStyle.Success" SizeMode="SizeMode.Small"
+                                  Click="@(() => AbrirCobroAsync(f))" />
+                    }
+                </CellDisplayTemplate>
+            </DxGridDataColumn>
+        </Columns>
+    </DxGrid>
+</div>
+
+@* --- Diálogo de cobro --- *@
+<DxPopup @bind-Visible="_cobroVisible" HeaderText="Cobrar factura" Width="440px" CloseOnEscape="true">
+    <BodyContentTemplate Context="popup">
+        @if (_cobro is not null)
+        {
+            <DxFormLayout>
+                <DxFormLayoutItem Caption="Nº factura" ColSpanMd="12">
+                    <strong>@_cobro.NroFactura</strong>
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Vencimiento" ColSpanMd="12">
+                    @(_cobro.FechaVencimiento?.ToString("dd/MM/yyyy") ?? "—")
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Fecha de pago" ColSpanMd="12">
+                    <DxDateEdit @bind-Date="_fechaPago" @bind-Date:after="RecalcularMoraAsync" TValue="DateTime" />
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Sucursal" ColSpanMd="12">
+                    <DxTextBox @bind-Text="_sucursal" />
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Importe" ColSpanMd="6">
+                    @_cobro.Importe.ToString("N2")
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Mora" ColSpanMd="6">
+                    @_mora.ToString("N2")
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Total a cobrar" ColSpanMd="12">
+                    <strong>@((_cobro.Importe + _mora).ToString("N2"))</strong>
+                </DxFormLayoutItem>
+            </DxFormLayout>
+
+            <div class="d-flex justify-content-end gap-2 mt-3">
+                <DxButton Text="Cancelar" RenderStyle="ButtonRenderStyle.Secondary"
+                          Click="@(() => _cobroVisible = false)" Enabled="@(!_grabando)" />
+                <DxButton Text="Grabar pago" IconCssClass="fa-solid fa-check" RenderStyle="ButtonRenderStyle.Primary"
+                          Click="GrabarAsync" Enabled="@(!_grabando)" />
+            </div>
+        }
+    </BodyContentTemplate>
+</DxPopup>
+
+@code {
+    [Parameter] public int IDPrestamo { get; set; }
+
+    private IReadOnlyList<FacturaPagoView> _facturas = Array.Empty<FacturaPagoView>();
+    private string? _error;
+
+    private bool _cobroVisible;
+    private FacturaCobro? _cobro;
+    private DateTime _fechaPago = DateTime.Today;
+    private string _sucursal = "";
+    private double _mora;
+    private bool _grabando;
+
+    private int _loadedFor = -1;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (IDPrestamo != _loadedFor)
+        {
+            _loadedFor = IDPrestamo;
+            await CargarAsync();
+        }
+    }
+
+    private async Task CargarAsync()
+    {
+        try
+        {
+            _error = null;
+            _facturas = await Pagos.GetFacturasAsync(IDPrestamo);
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+    }
+
+    private async Task AbrirCobroAsync(FacturaPagoView f)
+    {
+        _cobro = await Pagos.GetFacturaCobroAsync(f.NroFactura);
+        if (_cobro is null) { Toasts.Error("No se encontró la factura."); return; }
+        _fechaPago = DateTime.Today;
+        _sucursal = "";
+        await RecalcularMoraAsync();
+        _cobroVisible = true;
+    }
+
+    private async Task RecalcularMoraAsync()
+    {
+        if (_cobro is null) { _mora = 0; return; }
+        _mora = await Pagos.GetImporteMoraAsync(_cobro.NroFactura, _fechaPago);
+    }
+
+    private async Task GrabarAsync()
+    {
+        if (_cobro is null) return;
+        _grabando = true;
+        try
+        {
+            var r = await Pagos.IngresarPagoAsync(new IngresarPagoRequest(
+                _cobro.NroFactura, _fechaPago, _cobro.Importe, _mora,
+                PagoOrigen.Casemed, string.IsNullOrWhiteSpace(_sucursal) ? null : _sucursal));
+
+            if (r == ResultadoPago.Ok)
+            {
+                Toasts.Exito($"Pago de la factura {_cobro.NroFactura} registrado.");
+                _cobroVisible = false;
+                await CargarAsync();
+            }
+            else
+            {
+                Toasts.Error(Mensaje(r));
+            }
+        }
+        catch (Exception ex)
+        {
+            Toasts.Error(SqlErrorMessages.Amigable(ex));
+        }
+        finally
+        {
+            _grabando = false;
+        }
+    }
+
+    private static string Mensaje(ResultadoPago r) => r switch
+    {
+        ResultadoPago.FacturaInexistente => "No existe la factura.",
+        ResultadoPago.EstadoIncorrecto => "La factura no está emitida (ya fue cobrada, anulada o retenida).",
+        ResultadoPago.Retenida => "La factura está retenida: no se puede cobrar.",
+        ResultadoPago.NoCoincideImporte => "El importe cobrado no coincide con el de la factura.",
+        ResultadoPago.NoCoincideInteres => "El interés cobrado no coincide.",
+        _ => "No se pudo registrar el pago.",
+    };
+}

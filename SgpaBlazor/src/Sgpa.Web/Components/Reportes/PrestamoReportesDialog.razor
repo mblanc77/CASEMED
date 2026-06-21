@@ -1,0 +1,86 @@
+@using DevExpress.Blazor.Reporting
+@using DevExpress.XtraReports.UI
+@using Microsoft.JSInterop
+@using Sgpa.Web.Reporting.Predefinidos
+@inject IPrestamoReportes Reportes
+@inject IJSRuntime JS
+
+@* Diálogo de impresión de reportes predefinidos del préstamo: lista con checkboxes; Ver = vista previa de los
+   tildados fusionados; Imprimir = PDF fusionado inline (batch). Se abre vía @ref Open(idPrestamo). *@
+<DxPopup @bind-Visible="_visible" HeaderText="@($"Reportes — préstamo Nº {_id:00000}")" Width="460px" CloseOnEscape="true">
+    <BodyContentTemplate>
+        <div class="mb-2 text-muted small">Tildá los reportes y elegí <b>Ver</b> (vista previa, todos juntos) o <b>Imprimir</b> (batch).</div>
+        @foreach (var d in Visibles)
+        {
+            <div class="form-check py-1">
+                <input class="form-check-input" type="checkbox" id="@($"rep-{d.Key}")"
+                       checked="@_sel.Contains(d.Key)" @onchange="@(e => Toggle(d.Key, (bool)(e.Value ?? false)))" />
+                <label class="form-check-label" for="@($"rep-{d.Key}")">
+                    <i class="fa-solid @d.Icono me-1 text-primary"></i> @d.Nombre
+                </label>
+            </div>
+        }
+        <div class="d-flex justify-content-between align-items-center mt-3">
+            <a class="small text-decoration-none" @onclick="ToggleTodos" @onclick:preventDefault href="#">
+                @(_sel.Count == Visibles.Count() ? "Destildar todos" : "Tildar todos")
+            </a>
+            <div class="d-flex gap-2">
+                <DxButton Text="Ver" IconCssClass="fa-solid fa-eye" RenderStyle="ButtonRenderStyle.Primary"
+                          Enabled="@(_sel.Count > 0 && !_busy)" Click="VerAsync" />
+                <DxButton Text="Imprimir" IconCssClass="fa-solid fa-print" RenderStyle="ButtonRenderStyle.Secondary"
+                          Enabled="@(_sel.Count > 0 && !_busy)" Click="ImprimirAsync" />
+            </div>
+        </div>
+    </BodyContentTemplate>
+</DxPopup>
+
+<DxPopup @bind-Visible="_viewerVisible" HeaderText="Vista previa" Width="95vw" Height="92vh" CloseOnEscape="true">
+    <BodyContentTemplate>
+        @if (_report is not null)
+        {
+            <div class="sgpa-report-viewer-host">
+                <DxReportViewer Report="_report" />
+            </div>
+        }
+    </BodyContentTemplate>
+</DxPopup>
+
+<SgpaWaitDialog Visible="_busy" Text="Generando reporte…" />
+
+@code {
+    private int _id;
+    private bool _visible, _viewerVisible, _busy, _esFideicomiso;
+    private readonly HashSet<string> _sel = new(StringComparer.Ordinal);
+    private XtraReport? _report;
+
+    // Cesión sólo aplica a préstamos de fideicomiso.
+    private IEnumerable<PrestamoReporteDef> Visibles => Reportes.Disponibles.Where(d => !d.SoloFideicomiso || _esFideicomiso);
+
+    public void Open(int idPrestamo, bool esFideicomiso)
+    {
+        _id = idPrestamo;
+        _esFideicomiso = esFideicomiso;
+        _sel.Clear();   // sin nada tildado por defecto
+        _visible = true;
+        StateHasChanged();
+    }
+
+    private void Toggle(string key, bool on) { if (on) _sel.Add(key); else _sel.Remove(key); }
+
+    private void ToggleTodos()
+    {
+        if (_sel.Count == Visibles.Count()) _sel.Clear();
+        else foreach (var d in Visibles) _sel.Add(d.Key);
+    }
+
+    private async Task VerAsync()
+    {
+        _busy = true; StateHasChanged();
+        try { _report = await Reportes.BuildAsync(_sel, _id); }
+        finally { _busy = false; }
+        _viewerVisible = _report is not null;
+    }
+
+    private async Task ImprimirAsync()
+        => await JS.InvokeVoidAsync("window.open", $"/reportes/prestamo/{_id}/pdf?keys={string.Join(',', _sel)}", "_blank");
+}

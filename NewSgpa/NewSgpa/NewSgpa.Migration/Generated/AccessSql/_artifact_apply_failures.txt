@@ -1,0 +1,10 @@
+GeneratedAtUtc=2026-06-15T21:08:09.2044164Z
+AppliedBatches=1625
+FailedBatches=5
+
+Failures:
+sgpa.generated.sql | batch=214 | startLine=2178 | preview=-- ===== DATA OBJECT FOR QUERY: Rs_Export_BROU_Excel ===== | Invalid column name 'NroCuenta'.  Invalid column name 'ImpLiquido'.  Invalid column name 'Fecha'.
+sgpa.generated.sql | batch=226 | startLine=2277 | preview=-- ===== DATA OBJECT FOR QUERY: Rs_MutualistaBps ===== | Invalid object name 'Mutu'.
+sgpa.generated.sql | batch=564 | startLine=5179 | preview=-- ===== COMPAT OBJECT FOR QUERY: Rs_Export_BROU_Excel ===== | Invalid object name 'dbo.acc_sgpa_Rs_Export_BROU_Excel_q'.
+sgpa.generated.sql | batch=576 | startLine=5233 | preview=-- ===== COMPAT OBJECT FOR QUERY: Rs_MutualistaBps ===== | Invalid object name 'dbo.acc_sgpa_Rs_MutualistaBps_q'.
+sgpa.generated.sql | batch=955 | startLine=9477 | preview=-- ===== WRAPPER PROCEDURE FOR QUERY: Rs_Export_BROU_Excel ===== | Invalid column name 'NroCuenta'.  Invalid column name 'ImpLiquido'.  Invalid column name 'Fecha'.

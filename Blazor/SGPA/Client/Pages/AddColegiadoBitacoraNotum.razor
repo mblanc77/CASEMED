@@ -1,0 +1,31 @@
+@page "/add-colegiado-bitacora-notum"
+
+<PageTitle>Add ColegiadoBitacoraNotum</PageTitle>
+    <RadzenColumn SizeMD=12>
+        <RadzenAlert Shade="Shade.Lighter" Variant="Variant.Flat" Size="AlertSize.Small" AlertStyle="AlertStyle.Danger" Visible="@errorVisible">Cannot save ColegiadoBitacoraNotum</RadzenAlert>
+        <RadzenTemplateForm TItem="SGPA.Server.Models.CMU.ColegiadoBitacoraNotum" Data="@colegiadoBitacoraNotum" Visible="@(colegiadoBitacoraNotum != null && canEdit)" Submit="@FormSubmit">
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Contenido" Component="Contenido" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenTextBox style="display: block; width: 100%" @bind-Value="@colegiadoBitacoraNotum.Contenido" Name="Contenido" />
+                </RadzenColumn>
+            </RadzenRow>
+            <RadzenRow style="margin-bottom: 1rem">
+                <RadzenColumn SizeMD="3">
+                    <RadzenLabel Text="Colegiado Bitacora" Component="ColegiadoBitacora" style="width: 100%" />
+                </RadzenColumn>
+                <RadzenColumn SizeMD="9">
+                    <RadzenDropDownDataGrid Data="@colegiadoBitacorasForId" TextProperty="" ValueProperty="Id" AllowClear=true
+                         Placeholder="Choose ColegiadoBitacora" style="display: block; width: 100%" @bind-Value="@colegiadoBitacoraNotum.Id" Name="Id"
+                        SelectedValue=@colegiadoBitacorasForIdValue Count=@colegiadoBitacorasForIdCount LoadData=@colegiadoBitacorasForIdLoadData />
+                </RadzenColumn>
+            </RadzenRow>
+          <RadzenStack  Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.End" Gap="0.5rem">
+                    <RadzenButton ButtonStyle="ButtonStyle.Primary" ButtonType="ButtonType.Submit" Icon="save" Text="Save" Variant="Variant.Flat" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Light" Text="Cancel" Variant="Variant.Flat" Click="@CancelButtonClick"  />
+          </RadzenStack>
+        </RadzenTemplateForm>
+    </RadzenColumn>
+

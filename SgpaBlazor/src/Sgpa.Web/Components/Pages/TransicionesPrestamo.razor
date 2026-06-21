@@ -1,0 +1,7 @@
+@page "/transiciones-prestamo"
+@rendermode InteractiveServer
+
+<PageTitle>Transiciones de estado (préstamos)</PageTitle>
+
+@* Demo de CRUD con clave compuesta (SP_CtrlPrestamoEstado: PrestamoEstadoAnt + PrestamoEstadoSig). *@
+<SgpaCrudView TEntity="SP_CtrlPrestamoEstado" Title="Transiciones de estado (préstamos)" />
