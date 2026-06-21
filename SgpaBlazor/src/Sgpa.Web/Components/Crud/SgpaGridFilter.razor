@@ -4,6 +4,7 @@
 @inject ISavedFilterService Filters
 @inject WebCurrentUser CurrentUser
 @inject IToastNotificationService Toasts
+@inject ISgpaLookupService Lookups
 
 @*
     Filtrado interactivo del ListView con DxFilterBuilder (FilterControl de DevExpress) + filtros
@@ -32,7 +33,21 @@
             <Fields>
                 @foreach (var col in Meta.ListColumns)
                 {
-                    <DxFilterBuilderField FieldName="@col.Name" Caption="@col.Caption" Type="col.UnderlyingType" />
+                    @if (_fkLookups.TryGetValue(col.Name, out var fklk))
+                    {
+                        @* Columna FK: el valor se elige de un combo de lookup (descripción), guardando el código. *@
+                        <DxFilterBuilderField FieldName="@col.Name" Caption="@col.Caption" Type="col.UnderlyingType">
+                            <EditSettings>
+                                <DxComboBoxSettings Data="fklk"
+                                                    ValueFieldName="@nameof(LookupItem.Value)" TextFieldName="@nameof(LookupItem.Text)"
+                                                    FilteringMode="DataGridFilteringMode.Contains" />
+                            </EditSettings>
+                        </DxFilterBuilderField>
+                    }
+                    else
+                    {
+                        <DxFilterBuilderField FieldName="@col.Name" Caption="@col.Caption" Type="col.UnderlyingType" />
+                    }
                 }
                 @* Relaciones a otras tablas como campos JERÁRQUICOS (no ensucian el root):
                    - 1-N (colección): IsCollection=true → el builder arma un Exists; subcampos con FieldName RELATIVO.
@@ -53,7 +68,9 @@
                     }
                     else
                     {
-                        <DxFilterBuilderField FieldName="@rel.FieldPrefix" Caption="@rel.Label">
+                        @* Nodo de referencia N-1: sólo agrupa; NO es columna real → no seleccionable en sí.
+                           Se elige una columna hija (ej. Mutualista · Descripción), que filtra vía EXISTS. *@
+                        <DxFilterBuilderField FieldName="@rel.FieldPrefix" Caption="@rel.Label" AllowSelection="false">
                             <Fields>
                                 @foreach (var col in rel.Child.ListColumns)
                                 {
@@ -129,6 +146,13 @@
                         case Cat.Bool:
                             <DxCheckBox @bind-Checked="pv.Booleano" />
                             break;
+                        case Cat.Fk:
+                            <DxComboBox Data="pv.FkLookup" TData="LookupItem" TValue="object"
+                                        Value="pv.FkValue" ValueChanged="@((object v) => pv.FkValue = v)"
+                                        ValueFieldName="@nameof(LookupItem.Value)" TextFieldName="@nameof(LookupItem.Text)"
+                                        FilteringMode="DataGridFilteringMode.Contains"
+                                        ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto" NullText=" " />
+                            break;
                         default:
                             <DxTextBox @bind-Text="pv.Texto" />
                             break;
@@ -197,7 +221,26 @@
     private List<PromptVal> _promptVals = new();
     private readonly Dictionary<int, Dictionary<string, object?>> _ultimosValores = new();
 
-    protected override async Task OnInitializedAsync() => await ReloadSavedAsync();
+    // Lookups de las columnas FK de la entidad, para el combo del filter builder (col física -> items).
+    private readonly Dictionary<string, IReadOnlyList<LookupItem>> _fkLookups = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ReloadSavedAsync();
+        await CargarLookupsFkAsync();
+    }
+
+    private async Task CargarLookupsFkAsync()
+    {
+        foreach (var col in Meta.ListColumns)
+        {
+            if (col.IsAudit || col.IsKey) continue;
+            var target = EntityCatalog.LookupTargetFor(col, Meta);
+            if (target is null) continue;
+            var items = await Lookups.GetAsync(target.EntityType);
+            if (items is not null) _fkLookups[col.Name] = items;
+        }
+    }
 
     private async Task ReloadSavedAsync()
     {
@@ -231,7 +274,7 @@
                 // El filtro tiene parámetros: pedirlos antes de aplicar (no se aplica todavía).
                 _promptFilter = f;
                 _promptCrit = crit;
-                _promptVals = BuildPromptVals(f, defs);
+                _promptVals = await BuildPromptVals(f, defs);
                 _manageVisible = false;
                 _promptVisible = true;
                 return;
@@ -307,14 +350,21 @@
         await OnChanged.InvokeAsync();
     }
 
-    private List<PromptVal> BuildPromptVals(SavedFilter f, IReadOnlyList<FiltroParametroDef> defs)
+    private async Task<List<PromptVal>> BuildPromptVals(SavedFilter f, IReadOnlyList<FiltroParametroDef> defs)
     {
         _ultimosValores.TryGetValue(f.Id, out var last);
         var res = new List<PromptVal>();
         foreach (var d in defs)
         {
             var t = Type.GetType(d.ClrType) ?? typeof(string);
-            var pv = new PromptVal { Def = d, Categoria = Categorizar(t) };
+            var esFk = !string.IsNullOrEmpty(d.FkEntidad);
+            var pv = new PromptVal { Def = d, Categoria = esFk ? Cat.Fk : Categorizar(t) };
+            if (esFk)
+            {
+                var target = EntityCatalog.All.FirstOrDefault(m => m.Table.Equals(d.FkEntidad, StringComparison.OrdinalIgnoreCase));
+                if (target is not null) pv.FkLookup = await Lookups.GetAsync(target.EntityType);
+                if (pv.FkLookup is null) pv.Categoria = Categorizar(t);   // sin lookup → editor escalar (el código)
+            }
             object? init = last is not null && last.TryGetValue(d.Nombre, out var lv) ? lv
                 : (d.DefaultJson is null ? null : SafeDeserialize(d.DefaultJson, t));
             pv.Set(init);
@@ -335,7 +385,7 @@
         try { return System.Text.Json.JsonSerializer.Deserialize(json, t); } catch { return null; }
     }
 
-    private enum Cat { Fecha, Numero, Bool, Texto }
+    private enum Cat { Fecha, Numero, Bool, Texto, Fk }
 
     private sealed class PromptVal
     {
@@ -345,6 +395,8 @@
         public decimal? Numero;
         public bool Booleano;
         public string? Texto;
+        public object? FkValue;                          // clave seleccionada (FK)
+        public IReadOnlyList<LookupItem>? FkLookup;      // opciones del combo (FK)
 
         public void Set(object? v)
         {
@@ -353,6 +405,7 @@
                 case Cat.Fecha: Fecha = v is DateTime dt ? dt : (DateTime?)null; break;
                 case Cat.Numero: Numero = v is null ? null : System.Convert.ToDecimal(v); break;
                 case Cat.Bool: Booleano = v is bool b && b; break;
+                case Cat.Fk: FkValue = v; break;
                 default: Texto = v?.ToString(); break;
             }
         }
@@ -362,6 +415,7 @@
             Cat.Fecha => Fecha,
             Cat.Numero => Numero,
             Cat.Bool => Booleano,
+            Cat.Fk => FkValue,
             _ => Texto
         };
     }
