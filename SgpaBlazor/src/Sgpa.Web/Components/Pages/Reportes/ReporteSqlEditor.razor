@@ -46,6 +46,29 @@ else
                 }
             </div>
             @if (_error is not null) { <div class="alert alert-danger py-2 mt-2 mb-0">@_error</div> }
+
+            <details class="mt-2">
+                <summary class="text-muted small" style="cursor:pointer">¿Cómo escribir los parámetros? (ejemplos)</summary>
+                <div class="border rounded p-2 mt-1 small bg-light">
+                    <p class="mb-2">
+                        Escribí el token <code>@@Nombre</code> <strong>sin comillas</strong>: el motor agrega (o no) las
+                        comillas y escapa el valor <strong>según el tipo</strong> que definas abajo.
+                    </p>
+                    <table class="table table-sm mb-2">
+                        <thead><tr><th>Tipo</th><th>En tu SQL</th><th>Queda como</th></tr></thead>
+                        <tbody>
+                            <tr><td>Texto</td><td><code>WHERE Nombre = @@Nombre</code></td><td><code>= N'blanc'</code> (entrecomillado y escapado)</td></tr>
+                            <tr><td>Fecha</td><td><code>WHERE Fecha &gt;= @@Desde</code></td><td><code>&gt;= '2026-06-21T00:00:00'</code></td></tr>
+                            <tr><td>Entero / Decimal</td><td><code>WHERE Edad = @@Edad</code></td><td><code>= 25</code> (sin comillas)</td></tr>
+                            <tr><td>Bool</td><td><code>WHERE Activo = @@Act</code></td><td><code>= 1</code></td></tr>
+                            <tr><td>(sin valor)</td><td><code>... = @@X</code></td><td><code>= NULL</code></td></tr>
+                        </tbody>
+                    </table>
+                    <p class="mb-1"><strong>Búsqueda parcial (LIKE):</strong> <code>WHERE Nombre LIKE '%' + @@Filtro + '%'</code> (token sin comillas; los <code>%</code> aparte).</p>
+                    <p class="mb-1"><strong>Lista (IN):</strong> usá un parámetro de texto: <code>WHERE x IN (SELECT value FROM STRING_SPLIT(@@Lista, ','))</code>.</p>
+                    <p class="mb-0"><strong>Tope de filas (TOP):</strong> <code>SELECT TOP (@@Top) ...</code> con <code>Top</code> de tipo Entero.</p>
+                </div>
+            </details>
         </div>
 
         @if (_params.Count > 0)
