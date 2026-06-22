@@ -13,7 +13,6 @@
 @inject WebCurrentUser CurrentUser
 @inject IToastNotificationService Toasts
 @inject ICalculatedFieldCatalog CalcCatalog
-@inject IJSRuntime JS
 
 <PageTitle>@(_rep?.Nombre ?? "Reporte")</PageTitle>
 
@@ -62,8 +61,6 @@ else if (_rep is not null)
                     <DxDropDownButtonItem Text="CSV (.csv)" Click="@(() => ExportAsync("csv"))" />
                 </Items>
             </DxDropDownButton>
-            <DxButton Text="Imprimir" IconCssClass="fa-solid fa-print" RenderStyle="ButtonRenderStyle.Secondary"
-                      Click="PrintAsync" />
             <span class="ms-auto align-self-center text-muted small">@_rows.Count fila(s)@(_truncated ? " (limitado)" : "")</span>
         </div>
 
@@ -244,8 +241,6 @@ else if (_rep is not null)
             default: await _grid.ExportToXlsxAsync(name); break;
         }
     }
-
-    private async Task PrintAsync() => await JS.InvokeVoidAsync("window.print");
 
     // Filtro avanzado ad-hoc: opera client-side sobre las filas ya cargadas (no se persiste; cada apertura arranca limpia).
     private void OpenAdvanced()
