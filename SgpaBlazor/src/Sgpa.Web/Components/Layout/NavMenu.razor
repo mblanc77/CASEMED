@@ -81,21 +81,32 @@ else
                 </Nodes>
             </DxTreeViewNode>
 
-            @* Reportes: todo lo de reporting junto (estadísticos, diseñador REPX, reportes dinámicos y, para admin,
-               creación/administración + campos calculados). *@
+            @* Reportes: agrupado por tipo, con subcarpeta para los reportes a medida del usuario. *@
             <DxTreeViewNode Text="Reportes" IconCssClass="fa-solid fa-chart-pie">
                 <Nodes>
-                    <DxTreeViewNode Text="Informes estadísticos" IconCssClass="fa-solid fa-chart-column" NavigateUrl="/informes-estadisticos" />
-                    <DxTreeViewNode Text="Diseñador de reportes" IconCssClass="fa-solid fa-pen-ruler" NavigateUrl="/reportes" />
-                    @foreach (var r in _reportes)
+                    @* Reportes tabulares definidos por el usuario (el módulo dinámico). *@
+                    @if (_reportes.Count > 0 || _isAdmin)
                     {
-                        <DxTreeViewNode Text="@r.Nombre" IconCssClass="fa-solid fa-file-lines" NavigateUrl="@($"/reportes/din/{r.Id}")" />
+                        <DxTreeViewNode Text="Reportes a medida" IconCssClass="fa-solid fa-table-list">
+                            <Nodes>
+                                @foreach (var r in _reportes)
+                                {
+                                    <DxTreeViewNode Text="@r.Nombre" IconCssClass="fa-solid fa-file-lines" NavigateUrl="@($"/reportes/din/{r.Id}")" />
+                                }
+                                @if (_isAdmin)
+                                {
+                                    <DxTreeViewNode Text="Nuevo reporte a medida…" IconCssClass="fa-solid fa-plus" NavigateUrl="/reportes/din/editor" BeginGroup="true" />
+                                    <DxTreeViewNode Text="Administrar reportes a medida…" IconCssClass="fa-solid fa-list-check" NavigateUrl="/reportes/din" />
+                                }
+                            </Nodes>
+                        </DxTreeViewNode>
                     }
+                    @* Informes con formato fijo y diseñador avanzado. *@
+                    <DxTreeViewNode Text="Informes estadísticos" IconCssClass="fa-solid fa-chart-column" NavigateUrl="/informes-estadisticos" />
+                    <DxTreeViewNode Text="Diseñador avanzado (DevExpress)" IconCssClass="fa-solid fa-pen-ruler" NavigateUrl="/reportes" />
                     @if (_isAdmin)
                     {
-                        <DxTreeViewNode Text="Nuevo reporte…" IconCssClass="fa-solid fa-plus" NavigateUrl="/reportes/din/editor" BeginGroup="true" />
-                        <DxTreeViewNode Text="Administrar reportes…" IconCssClass="fa-solid fa-list-check" NavigateUrl="/reportes/din" />
-                        <DxTreeViewNode Text="Campos calculados" IconCssClass="fa-solid fa-calculator" NavigateUrl="/crud/CampoCalculado" />
+                        <DxTreeViewNode Text="Campos calculados" IconCssClass="fa-solid fa-calculator" NavigateUrl="/campos-calculados" />
                     }
                 </Nodes>
             </DxTreeViewNode>
@@ -171,9 +182,9 @@ else
     // Ítems de reporting que sólo ve el admin (se agregan a la búsqueda sólo si corresponde).
     private static readonly (string Label, string Url, string Icon)[] _leafAdmin =
     {
-        ("Nuevo reporte", "/reportes/din/editor", "fa-plus"),
-        ("Administrar reportes", "/reportes/din", "fa-list-check"),
-        ("Campos calculados", "/crud/CampoCalculado", "fa-calculator"),
+        ("Nuevo reporte a medida", "/reportes/din/editor", "fa-plus"),
+        ("Administrar reportes a medida", "/reportes/din", "fa-list-check"),
+        ("Campos calculados", "/campos-calculados", "fa-calculator"),
     };
 
     private IEnumerable<(string Label, string Url, string Icon)> Filtered =>

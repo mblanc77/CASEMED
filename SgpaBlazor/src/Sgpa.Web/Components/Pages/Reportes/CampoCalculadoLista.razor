@@ -1,0 +1,111 @@
+@page "/campos-calculados"
+@rendermode InteractiveServer
+@using Sgpa.Data.Configuracion
+@using Sgpa.Data.Crud
+@using Sgpa.Domain.Entities
+@using Sgpa.Web.Components.Crud
+@inject ISgpaCrudService<CampoCalculado> Crud
+@inject ICalculatedFieldCatalog CalcCatalog
+@inject ITablaConfigService TablaConfig
+@inject WebCurrentUser CurrentUser
+@inject IToastNotificationService Toasts
+@inject NavigationManager Nav
+
+<PageTitle>Campos calculados</PageTitle>
+
+@if (_denied)
+{
+    <div class="alert alert-danger mt-3">Solo un administrador puede gestionar campos calculados.</div>
+}
+else
+{
+    <div class="d-flex align-items-center gap-2 mb-3">
+        <h3 class="mb-0"><i class="fa-solid fa-calculator me-2"></i>Campos calculados</h3>
+        <DxButton Text="Nuevo campo calculado" IconCssClass="fa-solid fa-plus" RenderStyle="ButtonRenderStyle.Primary"
+                  CssClass="ms-auto" Click="@(() => Nav.NavigateTo("/campos-calculados/editor"))" />
+    </div>
+    <p class="text-muted small mb-3">Expresiones por tabla, reutilizables en reportes a medida y en los listados (filtrar, ordenar, agrupar, totalizar).</p>
+
+    @if (_items.Count == 0)
+    {
+        <p class="text-muted">No hay campos calculados todavía.</p>
+    }
+    else
+    {
+        <table class="table table-sm table-hover align-middle">
+            <thead>
+                <tr>
+                    <th style="width:180px">Tabla</th>
+                    <th>Campo</th>
+                    <th>Expresión</th>
+                    <th style="width:90px">Tipo</th>
+                    <th style="width:70px">Activo</th>
+                    <th style="width:170px"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var c in _items)
+                {
+                    <tr>
+                        <td class="text-muted">@TablaConfig.DisplayName(c.Tabla)</td>
+                        <td><strong>@(string.IsNullOrWhiteSpace(c.Caption) ? c.Nombre : c.Caption)</strong> <span class="text-muted small">@c.Nombre</span></td>
+                        <td class="small"><code>@c.Expr</code></td>
+                        <td class="text-muted small">@c.TipoResultado</td>
+                        <td>@(c.Activo ? "Sí" : "No")</td>
+                        <td class="text-nowrap">
+                            <DxButton Text="Editar" IconCssClass="fa-solid fa-pen" RenderStyle="ButtonRenderStyle.Link"
+                                      Click="@(() => Nav.NavigateTo($"/campos-calculados/editor/{c.Id}"))" />
+                            <DxButton Text="Borrar" IconCssClass="fa-solid fa-trash" RenderStyle="ButtonRenderStyle.Link"
+                                      Click="@(() => OpenDelete(c))" />
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    <DxPopup @bind-Visible="_deleteVisible" HeaderText="Borrar campo calculado" Width="480px" CloseOnEscape="true">
+        <BodyContentTemplate>
+            <p>¿Borrar el campo <strong>@_target?.Nombre</strong> de <strong>@(_target is null ? "" : TablaConfig.DisplayName(_target.Tabla))</strong>?
+               Dejará de estar disponible en reportes y listados.</p>
+            <div class="d-flex gap-2 justify-content-end">
+                <DxButton Text="Cancelar" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => _deleteVisible = false)" />
+                <DxButton Text="Borrar" IconCssClass="fa-solid fa-trash" RenderStyle="ButtonRenderStyle.Danger" Click="DeleteAsync" />
+            </div>
+        </BodyContentTemplate>
+    </DxPopup>
+}
+
+@code {
+    private bool _denied;
+    private IReadOnlyList<CampoCalculado> _items = Array.Empty<CampoCalculado>();
+    private bool _deleteVisible;
+    private CampoCalculado? _target;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CurrentUser.EnsureLoadedAsync();
+        if (!CurrentUser.IsAdmin) { _denied = true; return; }
+        await TablaConfig.EnsureLoadedAsync();
+        await ReloadAsync();
+    }
+
+    private async Task ReloadAsync()
+    {
+        var all = await Crud.GetAllAsync();
+        _items = all.OrderBy(c => c.Tabla, StringComparer.OrdinalIgnoreCase)
+                    .ThenBy(c => c.Nombre, StringComparer.OrdinalIgnoreCase).ToList();
+    }
+
+    private void OpenDelete(CampoCalculado c) { _target = c; _deleteVisible = true; }
+
+    private async Task DeleteAsync()
+    {
+        if (_target is null) return;
+        await Crud.DeleteAsync(_target);
+        CalcCatalog.Invalidate();
+        _deleteVisible = false;
+        Toasts.Exito("Campo calculado borrado.");
+        await ReloadAsync();
+    }
+}

@@ -1,0 +1,128 @@
+@page "/campos-calculados/editor"
+@page "/campos-calculados/editor/{Id:int}"
+@rendermode InteractiveServer
+@using FluentValidation
+@using Sgpa.Data.Configuracion
+@using Sgpa.Data.Crud
+@using Sgpa.Domain.Entities
+@using Sgpa.Domain.Metadata
+@using Sgpa.Web.Components.Crud
+@inject ISgpaCrudService<CampoCalculado> Crud
+@inject IValidator<CampoCalculado> Validator
+@inject ICalculatedFieldCatalog CalcCatalog
+@inject ITablaConfigService TablaConfig
+@inject WebCurrentUser CurrentUser
+@inject IToastNotificationService Toasts
+@inject NavigationManager Nav
+
+<PageTitle>@(Id is null ? "Nuevo campo calculado" : "Editar campo calculado")</PageTitle>
+
+@if (_denied)
+{
+    <div class="alert alert-danger mt-3">Solo un administrador puede gestionar campos calculados.</div>
+}
+else
+{
+    <h3 class="mb-3"><i class="fa-solid fa-calculator me-2"></i>@(Id is null ? "Nuevo campo calculado" : "Editar campo calculado")</h3>
+
+    <div class="row g-3" style="max-width:900px">
+        <div class="col-lg-6">
+            <label class="form-label mb-1">Tabla</label>
+            <DxComboBox Data="_tablas" TData="TablaOpt" TValue="string"
+                        Value="_model.Tabla" ValueChanged="@((string v) => _model.Tabla = v)"
+                        ValueFieldName="@nameof(TablaOpt.Table)" TextFieldName="@nameof(TablaOpt.Label)"
+                        FilteringMode="DataGridFilteringMode.Contains" NullText="Elegí la tabla…" />
+        </div>
+        <div class="col-lg-6">
+            <label class="form-label mb-1">Tipo de resultado</label>
+            <DxComboBox Data="_tipos" TData="string" TValue="string" @bind-Value="_model.TipoResultado" />
+        </div>
+        <div class="col-lg-6">
+            <label class="form-label mb-1">Nombre del campo</label>
+            <DxTextBox @bind-Text="_model.Nombre" NullText="Identificador, sin espacios (ej. Duracion)" />
+        </div>
+        <div class="col-lg-6">
+            <label class="form-label mb-1">Encabezado</label>
+            <DxTextBox @bind-Text="_model.Caption" NullText="Texto a mostrar (ej. Duración)" />
+        </div>
+        <div class="col-12">
+            <label class="form-label mb-1">Expresión</label>
+            @* TODO (etapa siguiente): reemplazar este memo por un editor visual de fórmulas (estilo Expression
+               Editor de DevExpress XtraReports): árbol de campos/funciones + validación en vivo. *@
+            <DxMemo @bind-Text="_model.Expr" Rows="4" CssClass="w-100"
+                    NullText="ej. DateDiffDay([FechaIni],[FechaFin]) + 1" />
+            <div class="form-text">
+                Sintaxis CriteriaOperator. Campos entre corchetes: <code>[Columna]</code>. Funciones:
+                <code>DateDiffDay</code>, <code>AddDays</code>, <code>Concat</code>, <code>Iif</code>, <code>IsNull</code>,
+                <code>Substring</code>, <code>Len</code>, <code>Upper/Lower/Trim</code>, <code>Abs</code>, <code>Round</code>.
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <label class="form-label mb-1">Formato (opcional)</label>
+            <DxTextBox @bind-Text="_model.DisplayFormat" NullText="ej. n0, d, #,##0.00" />
+        </div>
+        <div class="col-lg-6 d-flex align-items-end">
+            <DxCheckBox @bind-Checked="_model.Activo">Activo</DxCheckBox>
+        </div>
+    </div>
+
+    @if (_errores.Count > 0)
+    {
+        <div class="alert alert-danger mt-3">
+            <ul class="mb-0">@foreach (var e in _errores) { <li>@e</li> }</ul>
+        </div>
+    }
+
+    <div class="d-flex gap-2 mt-3">
+        <DxButton Text="Guardar" IconCssClass="fa-solid fa-floppy-disk" RenderStyle="ButtonRenderStyle.Primary" Click="SaveAsync" />
+        <DxButton Text="Cancelar" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => Nav.NavigateTo("/campos-calculados"))" />
+    </div>
+}
+
+@code {
+    [Parameter] public int? Id { get; set; }
+
+    private bool _denied;
+    private CampoCalculado _model = new() { Activo = true, TipoResultado = "decimal" };
+    private readonly List<string> _errores = new();
+
+    private IReadOnlyList<TablaOpt> _tablas = Array.Empty<TablaOpt>();
+    private static readonly string[] _tipos = { "int", "decimal", "datetime", "bool", "string" };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CurrentUser.EnsureLoadedAsync();
+        if (!CurrentUser.IsAdmin) { _denied = true; return; }
+        await TablaConfig.EnsureLoadedAsync();
+
+        _tablas = EntityCatalog.CrudCapable
+            .OrderBy(m => TablaConfig.DisplayName(m.Table), StringComparer.OrdinalIgnoreCase)
+            .Select(m => new TablaOpt(m.Table, TablaConfig.DisplayName(m.Table)))
+            .ToList();
+
+        if (Id is int id)
+            _model = await Crud.GetByKeyAsync(new object?[] { id }) ?? new CampoCalculado { Activo = true, TipoResultado = "decimal" };
+    }
+
+    private async Task SaveAsync()
+    {
+        _errores.Clear();
+        var result = await Validator.ValidateAsync(_model);
+        if (!result.IsValid)
+        {
+            _errores.AddRange(result.Errors.Select(e => e.ErrorMessage).Distinct());
+            return;
+        }
+        try
+        {
+            if (Id is null) await Crud.InsertAsync(_model);
+            else await Crud.UpdateAsync(_model);
+            CalcCatalog.Invalidate();   // que el catálogo recargue con el cambio
+            Toasts.Exito("Campo calculado guardado.");
+            Nav.NavigateTo("/campos-calculados");
+        }
+        catch (Exception ex) { _errores.Add($"No se pudo guardar: {ex.Message}"); }
+    }
+
+    private sealed record TablaOpt(string Table, string Label);
+}
