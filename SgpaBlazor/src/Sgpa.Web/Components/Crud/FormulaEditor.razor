@@ -1,18 +1,21 @@
+@using Dapper
 @using DevExpress.Data.Filtering
+@using Sgpa.Data
 @using Sgpa.Data.Crud
 @using Sgpa.Domain.Metadata
 @implements IAsyncDisposable
 @inject IJSRuntime JS
+@inject IDbExecutor Db
 
 @*
     Editor visual de fórmulas para campos calculados (inspirado en el Expression Editor de DevExpress XtraReports):
-    paleta de CAMPOS de la tabla + FUNCIONES por categoría + operadores, que se insertan en la posición del cursor;
-    el texto sigue siendo una expresión CriteriaOperator y se valida en vivo (parse + existencia de columnas) con el
-    mismo motor (SgpaScalarTranslator) que traduce a SQL.
+    paleta de CAMPOS + FUNCIONES por categoría + operadores (insertados en el cursor), autocompletado al tipear '[',
+    validación en vivo (parse + columnas) y vista previa del valor sobre una fila de muestra. El texto es una
+    expresión CriteriaOperator traducida a SQL por ScalarSqlTranslator.
 *@
 <div class="row g-2">
     <div class="col-lg-5">
-        <div class="border rounded p-2 sgpa-formula-palette" style="max-height:260px; overflow:auto">
+        <div class="border rounded p-2 sgpa-formula-palette" style="max-height:300px; overflow:auto">
             <div class="fw-semibold small text-muted">Campos</div>
             @if (_columns.Count == 0)
             {
@@ -55,19 +58,45 @@
     <div class="col-lg-7">
         <textarea @ref="_ta" class="form-control font-monospace" rows="6" spellcheck="false"
                   value="@Expression" @oninput="OnInput" placeholder="ej. DateDiffDay([FechaIni],[FechaFin]) + 1"></textarea>
-        <div class="mt-1 small">
-            @if (string.IsNullOrWhiteSpace(Expression))
-            {
-                <span class="text-muted">Escribí o insertá campos y funciones desde la izquierda.</span>
-            }
-            else if (_error is not null)
-            {
-                <span class="text-danger"><i class="fa-solid fa-triangle-exclamation me-1"></i>@_error</span>
-            }
-            else
-            {
-                <span class="text-success"><i class="fa-solid fa-check me-1"></i>Expresión válida.</span>
-            }
+
+        @* Autocompletado: sugerencias de campos mientras hay un '[' abierto. *@
+        @if (_suggest.Count > 0)
+        {
+            <div class="border rounded mt-1 p-1 d-flex flex-wrap gap-1 bg-light">
+                @foreach (var s in _suggest)
+                {
+                    <button type="button" class="btn btn-sm btn-light border py-0" @onclick="@(() => ConfirmSuggestion(s))">
+                        <i class="fa-solid fa-table-column me-1 text-muted"></i>@s.Caption <span class="text-muted small">@s.Name</span>
+                    </button>
+                }
+            </div>
+        }
+
+        <div class="d-flex align-items-center gap-2 mt-1">
+            <DxButton Text="Probar" IconCssClass="fa-solid fa-flask" RenderStyle="ButtonRenderStyle.Secondary"
+                      SizeMode="SizeMode.Small" Click="ProbarAsync" Enabled="@(!string.IsNullOrWhiteSpace(Expression) && _error is null)" />
+            <div class="small">
+                @if (string.IsNullOrWhiteSpace(Expression))
+                {
+                    <span class="text-muted">Escribí o insertá campos y funciones desde la izquierda.</span>
+                }
+                else if (_error is not null)
+                {
+                    <span class="text-danger"><i class="fa-solid fa-triangle-exclamation me-1"></i>@_error</span>
+                }
+                else if (_previewError is not null)
+                {
+                    <span class="text-danger"><i class="fa-solid fa-triangle-exclamation me-1"></i>@_previewError</span>
+                }
+                else if (_preview is not null)
+                {
+                    <span class="text-success"><i class="fa-solid fa-check me-1"></i>Válida. Ejemplo: <strong>@_preview</strong></span>
+                }
+                else
+                {
+                    <span class="text-success"><i class="fa-solid fa-check me-1"></i>Expresión válida.</span>
+                }
+            </div>
         </div>
     </div>
 </div>
@@ -82,6 +111,15 @@
     private IReadOnlyList<ColumnMetadata> _columns = Array.Empty<ColumnMetadata>();
     private string? _error;
     private string? _validatedTabla;
+
+    // Vista previa.
+    private string? _preview;
+    private string? _previewError;
+
+    // Autocompletado.
+    private List<ColumnMetadata> _suggest = new();
+    private int _openIndex = -1;     // posición del '[' abierto
+    private int _caretStart;         // posición del cursor al sugerir
 
     private sealed record FnDef(string Cat, string Name, string Hint);
     private static readonly FnDef[] _funciones =
@@ -106,33 +144,92 @@
 
     protected override void OnParametersSet()
     {
-        // Recarga columnas si cambió la tabla; revalida.
         if (!string.Equals(_validatedTabla, Tabla, StringComparison.OrdinalIgnoreCase))
         {
             _validatedTabla = Tabla;
             var meta = string.IsNullOrWhiteSpace(Tabla) ? null : EntityCatalog.TryGet(Tabla);
             _columns = meta?.Columns.Where(c => !c.IsAudit).ToList() ?? (IReadOnlyList<ColumnMetadata>)Array.Empty<ColumnMetadata>();
+            _preview = null; _previewError = null;
         }
         Validate();
     }
 
+    private async Task<IJSObjectReference> ModuleAsync()
+        => _module ??= await JS.InvokeAsync<IJSObjectReference>("import", "./js/formula-editor.js");
+
     private async Task OnInput(ChangeEventArgs e)
     {
         Expression = e.Value?.ToString();
+        _preview = null; _previewError = null;
         await ExpressionChanged.InvokeAsync(Expression);
         Validate();
+        await UpdateSuggestionsAsync();
     }
 
     private async Task Insert(string snippet, int caretOffset)
     {
-        _module ??= await JS.InvokeAsync<IJSObjectReference>("import", "./js/formula-editor.js");
-        var nuevo = await _module.InvokeAsync<string?>("insertAtCursor", _ta, snippet, caretOffset);
+        var mod = await ModuleAsync();
+        var nuevo = await mod.InvokeAsync<string?>("insertAtCursor", _ta, snippet, caretOffset);
         Expression = nuevo;
+        _preview = null; _previewError = null;
+        await ExpressionChanged.InvokeAsync(Expression);
+        Validate();
+        _suggest.Clear();
+    }
+
+    // Muestra sugerencias de campos si el cursor está dentro de un '[' sin cerrar.
+    private async Task UpdateSuggestionsAsync()
+    {
+        _suggest = new();
+        if (_columns.Count == 0 || string.IsNullOrEmpty(Expression)) return;
+        var mod = await ModuleAsync();
+        var caret = await mod.InvokeAsync<CaretInfo?>("getCaret", _ta);
+        var start = caret?.Start ?? Expression.Length;
+        if (start > Expression.Length) start = Expression.Length;
+
+        var open = Expression.LastIndexOf('[', Math.Max(0, start - 1));
+        if (open < 0) return;
+        var fragment = Expression.Substring(open + 1, start - open - 1);
+        if (fragment.Contains(']')) return;   // corchete ya cerrado
+
+        _openIndex = open;
+        _caretStart = start;
+        _suggest = _columns
+            .Where(c => fragment.Length == 0
+                        || c.Name.Contains(fragment, StringComparison.OrdinalIgnoreCase)
+                        || c.Caption.Contains(fragment, StringComparison.OrdinalIgnoreCase))
+            .Take(8).ToList();
+    }
+
+    private async Task ConfirmSuggestion(ColumnMetadata col)
+    {
+        var mod = await ModuleAsync();
+        var nuevo = await mod.InvokeAsync<string?>("replaceRange", _ta, _openIndex, _caretStart, $"[{col.Name}]", -1);
+        Expression = nuevo;
+        _suggest.Clear();
+        _preview = null; _previewError = null;
         await ExpressionChanged.InvokeAsync(Expression);
         Validate();
     }
 
-    // Validación en vivo: parsea la expresión y verifica que sus columnas existan en la tabla.
+    private async Task ProbarAsync()
+    {
+        _preview = null; _previewError = null;
+        var meta = string.IsNullOrWhiteSpace(Tabla) ? null : EntityCatalog.TryGet(Tabla);
+        if (meta is null || string.IsNullOrWhiteSpace(Expression)) return;
+        try
+        {
+            var node = SgpaScalarTranslator.Translate(CriteriaOperator.Parse(Expression));
+            var p = new DynamicParameters();
+            int n = 0;
+            var expr = ScalarSqlTranslator.Translate(node, c => $"[{FilterSqlTranslator.ResolveColumnIn(meta, c).Name}]", p, ref n);
+            var sql = $"SELECT TOP 1 ({expr}) AS V FROM {meta.QualifiedTable}";
+            var v = await Db.ExecuteScalarAsync<object>(sql, p);
+            _preview = v is null ? "(sin filas / null)" : v.ToString();
+        }
+        catch (Exception ex) { _previewError = ex.Message; }
+    }
+
     private void Validate()
     {
         _error = null;
@@ -161,11 +258,13 @@
         _ => Array.Empty<string>()
     };
 
+    private sealed class CaretInfo { public int Start { get; set; } public string? Value { get; set; } }
+
     public async ValueTask DisposeAsync()
     {
         if (_module is not null)
         {
-            try { await _module.DisposeAsync(); } catch { /* circuito ya cerrado */ }
+            try { await _module.DisposeAsync(); } catch { /* circuito cerrado */ }
         }
     }
 }
