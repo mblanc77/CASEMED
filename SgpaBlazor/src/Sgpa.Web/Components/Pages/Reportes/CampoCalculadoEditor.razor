@@ -29,7 +29,7 @@ else
         <div class="col-lg-6">
             <label class="form-label mb-1">Tabla</label>
             <DxComboBox Data="_tablas" TData="TablaOpt" TValue="string"
-                        Value="_model.Tabla" ValueChanged="@((string v) => _model.Tabla = v)"
+                        @bind-Value="_model.Tabla"
                         ValueFieldName="@nameof(TablaOpt.Table)" TextFieldName="@nameof(TablaOpt.Label)"
                         FilteringMode="DataGridFilteringMode.Contains" NullText="Elegí la tabla…" />
         </div>

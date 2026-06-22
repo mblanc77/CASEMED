@@ -49,7 +49,7 @@
                     @foreach (var f in grupo)
                     {
                         <button type="button" class="btn btn-sm btn-outline-info py-0" title="@f.Hint"
-                                @onclick="@(() => Insert($"{f.Name}()", f.Name.Length + 1))">@f.Name</button>
+                                @onclick="@(() => Insert($"{f.Name}({Args(f.Arity)})", f.Name.Length + 1))">@f.Name</button>
                     }
                 </div>
             }
@@ -136,26 +136,29 @@
     private int _openIndex = -1;     // posición del '[' abierto
     private int _caretStart;         // posición del cursor al sugerir
 
-    private sealed record FnDef(string Cat, string Name, string Hint);
+    private sealed record FnDef(string Cat, string Name, string Hint, int Arity);
     private static readonly FnDef[] _funciones =
     {
-        new("Fecha", "DateDiffDay", "Días entre dos fechas: DateDiffDay(desde, hasta)"),
-        new("Fecha", "DateDiffMonth", "Meses entre dos fechas"),
-        new("Fecha", "DateDiffYear", "Años entre dos fechas"),
-        new("Fecha", "AddDays", "Suma días a una fecha: AddDays(fecha, n)"),
-        new("Fecha", "AddMonths", "Suma meses a una fecha"),
-        new("Fecha", "AddYears", "Suma años a una fecha"),
-        new("Texto", "Concat", "Concatena: Concat(a, b, ...)"),
-        new("Texto", "Substring", "Substring(texto, inicio, largo)"),
-        new("Texto", "Len", "Largo del texto"),
-        new("Texto", "Upper", "Mayúsculas"),
-        new("Texto", "Lower", "Minúsculas"),
-        new("Texto", "Trim", "Quita espacios"),
-        new("Lógicas", "Iif", "Iif(condición, siValor, siNo)"),
-        new("Lógicas", "IsNull", "IsNull(valor, alternativo)"),
-        new("Matemáticas", "Abs", "Valor absoluto"),
-        new("Matemáticas", "Round", "Round(valor, decimales)"),
+        new("Fecha", "DateDiffDay", "Días entre dos fechas: DateDiffDay(desde, hasta)", 2),
+        new("Fecha", "DateDiffMonth", "Meses entre dos fechas", 2),
+        new("Fecha", "DateDiffYear", "Años entre dos fechas", 2),
+        new("Fecha", "AddDays", "Suma días a una fecha: AddDays(fecha, n)", 2),
+        new("Fecha", "AddMonths", "Suma meses a una fecha", 2),
+        new("Fecha", "AddYears", "Suma años a una fecha", 2),
+        new("Texto", "Concat", "Concatena: Concat(a, b, ...)", 2),
+        new("Texto", "Substring", "Substring(texto, inicio, largo)", 3),
+        new("Texto", "Len", "Largo del texto", 1),
+        new("Texto", "Upper", "Mayúsculas", 1),
+        new("Texto", "Lower", "Minúsculas", 1),
+        new("Texto", "Trim", "Quita espacios", 1),
+        new("Lógicas", "Iif", "Iif(condición, siValor, siNo)", 3),
+        new("Lógicas", "IsNull", "IsNull(valor, alternativo)", 2),
+        new("Matemáticas", "Abs", "Valor absoluto", 1),
+        new("Matemáticas", "Round", "Round(valor, decimales)", 2),
     };
+
+    // Comas/placeholders según la aridad: 1 arg → "" (cursor adentro); 2 → ", "; 3 → ", , ".
+    private static string Args(int arity) => arity <= 1 ? string.Empty : string.Join(", ", new string[arity]);
 
     protected override void OnParametersSet()
     {
