@@ -13,10 +13,12 @@
     validación en vivo (parse + columnas) y vista previa del valor sobre una fila de muestra. El texto es una
     expresión CriteriaOperator traducida a SQL por ScalarSqlTranslator.
 *@
+@{ EnsureFields(); }
 <div class="row g-2">
     <div class="col-lg-5">
         <div class="border rounded p-2 sgpa-formula-palette" style="max-height:300px; overflow:auto">
             <div class="fw-semibold small text-muted">Campos</div>
+            @if (!string.IsNullOrEmpty(_loadInfo)) { <div class="small text-info">@_loadInfo</div> }
             @if (_columns.Count == 0)
             {
                 <div class="text-muted small mb-2">Elegí la tabla para ver sus campos.</div>
@@ -126,6 +128,7 @@
     private List<(string Target, string TargetLabel, IReadOnlyList<ColumnMetadata> Cols)> _relations = new();
     private string? _error;
     private string? _validatedTabla;
+    private string? _loadInfo;   // diagnóstico visible: qué tabla llegó y cuántos campos cargaron
 
     // Vista previa.
     private string? _preview;
@@ -162,9 +165,19 @@
 
     protected override void OnParametersSet()
     {
-        if (!string.Equals(_validatedTabla, Tabla, StringComparison.OrdinalIgnoreCase))
+        EnsureFields();
+        Validate();
+    }
+
+    // Recalcula campos + relaciones desde el parámetro Tabla ACTUAL (cacheado por tabla). Se llama también en cada
+    // render (markup) para no depender del diff de OnParametersSet.
+    private void EnsureFields()
+    {
+        if (string.Equals(_validatedTabla, Tabla, StringComparison.OrdinalIgnoreCase)) return;
+        _validatedTabla = Tabla;
+        _preview = null; _previewError = null;
+        try
         {
-            _validatedTabla = Tabla;
             var meta = string.IsNullOrWhiteSpace(Tabla) ? null : EntityCatalog.TryGet(Tabla);
             _columns = meta?.Columns.Where(c => !c.IsAudit).ToList() ?? (IReadOnlyList<ColumnMetadata>)Array.Empty<ColumnMetadata>();
             _relations = new();
@@ -179,9 +192,13 @@
                     _relations.Add((target.Table, target.Table, target.Columns.Where(c => !c.IsAudit).ToList()));
                 }
             }
-            _preview = null; _previewError = null;
+            _loadInfo = $"Tabla='{Tabla}' · {_columns.Count} campos · {_relations.Count} relaciones";
         }
-        Validate();
+        catch (Exception ex)
+        {
+            _columns = Array.Empty<ColumnMetadata>(); _relations = new();
+            _loadInfo = "ERROR cargando campos: " + ex.Message;
+        }
     }
 
     private async Task<IJSObjectReference> ModuleAsync()
