@@ -81,24 +81,24 @@ else
                 </Nodes>
             </DxTreeViewNode>
 
-            <DxTreeViewNode Text="Informes estadísticos" IconCssClass="fa-solid fa-chart-pie" NavigateUrl="/informes-estadisticos" />
-
-            @if (_reportes.Count > 0 || _isAdmin)
-            {
-                <DxTreeViewNode Text="Reportes dinámicos" IconCssClass="fa-solid fa-file-lines">
-                    <Nodes>
-                        @foreach (var r in _reportes)
-                        {
-                            <DxTreeViewNode Text="@r.Nombre" IconCssClass="fa-solid fa-file-lines" NavigateUrl="@($"/reportes/din/{r.Id}")" />
-                        }
-                        @if (_isAdmin)
-                        {
-                            <DxTreeViewNode Text="Nuevo reporte…" IconCssClass="fa-solid fa-plus" NavigateUrl="/reportes/din/editor" />
-                            <DxTreeViewNode Text="Administrar reportes…" IconCssClass="fa-solid fa-list-check" NavigateUrl="/reportes/din" />
-                        }
-                    </Nodes>
-                </DxTreeViewNode>
-            }
+            @* Reportes: todo lo de reporting junto (estadísticos, diseñador REPX, reportes dinámicos y, para admin,
+               creación/administración + campos calculados). *@
+            <DxTreeViewNode Text="Reportes" IconCssClass="fa-solid fa-chart-pie">
+                <Nodes>
+                    <DxTreeViewNode Text="Informes estadísticos" IconCssClass="fa-solid fa-chart-column" NavigateUrl="/informes-estadisticos" />
+                    <DxTreeViewNode Text="Diseñador de reportes" IconCssClass="fa-solid fa-pen-ruler" NavigateUrl="/reportes" />
+                    @foreach (var r in _reportes)
+                    {
+                        <DxTreeViewNode Text="@r.Nombre" IconCssClass="fa-solid fa-file-lines" NavigateUrl="@($"/reportes/din/{r.Id}")" />
+                    }
+                    @if (_isAdmin)
+                    {
+                        <DxTreeViewNode Text="Nuevo reporte…" IconCssClass="fa-solid fa-plus" NavigateUrl="/reportes/din/editor" BeginGroup="true" />
+                        <DxTreeViewNode Text="Administrar reportes…" IconCssClass="fa-solid fa-list-check" NavigateUrl="/reportes/din" />
+                        <DxTreeViewNode Text="Campos calculados" IconCssClass="fa-solid fa-calculator" NavigateUrl="/crud/CampoCalculado" />
+                    }
+                </Nodes>
+            </DxTreeViewNode>
 
             <DxTreeViewNode Text="Sistema" IconCssClass="fa-solid fa-gear">
                 <Nodes>
@@ -106,7 +106,6 @@ else
                     <DxTreeViewNode Text="Parámetros" IconCssClass="fa-solid fa-sliders" NavigateUrl="/parametros" />
                     <DxTreeViewNode Text="Configuración de tablas" IconCssClass="fa-solid fa-table-list" NavigateUrl="/config/tablas" />
                     <DxTreeViewNode Text="Auditoría" IconCssClass="fa-solid fa-clock-rotate-left" NavigateUrl="/auditoria" />
-                    <DxTreeViewNode Text="Reportes" IconCssClass="fa-solid fa-file-lines" NavigateUrl="/reportes" />
                     <DxTreeViewNode Text="Diagnóstico" IconCssClass="fa-solid fa-heart-pulse" NavigateUrl="/diagnostico" />
                 </Nodes>
             </DxTreeViewNode>
@@ -164,13 +163,22 @@ else
         ("Parámetros", "/parametros", "fa-sliders"),
         ("Configuración de tablas", "/config/tablas", "fa-table-list"),
         ("Auditoría", "/auditoria", "fa-clock-rotate-left"),
-        ("Reportes", "/reportes", "fa-file-lines"),
-        ("Informes estadísticos", "/informes-estadisticos", "fa-chart-pie"),
+        ("Diseñador de reportes", "/reportes", "fa-pen-ruler"),
+        ("Informes estadísticos", "/informes-estadisticos", "fa-chart-column"),
         ("Diagnóstico", "/diagnostico", "fa-heart-pulse"),
+    };
+
+    // Ítems de reporting que sólo ve el admin (se agregan a la búsqueda sólo si corresponde).
+    private static readonly (string Label, string Url, string Icon)[] _leafAdmin =
+    {
+        ("Nuevo reporte", "/reportes/din/editor", "fa-plus"),
+        ("Administrar reportes", "/reportes/din", "fa-list-check"),
+        ("Campos calculados", "/crud/CampoCalculado", "fa-calculator"),
     };
 
     private IEnumerable<(string Label, string Url, string Icon)> Filtered =>
         _leaf
+            .Concat(_isAdmin ? _leafAdmin : Array.Empty<(string Label, string Url, string Icon)>())
             .Concat(Catalogos.Select(c => (c.Label, $"/crud/{c.Entity}", "fa-tag")))
             .Concat(_reportes.Select(r => (Label: r.Nombre, Url: $"/reportes/din/{r.Id}", Icon: "fa-file-lines")))
             .Where(i => Norm(i.Label).Contains(Norm(_search)))
