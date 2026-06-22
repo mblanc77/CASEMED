@@ -22,19 +22,19 @@ public sealed record FiltroLeaf(int Indice, string Caption, string ClrType, stri
 /// </summary>
 public static class FiltroParametros
 {
-    public static IReadOnlyList<FiltroLeaf> Enumerar(CriteriaOperator? crit, Type owner)
+    public static IReadOnlyList<FiltroLeaf> Enumerar(CriteriaOperator? crit, Type owner, Func<string, Type?>? calcType = null)
     {
         if (ReferenceEquals(crit, null)) return System.Array.Empty<FiltroLeaf>();
-        var st = new State { OwnerType = owner };
+        var st = new State { OwnerType = owner, CalcType = calcType };
         Process(crit, MetaOf(owner), st);
         return st.Leaves;
     }
 
     public static (CriteriaOperator? Criteria, IReadOnlyList<FiltroParametroDef> Defs) Parametrizar(
-        CriteriaOperator? crit, Type owner, IReadOnlyDictionary<int, string> elegidos)
+        CriteriaOperator? crit, Type owner, IReadOnlyDictionary<int, string> elegidos, Func<string, Type?>? calcType = null)
     {
         if (ReferenceEquals(crit, null)) return (crit, System.Array.Empty<FiltroParametroDef>());
-        var st = new State { Rebuild = true, OwnerType = owner, Chosen = new Dictionary<int, string>(elegidos) };
+        var st = new State { Rebuild = true, OwnerType = owner, Chosen = new Dictionary<int, string>(elegidos), CalcType = calcType };
         var c = Process(crit, MetaOf(owner), st);
         return (c, st.Defs);
     }
@@ -63,6 +63,7 @@ public static class FiltroParametros
         public int Counter;
         public Type OwnerType = default!;
         public Dictionary<int, string>? Chosen;     // índice -> etiqueta/prompt elegida por el usuario
+        public Func<string, Type?>? CalcType;       // resolver de tipo para campos calculados (por nombre)
         public List<FiltroLeaf> Leaves = new();
         public List<FiltroParametroDef> Defs = new();
         public HashSet<string> Used = new(StringComparer.OrdinalIgnoreCase);  // identificadores ?X ya usados
@@ -93,7 +94,7 @@ public static class FiltroParametros
             }
             case BetweenOperator bt:
             {
-                var (caption, clr, fk) = ColInfo(PropName(bt.TestExpression), ctx, st.OwnerType);
+                var (caption, clr, fk) = ColInfo(PropName(bt.TestExpression), ctx, st.OwnerType, st.CalcType);
                 var begin = ValueSlot(caption, clr, fk, bt.BeginExpression, st, "desde");
                 var end = ValueSlot(caption, clr, fk, bt.EndExpression, st, "hasta");
                 return st.Rebuild ? new BetweenOperator(bt.TestExpression, begin, end) : op;
@@ -102,7 +103,7 @@ public static class FiltroParametros
                 when (f.OperatorType is FunctionOperatorType.StartsWith or FunctionOperatorType.EndsWith or FunctionOperatorType.Contains)
                      && f.Operands.Count >= 2 && PropName(f.Operands[0]) is { } fcol && f.Operands[1] is OperandValue:
             {
-                var (caption, clr, fk) = ColInfo(fcol, ctx, st.OwnerType);
+                var (caption, clr, fk) = ColInfo(fcol, ctx, st.OwnerType, st.CalcType);
                 var v = ValueSlot(caption, clr, fk, f.Operands[1], st, null);
                 if (!st.Rebuild) return op;
                 var ops = f.Operands.ToArray(); ops[1] = v;
@@ -121,13 +122,13 @@ public static class FiltroParametros
                 // propiedad <op> valor
                 if (PropName(b.LeftOperand) is { } lc && b.RightOperand is OperandValue)
                 {
-                    var (caption, clr, fk) = ColInfo(lc, ctx, st.OwnerType);
+                    var (caption, clr, fk) = ColInfo(lc, ctx, st.OwnerType, st.CalcType);
                     var v = ValueSlot(caption, clr, fk, b.RightOperand, st, null);
                     return st.Rebuild ? new BinaryOperator(b.LeftOperand, v, b.OperatorType) : op;
                 }
                 if (PropName(b.RightOperand) is { } rc && b.LeftOperand is OperandValue)
                 {
-                    var (caption, clr, fk) = ColInfo(rc, ctx, st.OwnerType);
+                    var (caption, clr, fk) = ColInfo(rc, ctx, st.OwnerType, st.CalcType);
                     var v = ValueSlot(caption, clr, fk, b.LeftOperand, st, null);
                     return st.Rebuild ? new BinaryOperator(v, b.RightOperand, b.OperatorType) : op;
                 }
@@ -214,7 +215,7 @@ public static class FiltroParametros
 
     // ---------- resolución de columnas/tipos ----------
 
-    private static (string Caption, Type Clr, string? Fk) ColInfo(string? propName, EntityMetadata? ctx, Type owner)
+    private static (string Caption, Type Clr, string? Fk) ColInfo(string? propName, EntityMetadata? ctx, Type owner, Func<string, Type?>? calcType)
     {
         if (propName is null) return ("valor", typeof(string), null);
         var dot = propName.IndexOf('.');
@@ -235,6 +236,8 @@ public static class FiltroParametros
                 c.Name.Equals(propName, StringComparison.OrdinalIgnoreCase) || c.Property.Name.Equals(propName, StringComparison.OrdinalIgnoreCase));
             if (col is not null) return (col.Caption, col.UnderlyingType, FkOf(col, ctx));
         }
+        // Campo calculado de la tabla (no es columna real): el tipo lo aporta el catálogo.
+        if (calcType?.Invoke(propName) is { } ct) return (propName, ct, null);
         return (propName, typeof(string), null);
     }
 

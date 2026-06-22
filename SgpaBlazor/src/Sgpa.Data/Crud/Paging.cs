@@ -13,7 +13,14 @@ public sealed record PageQuery(
     string? FilterColumn = null,
     object? FilterValue = null,
     IReadOnlyList<SortColumn>? Sort = null,
-    FilterNode? Filter = null);
+    FilterNode? Filter = null)
+{
+    /// <summary>
+    /// Campos calculados de la tabla (de <c>ICalculatedFieldCatalog</c>, ya en forma neutral). Si el filtro
+    /// referencia alguno por nombre, <see cref="FilterSqlTranslator"/> lo inserta inline en el WHERE.
+    /// </summary>
+    public IReadOnlyList<CalculatedField>? Calc { get; init; }
+}
 
 /// <summary>Una página de resultados más el total de filas que cumplen el filtro.</summary>
 public sealed record PagedResult<T>(IReadOnlyList<T> Items, int TotalCount);

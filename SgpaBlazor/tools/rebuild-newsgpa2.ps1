@@ -26,9 +26,11 @@ function ApplySqlFile($path) {
 }
 
 if (-not $SkipMigrator) {
-    Step '1/7  Migrador (drop + create + import desde sgpaserv2k3/spserv2k3)'
+    Step "1/7  Migrador (drop + create + import desde sgpaserv2k3/spserv2k3) -> $SqlDb"
     Push-Location (Split-Path $migProj)
-    dotnet run --project $migProj -c Debug
+    # IMPORTANTE: pasar la base al migrador (--db) para que TODO el orquestador respete -SqlDb;
+    # sin esto el migrador siempre apuntaba a su default (NewSgpa2) mientras los pasos 2-7 usaban -SqlDb.
+    dotnet run --project $migProj -c Debug -- --db=$SqlDb
     if ($LASTEXITCODE -ne 0) { Pop-Location; throw "Migrador falló (exit $LASTEXITCODE)" }
     Pop-Location
 } else { Step '1/7  Migrador OMITIDO (--SkipMigrator)' }

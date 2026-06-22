@@ -31,6 +31,7 @@ public static class DataServiceCollectionExtensions
         services.AddSingleton<ITablaConfigService, TablaConfigService>();
         services.AddScoped<IAuditService, AuditService>();
         services.AddScoped<Reporting.IReportGraphLoader, Reporting.ReportGraphLoader>();
+        services.AddScoped<Reporting.IReporteDinamicoService, Reporting.DapperReporteDinamicoService>();
         services.TryAddScoped<ICurrentUser, DefaultCurrentUser>();
         return services;
     }

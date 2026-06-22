@@ -362,7 +362,7 @@ class Program
     // Idempotente. Hoy: PreferenciaVista (personalización de pantallas por usuario, estilo XAF).
     static async Task CreateInfrastructureTablesAsync(MigrationDbContext db)
     {
-        Console.Write("Creating infrastructure tables (PreferenciaVista, TablaConfig, AuditCambio, SgpaFiltro + alias)... ");
+        Console.Write("Creating infrastructure tables (PreferenciaVista, TablaConfig, AuditCambio, SgpaFiltro, Reporte, ReporteDinamico, Z_ErrorLog, CampoCalculado + alias)... ");
         await db.Database.ExecuteSqlRawAsync(
             """
             IF OBJECT_ID('dbo.PreferenciaVista','U') IS NULL
@@ -434,6 +434,76 @@ class Program
             END
             IF COL_LENGTH('dbo.SgpaFiltro','Parametros') IS NULL ALTER TABLE dbo.SgpaFiltro ADD Parametros nvarchar(max) NULL;
             """);
+        // Reportes dinámicos creados por el administrador (raíz + campos N-1 + filtro con parámetros).
+        // Mantener en sintonía con SgpaBlazor/tools/sql/reporte-dinamico.sql. Idempotente.
+        await db.Database.ExecuteSqlRawAsync(
+            """
+            IF OBJECT_ID('dbo.ReporteDinamico','U') IS NULL
+            BEGIN
+                CREATE TABLE dbo.ReporteDinamico (
+                    Id        int IDENTITY(1,1) NOT NULL CONSTRAINT PK_ReporteDinamico PRIMARY KEY,
+                    Nombre    nvarchar(200) NOT NULL,
+                    RootTable nvarchar(128) NOT NULL,
+                    DefJson   nvarchar(max) NOT NULL,
+                    Activo    bit NOT NULL CONSTRAINT DF_ReporteDinamico_Activo DEFAULT(1),
+                    Login     nvarchar(50) NULL,
+                    Fecha     datetime2 NOT NULL CONSTRAINT DF_ReporteDinamico_Fecha DEFAULT SYSDATETIME()
+                );
+                CREATE INDEX IX_ReporteDinamico_RootTable ON dbo.ReporteDinamico(RootTable);
+            END
+            """);
+        // Log de errores no controlados (sink de Serilog + IErrorLog, best-effort). La app sólo INSERTA;
+        // si la tabla falta, el logging a base se pierde silenciosamente. Se crea acá para que sea reproducible.
+        await db.Database.ExecuteSqlRawAsync(
+            """
+            IF OBJECT_ID('dbo.Z_ErrorLog','U') IS NULL
+            CREATE TABLE dbo.Z_ErrorLog (
+                Id      int IDENTITY(1,1) NOT NULL CONSTRAINT PK_Z_ErrorLog PRIMARY KEY,
+                Fecha   datetime2 NOT NULL CONSTRAINT DF_Z_ErrorLog_Fecha DEFAULT SYSDATETIME(),
+                Login   nvarchar(100) NULL,
+                Origen  nvarchar(400) NULL,
+                Mensaje nvarchar(2000) NULL,
+                Detalle nvarchar(max) NULL
+            );
+            """);
+        // Campos calculados por tabla (expresión CriteriaOperator reutilizable en reportes/filtros/ListViews).
+        // Mantener en sintonía con SgpaBlazor/tools/sql/campo-calculado.sql. Idempotente.
+        await db.Database.ExecuteSqlRawAsync(
+            """
+            IF OBJECT_ID('dbo.CampoCalculado','U') IS NULL
+            BEGIN
+                CREATE TABLE dbo.CampoCalculado (
+                    Id            int IDENTITY(1,1) NOT NULL CONSTRAINT PK_CampoCalculado PRIMARY KEY,
+                    Tabla         nvarchar(128) NOT NULL,
+                    Nombre        nvarchar(128) NOT NULL,
+                    Caption       nvarchar(200) NULL,
+                    Expr          nvarchar(max) NOT NULL,
+                    TipoResultado nvarchar(20) NOT NULL CONSTRAINT DF_CampoCalculado_Tipo DEFAULT('decimal'),
+                    DisplayFormat nvarchar(50) NULL,
+                    Activo        bit NOT NULL CONSTRAINT DF_CampoCalculado_Activo DEFAULT(1),
+                    Usr           nvarchar(16) NULL,
+                    Ts            datetime2 NULL
+                );
+                CREATE UNIQUE INDEX UX_CampoCalculado_Tabla_Nombre ON dbo.CampoCalculado(Tabla, Nombre);
+            END
+            """);
+        // Reportes ad-hoc de DevExpress (REPX, End-User Designer). La app los lee/escribe vía SgpaReportStorage;
+        // si la tabla falta, el catálogo de reportes y el menú fallan. Mantener en sintonía con tools/sql/reporte.sql.
+        await db.Database.ExecuteSqlRawAsync(
+            """
+            IF OBJECT_ID('dbo.Reporte','U') IS NULL
+            BEGIN
+                CREATE TABLE dbo.Reporte (
+                    Id        int IDENTITY(1,1) NOT NULL CONSTRAINT PK_Reporte PRIMARY KEY,
+                    Nombre    nvarchar(200)  NOT NULL,
+                    TablaRoot nvarchar(128)  NULL,
+                    Layout    varbinary(max) NOT NULL,
+                    Fecha     datetime2      NOT NULL CONSTRAINT DF_Reporte_Fecha DEFAULT SYSDATETIME(),
+                    Login     nvarchar(50)   NULL
+                );
+                CREATE INDEX IX_Reporte_TablaRoot ON dbo.Reporte (TablaRoot);
+            END
+            """);
         // Alias (nombres amigables) por tabla. Mantener en sintonía con SgpaBlazor/tools/sql/tabla-config-alias-seed.sql.
         await db.Database.ExecuteSqlRawAsync(
             """
@@ -454,7 +524,9 @@ class Program
                 (N'PrimaFallecimiento', N'Primas por fallecimiento'), (N'Receta', N'Recetas'),
                 (N'RecetaDistancia', N'Distancias de receta'), (N'RegimenAporte', N'Regímenes de aporte'),
                 (N'RegimenJubilatorio', N'Regímenes jubilatorios'), (N'ReintegroMutual', N'Reintegros mutuales'),
-                (N'Reporte', N'Reportes'), (N'SalidaTipo', N'Tipos de salida'), (N'SituacionMutual', N'Situaciones mutuales'),
+                (N'Reporte', N'Reportes'), (N'ReporteDinamico', N'Reportes dinámicos'),
+                (N'CampoCalculado', N'Campos calculados'),
+                (N'SalidaTipo', N'Tipos de salida'), (N'SituacionMutual', N'Situaciones mutuales'),
                 (N'SituacionPago', N'Situaciones de pago'), (N'SP_AfiliadoComentario', N'Comentarios del afiliado'),
                 (N'SP_CtrlPrestamoEstado', N'Control de estados de préstamo'), (N'SP_CuadroAmortizacion', N'Cuadros de amortización'),
                 (N'SP_Cuota', N'Cuotas'), (N'SP_CuotaEstado', N'Estados de cuota'), (N'SP_Factura', N'Facturas'),

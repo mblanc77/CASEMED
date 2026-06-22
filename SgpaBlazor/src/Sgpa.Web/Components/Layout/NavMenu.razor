@@ -3,6 +3,12 @@
     Font Awesome. Requiere interactividad (el clic expande/colapsa vía circuito): se renderiza
     como isla InteractiveServer desde MainLayout. NodeClick = expandir al hacer clic en el grupo.
 *@
+@using Sgpa.Data.Reporting
+@using Sgpa.Domain.Security
+@using Sgpa.Web.Security
+@inject IReporteDinamicoService ReportesDin
+@inject WebCurrentUser CurrentUser
+
 <div class="sgpa-brand">
     <a href="" class="sgpa-brand-link"><img src="img/logo-casemed-white.png" alt="CASEMED" class="sgpa-brand-logo" /></a>
 </div>
@@ -77,6 +83,23 @@ else
 
             <DxTreeViewNode Text="Informes estadísticos" IconCssClass="fa-solid fa-chart-pie" NavigateUrl="/informes-estadisticos" />
 
+            @if (_reportes.Count > 0 || _isAdmin)
+            {
+                <DxTreeViewNode Text="Reportes dinámicos" IconCssClass="fa-solid fa-file-lines">
+                    <Nodes>
+                        @foreach (var r in _reportes)
+                        {
+                            <DxTreeViewNode Text="@r.Nombre" IconCssClass="fa-solid fa-file-lines" NavigateUrl="@($"/reportes/din/{r.Id}")" />
+                        }
+                        @if (_isAdmin)
+                        {
+                            <DxTreeViewNode Text="Nuevo reporte…" IconCssClass="fa-solid fa-plus" NavigateUrl="/reportes/din/editor" />
+                            <DxTreeViewNode Text="Administrar reportes…" IconCssClass="fa-solid fa-list-check" NavigateUrl="/reportes/din" />
+                        }
+                    </Nodes>
+                </DxTreeViewNode>
+            }
+
             <DxTreeViewNode Text="Sistema" IconCssClass="fa-solid fa-gear">
                 <Nodes>
                     <DxTreeViewNode Text="Tablas" IconCssClass="fa-solid fa-table-list" NavigateUrl="/entidades" />
@@ -94,6 +117,30 @@ else
 
 @code {
     private string _search = string.Empty;
+
+    // Reportes dinámicos del menú: filtrados por permiso de lectura sobre la tabla raíz (el viewer hace la
+    // verificación completa sobre TODAS las tablas involucradas). El admin ve todos + "Nuevo reporte…".
+    private IReadOnlyList<ReporteDinamicoInfo> _reportes = Array.Empty<ReporteDinamicoInfo>();
+    private bool _isAdmin;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CurrentUser.EnsureLoadedAsync();
+        _isAdmin = CurrentUser.IsAdmin;
+        try
+        {
+            var all = await ReportesDin.AllAsync();
+            _reportes = _isAdmin
+                ? all
+                : all.Where(r => CurrentUser.Can(r.RootTable, PermissionAction.Read)).ToList();
+        }
+        catch
+        {
+            // El menú no debe caerse si la consulta de reportes falla (p. ej. tabla ausente en la base):
+            // se deja la lista vacía; el resto de la navegación carga normalmente.
+            _reportes = Array.Empty<ReporteDinamicoInfo>();
+        }
+    }
 
     // Ítems "hoja" del menú (los grupos no navegan). Se combinan con los catálogos para la búsqueda.
     private static readonly (string Label, string Url, string Icon)[] _leaf =
@@ -125,6 +172,7 @@ else
     private IEnumerable<(string Label, string Url, string Icon)> Filtered =>
         _leaf
             .Concat(Catalogos.Select(c => (c.Label, $"/crud/{c.Entity}", "fa-tag")))
+            .Concat(_reportes.Select(r => (Label: r.Nombre, Url: $"/reportes/din/{r.Id}", Icon: "fa-file-lines")))
             .Where(i => Norm(i.Label).Contains(Norm(_search)))
             .OrderBy(i => i.Label, StringComparer.OrdinalIgnoreCase);
 

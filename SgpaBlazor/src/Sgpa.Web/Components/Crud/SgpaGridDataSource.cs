@@ -25,10 +25,12 @@ public sealed class SgpaGridDataSource<T> : GridCustomDataSource where T : class
     // Callback opcional tras traer cada página: resuelve las descripciones de las FK de esas filas (server-side,
     // por página) — para FK a tablas grandes (ej. Afiliado por CI) que no se materializan enteras en un combo.
     private readonly Func<IReadOnlyList<T>, CancellationToken, Task>? _onItemsLoaded;
+    private readonly IReadOnlyList<CalculatedField>? _calc;   // campos calculados de la tabla (para filtrar por ellos en SQL)
 
     public SgpaGridDataSource(ISgpaCrudService<T> service, string? filterColumn = null, object? filterValue = null,
         FilterNode? baseFilter = null, bool blocked = false,
-        Func<IReadOnlyList<T>, CancellationToken, Task>? onItemsLoaded = null)
+        Func<IReadOnlyList<T>, CancellationToken, Task>? onItemsLoaded = null,
+        IReadOnlyList<CalculatedField>? calc = null)
     {
         _service = service;
         _filterColumn = filterColumn;
@@ -36,6 +38,7 @@ public sealed class SgpaGridDataSource<T> : GridCustomDataSource where T : class
         _baseFilter = baseFilter;
         _blocked = blocked;
         _onItemsLoaded = onItemsLoaded;
+        _calc = calc;
     }
 
     // Último filtro que pidió la grilla (fila de filtros + menú + búsqueda traducidos). Se guarda para poder
@@ -158,7 +161,8 @@ public sealed class SgpaGridDataSource<T> : GridCustomDataSource where T : class
             FilterColumn: _filterColumn,
             FilterValue: _filterValue,
             Sort: sorts is { Count: > 0 } ? sorts : null,
-            Filter: CombineFilter(filter, parentGroups));
+            Filter: CombineFilter(filter, parentGroups))
+        { Calc = _calc };
     }
 
     // Combina el filtro del grid + las igualdades de los grupos padre + el filtro base fijo (todos en un AND).

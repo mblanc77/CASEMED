@@ -52,8 +52,9 @@ public class DapperCrudService<TEntity> : ISgpaCrudService<TEntity> where TEntit
     public async Task<PagedResult<TEntity>> GetPageAsync(PageQuery query, CancellationToken cancellationToken = default)
     {
         var p = new DynamicParameters();
-        var where = BuildWhere(query, p);
-        var orderBy = BuildOrderBy(query.Sort);
+        int n = 0;
+        var where = BuildWhere(query, p, ref n);
+        var orderBy = BuildOrderBy(query.Sort, query.Calc, p, ref n);
 
         var total = await _db.ExecuteScalarAsync<int>(
             $"SELECT COUNT(*) FROM {Meta.QualifiedTable}{where}", p, cancellationToken: cancellationToken)
@@ -71,7 +72,8 @@ public class DapperCrudService<TEntity> : ISgpaCrudService<TEntity> where TEntit
     }
 
     // Arma el WHERE combinando: filtro fijo (FK del padre) + búsqueda libre + árbol de filtro del grid.
-    private static string BuildWhere(PageQuery query, DynamicParameters p)
+    // <paramref name="n"/> numera los parámetros y se comparte con el ORDER BY / GROUP BY (campos calculados).
+    private static string BuildWhere(PageQuery query, DynamicParameters p, ref int n)
     {
         var conds = new List<string>();
 
@@ -92,15 +94,32 @@ public class DapperCrudService<TEntity> : ISgpaCrudService<TEntity> where TEntit
 
         if (query.Filter is not null)
         {
-            int n = 0;
-            var sql = TranslateFilter(query.Filter, p, ref n);
+            var sql = FilterSqlTranslator.Translate(query.Filter, p, ref n, Meta, Meta.QualifiedTable, "", CalcLookup(query.Calc));
             if (!string.IsNullOrEmpty(sql)) conds.Add(sql);
         }
 
         return conds.Count > 0 ? " WHERE " + string.Join(" AND ", conds) : string.Empty;
     }
 
-    private static string BuildOrderBy(IReadOnlyList<SortColumn>? sort)
+    // Resolver de campos calculados (nombre → expresión neutral) para el filtro; null si no hay calculados.
+    private static Func<string, ScalarNode?>? CalcLookup(IReadOnlyList<CalculatedField>? calc)
+    {
+        if (calc is not { Count: > 0 }) return null;
+        var byName = calc.ToDictionary(c => c.Nombre, c => c.Expr, StringComparer.OrdinalIgnoreCase);
+        return name => byName.TryGetValue(name, out var node) ? node : null;
+    }
+
+    // SQL de una columna "ordenable/agrupable": columna real (<c>[col]</c>) o expresión de un campo calculado (<c>(expr)</c>).
+    private static string SortableSql(string name, IReadOnlyList<CalculatedField>? calc, DynamicParameters p, ref int n)
+    {
+        var cf = calc?.FirstOrDefault(c => c.Nombre.Equals(name, StringComparison.OrdinalIgnoreCase));
+        if (cf is not null)
+            return "(" + ScalarSqlTranslator.Translate(cf.Expr, c => $"[{ResolveColumn(c).Name}]", p, ref n) + ")";
+        return $"[{ResolveColumn(name).Name}]";
+    }
+
+    private static string BuildOrderBy(IReadOnlyList<SortColumn>? sort, IReadOnlyList<CalculatedField>? calc,
+        DynamicParameters p, ref int n)
     {
         if (sort is null || sort.Count == 0) return Statements.OrderByKeys;
         // Valida cada columna contra la metadata (evita inyección por FieldName) y agrega las claves
@@ -109,6 +128,16 @@ public class DapperCrudService<TEntity> : ISgpaCrudService<TEntity> where TEntit
         var parts = new List<string>();
         foreach (var s in sort)
         {
+            var cf = calc?.FirstOrDefault(c => c.Nombre.Equals(s.Column, StringComparison.OrdinalIgnoreCase));
+            if (cf is not null)
+            {
+                if (used.Add("calc:" + cf.Nombre))
+                {
+                    var expr = SortableSql(s.Column, calc, p, ref n);
+                    parts.Add($"{expr}{(s.Descending ? " DESC" : "")}");
+                }
+                continue;
+            }
             var name = ResolveColumn(s.Column).Name;
             if (used.Add(name))
                 parts.Add($"[{name}]{(s.Descending ? " DESC" : "")}");
@@ -118,155 +147,27 @@ public class DapperCrudService<TEntity> : ISgpaCrudService<TEntity> where TEntit
         return string.Join(",", parts);
     }
 
-    // Traduce el árbol de filtro neutral a SQL parametrizado. Los nombres de columna se validan
-    // contra la metadata (ResolveColumn) → no hay inyección por el FieldName del grid.
-    // Ámbito de resolución de columnas: cómo validar el nombre (contra la metadata que corresponda) y con qué
-    // prefijo (alias) renderizarlo. Outer = entidad actual sin prefijo; dentro de un EXISTS = hija con alias.
-    private readonly record struct ColScope(Func<string, ColumnMetadata> Resolve, string Prefix);
-    private static readonly ColScope OuterScope = new(ResolveColumn, "");
-
-    private static ColumnMetadata ResolveColumnIn(EntityMetadata meta, string columnName) =>
-        meta.Columns.FirstOrDefault(c =>
-            c.Name.Equals(columnName, StringComparison.OrdinalIgnoreCase)
-            || c.Property.Name.Equals(columnName, StringComparison.OrdinalIgnoreCase))
-        ?? throw new ArgumentException($"{meta.Table} no tiene la columna '{columnName}'.");
-
-    private static string TranslateFilter(FilterNode node, DynamicParameters p, ref int n)
-        => TranslateFilter(node, p, ref n, OuterScope);
-
-    private static string TranslateFilter(FilterNode node, DynamicParameters p, ref int n, ColScope scope)
-    {
-        switch (node)
-        {
-            case FilterGroup g:
-            {
-                if (g.Nodes.Count == 0) return string.Empty;
-                var parts = new List<string>();
-                foreach (var child in g.Nodes)
-                {
-                    var s = TranslateFilter(child, p, ref n, scope);
-                    if (!string.IsNullOrEmpty(s)) parts.Add(s);
-                }
-                if (parts.Count == 0) return string.Empty;
-                return "(" + string.Join(g.And ? " AND " : " OR ", parts) + ")";
-            }
-            case FilterNot not:
-            {
-                var s = TranslateFilter(not.Inner, p, ref n, scope);
-                return string.IsNullOrEmpty(s) ? string.Empty : $"NOT ({s})";
-            }
-            case FilterNull fn:
-            {
-                var col = scope.Resolve(fn.Column).Name;
-                return $"{scope.Prefix}[{col}] IS {(fn.IsNull ? "NULL" : "NOT NULL")}";
-            }
-            case FilterIn fin:
-            {
-                var col = scope.Resolve(fin.Column).Name;
-                if (fin.Values.Count == 0) return "1=0";
-                var names = new List<string>();
-                foreach (var v in fin.Values)
-                {
-                    var pn = "@f" + n++;
-                    p.Add(pn, v);
-                    names.Add(pn);
-                }
-                return $"{scope.Prefix}[{col}] IN ({string.Join(",", names)})";
-            }
-            case FilterText ft:
-            {
-                var col = scope.Resolve(ft.Column).Name;
-                var pn = "@f" + n++;
-                var pattern = ft.Func switch
-                {
-                    FilterFunc.StartsWith => ft.Value + "%",
-                    FilterFunc.EndsWith => "%" + ft.Value,
-                    _ => "%" + ft.Value + "%"
-                };
-                p.Add(pn, pattern);
-                return $"CAST({scope.Prefix}[{col}] AS nvarchar(4000)) LIKE {pn}";
-            }
-            case FilterCompare fc:
-            {
-                var col = scope.Resolve(fc.Column).Name;
-                if (fc.Value is null)
-                    return fc.Op == FilterOp.NotEqual ? $"{scope.Prefix}[{col}] IS NOT NULL" : $"{scope.Prefix}[{col}] IS NULL";
-                var pn = "@f" + n++;
-                p.Add(pn, fc.Value);
-                var op = fc.Op switch
-                {
-                    FilterOp.Equal => "=",
-                    FilterOp.NotEqual => "<>",
-                    FilterOp.Greater => ">",
-                    FilterOp.Less => "<",
-                    FilterOp.GreaterOrEqual => ">=",
-                    FilterOp.LessOrEqual => "<=",
-                    FilterOp.Like => "LIKE",
-                    _ => "="
-                };
-                return $"{scope.Prefix}[{col}] {op} {pn}";
-            }
-            case FilterExists fe:
-            {
-                var alias = "ex" + n++;
-                var fk = ResolveColumnIn(fe.Child, fe.ChildFkColumn).Name;          // FK en la hija
-                var pk = scope.Resolve(fe.ParentKeyColumn).Name;                    // clave en el padre (scope actual)
-                // Correlación: hija.fk = padre.pk. El padre se referencia por su tabla (sin alias) o por el alias
-                // del scope si este EXISTS está anidado dentro de otro.
-                var parentRef = scope.Prefix.Length == 0 ? $"{Meta.QualifiedTable}.[{pk}]" : $"{scope.Prefix}[{pk}]";
-                var childScope = new ColScope(c => ResolveColumnIn(fe.Child, c), alias + ".");
-                var inner = fe.Inner is null ? string.Empty : TranslateFilter(fe.Inner, p, ref n, childScope);
-                var corr = $"{alias}.[{fk}] = {parentRef}";
-                var body = string.IsNullOrEmpty(inner) ? corr : $"{corr} AND {inner}";
-                return $"{(fe.Negate ? "NOT " : "")}EXISTS (SELECT 1 FROM {fe.Child.QualifiedTable} AS {alias} WHERE {body})";
-            }
-            case FilterAggregate fa:
-            {
-                var alias = "ag" + n++;
-                var fkc = ResolveColumnIn(fa.Child, fa.ChildFkColumn).Name;
-                var pk = scope.Resolve(fa.ParentKeyColumn).Name;
-                var parentRef = scope.Prefix.Length == 0 ? $"{Meta.QualifiedTable}.[{pk}]" : $"{scope.Prefix}[{pk}]";
-                var childScope = new ColScope(c => ResolveColumnIn(fa.Child, c), alias + ".");
-                var inner = fa.Inner is null ? string.Empty : TranslateFilter(fa.Inner, p, ref n, childScope);
-                var corr = $"{alias}.[{fkc}] = {parentRef}";
-                var whereSub = string.IsNullOrEmpty(inner) ? corr : $"{corr} AND {inner}";
-                var aggExpr = fa.Kind switch
-                {
-                    AggKind.Count => "COUNT(*)",
-                    AggKind.Sum => $"SUM({alias}.[{ResolveColumnIn(fa.Child, fa.AggColumn!).Name}])",
-                    AggKind.Min => $"MIN({alias}.[{ResolveColumnIn(fa.Child, fa.AggColumn!).Name}])",
-                    AggKind.Max => $"MAX({alias}.[{ResolveColumnIn(fa.Child, fa.AggColumn!).Name}])",
-                    AggKind.Avg => $"AVG({alias}.[{ResolveColumnIn(fa.Child, fa.AggColumn!).Name}])",
-                    _ => "COUNT(*)"
-                };
-                var pn = "@f" + n++;
-                p.Add(pn, fa.Value);
-                var op = fa.Op switch
-                {
-                    FilterOp.Equal => "=",
-                    FilterOp.NotEqual => "<>",
-                    FilterOp.Greater => ">",
-                    FilterOp.Less => "<",
-                    FilterOp.GreaterOrEqual => ">=",
-                    FilterOp.LessOrEqual => "<=",
-                    _ => "="
-                };
-                var aggSql = $"(SELECT {aggExpr} FROM {fa.Child.QualifiedTable} AS {alias} WHERE {whereSub})";
-                if (fa.Kind == AggKind.Count) aggSql = $"ISNULL({aggSql}, 0)";   // sin filas → Count = 0
-                return $"{aggSql} {op} {pn}";
-            }
-            default:
-                throw new NotSupportedException($"Nodo de filtro no soportado: {node.GetType().Name}");
-        }
-    }
-
     public async Task<IReadOnlyList<object?>> GetDistinctValuesAsync(string column, PageQuery filterContext, int max,
         CancellationToken cancellationToken = default)
     {
+        var top = Math.Clamp(max, 1, 5000);
+
+        // Campo calculado: distinct de la EXPRESIÓN (sin el filtro del contexto, para no mezclar parámetros).
+        var calc = filterContext.Calc?.FirstOrDefault(c => c.Nombre.Equals(column, StringComparison.OrdinalIgnoreCase));
+        if (calc is not null)
+        {
+            var pc = new DynamicParameters();
+            int n = 0;
+            var expr = ScalarSqlTranslator.Translate(calc.Expr, c => $"[{ResolveColumn(c).Name}]", pc, ref n);
+            var sqlc = $"SELECT DISTINCT TOP ({top}) ({expr}) AS V FROM {Meta.QualifiedTable} ORDER BY ({expr})";
+            var rowsc = await _db.QueryAsync<DistinctRow>(sqlc, pc, cancellationToken: cancellationToken).ConfigureAwait(false);
+            return rowsc.Select(r => r.V).ToList();
+        }
+
         var col = ResolveColumn(column);
         var p = new DynamicParameters();
-        var where = BuildWhere(filterContext, p);
-        var top = Math.Clamp(max, 1, 5000);
+        int wn = 0;
+        var where = BuildWhere(filterContext, p, ref wn);
         var sql = $"SELECT DISTINCT TOP ({top}) [{col.Name}] AS V FROM {Meta.QualifiedTable}{where} ORDER BY [{col.Name}]";
         var rows = await _db.QueryAsync<DistinctRow>(sql, p, cancellationToken: cancellationToken).ConfigureAwait(false);
         return rows.Select(r => r.V).ToList();
@@ -274,15 +175,54 @@ public class DapperCrudService<TEntity> : ISgpaCrudService<TEntity> where TEntit
 
     private sealed class DistinctRow { public object? V { get; set; } }
 
+    // Side-fetch de campos calculados por página (clave simple): SELECT [pk] AS __k, (expr_i) AS [c{i}] ... WHERE [pk] IN (...).
+    public async Task<IReadOnlyDictionary<string, IReadOnlyDictionary<string, object?>>> GetCalcValuesAsync(
+        IReadOnlyCollection<object> keys, IReadOnlyList<CalculatedField> calc, CancellationToken cancellationToken = default)
+    {
+        var result = new Dictionary<string, IReadOnlyDictionary<string, object?>>();
+        if (Meta.Keys.Count != 1 || calc.Count == 0) return result;
+
+        var keyName = Meta.Key.Name;
+        var distinct = keys.Where(k => k is not null).Distinct().ToList();
+        Func<string, string> resolver = c => $"[{ResolveColumn(c).Name}]";   // columnas desnudas (FROM sin alias)
+
+        foreach (var chunk in distinct.Chunk(1000))
+        {
+            var p = new DynamicParameters();
+            int n = 0;
+            var exprs = new List<string>();
+            for (int i = 0; i < calc.Count; i++)
+                exprs.Add($"({ScalarSqlTranslator.Translate(calc[i].Expr, resolver, p, ref n)}) AS [c{i}]");
+
+            var keyParams = new List<string>();
+            foreach (var k in chunk) { var pn = "@k" + n++; p.Add(pn, k); keyParams.Add(pn); }
+
+            var sql = $"SELECT [{keyName}] AS __k, {string.Join(", ", exprs)} FROM {Meta.QualifiedTable} " +
+                      $"WHERE [{keyName}] IN ({string.Join(",", keyParams)})";
+            var rows = await _db.QueryAsync<dynamic>(sql, p, cancellationToken: cancellationToken).ConfigureAwait(false);
+            foreach (IDictionary<string, object> r in rows.Cast<IDictionary<string, object>>())
+            {
+                var k = r.TryGetValue("__k", out var kv) ? kv?.ToString() : null;
+                if (k is null) continue;
+                var vals = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase);
+                for (int i = 0; i < calc.Count; i++)
+                    vals[calc[i].Nombre] = r.TryGetValue("c" + i, out var v) ? v : null;
+                result[k] = vals;
+            }
+        }
+        return result;
+    }
+
     public async Task<IReadOnlyList<GroupBucket>> GetGroupsAsync(string groupColumn, bool descending, PageQuery filterContext,
         IReadOnlyList<SummarySpec> summaries, CancellationToken cancellationToken = default)
     {
-        var col = ResolveColumn(groupColumn);
         var p = new DynamicParameters();
-        var where = BuildWhere(filterContext, p);
-        var aggs = BuildAggSelects(summaries);
-        var sql = $"SELECT [{col.Name}] AS GroupKey, COUNT(*) AS Cnt{aggs} FROM {Meta.QualifiedTable}{where} " +
-                  $"GROUP BY [{col.Name}] ORDER BY [{col.Name}]{(descending ? " DESC" : string.Empty)}";
+        int n = 0;
+        var where = BuildWhere(filterContext, p, ref n);
+        var groupSql = SortableSql(groupColumn, filterContext.Calc, p, ref n);   // [col] o (expr) si es calculado
+        var aggs = BuildAggSelects(summaries, filterContext.Calc, p, ref n);
+        var sql = $"SELECT {groupSql} AS GroupKey, COUNT(*) AS Cnt{aggs} FROM {Meta.QualifiedTable}{where} " +
+                  $"GROUP BY {groupSql} ORDER BY {groupSql}{(descending ? " DESC" : string.Empty)}";
 
         // Columnas dinámicas (A0..An según la cantidad de sumarios) → filas dinámicas de Dapper (DBNull→null).
         var rows = await _db.QueryAsync<dynamic>(sql, p, cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -302,8 +242,9 @@ public class DapperCrudService<TEntity> : ISgpaCrudService<TEntity> where TEntit
     {
         if (summaries.Count == 0) return Array.Empty<object?>();
         var p = new DynamicParameters();
-        var where = BuildWhere(filterContext, p);
-        var aggs = BuildAggSelects(summaries).TrimStart(',', ' ');
+        int n = 0;
+        var where = BuildWhere(filterContext, p, ref n);
+        var aggs = BuildAggSelects(summaries, filterContext.Calc, p, ref n).TrimStart(',', ' ');
         var sql = $"SELECT {aggs} FROM {Meta.QualifiedTable}{where}";
 
         var rows = await _db.QueryAsync<dynamic>(sql, p, cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -315,25 +256,27 @@ public class DapperCrudService<TEntity> : ISgpaCrudService<TEntity> where TEntit
     }
 
     // Construye ", agg AS A0, agg AS A1, ..." validando cada columna contra la metadata (sin inyección).
-    private static string BuildAggSelects(IReadOnlyList<SummarySpec> summaries)
+    // Las columnas calculadas se agregan sobre su expresión inline (SUM((expr)), etc.).
+    private static string BuildAggSelects(IReadOnlyList<SummarySpec> summaries, IReadOnlyList<CalculatedField>? calc,
+        DynamicParameters p, ref int n)
     {
         if (summaries.Count == 0) return string.Empty;
         var parts = new List<string>();
         for (int i = 0; i < summaries.Count; i++)
-            parts.Add($"{AggSql(summaries[i])} AS A{i}");
+            parts.Add($"{AggSql(summaries[i], calc, p, ref n)} AS A{i}");
         return ", " + string.Join(", ", parts);
     }
 
-    private static string AggSql(SummarySpec s)
+    private static string AggSql(SummarySpec s, IReadOnlyList<CalculatedField>? calc, DynamicParameters p, ref int n)
     {
         if (s.Kind == AggKind.Count) return "COUNT(*)";
-        var c = ResolveColumn(s.Column).Name;
+        var c = SortableSql(s.Column, calc, p, ref n);   // [col] o (expr) si es calculado
         return s.Kind switch
         {
-            AggKind.Sum => $"SUM([{c}])",
-            AggKind.Min => $"MIN([{c}])",
-            AggKind.Max => $"MAX([{c}])",
-            AggKind.Avg => $"AVG(CAST([{c}] AS float))",
+            AggKind.Sum => $"SUM({c})",
+            AggKind.Min => $"MIN({c})",
+            AggKind.Max => $"MAX({c})",
+            AggKind.Avg => $"AVG(CAST({c} AS float))",
             _ => "COUNT(*)"
         };
     }

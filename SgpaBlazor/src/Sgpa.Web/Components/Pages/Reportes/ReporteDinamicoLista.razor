@@ -1,0 +1,143 @@
+@page "/reportes/din"
+@rendermode InteractiveServer
+@using Sgpa.Data.Configuracion
+@using Sgpa.Data.Reporting
+@using Sgpa.Web.Components.Crud
+@inject IReporteDinamicoService Reportes
+@inject WebCurrentUser CurrentUser
+@inject ITablaConfigService TablaConfig
+@inject IToastNotificationService Toasts
+@inject NavigationManager Nav
+
+<PageTitle>Reportes dinámicos</PageTitle>
+
+@if (_denied)
+{
+    <div class="alert alert-danger mt-3">Solo un administrador puede administrar los reportes dinámicos.</div>
+}
+else
+{
+    <div class="d-flex align-items-center gap-2 mb-3">
+        <h3 class="mb-0"><i class="fa-solid fa-file-lines me-2"></i>Reportes dinámicos</h3>
+        <DxButton Text="Nuevo reporte" IconCssClass="fa-solid fa-plus" RenderStyle="ButtonRenderStyle.Primary"
+                  CssClass="ms-auto" Click="@(() => Nav.NavigateTo("/reportes/din/editor"))" />
+    </div>
+
+    @if (_reportes.Count == 0)
+    {
+        <p class="text-muted">No hay reportes creados todavía.</p>
+    }
+    else
+    {
+        <table class="table table-sm table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Tabla raíz</th>
+                    <th style="width:160px">Modificado</th>
+                    <th style="width:90px">Autor</th>
+                    <th style="width:240px"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var r in _reportes)
+                {
+                    <tr>
+                        <td>@r.Nombre</td>
+                        <td class="text-muted">@TablaConfig.DisplayName(r.RootTable)</td>
+                        <td class="text-muted small">@r.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td class="text-muted small">@r.Login</td>
+                        <td class="text-nowrap">
+                            <DxButton Text="Ver" IconCssClass="fa-solid fa-eye" RenderStyle="ButtonRenderStyle.Link"
+                                      Click="@(() => Nav.NavigateTo($"/reportes/din/{r.Id}"))" />
+                            <DxButton Text="Editar" IconCssClass="fa-solid fa-pen" RenderStyle="ButtonRenderStyle.Link"
+                                      Click="@(() => Nav.NavigateTo($"/reportes/din/editor/{r.Id}"))" />
+                            <DxButton Text="Renombrar" IconCssClass="fa-solid fa-i-cursor" RenderStyle="ButtonRenderStyle.Link"
+                                      Click="@(() => OpenRename(r))" />
+                            <DxButton Text="Borrar" IconCssClass="fa-solid fa-trash" RenderStyle="ButtonRenderStyle.Link"
+                                      Click="@(() => OpenDelete(r))" />
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    @* ---- Popup: renombrar ---- *@
+    <DxPopup @bind-Visible="_renameVisible" HeaderText="Renombrar reporte" Width="480px" CloseOnEscape="true">
+        <BodyContentTemplate>
+            @if (_error is not null) { <div class="alert alert-danger py-2">@_error</div> }
+            <div class="d-flex gap-2 align-items-center">
+                <DxTextBox @bind-Text="_newName" NullText="Nuevo nombre…" />
+                <DxButton Text="Guardar" IconCssClass="fa-solid fa-floppy-disk" RenderStyle="ButtonRenderStyle.Primary"
+                          Click="RenameAsync" />
+            </div>
+        </BodyContentTemplate>
+    </DxPopup>
+
+    @* ---- Popup: confirmar borrado ---- *@
+    <DxPopup @bind-Visible="_deleteVisible" HeaderText="Borrar reporte" Width="480px" CloseOnEscape="true">
+        <BodyContentTemplate>
+            <p>¿Borrar el reporte <strong>@_target?.Nombre</strong>? Dejará de aparecer en el menú.</p>
+            <div class="d-flex gap-2 justify-content-end">
+                <DxButton Text="Cancelar" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => _deleteVisible = false)" />
+                <DxButton Text="Borrar" IconCssClass="fa-solid fa-trash" RenderStyle="ButtonRenderStyle.Danger"
+                          Click="DeleteAsync" />
+            </div>
+        </BodyContentTemplate>
+    </DxPopup>
+}
+
+@code {
+    private bool _denied;
+    private IReadOnlyList<ReporteDinamicoInfo> _reportes = Array.Empty<ReporteDinamicoInfo>();
+
+    private bool _renameVisible, _deleteVisible;
+    private ReporteDinamicoInfo? _target;
+    private string _newName = string.Empty;
+    private string? _error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CurrentUser.EnsureLoadedAsync();
+        if (!CurrentUser.IsAdmin) { _denied = true; return; }
+        await TablaConfig.EnsureLoadedAsync();
+        await ReloadAsync();
+    }
+
+    private async Task ReloadAsync() => _reportes = await Reportes.AllAsync();
+
+    private void OpenRename(ReporteDinamicoInfo r)
+    {
+        _error = null;
+        _target = r;
+        _newName = r.Nombre;
+        _renameVisible = true;
+    }
+
+    private async Task RenameAsync()
+    {
+        _error = null;
+        if (string.IsNullOrWhiteSpace(_newName)) { _error = "Indicá un nombre."; return; }
+        if (_target is null) return;
+        await Reportes.RenameAsync(_target.Id, _newName.Trim());
+        _renameVisible = false;
+        Toasts.Exito("Reporte renombrado.");
+        await ReloadAsync();
+    }
+
+    private void OpenDelete(ReporteDinamicoInfo r)
+    {
+        _target = r;
+        _deleteVisible = true;
+    }
+
+    private async Task DeleteAsync()
+    {
+        if (_target is null) return;
+        await Reportes.DeleteAsync(_target.Id);
+        _deleteVisible = false;
+        Toasts.Exito("Reporte borrado.");
+        await ReloadAsync();
+    }
+}

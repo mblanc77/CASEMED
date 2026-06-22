@@ -2,7 +2,9 @@
 # (que la migración original dejó en NULL). Ejecutar en PowerShell 32-bit (proveedor Jet 4.0).
 param(
     [string]$Mdb = 'C:\Personal\Gestion\db\sgpaserv.mdb',
-    [string]$Password = '$($env:CASEMED_MDB_PWD)',
+    # La clave sale de $env:CASEMED_MDB_PWD (sgpaserv.mdb NO lleva la 's' final que sí usa seguserv.mdb).
+    # (Antes estaba entre comillas SIMPLES -> no expandía y mandaba el literal, fallando con "Multiple-step OLE DB".)
+    [string]$Password = "$($env:CASEMED_MDB_PWD)",
     [string]$SqlServer = 'localhost',
     [string]$SqlDb = 'NewSgpa2'
 )

@@ -1,0 +1,509 @@
+@page "/reportes/din/editor"
+@page "/reportes/din/editor/{Id:int}"
+@rendermode InteractiveServer
+@using DevExpress.Data.Filtering
+@using Sgpa.Data.Crud
+@using Sgpa.Data.Configuracion
+@using Sgpa.Data.Reporting
+@using Sgpa.Domain.Metadata
+@using Sgpa.Domain.Security
+@using Sgpa.Web.Components.Crud
+@inject IReporteDinamicoService Reportes
+@inject WebCurrentUser CurrentUser
+@inject ITablaConfigService TablaConfig
+@inject IToastNotificationService Toasts
+@inject ICalculatedFieldCatalog CalcCatalog
+@inject NavigationManager Nav
+
+<PageTitle>@(Id is null ? "Nuevo reporte" : "Editar reporte")</PageTitle>
+
+@if (_denied)
+{
+    <div class="alert alert-danger mt-3">Solo un administrador puede crear o editar reportes dinámicos.</div>
+}
+else
+{
+    <h3 class="mb-3"><i class="fa-solid fa-pen-ruler me-2"></i>@(Id is null ? "Nuevo reporte dinámico" : "Editar reporte")</h3>
+
+    <div class="row g-3 mb-3">
+        <div class="col-lg-6">
+            <label class="form-label mb-1">Nombre del reporte</label>
+            <DxTextBox @bind-Text="_nombre" NullText="Nombre visible en el menú…" />
+        </div>
+        <div class="col-lg-6">
+            <label class="form-label mb-1">Tabla raíz</label>
+            <DxComboBox Data="_rootOptions" TData="RootOpt" TValue="string"
+                        Value="_rootTable" ValueChanged="@((string v) => OnRootChanged(v))"
+                        ValueFieldName="@nameof(RootOpt.Table)" TextFieldName="@nameof(RootOpt.Label)"
+                        FilteringMode="DataGridFilteringMode.Contains" NullText="Elegí la tabla raíz…"
+                        Enabled="@(_cols.Count == 0)" />
+            @if (_cols.Count > 0)
+            {
+                <div class="form-text">Quitá todas las columnas para cambiar la raíz.</div>
+            }
+        </div>
+    </div>
+
+    @if (_root is not null)
+    {
+        <div class="row g-3">
+            @* ---- Navegador de campos (N niveles N-1) ---- *@
+            <div class="col-lg-5">
+                <div class="card h-100">
+                    <div class="card-header py-2 d-flex align-items-center gap-2">
+                        <span class="fw-semibold">Campos</span>
+                        <span class="text-muted small ms-auto">@Breadcrumb</span>
+                    </div>
+                    <div class="card-body" style="max-height:460px; overflow:auto">
+                        @if (_path.Count > 0)
+                        {
+                            <DxButton Text="◂ Volver" RenderStyle="ButtonRenderStyle.Link" Click="NavBack" CssClass="mb-2 p-0" />
+                        }
+                        <div class="fw-semibold small text-muted mt-1">Columnas (clic para agregar)</div>
+                        <div class="d-flex flex-wrap gap-1 mb-3">
+                            @foreach (var col in _navMeta!.ListColumns)
+                            {
+                                <DxButton Text="@col.Caption" RenderStyle="ButtonRenderStyle.Secondary" SizeMode="SizeMode.Small"
+                                          Click="@(() => AddColumn(col))" Enabled="@(!AlreadyAdded(col.Name))" />
+                            }
+                        </div>
+                        <div class="fw-semibold small text-muted">Relaciones (clic para navegar)</div>
+                        <div class="d-flex flex-wrap gap-1">
+                            @foreach (var (col, target) in NavTargets())
+                            {
+                                <DxButton Text="@($"{col.Caption} →")" RenderStyle="ButtonRenderStyle.Info" SizeMode="SizeMode.Small"
+                                          Click="@(() => NavInto(col, target))" />
+                            }
+                        </div>
+                        @* Campos calculados de la raíz (v1: sólo en la raíz). *@
+                        @if (_path.Count == 0 && CalcCatalog.For(_root.Table).Count > 0)
+                        {
+                            <div class="fw-semibold small text-muted mt-3">Calculados (clic para agregar)</div>
+                            <div class="d-flex flex-wrap gap-1">
+                                @foreach (var cf in CalcCatalog.For(_root.Table))
+                                {
+                                    <DxButton Text="@($"ƒ {cf.Caption}")" RenderStyle="ButtonRenderStyle.Warning" SizeMode="SizeMode.Small"
+                                              Click="@(() => AddCalc(cf))" Enabled="@(!AlreadyAddedCalc(cf.Nombre))" />
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            @* ---- Columnas seleccionadas ---- *@
+            <div class="col-lg-7">
+                <div class="card h-100">
+                    <div class="card-header py-2 fw-semibold">Columnas del reporte (@_cols.Count)</div>
+                    <div class="card-body" style="max-height:460px; overflow:auto">
+                        @if (_cols.Count == 0)
+                        {
+                            <p class="text-muted mb-0">Agregá columnas desde el panel de la izquierda.</p>
+                        }
+                        else
+                        {
+                            <table class="table table-sm align-middle">
+                                <thead>
+                                    <tr>
+                                        <th style="width:60px"></th>
+                                        <th>Campo</th>
+                                        <th>Encabezado</th>
+                                        <th style="width:80px">Agrupar</th>
+                                        <th style="width:140px">Total</th>
+                                        <th style="width:40px"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0; i < _cols.Count; i++)
+                                    {
+                                        var idx = i;
+                                        var c = _cols[idx];
+                                        <tr>
+                                            <td class="text-nowrap">
+                                                <DxButton IconCssClass="fa-solid fa-arrow-up" RenderStyle="ButtonRenderStyle.Link"
+                                                          Click="@(() => Move(idx, -1))" Enabled="@(idx > 0)" />
+                                                <DxButton IconCssClass="fa-solid fa-arrow-down" RenderStyle="ButtonRenderStyle.Link"
+                                                          Click="@(() => Move(idx, 1))" Enabled="@(idx < _cols.Count - 1)" />
+                                            </td>
+                                            <td class="small text-muted">@c.PathLabel</td>
+                                            <td><DxTextBox @bind-Text="c.Caption" /></td>
+                                            <td><DxCheckBox @bind-Checked="c.Group" /></td>
+                                            <td>
+                                                <DxComboBox Data="_aggOptions" TData="AggOpt" TValue="AggKind?"
+                                                            @bind-Value="c.Agg"
+                                                            ValueFieldName="@nameof(AggOpt.Value)" TextFieldName="@nameof(AggOpt.Label)" />
+                                            </td>
+                                            <td>
+                                                <DxButton IconCssClass="fa-solid fa-trash" RenderStyle="ButtonRenderStyle.Link"
+                                                          Click="@(() => _cols.RemoveAt(idx))" />
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* ---- Filtro (con placeholders) ---- *@
+        <div class="card mt-3">
+            <div class="card-header py-2 fw-semibold">Filtro</div>
+            <div class="card-body">
+                <p class="text-muted small mb-2">Definí condiciones del reporte. Luego, en "Parámetros", marcá los valores que el usuario debe ingresar al ejecutar (los no marcados quedan fijos).</p>
+                <DxFilterBuilder @bind-FilterCriteria="_criteria">
+                    <Fields>
+                        @foreach (var col in _root.ListColumns)
+                        {
+                            <DxFilterBuilderField FieldName="@col.Name" Caption="@col.Caption" Type="col.UnderlyingType" />
+                        }
+                        @* Campos calculados de la raíz: filtrables como cualquier campo (se traducen inline en el WHERE). *@
+                        @foreach (var cf in CalcCatalog.For(_root.Table))
+                        {
+                            <DxFilterBuilderField FieldName="@cf.Nombre" Caption="@($"ƒ {cf.Caption}")" Type="cf.ClrType" />
+                        }
+                        @foreach (var rel in EntityRelations.For(_root.EntityType))
+                        {
+                            @if (rel.IsCollection)
+                            {
+                                <DxFilterBuilderField FieldName="@rel.FieldPrefix" Caption="@RelLabel(rel)" IsCollection="true">
+                                    <Fields>
+                                        @foreach (var col in rel.Child.ListColumns)
+                                        {
+                                            <DxFilterBuilderField FieldName="@col.Name" Caption="@col.Caption" Type="col.UnderlyingType" />
+                                        }
+                                    </Fields>
+                                </DxFilterBuilderField>
+                            }
+                            else
+                            {
+                                <DxFilterBuilderField FieldName="@rel.FieldPrefix" Caption="@RelLabel(rel)" AllowSelection="false">
+                                    <Fields>
+                                        @foreach (var col in rel.Child.ListColumns)
+                                        {
+                                            <DxFilterBuilderField FieldName="@($"{rel.FieldPrefix}.{col.Name}")"
+                                                                  Caption="@col.Caption"
+                                                                  CaptionFullPath="@($"{RelLabel(rel)}.{col.Caption}")"
+                                                                  Type="col.UnderlyingType" />
+                                        }
+                                    </Fields>
+                                </DxFilterBuilderField>
+                            }
+                        }
+                    </Fields>
+                </DxFilterBuilder>
+
+                <div class="d-flex gap-2 mt-3">
+                    <DxButton Text="Parámetros…" IconCssClass="fa-solid fa-sliders"
+                              RenderStyle="ButtonRenderStyle.Secondary" Click="RefreshLeaves" />
+                    <DxButton Text="Limpiar filtro" RenderStyle="ButtonRenderStyle.Link"
+                              Click="@(() => { _criteria = null; _leaves = Array.Empty<FiltroLeaf>(); })" />
+                </div>
+
+                @if (_leaves.Count > 0)
+                {
+                    <div class="mt-3">
+                        <p class="text-muted small mb-1">Marcá los valores a pedir al ejecutar (los no marcados quedan fijos):</p>
+                        <ul class="list-group">
+                            @foreach (var lf in _leaves)
+                            {
+                                <li class="list-group-item d-flex align-items-center gap-2 py-1">
+                                    <DxCheckBox @bind-Checked="_leafChecked[lf.Indice]" />
+                                    <span class="flex-grow-1">@lf.Caption <span class="text-muted">= @(lf.ValorActual ?? "—")</span></span>
+                                    @if (_leafChecked[lf.Indice])
+                                    {
+                                        <DxTextBox Text="@(_leafNames.TryGetValue(lf.Indice, out var nm) ? nm : lf.Caption)"
+                                                   TextChanged="@(v => _leafNames[lf.Indice] = v)"
+                                                   NullText="etiqueta a mostrar" Width="220px" />
+                                    }
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    @if (_error is not null) { <div class="alert alert-danger mt-3">@_error</div> }
+
+    <div class="d-flex gap-2 mt-3">
+        <DxButton Text="Guardar" IconCssClass="fa-solid fa-floppy-disk" RenderStyle="ButtonRenderStyle.Primary" Click="SaveAsync" />
+        <DxButton Text="Cancelar" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => Nav.NavigateTo("/"))" />
+    </div>
+}
+
+@code {
+    [Parameter] public int? Id { get; set; }
+
+    private bool _denied;
+    private string _nombre = string.Empty;
+    private string? _rootTable;
+    private EntityMetadata? _root;
+    private string? _error;
+
+    // Navegación de campos: pila de columnas FK + sus entidades destino desde la raíz.
+    private readonly List<string> _path = new();
+    private readonly List<EntityMetadata> _pathMetas = new();
+    private EntityMetadata? _navMeta;
+
+    private readonly List<ColEdit> _cols = new();
+
+    // Filtro + autoría de parámetros.
+    private CriteriaOperator? _criteria;
+    private IReadOnlyList<FiltroLeaf> _leaves = Array.Empty<FiltroLeaf>();
+    private readonly Dictionary<int, bool> _leafChecked = new();
+    private readonly Dictionary<int, string> _leafNames = new();
+
+    private IReadOnlyList<RootOpt> _rootOptions = Array.Empty<RootOpt>();
+    private static readonly AggOpt[] _aggOptions =
+    {
+        new("—", null), new("Suma", AggKind.Sum), new("Cantidad", AggKind.Count),
+        new("Promedio", AggKind.Avg), new("Mínimo", AggKind.Min), new("Máximo", AggKind.Max),
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CurrentUser.EnsureLoadedAsync();
+        if (!CurrentUser.IsAdmin) { _denied = true; return; }
+        await TablaConfig.EnsureLoadedAsync();
+        await CalcCatalog.EnsureLoadedAsync();
+
+        _rootOptions = EntityCatalog.CrudCapable
+            .OrderBy(m => TablaConfig.DisplayName(m.Table), StringComparer.OrdinalIgnoreCase)
+            .Select(m => new RootOpt(m.Table, TablaConfig.DisplayName(m.Table)))
+            .ToList();
+
+        if (Id is int id)
+            await LoadExistingAsync(id);
+    }
+
+    private async Task LoadExistingAsync(int id)
+    {
+        var rep = await Reportes.GetAsync(id);
+        if (rep is null) { _error = "El reporte no existe."; return; }
+        _nombre = rep.Nombre;
+        SetRoot(rep.Def.RootTable);
+        if (_root is null) { _error = $"La tabla raíz '{rep.Def.RootTable}' no existe."; return; }
+
+        foreach (var fr in rep.Def.Columns)
+        {
+            string pathLabel; string caption;
+            if (fr.Calc)
+            {
+                var cf = CalcCatalog.For(_root.Table).FirstOrDefault(c => c.Nombre.Equals(fr.Column, StringComparison.OrdinalIgnoreCase));
+                pathLabel = "ƒ " + (cf?.Caption ?? fr.Column);
+                caption = fr.Caption ?? cf?.Caption ?? fr.Column;
+            }
+            else
+            {
+                var (meta, label) = ResolvePathInfo(fr.Path);
+                if (meta is null) continue;
+                var col = meta.Columns.FirstOrDefault(c => c.Name.Equals(fr.Column, StringComparison.OrdinalIgnoreCase));
+                if (col is null) continue;
+                pathLabel = label + col.Caption;
+                caption = fr.Caption ?? col.Caption;
+            }
+            _cols.Add(new ColEdit
+            {
+                Path = fr.Path, Column = fr.Column, PathLabel = pathLabel,
+                Caption = caption, DisplayFormat = fr.DisplayFormat, Calc = fr.Calc,
+                Group = rep.Def.Groups.Any(g => SameRef(g, fr)),
+                Agg = rep.Def.Summaries.FirstOrDefault(s => SameRef(s.Field, fr))?.Agg,
+            });
+        }
+        _criteria = string.IsNullOrWhiteSpace(rep.Def.Criteria) ? null : CriteriaOperator.Parse(rep.Def.Criteria);
+    }
+
+    private static bool SameRef(ReportFieldRef a, ReportFieldRef b)
+        => a.Column.Equals(b.Column, StringComparison.OrdinalIgnoreCase) && a.Path.SequenceEqual(b.Path, StringComparer.OrdinalIgnoreCase);
+
+    private void OnRootChanged(string table)
+    {
+        SetRoot(table);
+        _cols.Clear();
+        _criteria = null;
+        _leaves = Array.Empty<FiltroLeaf>();
+    }
+
+    private void SetRoot(string? table)
+    {
+        _rootTable = table;
+        _root = table is null ? null : EntityCatalog.TryGet(table);
+        _path.Clear();
+        _pathMetas.Clear();
+        _navMeta = _root;
+    }
+
+    private string Breadcrumb => _root is null ? "" :
+        string.Join(" › ", new[] { _root.Table }.Concat(_pathMetas.Select(m => m.Table)));
+
+    // FK navegables desde la entidad actual (N-1 a entidades de clave simple).
+    private IEnumerable<(ColumnMetadata Col, EntityMetadata Target)> NavTargets()
+    {
+        if (_navMeta is null) yield break;
+        foreach (var col in _navMeta.Columns)
+        {
+            if (col.IsAudit) continue;
+            var t = EntityCatalog.LookupDisplayTargetFor(col, _navMeta);
+            if (t is not null) yield return (col, t);
+        }
+    }
+
+    private void NavInto(ColumnMetadata col, EntityMetadata target)
+    {
+        _path.Add(col.Name);
+        _pathMetas.Add(target);
+        _navMeta = target;
+    }
+
+    private void NavBack()
+    {
+        if (_path.Count == 0) return;
+        _path.RemoveAt(_path.Count - 1);
+        _pathMetas.RemoveAt(_pathMetas.Count - 1);
+        _navMeta = _pathMetas.Count > 0 ? _pathMetas[^1] : _root;
+    }
+
+    private bool AlreadyAdded(string column)
+    {
+        var path = _path.ToArray();
+        return _cols.Any(c => c.Column.Equals(column, StringComparison.OrdinalIgnoreCase)
+                              && c.Path.SequenceEqual(path, StringComparer.OrdinalIgnoreCase));
+    }
+
+    private void AddColumn(ColumnMetadata col)
+    {
+        var prefix = _pathMetas.Count > 0 ? string.Join(" › ", _pathMetas.Select(m => m.Table)) + " › " : "";
+        _cols.Add(new ColEdit
+        {
+            Path = _path.ToArray(), Column = col.Name, PathLabel = prefix + col.Caption,
+            Caption = col.Caption, DisplayFormat = col.DisplayFormat,
+        });
+    }
+
+    private bool AlreadyAddedCalc(string nombre)
+        => _cols.Any(c => c.Calc && c.Column.Equals(nombre, StringComparison.OrdinalIgnoreCase));
+
+    private void AddCalc(CalculatedField cf)
+    {
+        _cols.Add(new ColEdit
+        {
+            Path = Array.Empty<string>(), Column = cf.Nombre, PathLabel = "ƒ " + cf.Caption,
+            Caption = cf.Caption, DisplayFormat = cf.DisplayFormat, Calc = true,
+        });
+    }
+
+    // Resolver de tipo para campos calculados de la raíz (alimenta la inferencia de tipo del parámetro).
+    private Type? CalcType(string nombre)
+        => _root is null ? null
+           : CalcCatalog.For(_root.Table).FirstOrDefault(c => c.Nombre.Equals(nombre, StringComparison.OrdinalIgnoreCase))?.ClrType;
+
+    private void Move(int idx, int delta)
+    {
+        var j = idx + delta;
+        if (j < 0 || j >= _cols.Count) return;
+        (_cols[idx], _cols[j]) = (_cols[j], _cols[idx]);
+    }
+
+    // Resuelve la entidad y el label de un path FK (para reconstruir columnas al editar).
+    private (EntityMetadata? Meta, string Label) ResolvePathInfo(string[] path)
+    {
+        var meta = _root;
+        var labels = new List<string>();
+        foreach (var fk in path)
+        {
+            var col = meta?.Columns.FirstOrDefault(c => c.Name.Equals(fk, StringComparison.OrdinalIgnoreCase));
+            var t = col is null || meta is null ? null : EntityCatalog.LookupDisplayTargetFor(col, meta);
+            if (t is null) return (null, "");
+            labels.Add(t.Table);
+            meta = t;
+        }
+        return (meta, labels.Count > 0 ? string.Join(" › ", labels) + " › " : "");
+    }
+
+    private string RelLabel(ExistsRelation rel)
+    {
+        var alias = TablaConfig.Get(rel.Child.Table).Alias;
+        if (string.IsNullOrWhiteSpace(alias) && !rel.Label.Equals(rel.Child.Table, StringComparison.Ordinal))
+            return rel.Label;
+        return TablaConfig.DisplayName(rel.Child.Table);
+    }
+
+    private void RefreshLeaves()
+    {
+        _leaves = _root is null || ReferenceEquals(_criteria, null)
+            ? Array.Empty<FiltroLeaf>()
+            : FiltroParametros.Enumerar(_criteria, _root.EntityType, CalcType);
+        foreach (var lf in _leaves)
+        {
+            _leafChecked.TryAdd(lf.Indice, false);
+            _leafNames.TryAdd(lf.Indice, lf.Caption);
+        }
+    }
+
+    private async Task SaveAsync()
+    {
+        _error = null;
+        if (string.IsNullOrWhiteSpace(_nombre)) { _error = "Indicá un nombre."; return; }
+        if (_root is null) { _error = "Elegí la tabla raíz."; return; }
+        if (_cols.Count == 0) { _error = "Agregá al menos una columna."; return; }
+
+        // Parametrizar el filtro según las hojas marcadas.
+        string? criteriaText = null, paramsJson = null;
+        if (!ReferenceEquals(_criteria, null))
+        {
+            var chosen = new Dictionary<int, string>();
+            foreach (var lf in _leaves)
+                if (_leafChecked.TryGetValue(lf.Indice, out var ck) && ck)
+                {
+                    var nm = (_leafNames.TryGetValue(lf.Indice, out var n) ? n : lf.SugerenciaNombre)?.Trim();
+                    if (string.IsNullOrWhiteSpace(nm)) { _error = $"Falta la etiqueta del parámetro para «{lf.Caption}»."; return; }
+                    chosen[lf.Indice] = nm;
+                }
+            if (chosen.Count > 0)
+            {
+                var (pc, defs) = FiltroParametros.Parametrizar(_criteria, _root.EntityType, chosen, CalcType);
+                criteriaText = pc!.ToString();
+                paramsJson = FiltroParametros.SerializarDefs(defs);
+            }
+            else criteriaText = _criteria.ToString();
+        }
+
+        var def = new ReporteDinamicoDef
+        {
+            RootTable = _root.Table,
+            Columns = _cols.Select(c => new ReportFieldRef(c.Path, c.Column, c.Caption, c.DisplayFormat) { Calc = c.Calc }).ToList(),
+            Criteria = criteriaText,
+            ParametrosJson = paramsJson,
+            Groups = _cols.Where(c => c.Group).Select(c => new ReportFieldRef(c.Path, c.Column) { Calc = c.Calc }).ToList(),
+            Summaries = _cols.Where(c => c.Agg is not null).Select(c => new ReportSummary(new ReportFieldRef(c.Path, c.Column) { Calc = c.Calc }, c.Agg!.Value)).ToList(),
+        };
+
+        try
+        {
+            int id;
+            if (Id is int existing) { await Reportes.UpdateAsync(existing, _nombre.Trim(), def); id = existing; }
+            else { id = await Reportes.CreateAsync(_nombre.Trim(), def, CurrentUser.UserName); }
+            Toasts.Exito("Reporte guardado.");
+            Nav.NavigateTo($"/reportes/din/{id}");
+        }
+        catch (Exception ex) { _error = $"No se pudo guardar: {ex.Message}"; }
+    }
+
+    private sealed class ColEdit
+    {
+        public string[] Path = Array.Empty<string>();
+        public string Column = string.Empty;
+        public string PathLabel = string.Empty;
+        public string Caption = string.Empty;
+        public string? DisplayFormat;
+        public bool Calc;
+        public bool Group;
+        public AggKind? Agg;
+    }
+
+    private sealed record RootOpt(string Table, string Label);
+    private sealed record AggOpt(string Label, AggKind? Value);
+}

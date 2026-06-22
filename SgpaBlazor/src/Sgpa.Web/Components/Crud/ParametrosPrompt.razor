@@ -1,0 +1,158 @@
+@using Sgpa.Data.Crud
+@using Sgpa.Domain.Metadata
+@inject ISgpaLookupService Lookups
+
+@*
+    Formulario reutilizable para pedir los valores de parámetros (estilo "Request Parameters" de XtraReports).
+    A partir de la lista de FiltroParametroDef rinde el editor adecuado según el tipo inferido (fecha, número,
+    bool, FK→combo de lookup, texto). Lo usan el filtro de los ListView (SgpaGridFilter) y el viewer de reportes
+    dinámicos. No conoce el destino de los valores: al aceptar invoca OnAccept con el diccionario Nombre→valor.
+*@
+<div class="d-flex flex-column gap-2">
+    @foreach (var pv in _vals)
+    {
+        <div class="d-flex align-items-center gap-2">
+            <label class="mb-0" style="min-width:180px">@pv.Def.Prompt@(pv.Def.Requerido ? " *" : "")</label>
+            @switch (pv.Categoria)
+            {
+                case Cat.Fecha:
+                    <DxDateEdit @bind-Date="pv.Fecha" />
+                    break;
+                case Cat.Numero:
+                    <DxSpinEdit @bind-Value="pv.Numero" />
+                    break;
+                case Cat.Bool:
+                    <DxCheckBox @bind-Checked="pv.Booleano" />
+                    break;
+                case Cat.Fk:
+                    <DxComboBox Data="pv.FkLookup" TData="LookupItem" TValue="object"
+                                Value="pv.FkValue" ValueChanged="@((object v) => pv.FkValue = v)"
+                                ValueFieldName="@nameof(LookupItem.Value)" TextFieldName="@nameof(LookupItem.Text)"
+                                FilteringMode="DataGridFilteringMode.Contains"
+                                ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto" NullText=" " />
+                    break;
+                default:
+                    <DxTextBox @bind-Text="pv.Texto" />
+                    break;
+            }
+        </div>
+    }
+</div>
+@if (_error is not null) { <div class="alert alert-danger py-2 mt-2">@_error</div> }
+<div class="d-flex gap-2 mt-3 justify-content-end">
+    @if (ShowCancel)
+    {
+        <DxButton Text="@CancelText" RenderStyle="ButtonRenderStyle.Secondary" Click="OnCancel" />
+    }
+    <DxButton Text="@AcceptText" IconCssClass="fa-solid fa-check" RenderStyle="ButtonRenderStyle.Primary" Click="AcceptAsync" />
+</div>
+
+@code {
+    [Parameter, EditorRequired] public IReadOnlyList<FiltroParametroDef> Defs { get; set; } = Array.Empty<FiltroParametroDef>();
+
+    /// <summary>Valores iniciales por nombre de parámetro (ej. los últimos usados). Tienen prioridad sobre el default.</summary>
+    [Parameter] public IReadOnlyDictionary<string, object?>? Initial { get; set; }
+
+    /// <summary>Se invoca al aceptar con los valores resueltos (Nombre→valor), ya validados los requeridos.</summary>
+    [Parameter] public EventCallback<IReadOnlyDictionary<string, object?>> OnAccept { get; set; }
+
+    [Parameter] public EventCallback OnCancel { get; set; }
+    [Parameter] public string AcceptText { get; set; } = "Aplicar";
+    [Parameter] public string CancelText { get; set; } = "Cancelar";
+    [Parameter] public bool ShowCancel { get; set; }
+
+    private List<PromptVal> _vals = new();
+    private string? _error;
+    private object? _builtFor;   // referencia de Defs para la que ya se construyó _vals (evita reconstruir en cada render)
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (ReferenceEquals(_builtFor, Defs)) return;
+        _builtFor = Defs;
+        _error = null;
+        _vals = await BuildValsAsync();
+    }
+
+    private async Task<List<PromptVal>> BuildValsAsync()
+    {
+        var res = new List<PromptVal>();
+        foreach (var d in Defs)
+        {
+            var t = Type.GetType(d.ClrType) ?? typeof(string);
+            var esFk = !string.IsNullOrEmpty(d.FkEntidad);
+            var pv = new PromptVal { Def = d, Categoria = esFk ? Cat.Fk : Categorizar(t) };
+            if (esFk)
+            {
+                var target = EntityCatalog.All.FirstOrDefault(m => m.Table.Equals(d.FkEntidad, StringComparison.OrdinalIgnoreCase));
+                if (target is not null) pv.FkLookup = await Lookups.GetAsync(target.EntityType);
+                if (pv.FkLookup is null) pv.Categoria = Categorizar(t);   // sin lookup (tabla grande/sin descripción) → editor escalar
+            }
+            object? init = Initial is not null && Initial.TryGetValue(d.Nombre, out var lv) ? lv
+                : (d.DefaultJson is null ? null : SafeDeserialize(d.DefaultJson, t));
+            pv.Set(init);
+            res.Add(pv);
+        }
+        return res;
+    }
+
+    private async Task AcceptAsync()
+    {
+        _error = null;
+        var vals = new Dictionary<string, object?>();
+        foreach (var pv in _vals)
+        {
+            var v = pv.Resolver();
+            if (pv.Def.Requerido && (v is null || (v is string s && string.IsNullOrWhiteSpace(s))))
+            { _error = $"Falta el valor de «{pv.Def.Prompt}»."; return; }
+            vals[pv.Def.Nombre] = v;
+        }
+        await OnAccept.InvokeAsync(vals);
+    }
+
+    private static Cat Categorizar(Type t) =>
+        t == typeof(DateTime) ? Cat.Fecha :
+        t == typeof(bool) ? Cat.Bool :
+        (t == typeof(int) || t == typeof(long) || t == typeof(short) || t == typeof(byte)
+            || t == typeof(decimal) || t == typeof(double) || t == typeof(float)) ? Cat.Numero :
+        Cat.Texto;
+
+    private static object? SafeDeserialize(string json, Type t)
+    {
+        try { return System.Text.Json.JsonSerializer.Deserialize(json, t); } catch { return null; }
+    }
+
+    private enum Cat { Fecha, Numero, Bool, Texto, Fk }
+
+    private sealed class PromptVal
+    {
+        public FiltroParametroDef Def = default!;
+        public Cat Categoria;
+        public DateTime? Fecha;
+        public decimal? Numero;
+        public bool Booleano;
+        public string? Texto;
+        public object? FkValue;                          // clave seleccionada (FK)
+        public IReadOnlyList<LookupItem>? FkLookup;      // opciones del combo (FK)
+
+        public void Set(object? v)
+        {
+            switch (Categoria)
+            {
+                case Cat.Fecha: Fecha = v is DateTime dt ? dt : (DateTime?)null; break;
+                case Cat.Numero: Numero = v is null ? null : System.Convert.ToDecimal(v); break;
+                case Cat.Bool: Booleano = v is bool b && b; break;
+                case Cat.Fk: FkValue = v; break;
+                default: Texto = v?.ToString(); break;
+            }
+        }
+
+        public object? Resolver() => Categoria switch
+        {
+            Cat.Fecha => Fecha,
+            Cat.Numero => Numero,
+            Cat.Bool => Booleano,
+            Cat.Fk => FkValue,
+            _ => Texto
+        };
+    }
+}

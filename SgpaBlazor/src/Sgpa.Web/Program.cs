@@ -118,6 +118,10 @@ builder.Services.AddScoped<ICurrentUser>(sp => sp.GetRequiredService<WebCurrentU
 // Enriquece el logging con el usuario del circuito (para que las no controladas registren quién las disparó).
 builder.Services.AddScoped<Microsoft.AspNetCore.Components.Server.Circuits.CircuitHandler, Sgpa.Web.Logging.UserLogCircuitHandler>();
 
+// Campos calculados por tabla: catálogo (parsea CriteriaOperator→árbol neutral) + validador del CRUD del catálogo.
+builder.Services.AddScoped<Sgpa.Web.Components.Crud.ICalculatedFieldCatalog, Sgpa.Web.Components.Crud.CalculatedFieldCatalog>();
+builder.Services.AddScoped<FluentValidation.IValidator<Sgpa.Domain.Entities.CampoCalculado>, Sgpa.Web.Components.Crud.CampoCalculadoValidator>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

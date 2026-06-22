@@ -51,6 +51,11 @@
                         <DxFilterBuilderField FieldName="@col.Name" Caption="@col.Caption" Type="col.UnderlyingType" />
                     }
                 }
+                @* Campos calculados (server-side): se traducen inline en el WHERE. *@
+                @foreach (var cf in CalcFields)
+                {
+                    <DxFilterBuilderField FieldName="@cf.Nombre" Caption="@($"ƒ {cf.Caption}")" Type="cf.ClrType" />
+                }
                 @* Relaciones a otras tablas como campos JERÁRQUICOS (no ensucian el root):
                    - 1-N (colección): IsCollection=true → el builder arma un Exists; subcampos con FieldName RELATIVO.
                    - N-1 (referencia/FK): nodo de navegación; subcampos con FieldName de PATH COMPLETO ("Banco.Nombre").
@@ -131,41 +136,8 @@
 @* ---- Popup: pedir parámetros al ejecutar (estilo Request Parameters de XtraReports) ---- *@
 <DxPopup @bind-Visible="_promptVisible" HeaderText="@($"Parámetros — {_promptFilter?.Nombre}")" Width="480px" CloseOnEscape="true">
     <BodyContentTemplate>
-        @if (_error is not null) { <div class="alert alert-danger py-2">@_error</div> }
-        <div class="d-flex flex-column gap-2">
-            @foreach (var pv in _promptVals)
-            {
-                <div class="d-flex align-items-center gap-2">
-                    <label class="mb-0" style="min-width:180px">@pv.Def.Prompt@(pv.Def.Requerido ? " *" : "")</label>
-                    @switch (pv.Categoria)
-                    {
-                        case Cat.Fecha:
-                            <DxDateEdit @bind-Date="pv.Fecha" />
-                            break;
-                        case Cat.Numero:
-                            <DxSpinEdit @bind-Value="pv.Numero" />
-                            break;
-                        case Cat.Bool:
-                            <DxCheckBox @bind-Checked="pv.Booleano" />
-                            break;
-                        case Cat.Fk:
-                            <DxComboBox Data="pv.FkLookup" TData="LookupItem" TValue="object"
-                                        Value="pv.FkValue" ValueChanged="@((object v) => pv.FkValue = v)"
-                                        ValueFieldName="@nameof(LookupItem.Value)" TextFieldName="@nameof(LookupItem.Text)"
-                                        FilteringMode="DataGridFilteringMode.Contains"
-                                        ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto" NullText=" " />
-                            break;
-                        default:
-                            <DxTextBox @bind-Text="pv.Texto" />
-                            break;
-                    }
-                </div>
-            }
-        </div>
-        <div class="d-flex gap-2 mt-3 justify-content-end">
-            <DxButton Text="Cancelar" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => _promptVisible = false)" />
-            <DxButton Text="Aplicar" IconCssClass="fa-solid fa-check" RenderStyle="ButtonRenderStyle.Primary" Click="AplicarParametrosAsync" />
-        </div>
+        <ParametrosPrompt Defs="_promptDefs" Initial="_promptInitial" ShowCancel="true"
+                          OnAccept="OnParamsAccepted" OnCancel="@(() => _promptVisible = false)" />
     </BodyContentTemplate>
 </DxPopup>
 
@@ -203,6 +175,12 @@
     [Parameter, EditorRequired] public EntityMetadata Meta { get; set; } = default!;
     /// <summary>Se invoca tras aplicar/limpiar un filtro (para refrescar contadores del padre).</summary>
     [Parameter] public EventCallback OnChanged { get; set; }
+    /// <summary>Campos calculados de la tabla, filtrables en modo servidor (se traducen inline en el WHERE).</summary>
+    [Parameter] public IReadOnlyList<CalculatedField> CalcFields { get; set; } = Array.Empty<CalculatedField>();
+
+    // Resolver de tipo para campos calculados (alimenta la inferencia de tipo del parámetro al guardar el filtro).
+    private Type? CalcType(string nombre)
+        => CalcFields.FirstOrDefault(c => c.Nombre.Equals(nombre, StringComparison.OrdinalIgnoreCase))?.ClrType;
 
     private bool _builderVisible, _saveVisible, _manageVisible;
     private CriteriaOperator? _builderCriteria;
@@ -220,7 +198,8 @@
     private bool _promptVisible;
     private SavedFilter? _promptFilter;
     private CriteriaOperator? _promptCrit;
-    private List<PromptVal> _promptVals = new();
+    private IReadOnlyList<FiltroParametroDef> _promptDefs = Array.Empty<FiltroParametroDef>();
+    private IReadOnlyDictionary<string, object?>? _promptInitial;
     private readonly Dictionary<int, Dictionary<string, object?>> _ultimosValores = new();
 
     // Lookups de las columnas FK de la entidad, para el combo del filter builder (col física -> items).
@@ -288,7 +267,9 @@
                 // El filtro tiene parámetros: pedirlos antes de aplicar (no se aplica todavía).
                 _promptFilter = f;
                 _promptCrit = crit;
-                _promptVals = await BuildPromptVals(f, defs);
+                _promptDefs = defs;
+                _ultimosValores.TryGetValue(f.Id, out var last);   // recordar últimos valores de la sesión
+                _promptInitial = last;
                 _manageVisible = false;
                 _promptVisible = true;
                 return;
@@ -309,7 +290,7 @@
         _leafNames.Clear();
         _saveLeaves = ReferenceEquals(_saveCrit, null)
             ? Array.Empty<FiltroLeaf>()
-            : FiltroParametros.Enumerar(_saveCrit, Meta.EntityType);
+            : FiltroParametros.Enumerar(_saveCrit, Meta.EntityType, CalcType);
         foreach (var lf in _saveLeaves) { _leafCheckedRef[lf.Indice] = false; _leafNames[lf.Indice] = lf.Caption; }
         _saveVisible = true;
         return Task.CompletedTask;
@@ -335,7 +316,7 @@
         string? paramsJson = null;
         if (chosen.Count > 0)
         {
-            var (pc, defs) = FiltroParametros.Parametrizar(crit, Meta.EntityType, chosen);
+            var (pc, defs) = FiltroParametros.Parametrizar(crit, Meta.EntityType, chosen, CalcType);
             critText = pc!.ToString();
             paramsJson = FiltroParametros.SerializarDefs(defs);
         }
@@ -346,92 +327,14 @@
         await ReloadSavedAsync();
     }
 
-    // Aplica el filtro parametrizado tras pedir los valores: valida requeridos, sustituye y setea el criterio.
-    private async Task AplicarParametrosAsync()
+    // Aplica el filtro parametrizado tras pedir los valores (ParametrosPrompt ya validó los requeridos):
+    // recuerda los últimos valores de la sesión, sustituye los parámetros y setea el criterio en la grilla.
+    private async Task OnParamsAccepted(IReadOnlyDictionary<string, object?> vals)
     {
-        _error = null;
-        var vals = new Dictionary<string, object?>();
-        foreach (var pv in _promptVals)
-        {
-            var v = pv.Resolver();
-            if (pv.Def.Requerido && (v is null || (v is string s && string.IsNullOrWhiteSpace(s))))
-            { _error = $"Falta el valor de «{pv.Def.Prompt}»."; return; }
-            vals[pv.Def.Nombre] = v;
-        }
         if (_promptFilter is not null) _ultimosValores[_promptFilter.Id] = new Dictionary<string, object?>(vals);
         Grid?.SetFilterCriteria(FiltroParametros.Sustituir(_promptCrit, vals));
         _promptVisible = false;
         await OnChanged.InvokeAsync();
-    }
-
-    private async Task<List<PromptVal>> BuildPromptVals(SavedFilter f, IReadOnlyList<FiltroParametroDef> defs)
-    {
-        _ultimosValores.TryGetValue(f.Id, out var last);
-        var res = new List<PromptVal>();
-        foreach (var d in defs)
-        {
-            var t = Type.GetType(d.ClrType) ?? typeof(string);
-            var esFk = !string.IsNullOrEmpty(d.FkEntidad);
-            var pv = new PromptVal { Def = d, Categoria = esFk ? Cat.Fk : Categorizar(t) };
-            if (esFk)
-            {
-                var target = EntityCatalog.All.FirstOrDefault(m => m.Table.Equals(d.FkEntidad, StringComparison.OrdinalIgnoreCase));
-                if (target is not null) pv.FkLookup = await Lookups.GetAsync(target.EntityType);
-                if (pv.FkLookup is null) pv.Categoria = Categorizar(t);   // sin lookup → editor escalar (el código)
-            }
-            object? init = last is not null && last.TryGetValue(d.Nombre, out var lv) ? lv
-                : (d.DefaultJson is null ? null : SafeDeserialize(d.DefaultJson, t));
-            pv.Set(init);
-            res.Add(pv);
-        }
-        return res;
-    }
-
-    private static Cat Categorizar(Type t) =>
-        t == typeof(DateTime) ? Cat.Fecha :
-        t == typeof(bool) ? Cat.Bool :
-        (t == typeof(int) || t == typeof(long) || t == typeof(short) || t == typeof(byte)
-            || t == typeof(decimal) || t == typeof(double) || t == typeof(float)) ? Cat.Numero :
-        Cat.Texto;
-
-    private static object? SafeDeserialize(string json, Type t)
-    {
-        try { return System.Text.Json.JsonSerializer.Deserialize(json, t); } catch { return null; }
-    }
-
-    private enum Cat { Fecha, Numero, Bool, Texto, Fk }
-
-    private sealed class PromptVal
-    {
-        public FiltroParametroDef Def = default!;
-        public Cat Categoria;
-        public DateTime? Fecha;
-        public decimal? Numero;
-        public bool Booleano;
-        public string? Texto;
-        public object? FkValue;                          // clave seleccionada (FK)
-        public IReadOnlyList<LookupItem>? FkLookup;      // opciones del combo (FK)
-
-        public void Set(object? v)
-        {
-            switch (Categoria)
-            {
-                case Cat.Fecha: Fecha = v is DateTime dt ? dt : (DateTime?)null; break;
-                case Cat.Numero: Numero = v is null ? null : System.Convert.ToDecimal(v); break;
-                case Cat.Bool: Booleano = v is bool b && b; break;
-                case Cat.Fk: FkValue = v; break;
-                default: Texto = v?.ToString(); break;
-            }
-        }
-
-        public object? Resolver() => Categoria switch
-        {
-            Cat.Fecha => Fecha,
-            Cat.Numero => Numero,
-            Cat.Bool => Booleano,
-            Cat.Fk => FkValue,
-            _ => Texto
-        };
     }
 
     private async Task OpenManageAsync()

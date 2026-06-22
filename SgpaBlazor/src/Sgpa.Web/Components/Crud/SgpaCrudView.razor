@@ -23,6 +23,7 @@
 @inject IPreferenciaVistaStore VistaStore
 @inject ITablaConfigService TablaConfig
 @inject IToastNotificationService Toasts
+@inject ICalculatedFieldCatalog CalcCatalog
 
 @*
     Componente CRUD genérico (estilo XAF ListView + DetailView en popup).
@@ -154,7 +155,7 @@ else
                 </DxDropDownButton>
             }
             <span class="vr mx-1"></span>
-            <SgpaGridFilter Grid="_grid" Meta="Meta" />
+            <SgpaGridFilter Grid="_grid" Meta="Meta" CalcFields="@(_serverMode ? _calc : System.Array.Empty<CalculatedField>())" />
         </div>
     </ToolbarTemplate>
     <Columns>
@@ -199,6 +200,18 @@ else
             {
                 <DxGridDataColumn FieldName="@col.Name" Caption="@col.Caption" DisplayFormat="@DisplayFormatFor(col)"
                                   TextAlignment="@AlignFor(col)" />
+            }
+        }
+        @* Columnas calculadas (server-side): valor resuelto por página vía side-fetch por PK. Sólo display
+           (sin ordenar/agrupar por la columna; el filtro por ellas va por SgpaGridFilter). Requiere clave simple. *@
+        @if (Meta.Keys.Count == 1)
+        {
+            @foreach (var cf in _calc)
+            {
+                @* Ordenar/agrupar por la columna calculada sólo tiene sentido server-side (en cliente el POCO no la tiene). *@
+                <DxGridDataColumn FieldName="@cf.Nombre" Caption="@($"ƒ {cf.Caption}")" AllowSort="@_serverMode" AllowGroup="@_serverMode">
+                    <CellDisplayTemplate Context="cell">@CalcText(cell.DataItem, cf.Nombre)</CellDisplayTemplate>
+                </DxGridDataColumn>
             }
         }
     </Columns>
@@ -463,6 +476,10 @@ else
     private readonly List<(ColumnMetadata Col, EntityMetadata Target)> _lookupCols = new();
     // Cabezal de las columnas FK: el nombre de la tabla referenciada (no "Código de X", ya que se ve la descripción).
     private readonly Dictionary<string, string> _lookupCaptions = new(StringComparer.OrdinalIgnoreCase);
+    // Campos calculados de la tabla (server-side): se pueden filtrar en modo servidor.
+    private IReadOnlyList<CalculatedField> _calc = System.Array.Empty<CalculatedField>();
+    // Valores de los calculados resueltos por página (clave de fila → nombreCalc → valor), para mostrarlos en la grilla.
+    private readonly Dictionary<string, IReadOnlyDictionary<string, object?>> _calcValues = new(StringComparer.OrdinalIgnoreCase);
     private bool _editingIsNew;
     private string? _error;
     private bool _denied;
@@ -503,6 +520,8 @@ else
         _perms = Permissions ?? CurrentUser.PermissionsFor(Meta.Table);
         _viewKey = ViewKey ?? (FilterColumn is null ? Meta.Table : $"{Meta.Table}:{FilterColumn}");
         await TablaConfig.EnsureLoadedAsync();
+        await CalcCatalog.EnsureLoadedAsync();
+        _calc = CalcCatalog.For(Meta.Table);
         var cfg = TablaConfig.Get(Meta.Table);
         _requiereTextoEliminar = cfg.ConfirmarBorrado;
         _inlineEdit = cfg.EdicionInline;
@@ -552,15 +571,18 @@ else
         {
             // onItemsLoaded resuelve las descripciones FK por página (ej. CI→nombre del afiliado), ya que las
             // tablas grandes no se materializan en LoadFullTableLookupsAsync.
+            var resolverExtras = _lookupCols.Count > 0 || (_calc.Count > 0 && Meta.Keys.Count == 1);
             _dataSource = new SgpaGridDataSource<TEntity>(Service, _filterCol?.Name,
                 _filterCol is null ? null : FilterValue,
-                onItemsLoaded: _lookupCols.Count > 0 ? ResolvePageLookupsAsync : null);
+                onItemsLoaded: resolverExtras ? ResolvePageExtrasAsync : null,
+                calc: _calc.Count > 0 ? _calc : null);
             await LoadFullTableLookupsAsync();
         }
         else
         {
             await ReloadAsync();
             await LoadDataLookupsAsync();
+            await ResolvePageCalcAsync(_data, default);   // campos calculados de todas las filas (tabla chica)
         }
     }
 
@@ -575,6 +597,7 @@ else
         {
             await ReloadAsync();
             await LoadDataLookupsAsync();
+            await ResolvePageCalcAsync(_data, default);   // campos calculados de todas las filas (tabla chica)
         }
     }
 
@@ -636,6 +659,32 @@ else
         => _lookups.TryGetValue(colName, out var map) && value?.ToString() is { } k && map.TryGetValue(k, out var txt)
             ? txt
             : value?.ToString() ?? string.Empty;
+
+    // Resuelve descripciones FK + valores de campos calculados de la página (un solo paso al cargar cada página).
+    private async Task ResolvePageExtrasAsync(IReadOnlyList<TEntity> items, CancellationToken ct)
+    {
+        if (_lookupCols.Count > 0) await ResolvePageLookupsAsync(items, ct);
+        await ResolvePageCalcAsync(items, ct);
+    }
+
+    // Side-fetch de los campos calculados de las filas dadas (por su PK) → _calcValues. Requiere clave simple.
+    private async Task ResolvePageCalcAsync(IReadOnlyList<TEntity> items, CancellationToken ct)
+    {
+        if (_calc.Count == 0 || Meta.Keys.Count != 1 || items.Count == 0) return;
+        var keys = items.Select(e => Meta.Key.GetValue(e)).Where(v => v is not null).Cast<object>().Distinct().ToList();
+        if (keys.Count == 0) return;
+        var map = await Service.GetCalcValuesAsync(keys, _calc, ct);
+        foreach (var kv in map) _calcValues[kv.Key] = kv.Value;
+    }
+
+    // Texto de una celda calculada: busca por la PK de la fila en el mapa resuelto por página.
+    private string CalcText(object? dataItem, string nombre)
+    {
+        if (dataItem is not TEntity e || Meta.Keys.Count != 1) return string.Empty;
+        var key = Meta.Key.GetValue(e)?.ToString();
+        if (key is null || !_calcValues.TryGetValue(key, out var vals)) return string.Empty;
+        return vals.TryGetValue(nombre, out var v) ? v?.ToString() ?? string.Empty : string.Empty;
+    }
 
     // La cédula (CI) se muestra sin separadores de miles en toda la app; el resto usa su formato de metadata.
     private static string? DisplayFormatFor(ColumnMetadata col)
@@ -1037,6 +1086,8 @@ else
             _ => null
         };
         if (col is not IGridDataColumn dataCol || string.IsNullOrEmpty(dataCol.FieldName)) return;
+        // Totalizar por una columna calculada sólo es válido server-side (en cliente el POCO no la tiene).
+        if (!_serverMode && _calc.Any(c => c.Nombre.Equals(dataCol.FieldName, StringComparison.OrdinalIgnoreCase))) return;
         AddTotalizarMenu(e.Items, dataCol.FieldName);
     }
 

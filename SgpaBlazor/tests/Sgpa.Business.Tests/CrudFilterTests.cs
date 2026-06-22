@@ -106,6 +106,68 @@ public class CrudFilterTests
         Assert.Equal(0, (await Svc<Afiliado>().GetPageAsync(new PageQuery(0, 1, Filter: bogus))).TotalCount);
     }
 
+    // Filtro por CAMPO CALCULADO en el CRUD tipado (server-side): duración de la certificación = FechaFin-FechaIni+1.
+    [Fact]
+    public async Task Filtra_por_campo_calculado_duracion()
+    {
+        var duracion = new CalculatedField("Certificacion", "Duracion", "Duración",
+            new ScalarBinary(ScalarBinOp.Add,
+                new ScalarFunc(ScalarFn.DateDiffDay, new ScalarNode[] { new ScalarColumn("FechaIni"), new ScalarColumn("FechaFin") }),
+                new ScalarConst(1)),
+            typeof(int), null);
+
+        var conDuracion = new PageQuery(0, 1, Filter: new FilterCompare("Duracion", FilterOp.GreaterOrEqual, 1)) { Calc = new[] { duracion } };
+        Assert.True((await Svc<Certificacion>().GetPageAsync(conDuracion)).TotalCount > 0);
+
+        var imposible = new PageQuery(0, 1, Filter: new FilterCompare("Duracion", FilterOp.Greater, 100000)) { Calc = new[] { duracion } };
+        Assert.Equal(0, (await Svc<Certificacion>().GetPageAsync(imposible)).TotalCount);
+    }
+
+    private static CalculatedField DuracionCalc() => new(
+        "Certificacion", "Duracion", "Duración",
+        new ScalarBinary(ScalarBinOp.Add,
+            new ScalarFunc(ScalarFn.DateDiffDay, new ScalarNode[] { new ScalarColumn("FechaIni"), new ScalarColumn("FechaFin") }),
+            new ScalarConst(1)),
+        typeof(int), null);
+
+    // 4b: ordenar / agrupar / totalizar POR un campo calculado en el CRUD tipado (server-side).
+    [Fact]
+    public async Task Ordena_agrupa_totaliza_por_campo_calculado()
+    {
+        var calc = new[] { DuracionCalc() };
+        var ctx = new PageQuery(0, 1) { Calc = calc };
+
+        var ordenado = await Svc<Certificacion>().GetPageAsync(
+            new PageQuery(0, 5, Sort: new[] { new SortColumn("Duracion", true) }) { Calc = calc });
+        Assert.NotEmpty(ordenado.Items);
+
+        var grupos = await Svc<Certificacion>().GetGroupsAsync("Duracion", false, ctx, System.Array.Empty<SummarySpec>());
+        Assert.NotEmpty(grupos);
+
+        var totales = await Svc<Certificacion>().GetTotalSummaryAsync(new[] { new SummarySpec("Duracion", AggKind.Sum) }, ctx);
+        Assert.Single(totales);
+    }
+
+    // Side-fetch de valores de un campo calculado por PK (para mostrar la columna en el ListView tipado).
+    [Fact]
+    public async Task GetCalcValues_resuelve_duracion_por_clave()
+    {
+        var duracion = new CalculatedField("Certificacion", "Duracion", "Duración",
+            new ScalarBinary(ScalarBinOp.Add,
+                new ScalarFunc(ScalarFn.DateDiffDay, new ScalarNode[] { new ScalarColumn("FechaIni"), new ScalarColumn("FechaFin") }),
+                new ScalarConst(1)),
+            typeof(int), null);
+
+        var page = await Svc<Certificacion>().GetPageAsync(new PageQuery(0, 5));
+        var keys = page.Items.Select(c => (object)c.NroLlamado).ToList();
+        Assert.NotEmpty(keys);
+
+        var map = await Svc<Certificacion>().GetCalcValuesAsync(keys, new[] { duracion });
+
+        Assert.NotEmpty(map);
+        Assert.All(map.Values, v => Assert.True(v.ContainsKey("Duracion")));
+    }
+
     // Filtro de AGREGADO sobre colección: "afiliados con N certificaciones" (Certificaciones.Count()).
     [Fact]
     public async Task FilterAggregate_afiliados_por_cantidad_de_certificaciones()

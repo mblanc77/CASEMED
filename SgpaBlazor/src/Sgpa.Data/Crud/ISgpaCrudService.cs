@@ -46,6 +46,16 @@ public interface ISgpaCrudService<TEntity> where TEntity : class
         CancellationToken cancellationToken = default)
         => Task.FromResult<IReadOnlyList<object?>>(Array.Empty<object?>());
 
+    /// <summary>
+    /// Valores de los campos calculados <paramref name="calc"/> para las filas con las claves dadas (sólo tablas de
+    /// clave simple): devuelve <c>clave.ToString() → (nombreCalc → valor)</c>. Para mostrar columnas calculadas en la
+    /// grilla tipada con un side-fetch por página (mismo patrón que las descripciones FK). Default: vacío.
+    /// </summary>
+    Task<IReadOnlyDictionary<string, IReadOnlyDictionary<string, object?>>> GetCalcValuesAsync(
+        IReadOnlyCollection<object> keys, IReadOnlyList<CalculatedField> calc, CancellationToken cancellationToken = default)
+        => Task.FromResult<IReadOnlyDictionary<string, IReadOnlyDictionary<string, object?>>>(
+            new Dictionary<string, IReadOnlyDictionary<string, object?>>());
+
     /// <summary>Obtiene por clave. Los valores van en el orden de <c>EntityMetadata.Keys</c>.</summary>
     Task<TEntity?> GetByKeyAsync(object?[] keyValues, CancellationToken cancellationToken = default);
 
