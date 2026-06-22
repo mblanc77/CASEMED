@@ -362,7 +362,7 @@ class Program
     // Idempotente. Hoy: PreferenciaVista (personalización de pantallas por usuario, estilo XAF).
     static async Task CreateInfrastructureTablesAsync(MigrationDbContext db)
     {
-        Console.Write("Creating infrastructure tables (PreferenciaVista, TablaConfig, AuditCambio, SgpaFiltro, Reporte, ReporteDinamico, Z_ErrorLog, CampoCalculado + alias)... ");
+        Console.Write("Creating infrastructure tables (PreferenciaVista, TablaConfig, AuditCambio, SgpaFiltro, Reporte, ReporteDinamico, ReporteSql, Z_ErrorLog, CampoCalculado + alias)... ");
         await db.Database.ExecuteSqlRawAsync(
             """
             IF OBJECT_ID('dbo.PreferenciaVista','U') IS NULL
@@ -487,6 +487,23 @@ class Program
                 CREATE UNIQUE INDEX UX_CampoCalculado_Tabla_Nombre ON dbo.CampoCalculado(Tabla, Nombre);
             END
             """);
+        // Reportes basados en SQL crudo (una sola consulta SELECT con tokens @param). Mantener en sintonía con
+        // SgpaBlazor/tools/sql/reporte-sql.sql. Idempotente.
+        await db.Database.ExecuteSqlRawAsync(
+            """
+            IF OBJECT_ID('dbo.ReporteSql','U') IS NULL
+            BEGIN
+                CREATE TABLE dbo.ReporteSql (
+                    Id        int IDENTITY(1,1) NOT NULL CONSTRAINT PK_ReporteSql PRIMARY KEY,
+                    Nombre    nvarchar(200) NOT NULL,
+                    DefJson   nvarchar(max) NOT NULL,
+                    SoloAdmin bit NOT NULL CONSTRAINT DF_ReporteSql_SoloAdmin DEFAULT(1),
+                    Activo    bit NOT NULL CONSTRAINT DF_ReporteSql_Activo DEFAULT(1),
+                    Login     nvarchar(50) NULL,
+                    Fecha     datetime2 NOT NULL CONSTRAINT DF_ReporteSql_Fecha DEFAULT SYSDATETIME()
+                );
+            END
+            """);
         // Reportes ad-hoc de DevExpress (REPX, End-User Designer). La app los lee/escribe vía SgpaReportStorage;
         // si la tabla falta, el catálogo de reportes y el menú fallan. Mantener en sintonía con tools/sql/reporte.sql.
         await db.Database.ExecuteSqlRawAsync(
@@ -525,6 +542,7 @@ class Program
                 (N'RecetaDistancia', N'Distancias de receta'), (N'RegimenAporte', N'Regímenes de aporte'),
                 (N'RegimenJubilatorio', N'Regímenes jubilatorios'), (N'ReintegroMutual', N'Reintegros mutuales'),
                 (N'Reporte', N'Reportes'), (N'ReporteDinamico', N'Reportes dinámicos'),
+                (N'ReporteSql', N'Reportes SQL'),
                 (N'CampoCalculado', N'Campos calculados'),
                 (N'SalidaTipo', N'Tipos de salida'), (N'SituacionMutual', N'Situaciones mutuales'),
                 (N'SituacionPago', N'Situaciones de pago'), (N'SP_AfiliadoComentario', N'Comentarios del afiliado'),

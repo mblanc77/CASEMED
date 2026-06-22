@@ -1,0 +1,215 @@
+@page "/reportes/sql/editor"
+@page "/reportes/sql/editor/{Id:int}"
+@rendermode InteractiveServer
+@using Sgpa.Data.Reporting
+@inject IReporteSqlService Reportes
+@inject WebCurrentUser CurrentUser
+@inject IToastNotificationService Toasts
+@inject NavigationManager Nav
+
+<PageTitle>@(Id is null ? "Nuevo reporte SQL" : "Editar reporte SQL")</PageTitle>
+
+@if (_denied)
+{
+    <div class="alert alert-danger mt-3">Solo un administrador puede gestionar reportes SQL.</div>
+}
+else
+{
+    <h3 class="mb-3"><i class="fa-solid fa-database me-2"></i>@(Id is null ? "Nuevo reporte SQL" : "Editar reporte SQL")</h3>
+
+    <div class="row g-3" style="max-width:1100px">
+        <div class="col-lg-6">
+            <label class="form-label mb-1">Nombre del reporte</label>
+            <DxTextBox @bind-Text="_nombre" NullText="Ej. Afiliados por mutualista" />
+        </div>
+        <div class="col-lg-3">
+            <label class="form-label mb-1">Máx. filas</label>
+            <DxSpinEdit @bind-Value="_maxFilas" MinValue="1" MaxValue="100000" />
+        </div>
+        <div class="col-lg-3 d-flex align-items-end">
+            <DxCheckBox @bind-Checked="_soloAdmin">Sólo administradores</DxCheckBox>
+        </div>
+
+        <div class="col-12">
+            <label class="form-label mb-1">
+                Consulta SQL <span class="text-muted small">— una sola sentencia SELECT; usá <code>@@Nombre</code> para parámetros</span>
+            </label>
+            <textarea class="form-control font-monospace" rows="10" spellcheck="false"
+                      @bind="_sql" @bind:event="oninput"
+                      placeholder="SELECT a.CI, a.Nombres, m.Descrip AS Mutualista&#10;FROM dbo.Afiliado a&#10;JOIN dbo.Mutualista m ON m.CodMutualista = a.CodMutualista&#10;WHERE a.CodMutualista = @@Mutualista AND a.FechaAlta >= @@Desde"></textarea>
+            <div class="d-flex gap-2 mt-2">
+                <DxButton Text="Validar y cargar campos" IconCssClass="fa-solid fa-circle-check"
+                          RenderStyle="ButtonRenderStyle.Secondary" Click="ValidarAsync" />
+                @if (_validado)
+                {
+                    <span class="align-self-center text-success small"><i class="fa-solid fa-check me-1"></i>@_cols.Count columna(s), @_params.Count parámetro(s).</span>
+                }
+            </div>
+            @if (_error is not null) { <div class="alert alert-danger py-2 mt-2 mb-0">@_error</div> }
+        </div>
+
+        @if (_params.Count > 0)
+        {
+            <div class="col-12">
+                <h5 class="mb-2"><i class="fa-solid fa-sliders me-2"></i>Parámetros</h5>
+                <table class="table table-sm align-middle">
+                    <thead><tr><th>Token</th><th>Etiqueta (prompt)</th><th style="width:140px">Tipo</th><th style="width:160px">Valor por defecto</th><th style="width:90px">Requerido</th></tr></thead>
+                    <tbody>
+                        @foreach (var p in _params)
+                        {
+                            <tr>
+                                <td><code>@@@p.Nombre</code></td>
+                                <td><DxTextBox @bind-Text="p.Caption" NullText="@p.Nombre" /></td>
+                                <td>
+                                    <DxComboBox Data="_tipos" TData="SqlParamTipo" TValue="SqlParamTipo" @bind-Value="p.Tipo" />
+                                </td>
+                                <td><DxTextBox @bind-Text="p.DefaultText" NullText="(opcional)" /></td>
+                                <td class="text-center"><DxCheckBox @bind-Checked="p.Requerido" /></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+
+        @if (_cols.Count > 0)
+        {
+            <div class="col-12">
+                <h5 class="mb-2"><i class="fa-solid fa-table-columns me-2"></i>Columnas</h5>
+                <table class="table table-sm align-middle">
+                    <thead><tr><th>Campo</th><th>Encabezado</th><th style="width:200px">Formato</th><th style="width:90px">Visible</th></tr></thead>
+                    <tbody>
+                        @foreach (var c in _cols)
+                        {
+                            <tr>
+                                <td><code>@c.Nombre</code> <span class="text-muted small">@c.TipoSql</span></td>
+                                <td><DxTextBox @bind-Text="c.Caption" NullText="@c.Nombre" /></td>
+                                <td><DxTextBox @bind-Text="c.DisplayFormat" NullText="ej. n0, d, #,##0.00" /></td>
+                                <td class="text-center"><DxCheckBox @bind-Checked="c.Visible" /></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+
+    <div class="d-flex gap-2 mt-3">
+        <DxButton Text="Guardar" IconCssClass="fa-solid fa-floppy-disk" RenderStyle="ButtonRenderStyle.Primary" Click="SaveAsync" />
+        <DxButton Text="Cancelar" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => Nav.NavigateTo("/reportes/sql"))" />
+    </div>
+}
+
+@code {
+    [Parameter] public int? Id { get; set; }
+
+    private bool _denied;
+    private string _nombre = string.Empty;
+    private string _sql = string.Empty;
+    private bool _soloAdmin = true;
+    private int _maxFilas = 5000;
+    private bool _validado;
+    private string? _error;
+
+    private List<PEdit> _params = new();
+    private List<CEdit> _cols = new();
+    private static readonly SqlParamTipo[] _tipos = Enum.GetValues<SqlParamTipo>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CurrentUser.EnsureLoadedAsync();
+        if (!CurrentUser.IsAdmin) { _denied = true; return; }
+
+        if (Id is int id)
+        {
+            var r = await Reportes.GetAsync(id);
+            if (r is not null)
+            {
+                _nombre = r.Nombre;
+                _sql = r.Def.Sql;
+                _soloAdmin = r.Def.SoloAdmin;
+                _maxFilas = r.Def.MaxFilas;
+                _params = r.Def.Parametros.Select(p => new PEdit
+                { Nombre = p.Nombre, Caption = p.Caption, Tipo = p.Tipo, DefaultText = p.DefaultText, Requerido = p.Requerido }).ToList();
+                _cols = r.Def.Columnas.Select(c => new CEdit
+                { Nombre = c.Nombre, Caption = c.Caption, DisplayFormat = c.DisplayFormat, Visible = c.Visible }).ToList();
+                _validado = _cols.Count > 0;
+            }
+        }
+    }
+
+    private async Task ValidarAsync()
+    {
+        _error = null; _validado = false;
+        var err = SqlReportEngine.EnsureReadOnly(_sql);
+        if (err is not null) { _error = err; return; }
+
+        // Sincronizar parámetros con los tokens presentes (preserva los ya configurados).
+        var tokens = SqlReportEngine.DetectarTokens(_sql);
+        var prevP = _params.ToDictionary(p => p.Nombre, StringComparer.OrdinalIgnoreCase);
+        _params = tokens.Select(t => prevP.TryGetValue(t, out var ex) ? ex : new PEdit { Nombre = t }).ToList();
+
+        try
+        {
+            var defs = _params.Select(ToDef).ToList();
+            var cols = await Reportes.DescribirAsync(_sql, defs);
+            var prevC = _cols.ToDictionary(c => c.Nombre, StringComparer.OrdinalIgnoreCase);
+            _cols = cols.Select(c =>
+            {
+                if (prevC.TryGetValue(c.Name, out var ex)) { ex.TipoSql = c.SystemTypeName; return ex; }
+                return new CEdit { Nombre = c.Name, TipoSql = c.SystemTypeName, Visible = true };
+            }).ToList();
+            _validado = true;
+        }
+        catch (Exception ex)
+        {
+            _error = "No se pudo analizar la consulta: " + ex.Message;
+        }
+    }
+
+    private async Task SaveAsync()
+    {
+        _error = null;
+        if (string.IsNullOrWhiteSpace(_nombre)) { _error = "Indicá un nombre."; return; }
+        var err = SqlReportEngine.EnsureReadOnly(_sql);
+        if (err is not null) { _error = err; return; }
+        if (!_validado || _cols.Count == 0) { _error = "Validá la consulta para cargar los campos antes de guardar."; return; }
+
+        var def = new ReporteSqlDef
+        {
+            Sql = _sql,
+            SoloAdmin = _soloAdmin,
+            MaxFilas = _maxFilas,
+            Parametros = _params.Select(ToDef).ToList(),
+            Columnas = _cols.Select(c => new SqlColumnDef(c.Nombre, c.Caption, c.DisplayFormat, c.Visible)).ToList(),
+        };
+        try
+        {
+            if (Id is null) await Reportes.CreateAsync(_nombre, def, CurrentUser.UserName);
+            else await Reportes.UpdateAsync(Id.Value, _nombre, def);
+            Toasts.Exito("Reporte SQL guardado.");
+            Nav.NavigateTo("/reportes/sql");
+        }
+        catch (Exception ex) { _error = "No se pudo guardar: " + ex.Message; }
+    }
+
+    private static SqlParamDef ToDef(PEdit p) => new(p.Nombre, p.Caption, p.Tipo, p.DefaultText, p.Requerido);
+
+    private sealed class PEdit
+    {
+        public string Nombre = string.Empty;
+        public string? Caption;
+        public SqlParamTipo Tipo;
+        public string? DefaultText;
+        public bool Requerido = true;
+    }
+
+    private sealed class CEdit
+    {
+        public string Nombre = string.Empty;
+        public string? Caption;
+        public string? DisplayFormat;
+        public bool Visible = true;
+        public string? TipoSql;
+    }
+}

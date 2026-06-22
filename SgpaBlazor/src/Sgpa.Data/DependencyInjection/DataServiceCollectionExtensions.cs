@@ -32,6 +32,7 @@ public static class DataServiceCollectionExtensions
         services.AddScoped<IAuditService, AuditService>();
         services.AddScoped<Reporting.IReportGraphLoader, Reporting.ReportGraphLoader>();
         services.AddScoped<Reporting.IReporteDinamicoService, Reporting.DapperReporteDinamicoService>();
+        services.AddScoped<Reporting.IReporteSqlService, Reporting.DapperReporteSqlService>();
         services.TryAddScoped<ICurrentUser, DefaultCurrentUser>();
         return services;
     }

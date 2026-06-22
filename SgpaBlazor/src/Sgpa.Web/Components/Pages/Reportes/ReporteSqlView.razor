@@ -1,0 +1,206 @@
+@page "/reportes/sql/{Id:int}"
+@rendermode InteractiveServer
+@using System.Text.Json
+@using DevExpress.Data.Filtering
+@using Sgpa.Data
+@using Sgpa.Data.Reporting
+@using Sgpa.Web.Components.Crud
+@inject IReporteSqlService Reportes
+@inject IDbExecutor Db
+@inject WebCurrentUser CurrentUser
+@inject IToastNotificationService Toasts
+
+<PageTitle>@(_rep?.Nombre ?? "Reporte SQL")</PageTitle>
+
+@if (_notFound)
+{
+    <div class="alert alert-warning mt-3">El reporte solicitado no existe.</div>
+}
+else if (_denied)
+{
+    <div class="alert alert-danger mt-3">No tenés permiso para ejecutar este reporte (es de uso administrativo).</div>
+}
+else if (_rep is not null)
+{
+    <h3 class="mb-3"><i class="fa-solid fa-database me-2"></i>@_rep.Nombre</h3>
+
+    @if (_promptDefs.Count > 0 && !_ran)
+    {
+        <div class="card" style="max-width:640px">
+            <div class="card-header py-2">Parámetros</div>
+            <div class="card-body">
+                <ParametrosPrompt Defs="_promptDefs" Initial="_lastValues" AcceptText="Ver reporte" OnAccept="OnParamsAccepted" />
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="d-flex gap-2 mb-2">
+            @if (_promptDefs.Count > 0)
+            {
+                <DxButton Text="Cambiar parámetros" IconCssClass="fa-solid fa-sliders"
+                          RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => _ran = false)" />
+            }
+            <DxButton Text="Filtro avanzado" IconCssClass="fa-solid fa-filter" RenderStyle="ButtonRenderStyle.Secondary" Click="OpenAdvanced" />
+            <DxButton Text="Quitar filtro" IconCssClass="fa-solid fa-filter-circle-xmark" RenderStyle="ButtonRenderStyle.Link" Click="ClearFilter" />
+            <DxDropDownButton Text="Exportar" IconCssClass="fa-solid fa-file-export" RenderStyle="ButtonRenderStyle.Secondary">
+                <Items>
+                    <DxDropDownButtonItem Text="Excel (.xlsx)" Click="@(() => ExportAsync("xlsx"))" />
+                    <DxDropDownButtonItem Text="PDF (.pdf)" Click="@(() => ExportAsync("pdf"))" />
+                    <DxDropDownButtonItem Text="CSV (.csv)" Click="@(() => ExportAsync("csv"))" />
+                </Items>
+            </DxDropDownButton>
+            <span class="ms-auto align-self-center text-muted small">@_rows.Count fila(s)@(_truncated ? " (limitado)" : "")</span>
+        </div>
+
+        <DxGrid @ref="_grid" Data="_rows" ShowGroupPanel="true" ShowFilterRow="true"
+                PageSize="50" PagerVisible="true" CssClass="sgpa-report-grid">
+            <Columns>
+                @foreach (var col in _columns)
+                {
+                    <DxGridDataColumn FieldName="@col.FieldName" Caption="@col.Caption" DisplayFormat="@col.Format" />
+                }
+            </Columns>
+        </DxGrid>
+
+        <DxPopup @bind-Visible="_advVisible" HeaderText="Filtro avanzado" Width="640px" CloseOnEscape="true">
+            <BodyContentTemplate>
+                <DxFilterBuilder @bind-FilterCriteria="_advCriteria">
+                    <Fields>
+                        @foreach (var col in _columns)
+                        {
+                            <DxFilterBuilderField FieldName="@col.FieldName" Caption="@col.Caption" Type="col.ClrType" />
+                        }
+                    </Fields>
+                </DxFilterBuilder>
+                <div class="d-flex gap-2 mt-3">
+                    <DxButton Text="Aplicar" IconCssClass="fa-solid fa-check" RenderStyle="ButtonRenderStyle.Primary" Click="ApplyAdvanced" />
+                    <DxButton Text="Limpiar" RenderStyle="ButtonRenderStyle.Link" Click="@(() => _advCriteria = null)" />
+                </div>
+            </BodyContentTemplate>
+        </DxPopup>
+    }
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private ReporteSql? _rep;
+    private bool _notFound, _denied, _ran, _truncated;
+
+    private IReadOnlyList<FiltroParametroDef> _promptDefs = Array.Empty<FiltroParametroDef>();
+    private IReadOnlyDictionary<string, object?>? _lastValues;
+
+    private DxGrid? _grid;
+    private bool _advVisible;
+    private CriteriaOperator? _advCriteria;
+    private List<object> _rows = new();
+    private List<ColInfo> _columns = new();
+
+    private sealed record ColInfo(string FieldName, string Caption, string? Format, Type ClrType);
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _notFound = _denied = _ran = _truncated = false;
+        _rep = await Reportes.GetAsync(Id);
+        if (_rep is null) { _notFound = true; return; }
+
+        await CurrentUser.EnsureLoadedAsync();
+        if (_rep.Def.SoloAdmin && !CurrentUser.IsAdmin) { _denied = true; return; }
+
+        await BuildColumnsAsync();
+
+        _promptDefs = BuildPromptDefs(_rep.Def);
+        if (_promptDefs.Count == 0)
+            await RunAsync(null);
+    }
+
+    // Columnas a mostrar: las de la definición (visibles, en orden), con el tipo CLR tomado del describe (para el
+    // filtro avanzado). Si el describe falla, se asume texto.
+    private async Task BuildColumnsAsync()
+    {
+        var tipos = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
+        try
+        {
+            foreach (var c in await Reportes.DescribirAsync(_rep!.Def.Sql, _rep.Def.Parametros))
+                tipos[c.Name] = c.ClrType;
+        }
+        catch { /* describe puede fallar (p.ej. temp tables); se usa texto por defecto */ }
+
+        var visibles = _rep!.Def.Columnas.Where(c => c.Visible).ToList();
+        _columns = visibles
+            .Select(c => new ColInfo(c.Nombre, string.IsNullOrWhiteSpace(c.Caption) ? c.Nombre : c.Caption!,
+                                     c.DisplayFormat, tipos.GetValueOrDefault(c.Nombre, typeof(string))))
+            .ToList();
+    }
+
+    private static IReadOnlyList<FiltroParametroDef> BuildPromptDefs(ReporteSqlDef def)
+    {
+        var res = new List<FiltroParametroDef>();
+        foreach (var p in def.Parametros)
+        {
+            var defVal = SqlReportEngine.ParseDefault(p.Tipo, p.DefaultText);
+            var defJson = defVal is null ? null : JsonSerializer.Serialize(defVal);
+            res.Add(new FiltroParametroDef(p.Nombre, string.IsNullOrWhiteSpace(p.Caption) ? p.Nombre : p.Caption!,
+                                           SqlReportEngine.ClrType(p.Tipo), null, defJson, p.Requerido));
+        }
+        return res;
+    }
+
+    private async Task OnParamsAccepted(IReadOnlyDictionary<string, object?> vals)
+    {
+        _lastValues = vals;
+        await RunAsync(vals);
+    }
+
+    private async Task RunAsync(IReadOnlyDictionary<string, object?>? values)
+    {
+        try
+        {
+            var err = SqlReportEngine.EnsureReadOnly(_rep!.Def.Sql);
+            if (err is not null) { Toasts.Error(err); return; }
+
+            var finalSql = SqlReportEngine.Sustituir(_rep.Def.Sql, _rep.Def.Parametros,
+                values ?? new Dictionary<string, object?>());
+
+            var raw = await Db.QueryAsync<dynamic>(finalSql);
+            var max = Math.Clamp(_rep.Def.MaxFilas, 1, 100000);
+            _truncated = raw.Count > max;
+
+            // ExpandoObject: DxGrid resuelve los FieldName dinámicos contra miembros (un Dictionary plano falla).
+            _rows = raw.Take(max).Select(r =>
+            {
+                IDictionary<string, object?> ex = new System.Dynamic.ExpandoObject();
+                foreach (var kv in (IDictionary<string, object>)r) ex[kv.Key] = kv.Value;
+                return (object)ex;
+            }).ToList();
+
+            // Si no hay columnas definidas (caso borde), derivarlas de la primera fila.
+            if (_columns.Count == 0 && _rows.Count > 0)
+                _columns = ((IDictionary<string, object?>)_rows[0]).Keys
+                    .Select(k => new ColInfo(k, k, null, typeof(string))).ToList();
+
+            _ran = true;
+        }
+        catch (Exception ex)
+        {
+            Toasts.Error($"No se pudo ejecutar el reporte: {ex.Message}");
+        }
+    }
+
+    private async Task ExportAsync(string fmt)
+    {
+        if (_grid is null) return;
+        var name = string.IsNullOrWhiteSpace(_rep?.Nombre) ? "reporte" : _rep!.Nombre;
+        switch (fmt)
+        {
+            case "pdf": await _grid.ExportToPdfAsync(name); break;
+            case "csv": await _grid.ExportToCsvAsync(name); break;
+            default: await _grid.ExportToXlsxAsync(name); break;
+        }
+    }
+
+    private void OpenAdvanced() { _advCriteria = _grid?.GetFilterCriteria(); _advVisible = true; }
+    private void ApplyAdvanced() { _grid?.SetFilterCriteria(_advCriteria); _advVisible = false; }
+    private void ClearFilter() => _grid?.ClearFilter();
+}
