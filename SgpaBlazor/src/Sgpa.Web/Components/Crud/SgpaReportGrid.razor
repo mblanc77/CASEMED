@@ -1,0 +1,177 @@
+@using DevExpress.Blazor
+@using DevExpress.Data.Filtering
+@using Sgpa.Data.Preferencias
+@inject IPreferenciaVistaStore VistaStore
+@inject WebCurrentUser CurrentUser
+
+@*
+    Grilla reutilizable para los viewers de reportes dinámicos (asistidos + SQL). Da la misma experiencia de
+    personalización por usuario que los ListViews —búsqueda, selector de columnas, reordenar/redimensionar,
+    agrupar, ordenar, filtro avanzado, totales y persistencia del layout por usuario+reporte— pero de SOLO LECTURA
+    (sin alta/edición/borrado ni selección). El layout se guarda con el mecanismo nativo del DxGrid
+    (LayoutAutoLoading/LayoutAutoSaving) en PreferenciaVista, con el filtro/búsqueda descartados (StripLayoutFilter).
+*@
+<DxGrid @ref="_grid" @key="_gridKey" Data="Rows"
+        SearchText="@_search" ShowSearchBox="false"
+        ShowFilterRow="true" ShowGroupPanel="true" AllowGroup="true"
+        FooterDisplayMode="GridFooterDisplayMode.Always"
+        GroupFooterDisplayMode="GridGroupFooterDisplayMode.Always"
+        ContextMenus="GridContextMenus.All"
+        FilterMenuButtonDisplayMode="GridFilterMenuButtonDisplayMode.Always"
+        @bind-PageSize="_pageSize" PageSizeSelectorVisible="true" PageSizeSelectorItems="_pageSizes"
+        PageSizeSelectorAllRowsItemVisible="false"
+        LayoutAutoLoading="OnLayoutAutoLoading" LayoutAutoSaving="OnLayoutAutoSaving"
+        ColumnResizeMode="GridColumnResizeMode.NextColumn" CssClass="sgpa-report-grid">
+    <ToolbarTemplate>
+        <div class="sgpa-toolbar d-flex align-items-center gap-2 flex-wrap p-1">
+            @ToolbarStart
+            <span class="sgpa-search">
+                <DxTextBox @bind-Text="_search" NullText="Buscar…"
+                           ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto" />
+            </span>
+            <div class="btn-group sgpa-toolbar-group" role="group">
+                <DxButton IconCssClass="fa-solid fa-table-columns" RenderStyle="ButtonRenderStyle.Secondary"
+                          Click="@(() => _grid?.ShowColumnChooser())" Tooltip="Columnas" />
+                <DxButton IconCssClass="fa-solid fa-filter" RenderStyle="ButtonRenderStyle.Secondary"
+                          Click="OpenAdvanced" Tooltip="Filtro avanzado" />
+                <DxButton IconCssClass="fa-solid fa-filter-circle-xmark" RenderStyle="ButtonRenderStyle.Secondary"
+                          Click="ClearFilter" Tooltip="Quitar filtro" />
+                <DxButton IconCssClass="fa-solid fa-rotate-left" RenderStyle="ButtonRenderStyle.Secondary"
+                          Click="ResetAsync" Tooltip="Restablecer vista" />
+            </div>
+            <DxDropDownButton Text="Exportar" IconCssClass="fa-solid fa-file-export" RenderStyle="ButtonRenderStyle.Secondary">
+                <Items>
+                    <DxDropDownButtonItem Text="Excel (.xlsx)" IconCssClass="fa-solid fa-file-excel" Click="@(() => ExportAsync("xlsx"))" />
+                    <DxDropDownButtonItem Text="PDF (.pdf)" IconCssClass="fa-solid fa-file-pdf" Click="@(() => ExportAsync("pdf"))" />
+                    <DxDropDownButtonItem Text="CSV (.csv)" IconCssClass="fa-solid fa-file-csv" Click="@(() => ExportAsync("csv"))" />
+                </Items>
+            </DxDropDownButton>
+            <span class="ms-auto align-self-center text-muted small">@Rows.Count fila(s)@(Truncated ? " (limitado)" : "")</span>
+        </div>
+    </ToolbarTemplate>
+    <Columns>
+        @foreach (var col in Columns)
+        {
+            <DxGridDataColumn FieldName="@col.FieldName" Caption="@col.Caption"
+                              DisplayFormat="@col.Format" GroupIndex="col.GroupIndex" />
+        }
+    </Columns>
+    <GroupSummary>
+        @foreach (var s in Summaries) { <DxGridSummaryItem SummaryType="s.Type" FieldName="@s.FieldName" /> }
+    </GroupSummary>
+    <TotalSummary>
+        @foreach (var s in Summaries) { <DxGridSummaryItem SummaryType="s.Type" FieldName="@s.FieldName" /> }
+    </TotalSummary>
+</DxGrid>
+
+@* ---- Filtro avanzado ad-hoc sobre las columnas del reporte (no se persiste) ---- *@
+<DxPopup @bind-Visible="_advVisible" HeaderText="Filtro avanzado" Width="640px" CloseOnEscape="true">
+    <BodyContentTemplate>
+        <DxFilterBuilder @bind-FilterCriteria="_advCriteria">
+            <Fields>
+                @foreach (var col in Columns)
+                {
+                    <DxFilterBuilderField FieldName="@col.FieldName" Caption="@col.Caption" Type="col.ClrType" />
+                }
+            </Fields>
+        </DxFilterBuilder>
+        <div class="d-flex gap-2 mt-3">
+            <DxButton Text="Aplicar" IconCssClass="fa-solid fa-check" RenderStyle="ButtonRenderStyle.Primary" Click="ApplyAdvanced" />
+            <DxButton Text="Limpiar" RenderStyle="ButtonRenderStyle.Link" Click="@(() => _advCriteria = null)" />
+        </div>
+    </BodyContentTemplate>
+</DxPopup>
+
+@code {
+    /// <summary>Filas (ExpandoObject) ya cargadas por el viewer.</summary>
+    [Parameter, EditorRequired] public IReadOnlyList<object> Rows { get; set; } = Array.Empty<object>();
+    /// <summary>Columnas a mostrar (orden inicial; el usuario puede reordenar/ocultar y se persiste).</summary>
+    [Parameter, EditorRequired] public IReadOnlyList<ReportGridColumn> Columns { get; set; } = Array.Empty<ReportGridColumn>();
+    /// <summary>Sumarios de grupo/total (opcional).</summary>
+    [Parameter] public IReadOnlyList<(string FieldName, GridSummaryItemType Type)> Summaries { get; set; } = Array.Empty<(string, GridSummaryItemType)>();
+    /// <summary>Clave de persistencia por reporte (ej. "rptdin:5"). El layout se guarda por usuario+esta clave.</summary>
+    [Parameter, EditorRequired] public string ViewKey { get; set; } = string.Empty;
+    /// <summary>Nombre del archivo al exportar.</summary>
+    [Parameter] public string ReportName { get; set; } = "reporte";
+    /// <summary>Marca si las filas vienen limitadas por el tope.</summary>
+    [Parameter] public bool Truncated { get; set; }
+    /// <summary>Contenido extra al inicio del toolbar (ej. botón "Cambiar parámetros").</summary>
+    [Parameter] public RenderFragment? ToolbarStart { get; set; }
+
+    private DxGrid? _grid;
+    private object _gridKey = new();
+    private string? _search;
+    private int _pageSize = 50;
+    private static readonly IReadOnlyList<int> _pageSizes = new[] { 10, 25, 50, 100, 200 };
+
+    private bool _advVisible;
+    private CriteriaOperator? _advCriteria;
+
+    private VistaState? _saved;
+    private string _loadedKey = string.Empty;
+    private CancellationTokenSource? _saveCts;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (_loadedKey == ViewKey) return;   // cargar la personalización una sola vez por reporte
+        _loadedKey = ViewKey;
+        var json = VistaState.StripLayoutFilter(await VistaStore.GetAsync(CurrentUser.UserName, ViewKey));
+        _saved = VistaState.FromJson(json);
+        if (_saved?.PageSize is int ps && ps > 0) _pageSize = ps;
+    }
+
+    private Task OnLayoutAutoLoading(GridPersistentLayoutEventArgs e)
+    {
+        if (_saved?.Layout is not null) e.Layout = _saved.Layout;
+        return Task.CompletedTask;
+    }
+
+    private async Task OnLayoutAutoSaving(GridPersistentLayoutEventArgs e)
+    {
+        var json = VistaState.StripLayoutFilter(new VistaState { Layout = e.Layout, PageSize = _pageSize }.ToJson());
+        await SaveDebouncedAsync(json);
+    }
+
+    private async Task SaveDebouncedAsync(string? json)
+    {
+        if (json is null) return;
+        _saveCts?.Cancel();
+        var cts = new CancellationTokenSource();
+        _saveCts = cts;
+        try
+        {
+            await Task.Delay(800, cts.Token);
+            await VistaStore.SaveAsync(CurrentUser.UserName, ViewKey, json, cts.Token);
+        }
+        catch (TaskCanceledException) { /* reemplazado por un cambio posterior */ }
+    }
+
+    private async Task ResetAsync()
+    {
+        _saved = null;
+        _pageSize = 50;
+        await VistaStore.ResetAsync(CurrentUser.UserName, ViewKey);
+        _gridKey = new object();   // recrea el grid → carga el layout por defecto (orden del markup)
+        StateHasChanged();
+    }
+
+    private void OpenAdvanced() { _advCriteria = _grid?.GetFilterCriteria(); _advVisible = true; }
+    private void ApplyAdvanced() { _grid?.SetFilterCriteria(_advCriteria); _advVisible = false; }
+    private void ClearFilter() => _grid?.ClearFilter();
+
+    private async Task ExportAsync(string fmt)
+    {
+        if (_grid is null) return;
+        switch (fmt)
+        {
+            case "pdf": await _grid.ExportToPdfAsync(ReportName); break;
+            case "csv": await _grid.ExportToCsvAsync(ReportName); break;
+            default: await _grid.ExportToXlsxAsync(ReportName); break;
+        }
+    }
+}
+
+@code {
+    /// <summary>Descriptor de columna para <see cref="SgpaReportGrid"/>.</summary>
+    public sealed record ReportGridColumn(string FieldName, string Caption, string? Format, Type ClrType, int GroupIndex = -1);
+}
