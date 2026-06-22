@@ -154,6 +154,50 @@ public class DynamicReportQueryBuilderTests
         Assert.Equal(typeof(int), q.Columns.Single(c => c.FieldName == "Duracion").ClrType);
     }
 
+    // Campo calculado que referencia una columna de una tabla FK (N-1): se resuelve como subconsulta correlacionada.
+    private static CalculatedField MutDescrip() => new(
+        "Afiliado", "MutNombre", "Mutualista", new ScalarColumn("Mutualista.Descrip"), typeof(string), null);
+
+    [Fact]
+    public void Build_calc_FK_emite_subconsulta_correlacionada()
+    {
+        var def = new ReporteDinamicoDef
+        {
+            RootTable = "Afiliado",
+            Columns = { new ReportFieldRef(Array.Empty<string>(), "MutNombre") { Calc = true } },
+        };
+        var q = DynamicReportQueryBuilder.Build(def, filter: null, rootCalc: new[] { MutDescrip() });
+        Assert.Contains("SELECT jc.[Descrip] FROM [dbo].[Mutualista] AS jc WHERE jc.[CodMutualista] = t0.[CodMutualista]", q.Sql);
+    }
+
+    [Fact]
+    public void InvolvedTables_incluye_la_tabla_FK_del_calculado()
+    {
+        var def = new ReporteDinamicoDef
+        {
+            RootTable = "Afiliado",
+            Columns = { new ReportFieldRef(Array.Empty<string>(), "MutNombre") { Calc = true } },
+        };
+        var tablas = DynamicReportQueryBuilder.InvolvedTables(def, filter: null, new[] { MutDescrip() });
+        Assert.Contains("Afiliado", tablas);
+        Assert.Contains("Mutualista", tablas);
+    }
+
+    [Fact]
+    public async Task Build_calc_FK_ejecuta()
+    {
+        var def = new ReporteDinamicoDef
+        {
+            RootTable = "Afiliado",
+            Columns = { new ReportFieldRef(Array.Empty<string>(), "CI"), new ReportFieldRef(Array.Empty<string>(), "MutNombre") { Calc = true } },
+        };
+        var q = DynamicReportQueryBuilder.Build(def, filter: null, maxRows: 5, rootCalc: new[] { MutDescrip() });
+        var db = new DbExecutor(new SqlDbConnectionFactory(ConnectionString));
+        var rows = await db.QueryAsync<dynamic>(q.Sql, q.Parameters);
+        Assert.True(rows.Count is > 0 and <= 5);
+        Assert.True(((IDictionary<string, object>)rows[0]).ContainsKey("MutNombre"));
+    }
+
     [Fact]
     public async Task Build_campo_calculado_ejecuta()
     {

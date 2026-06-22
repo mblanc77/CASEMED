@@ -23,12 +23,9 @@ public static class SgpaScalarTranslator
     };
 
     private static ScalarColumn ParseColumn(string name)
-    {
-        // v1: sólo columnas de la propia tabla (sin navegación por FK dentro de la fórmula).
-        if (name.Contains('.'))
-            throw new NotSupportedException($"Las referencias por relación ('{name}') no están soportadas en un campo calculado (v1).");
-        return new ScalarColumn(name);
-    }
+        // Soporta columnas de la propia tabla y de relaciones N-1 un nivel: "Tabla.Columna"
+        // (el motor las resuelve como subconsulta correlacionada).
+        => new ScalarColumn(name);
 
     private static ScalarNode TranslateBinary(BinaryOperator b)
     {

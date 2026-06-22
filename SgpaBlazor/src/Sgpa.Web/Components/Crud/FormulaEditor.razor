@@ -53,6 +53,20 @@
                     }
                 </div>
             }
+
+            @* Campos de tablas relacionadas (N-1, un nivel): se insertan como [Tabla.Columna] y el motor los resuelve
+               con una subconsulta correlacionada. *@
+            @foreach (var rel in _relations)
+            {
+                <div class="fw-semibold small text-muted">@rel.TargetLabel <span class="text-muted">(relación)</span></div>
+                <div class="d-flex flex-wrap gap-1 mb-2">
+                    @foreach (var col in rel.Cols)
+                    {
+                        <button type="button" class="btn btn-sm btn-outline-warning py-0" title="@($"{rel.Target}.{col.Name}")"
+                                @onclick="@(() => Insert($"[{rel.Target}.{col.Name}]", -1))">@col.Caption</button>
+                    }
+                </div>
+            }
         </div>
     </div>
     <div class="col-lg-7">
@@ -109,6 +123,7 @@
     private ElementReference _ta;
     private IJSObjectReference? _module;
     private IReadOnlyList<ColumnMetadata> _columns = Array.Empty<ColumnMetadata>();
+    private List<(string Target, string TargetLabel, IReadOnlyList<ColumnMetadata> Cols)> _relations = new();
     private string? _error;
     private string? _validatedTabla;
 
@@ -149,6 +164,18 @@
             _validatedTabla = Tabla;
             var meta = string.IsNullOrWhiteSpace(Tabla) ? null : EntityCatalog.TryGet(Tabla);
             _columns = meta?.Columns.Where(c => !c.IsAudit).ToList() ?? (IReadOnlyList<ColumnMetadata>)Array.Empty<ColumnMetadata>();
+            _relations = new();
+            if (meta is not null)
+            {
+                var vistos = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                foreach (var fk in meta.Columns)
+                {
+                    if (fk.IsAudit) continue;
+                    var target = EntityCatalog.LookupDisplayTargetFor(fk, meta);
+                    if (target is null || !vistos.Add(target.Table)) continue;
+                    _relations.Add((target.Table, target.Table, target.Columns.Where(c => !c.IsAudit).ToList()));
+                }
+            }
             _preview = null; _previewError = null;
         }
         Validate();
@@ -240,11 +267,26 @@
         {
             var node = SgpaScalarTranslator.Translate(CriteriaOperator.Parse(Expression));
             foreach (var colName in ColumnasDe(node))
-                if (!meta.Columns.Any(c => c.Name.Equals(colName, StringComparison.OrdinalIgnoreCase)
-                                        || c.Property.Name.Equals(colName, StringComparison.OrdinalIgnoreCase)))
+                if (!ColumnExists(meta, colName))
                 { _error = $"La columna '{colName}' no existe en {meta.Table}."; return; }
         }
         catch (Exception ex) { _error = ex.Message; }
+    }
+
+    // Existe la columna (simple) o la relación N-1 + columna destino (nombre "Tabla.Columna").
+    private static bool ColumnExists(EntityMetadata meta, string name)
+    {
+        var dot = name.IndexOf('.');
+        if (dot < 0)
+            return meta.Columns.Any(c => c.Name.Equals(name, StringComparison.OrdinalIgnoreCase)
+                                      || c.Property.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        var prefix = name[..dot];
+        var col = name[(dot + 1)..];
+        var target = meta.Columns
+            .Select(fk => EntityCatalog.LookupDisplayTargetFor(fk, meta))
+            .FirstOrDefault(t => t is not null && t.Table.Equals(prefix, StringComparison.OrdinalIgnoreCase));
+        return target is not null && target.Columns.Any(c => c.Name.Equals(col, StringComparison.OrdinalIgnoreCase)
+                                                          || c.Property.Name.Equals(col, StringComparison.OrdinalIgnoreCase));
     }
 
     private static IEnumerable<string> ColumnasDe(ScalarNode node) => node switch

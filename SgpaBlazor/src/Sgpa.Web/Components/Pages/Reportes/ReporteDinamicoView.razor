@@ -148,7 +148,7 @@ else if (_rep is not null)
         // Seguridad: lectura sobre TODAS las tablas involucradas (raíz + destinos N-1 + relaciones del filtro).
         await CurrentUser.EnsureLoadedAsync();
         var filterForTables = Translate(ParseCriteria());
-        foreach (var tabla in DynamicReportQueryBuilder.InvolvedTables(_def, filterForTables))
+        foreach (var tabla in DynamicReportQueryBuilder.InvolvedTables(_def, filterForTables, _rootCalc))
             if (!CurrentUser.Can(tabla, PermissionAction.Read))
                 _missingTables.Add(tabla);
         if (_missingTables.Count > 0) { _denied = true; return; }

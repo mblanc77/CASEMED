@@ -26,7 +26,7 @@ public static class FilterSqlTranslator
         EntityMetadata rootMeta, string rootRef, string rootPrefix = "", Func<string, ScalarNode?>? calcLookup = null)
     {
         var outer = new ColScope(c => ResolveColumnIn(rootMeta, c), rootPrefix);
-        return Translate(node, p, ref n, outer, rootRef, calcLookup);
+        return Translate(node, p, ref n, outer, rootMeta, rootRef, calcLookup);
     }
 
     public static ColumnMetadata ResolveColumnIn(EntityMetadata meta, string columnName) =>
@@ -36,16 +36,16 @@ public static class FilterSqlTranslator
         ?? throw new ArgumentException($"{meta.Table} no tiene la columna '{columnName}'.");
 
     // Resuelve el operando IZQUIERDO de una hoja: un campo calculado (expresión inline) o una columna (prefijo[col]).
-    private static string ResolveLhs(string column, ColScope scope, Func<string, ScalarNode?>? calc,
-        DynamicParameters p, ref int n)
+    private static string ResolveLhs(string column, ColScope scope, EntityMetadata rootMeta, string rootRef,
+        Func<string, ScalarNode?>? calc, DynamicParameters p, ref int n)
     {
         if (calc?.Invoke(column) is { } node)
-            return ScalarSqlTranslator.Translate(node, c => $"{scope.Prefix}[{scope.Resolve(c).Name}]", p, ref n);
+            return ScalarSqlTranslator.Translate(node, ScalarSqlTranslator.ColumnResolver(rootMeta, scope.Prefix, rootRef), p, ref n);
         return $"{scope.Prefix}[{scope.Resolve(column).Name}]";
     }
 
-    private static string Translate(FilterNode node, DynamicParameters p, ref int n, ColScope scope, string rootRef,
-        Func<string, ScalarNode?>? calc)
+    private static string Translate(FilterNode node, DynamicParameters p, ref int n, ColScope scope,
+        EntityMetadata rootMeta, string rootRef, Func<string, ScalarNode?>? calc)
     {
         switch (node)
         {
@@ -55,7 +55,7 @@ public static class FilterSqlTranslator
                 var parts = new List<string>();
                 foreach (var child in g.Nodes)
                 {
-                    var s = Translate(child, p, ref n, scope, rootRef, calc);
+                    var s = Translate(child, p, ref n, scope, rootMeta, rootRef, calc);
                     if (!string.IsNullOrEmpty(s)) parts.Add(s);
                 }
                 if (parts.Count == 0) return string.Empty;
@@ -63,17 +63,17 @@ public static class FilterSqlTranslator
             }
             case FilterNot not:
             {
-                var s = Translate(not.Inner, p, ref n, scope, rootRef, calc);
+                var s = Translate(not.Inner, p, ref n, scope, rootMeta, rootRef, calc);
                 return string.IsNullOrEmpty(s) ? string.Empty : $"NOT ({s})";
             }
             case FilterNull fn:
             {
-                var lhs = ResolveLhs(fn.Column, scope, calc, p, ref n);
+                var lhs = ResolveLhs(fn.Column, scope, rootMeta, rootRef, calc, p, ref n);
                 return $"{lhs} IS {(fn.IsNull ? "NULL" : "NOT NULL")}";
             }
             case FilterIn fin:
             {
-                var lhs = ResolveLhs(fin.Column, scope, calc, p, ref n);
+                var lhs = ResolveLhs(fin.Column, scope, rootMeta, rootRef, calc, p, ref n);
                 if (fin.Values.Count == 0) return "1=0";
                 var names = new List<string>();
                 foreach (var v in fin.Values)
@@ -86,7 +86,7 @@ public static class FilterSqlTranslator
             }
             case FilterText ft:
             {
-                var lhs = ResolveLhs(ft.Column, scope, calc, p, ref n);
+                var lhs = ResolveLhs(ft.Column, scope, rootMeta, rootRef, calc, p, ref n);
                 var pn = "@f" + n++;
                 var pattern = ft.Func switch
                 {
@@ -99,7 +99,7 @@ public static class FilterSqlTranslator
             }
             case FilterCompare fc:
             {
-                var lhs = ResolveLhs(fc.Column, scope, calc, p, ref n);
+                var lhs = ResolveLhs(fc.Column, scope, rootMeta, rootRef, calc, p, ref n);
                 if (fc.Value is null)
                     return fc.Op == FilterOp.NotEqual ? $"{lhs} IS NOT NULL" : $"{lhs} IS NULL";
                 var pn = "@f" + n++;
@@ -127,7 +127,7 @@ public static class FilterSqlTranslator
                 var parentRef = scope.Prefix.Length == 0 ? $"{rootRef}.[{pk}]" : $"{scope.Prefix}[{pk}]";
                 var childScope = new ColScope(c => ResolveColumnIn(fe.Child, c), alias + ".");
                 // En la subcondición de la hija no aplican los calculados de la tabla raíz.
-                var inner = fe.Inner is null ? string.Empty : Translate(fe.Inner, p, ref n, childScope, rootRef, null);
+                var inner = fe.Inner is null ? string.Empty : Translate(fe.Inner, p, ref n, childScope, rootMeta, rootRef, null);
                 var corr = $"{alias}.[{fk}] = {parentRef}";
                 var body = string.IsNullOrEmpty(inner) ? corr : $"{corr} AND {inner}";
                 return $"{(fe.Negate ? "NOT " : "")}EXISTS (SELECT 1 FROM {fe.Child.QualifiedTable} AS {alias} WHERE {body})";
@@ -139,7 +139,7 @@ public static class FilterSqlTranslator
                 var pk = scope.Resolve(fa.ParentKeyColumn).Name;
                 var parentRef = scope.Prefix.Length == 0 ? $"{rootRef}.[{pk}]" : $"{scope.Prefix}[{pk}]";
                 var childScope = new ColScope(c => ResolveColumnIn(fa.Child, c), alias + ".");
-                var inner = fa.Inner is null ? string.Empty : Translate(fa.Inner, p, ref n, childScope, rootRef, null);
+                var inner = fa.Inner is null ? string.Empty : Translate(fa.Inner, p, ref n, childScope, rootMeta, rootRef, null);
                 var corr = $"{alias}.[{fkc}] = {parentRef}";
                 var whereSub = string.IsNullOrEmpty(inner) ? corr : $"{corr} AND {inner}";
                 var aggExpr = fa.Kind switch

@@ -1,4 +1,5 @@
 using Dapper;
+using Sgpa.Domain.Metadata;
 
 namespace Sgpa.Data.Crud;
 
@@ -10,6 +11,37 @@ namespace Sgpa.Data.Crud;
 /// </summary>
 public static class ScalarSqlTranslator
 {
+    /// <summary>
+    /// Resolver de columnas para las expresiones de un campo calculado, con soporte de columnas de tablas relacionadas
+    /// N-1 (un nivel): un nombre <c>Tabla.Columna</c> se emite como una subconsulta correlacionada a la raíz; un nombre
+    /// simple se emite como <paramref name="prefix"/>+<c>[col]</c> validado contra la metadata.
+    /// </summary>
+    /// <param name="rootMeta">Entidad raíz (dueña del campo calculado).</param>
+    /// <param name="prefix">Prefijo de las columnas simples (CRUD: <c>""</c> → <c>[col]</c>; reportes: <c>"t0."</c>).</param>
+    /// <param name="rootRef">Cómo referenciar la raíz en la correlación (CRUD: tabla calificada; reportes: alias <c>t0</c>).</param>
+    public static Func<string, string> ColumnResolver(EntityMetadata rootMeta, string prefix, string rootRef)
+        => name => name.Contains('.')
+            ? PathSubquery(name, rootMeta, rootRef)
+            : $"{prefix}[{FilterSqlTranslator.ResolveColumnIn(rootMeta, name).Name}]";
+
+    // Subconsulta correlacionada para una columna de una tabla relacionada N-1 (ej. [Mutualista.Descrip] sobre Afiliado):
+    // (SELECT jc.[Descrip] FROM dbo.Mutualista AS jc WHERE jc.[CodMutualista] = <raíz>.[CodMutualista]).
+    private static string PathSubquery(string dotted, EntityMetadata rootMeta, string rootRef)
+    {
+        var dot = dotted.IndexOf('.');
+        var prefix = dotted[..dot];
+        var colName = dotted[(dot + 1)..];
+        foreach (var fk in rootMeta.Columns)
+        {
+            if (fk.IsAudit) continue;
+            var target = EntityCatalog.LookupDisplayTargetFor(fk, rootMeta);
+            if (target is null || !target.Table.Equals(prefix, StringComparison.OrdinalIgnoreCase)) continue;
+            var col = FilterSqlTranslator.ResolveColumnIn(target, colName).Name;
+            return $"(SELECT jc.[{col}] FROM {target.QualifiedTable} AS jc WHERE jc.[{target.Key.Name}] = {rootRef}.[{fk.Name}])";
+        }
+        throw new ArgumentException($"'{prefix}' no es una relación N-1 de {rootMeta.Table}.");
+    }
+
     /// <summary>Traduce <paramref name="node"/> a SQL; <paramref name="n"/> numera los parámetros (compartido con el WHERE).</summary>
     public static string Translate(ScalarNode node, Func<string, string> resolveColumn, DynamicParameters p, ref int n)
     {

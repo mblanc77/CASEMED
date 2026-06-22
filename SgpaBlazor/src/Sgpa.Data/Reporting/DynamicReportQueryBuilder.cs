@@ -40,7 +40,8 @@ public static class DynamicReportQueryBuilder
         var calcByName = (rootCalc ?? Array.Empty<CalculatedField>())
             .ToDictionary(c => c.Nombre, StringComparer.OrdinalIgnoreCase);
         // Resolver de columnas para las expresiones de los calculados (siempre sobre la raíz aliaseada t0).
-        string RootColResolver(string name) => $"{RootAlias}.[{FilterSqlTranslator.ResolveColumnIn(root, name).Name}]";
+        // Resolver de columnas para los calculados: t0.[col] simple, o subconsulta correlacionada para FK (Tabla.Col).
+        var rootColResolver = ScalarSqlTranslator.ColumnResolver(root, RootAlias + ".", RootAlias);
 
         // alias de JOIN por path acumulado (clave canónica) → (alias, entidad destino). El primer registro es la raíz.
         var nodes = new Dictionary<string, (string Alias, EntityMetadata Meta)>(StringComparer.OrdinalIgnoreCase)
@@ -65,7 +66,7 @@ public static class DynamicReportQueryBuilder
                     throw new ArgumentException("Los campos calculados sólo se soportan sobre la tabla raíz (v1).");
                 if (!calcByName.TryGetValue(fieldRef.Column, out var cf))
                     throw new ArgumentException($"El campo calculado '{fieldRef.Column}' no existe en {root.Table}.");
-                var exprSql = ScalarSqlTranslator.Translate(cf.Expr, RootColResolver, p, ref n);
+                var exprSql = ScalarSqlTranslator.Translate(cf.Expr, rootColResolver, p, ref n);
                 selectParts.Add($"({exprSql}) AS [{fieldName}]");
                 columns.Add(new ReportColumn(fieldName, fieldRef.Caption ?? cf.Caption, cf.ClrType, fieldRef.DisplayFormat ?? cf.DisplayFormat));
                 continue;
@@ -95,8 +96,12 @@ public static class DynamicReportQueryBuilder
         return new DynamicReportQuery(sqlText, p, columns);
     }
 
-    /// <summary>Tablas involucradas (raíz + cada destino N-1 de columnas y del filtro), para el control de permisos.</summary>
-    public static IReadOnlySet<string> InvolvedTables(ReporteDinamicoDef def, FilterNode? filter)
+    /// <summary>
+    /// Tablas involucradas (raíz + cada destino N-1 de columnas y del filtro + tablas referenciadas por los campos
+    /// calculados usados), para el control de permisos. <paramref name="rootCalc"/> son los calculados de la raíz.
+    /// </summary>
+    public static IReadOnlySet<string> InvolvedTables(ReporteDinamicoDef def, FilterNode? filter,
+        IReadOnlyList<CalculatedField>? rootCalc = null)
     {
         var tables = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var root = EntityCatalog.TryGet(def.RootTable);
@@ -118,8 +123,60 @@ public static class DynamicReportQueryBuilder
         }
 
         if (filter is not null) CollectFilterTables(filter, tables);
+        CollectCalcFkTargets(rootCalc, def, filter, root, tables);
         return tables;
     }
+
+    // Suma las tablas N-1 que referencian los campos calculados USADOS (como columna o en el filtro), p. ej. un
+    // calculado [Mutualista.Descrip] agrega Mutualista a las tablas a chequear por permiso.
+    private static void CollectCalcFkTargets(IReadOnlyList<CalculatedField>? rootCalc, ReporteDinamicoDef def,
+        FilterNode? filter, EntityMetadata root, HashSet<string> tables)
+    {
+        if (rootCalc is not { Count: > 0 }) return;
+        var used = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var col in def.Columns) if (col.Calc) used.Add(col.Column);
+        if (filter is not null) CollectFilterColumns(filter, used);
+
+        foreach (var cf in rootCalc)
+        {
+            if (!used.Contains(cf.Nombre)) continue;
+            foreach (var dotted in DottedColumns(cf.Expr))
+            {
+                var prefix = dotted[..dotted.IndexOf('.')];
+                var target = root.Columns
+                    .Select(fk => EntityCatalog.LookupDisplayTargetFor(fk, root))
+                    .FirstOrDefault(t => t is not null && t.Table.Equals(prefix, StringComparison.OrdinalIgnoreCase));
+                if (target is not null) tables.Add(target.Table);
+            }
+        }
+    }
+
+    // Nombres de columna referenciados en las hojas de nivel raíz del filtro (para detectar uso de calculados).
+    private static void CollectFilterColumns(FilterNode node, HashSet<string> cols)
+    {
+        switch (node)
+        {
+            case FilterGroup g: foreach (var c in g.Nodes) CollectFilterColumns(c, cols); break;
+            case FilterNot not: CollectFilterColumns(not.Inner, cols); break;
+            case FilterCompare fc: cols.Add(fc.Column); break;
+            case FilterText ft: cols.Add(ft.Column); break;
+            case FilterNull fn: cols.Add(fn.Column); break;
+            case FilterIn fin: cols.Add(fin.Column); break;
+            // FilterExists/FilterAggregate: columnas de la hija, no de la raíz → no aplican a calculados.
+        }
+    }
+
+    private static IEnumerable<string> DottedColumns(ScalarNode node) => node switch
+    {
+        ScalarColumn c when c.Name.Contains('.') => new[] { c.Name },
+        ScalarColumn => Array.Empty<string>(),
+        ScalarConst => Array.Empty<string>(),
+        ScalarNegate u => DottedColumns(u.Operand),
+        ScalarBinary b => DottedColumns(b.Left).Concat(DottedColumns(b.Right)),
+        ScalarCondition cn => DottedColumns(cn.Left).Concat(DottedColumns(cn.Right)),
+        ScalarFunc f => f.Args.SelectMany(DottedColumns),
+        _ => Array.Empty<string>()
+    };
 
     private static void CollectFilterTables(FilterNode node, HashSet<string> tables)
     {

@@ -114,7 +114,7 @@ public class DapperCrudService<TEntity> : ISgpaCrudService<TEntity> where TEntit
     {
         var cf = calc?.FirstOrDefault(c => c.Nombre.Equals(name, StringComparison.OrdinalIgnoreCase));
         if (cf is not null)
-            return "(" + ScalarSqlTranslator.Translate(cf.Expr, c => $"[{ResolveColumn(c).Name}]", p, ref n) + ")";
+            return "(" + ScalarSqlTranslator.Translate(cf.Expr, ScalarSqlTranslator.ColumnResolver(Meta, "", Meta.QualifiedTable), p, ref n) + ")";
         return $"[{ResolveColumn(name).Name}]";
     }
 
@@ -158,7 +158,7 @@ public class DapperCrudService<TEntity> : ISgpaCrudService<TEntity> where TEntit
         {
             var pc = new DynamicParameters();
             int n = 0;
-            var expr = ScalarSqlTranslator.Translate(calc.Expr, c => $"[{ResolveColumn(c).Name}]", pc, ref n);
+            var expr = ScalarSqlTranslator.Translate(calc.Expr, ScalarSqlTranslator.ColumnResolver(Meta, "", Meta.QualifiedTable), pc, ref n);
             var sqlc = $"SELECT DISTINCT TOP ({top}) ({expr}) AS V FROM {Meta.QualifiedTable} ORDER BY ({expr})";
             var rowsc = await _db.QueryAsync<DistinctRow>(sqlc, pc, cancellationToken: cancellationToken).ConfigureAwait(false);
             return rowsc.Select(r => r.V).ToList();
@@ -184,7 +184,7 @@ public class DapperCrudService<TEntity> : ISgpaCrudService<TEntity> where TEntit
 
         var keyName = Meta.Key.Name;
         var distinct = keys.Where(k => k is not null).Distinct().ToList();
-        Func<string, string> resolver = c => $"[{ResolveColumn(c).Name}]";   // columnas desnudas (FROM sin alias)
+        var resolver = ScalarSqlTranslator.ColumnResolver(Meta, "", Meta.QualifiedTable);   // columnas desnudas + FK por subconsulta
 
         foreach (var chunk in distinct.Chunk(1000))
         {
