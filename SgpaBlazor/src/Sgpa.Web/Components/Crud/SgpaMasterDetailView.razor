@@ -169,6 +169,11 @@
                             </Items>
                         </DxSplitButton>
                     }
+                    @* Acciones custom alineadas a la DERECHA del toolbar (ej. botón "Reportes" propio de la pantalla). *@
+                    @if (ToolbarActionsEnd is not null)
+                    {
+                        @ToolbarActionsEnd
+                    }
                     <span class="vr mx-1"></span>
                     <SgpaGridFilter Grid="_grid" Meta="_meta" />
                 </div>
@@ -439,8 +444,10 @@ else
     private bool Bloqueada => RequiereFiltro && FiltroBase is null;
     /// <summary>Pestañas hijas (DxTabPage) — reciben el master para enlazar FilterValue.</summary>
     [Parameter] public RenderFragment<TMaster>? ChildTabs { get; set; }
-    /// <summary>Acciones extra para la toolbar de la lista (ej. botón "Liquidar" en Subsidios).</summary>
+    /// <summary>Acciones extra a la IZQUIERDA de la toolbar de la lista (ej. botón "Liquidar" en Subsidios).</summary>
     [Parameter] public RenderFragment? ToolbarActions { get; set; }
+    /// <summary>Acciones extra a la DERECHA de la toolbar de la lista (ej. botón "Reportes" propio de la pantalla).</summary>
+    [Parameter] public RenderFragment? ToolbarActionsEnd { get; set; }
 
     /// <summary>
     /// Override de la navegación al abrir una fila. Si se provee, "Abrir" va a esa URL en vez de al

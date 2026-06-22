@@ -25,10 +25,10 @@
     <DetailHeader Context="m">
         Mutualista @m.CodMutualista — @m.Descrip
     </DetailHeader>
-    <ToolbarActions>
+    <ToolbarActionsEnd>
         <DxButton Text="Reportes" IconCssClass="fa-solid fa-print" RenderStyle="ButtonRenderStyle.Success"
                   Click="@(() => _reportesDialog?.Open("Mutualista", 0))" />
-    </ToolbarActions>
+    </ToolbarActionsEnd>
 </SgpaMasterDetailView>
 
 <Sgpa.Web.Components.Reportes.SgpaReportesPredefDialog @ref="_reportesDialog" />
