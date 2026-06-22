@@ -115,8 +115,7 @@ else
             {
                 <DxButton IconCssClass="@(SelCount > 0 ? "fa-solid fa-square-minus" : "fa-solid fa-list-check")"
                           RenderStyle="ButtonRenderStyle.Secondary"
-                          Text="@(SelCount > 0 ? "Deseleccionar todo" : "Seleccionar todo")"
-                          Tooltip="@(SelCount > 0 ? "Quita toda la selección" : "Selecciona todos los registros del filtro actual (todas las páginas)")"
+                          Tooltip="@(SelCount > 0 ? "Deseleccionar todo" : "Seleccionar todos los registros del filtro actual (todas las páginas)")"
                           Click="ToggleSeleccionTodoAsync" />
                 @if (_keysTodoFiltro is not null)
                 {
