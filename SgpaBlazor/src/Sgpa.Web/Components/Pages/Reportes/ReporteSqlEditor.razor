@@ -119,12 +119,17 @@ else
 
     <div class="d-flex gap-2 mt-3">
         <DxButton Text="Guardar" IconCssClass="fa-solid fa-floppy-disk" RenderStyle="ButtonRenderStyle.Primary" Click="SaveAsync" />
-        <DxButton Text="Cancelar" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => Nav.NavigateTo("/reportes/sql"))" />
+        <DxButton Text="Cancelar" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => Nav.NavigateTo("/reportes/medida"))" />
     </div>
 }
 
 @code {
     [Parameter] public int? Id { get; set; }
+
+    // Valores iniciales cuando se llega desde el wizard de nuevo reporte (sólo aplican al crear).
+    [Parameter, SupplyParameterFromQuery] public string? Nombre { get; set; }
+    [Parameter, SupplyParameterFromQuery] public bool? SoloAdmin { get; set; }
+    [Parameter, SupplyParameterFromQuery] public int? MaxFilas { get; set; }
 
     private bool _denied;
     private string _nombre = string.Empty;
@@ -158,6 +163,13 @@ else
                 { Nombre = c.Nombre, Caption = c.Caption, DisplayFormat = c.DisplayFormat, Visible = c.Visible }).ToList();
                 _validado = _cols.Count > 0;
             }
+        }
+        else
+        {
+            // Sembrado desde el wizard.
+            if (!string.IsNullOrWhiteSpace(Nombre)) _nombre = Nombre;
+            if (SoloAdmin is bool sa) _soloAdmin = sa;
+            if (MaxFilas is int mf && mf > 0) _maxFilas = mf;
         }
     }
 
@@ -211,7 +223,7 @@ else
             if (Id is null) await Reportes.CreateAsync(_nombre, def, CurrentUser.UserName);
             else await Reportes.UpdateAsync(Id.Value, _nombre, def);
             Toasts.Exito("Reporte SQL guardado.");
-            Nav.NavigateTo("/reportes/sql");
+            Nav.NavigateTo("/reportes/medida");
         }
         catch (Exception ex) { _error = "No se pudo guardar: " + ex.Message; }
     }

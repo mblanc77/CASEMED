@@ -1,0 +1,118 @@
+@page "/reportes/medida"
+@rendermode InteractiveServer
+@using Sgpa.Data.Configuracion
+@using Sgpa.Data.Reporting
+@inject IReportesMedidaCatalogo Catalogo
+@inject IReporteDinamicoService ReportesDin
+@inject IReporteSqlService ReportesSql
+@inject ITablaConfigService TablaConfig
+@inject WebCurrentUser CurrentUser
+@inject IToastNotificationService Toasts
+@inject NavigationManager Nav
+
+<PageTitle>Reportes a medida</PageTitle>
+
+@if (_denied)
+{
+    <div class="alert alert-danger mt-3">Solo un administrador puede administrar los reportes a medida.</div>
+}
+else
+{
+    <div class="d-flex align-items-center gap-2 mb-3">
+        <h3 class="mb-0"><i class="fa-solid fa-chart-pie me-2"></i>Reportes a medida</h3>
+        <DxButton Text="Nuevo reporte" IconCssClass="fa-solid fa-plus" RenderStyle="ButtonRenderStyle.Primary"
+                  CssClass="ms-auto" Click="@(() => Nav.NavigateTo("/reportes/nuevo"))" />
+    </div>
+
+    @if (_items.Count == 0)
+    {
+        <p class="text-muted">No hay reportes creados todavía. Creá uno con «Nuevo reporte».</p>
+    }
+    else
+    {
+        <table class="table table-sm table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th style="width:120px">Tipo</th>
+                    <th>Detalle</th>
+                    <th style="width:160px">Modificado</th>
+                    <th style="width:90px">Autor</th>
+                    <th style="width:220px"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var r in _items)
+                {
+                    <tr>
+                        <td>@r.Nombre</td>
+                        <td>
+                            @if (r.Tipo == ReporteTipo.Asistido)
+                            {
+                                <span class="badge bg-info-subtle text-info-emphasis"><i class="fa-solid fa-table-list me-1"></i>Asistido</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary-subtle text-secondary-emphasis"><i class="fa-solid fa-database me-1"></i>SQL</span>
+                            }
+                        </td>
+                        <td class="text-muted small">
+                            @(r.Tipo == ReporteTipo.Asistido
+                                ? TablaConfig.DisplayName(r.RootTable ?? "")
+                                : (r.SoloAdmin ? "Sólo admin" : "Todos"))
+                        </td>
+                        <td class="text-muted small">@r.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td class="text-muted small">@r.Login</td>
+                        <td class="text-nowrap">
+                            <DxButton Text="Ver" IconCssClass="fa-solid fa-eye" RenderStyle="ButtonRenderStyle.Link"
+                                      Click="@(() => Nav.NavigateTo(r.VerUrl))" />
+                            <DxButton Text="Editar" IconCssClass="fa-solid fa-pen" RenderStyle="ButtonRenderStyle.Link"
+                                      Click="@(() => Nav.NavigateTo(r.EditarUrl))" />
+                            <DxButton Text="Borrar" IconCssClass="fa-solid fa-trash" RenderStyle="ButtonRenderStyle.Link"
+                                      Click="@(() => OpenDelete(r))" />
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    <DxPopup @bind-Visible="_deleteVisible" HeaderText="Borrar reporte" Width="480px" CloseOnEscape="true">
+        <BodyContentTemplate>
+            <p>¿Borrar el reporte <strong>@_target?.Nombre</strong>? Dejará de aparecer en el menú.</p>
+            <div class="d-flex gap-2 justify-content-end">
+                <DxButton Text="Cancelar" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => _deleteVisible = false)" />
+                <DxButton Text="Borrar" IconCssClass="fa-solid fa-trash" RenderStyle="ButtonRenderStyle.Danger" Click="DeleteAsync" />
+            </div>
+        </BodyContentTemplate>
+    </DxPopup>
+}
+
+@code {
+    private bool _denied;
+    private IReadOnlyList<ReporteItem> _items = Array.Empty<ReporteItem>();
+    private bool _deleteVisible;
+    private ReporteItem? _target;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CurrentUser.EnsureLoadedAsync();
+        if (!CurrentUser.IsAdmin) { _denied = true; return; }
+        await TablaConfig.EnsureLoadedAsync();
+        await ReloadAsync();
+    }
+
+    private async Task ReloadAsync() => _items = await Catalogo.AllAsync();
+
+    private void OpenDelete(ReporteItem r) { _target = r; _deleteVisible = true; }
+
+    private async Task DeleteAsync()
+    {
+        if (_target is null) return;
+        if (_target.Tipo == ReporteTipo.Asistido) await ReportesDin.DeleteAsync(_target.Id);
+        else await ReportesSql.DeleteAsync(_target.Id);
+        _deleteVisible = false;
+        Toasts.Exito("Reporte borrado.");
+        await ReloadAsync();
+    }
+}

@@ -230,12 +230,15 @@ else
 
     <div class="d-flex gap-2 mt-3">
         <DxButton Text="Guardar" IconCssClass="fa-solid fa-floppy-disk" RenderStyle="ButtonRenderStyle.Primary" Click="SaveAsync" />
-        <DxButton Text="Cancelar" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => Nav.NavigateTo("/"))" />
+        <DxButton Text="Cancelar" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => Nav.NavigateTo("/reportes/medida"))" />
     </div>
 }
 
 @code {
     [Parameter] public int? Id { get; set; }
+
+    /// <summary>Nombre inicial cuando se llega desde el wizard de nuevo reporte (sólo aplica al crear).</summary>
+    [Parameter, SupplyParameterFromQuery] public string? Nombre { get; set; }
 
     private bool _denied;
     private string _nombre = string.Empty;
@@ -277,6 +280,8 @@ else
 
         if (Id is int id)
             await LoadExistingAsync(id);
+        else if (!string.IsNullOrWhiteSpace(Nombre))
+            _nombre = Nombre;   // sembrado desde el wizard
     }
 
     private async Task LoadExistingAsync(int id)

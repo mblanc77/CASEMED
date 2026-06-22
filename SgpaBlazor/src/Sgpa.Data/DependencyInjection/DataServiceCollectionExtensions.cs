@@ -33,6 +33,7 @@ public static class DataServiceCollectionExtensions
         services.AddScoped<Reporting.IReportGraphLoader, Reporting.ReportGraphLoader>();
         services.AddScoped<Reporting.IReporteDinamicoService, Reporting.DapperReporteDinamicoService>();
         services.AddScoped<Reporting.IReporteSqlService, Reporting.DapperReporteSqlService>();
+        services.AddScoped<Reporting.IReportesMedidaCatalogo, Reporting.ReportesMedidaCatalogo>();
         services.TryAddScoped<ICurrentUser, DefaultCurrentUser>();
         return services;
     }

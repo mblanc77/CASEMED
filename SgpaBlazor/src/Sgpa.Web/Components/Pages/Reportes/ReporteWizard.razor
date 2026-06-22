@@ -1,0 +1,139 @@
+@page "/reportes/nuevo"
+@rendermode InteractiveServer
+@using Sgpa.Data.Reporting
+@inject WebCurrentUser CurrentUser
+@inject NavigationManager Nav
+
+<PageTitle>Nuevo reporte</PageTitle>
+
+@if (_denied)
+{
+    <div class="alert alert-danger mt-3">Solo un administrador puede crear reportes.</div>
+}
+else
+{
+    <h3 class="mb-3"><i class="fa-solid fa-wand-magic-sparkles me-2"></i>Nuevo reporte</h3>
+
+    @* Pasos *@
+    <div class="d-flex align-items-center gap-2 mb-4" style="max-width:760px">
+        @for (int i = 1; i <= 2; i++)
+        {
+            var n = i;
+            <span class="badge rounded-pill @(_step == n ? "bg-primary" : (_step > n ? "bg-success" : "bg-secondary"))">@n</span>
+            <span class="@(_step == n ? "fw-semibold" : "text-muted")">@(n == 1 ? "Tipo de reporte" : "Datos generales")</span>
+            @if (n == 1) { <span class="text-muted">———</span> }
+        }
+    </div>
+
+    <div style="max-width:760px">
+        @if (_step == 1)
+        {
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="card h-100 @(_tipo == ReporteTipo.Asistido ? "border-primary shadow-sm" : "")"
+                         role="button" @onclick="@(() => _tipo = ReporteTipo.Asistido)">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fa-solid fa-table-list me-2 text-info"></i>Asistido (por tabla)</h5>
+                            <p class="card-text text-muted small mb-0">
+                                Elegís una tabla, sus campos (incluyendo relacionados y calculados) y un filtro con parámetros.
+                                Sin escribir SQL. Respeta los permisos por tabla del usuario.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100 @(_tipo == ReporteTipo.Sql ? "border-primary shadow-sm" : "")"
+                         role="button" @onclick="@(() => _tipo = ReporteTipo.Sql)">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fa-solid fa-database me-2 text-secondary"></i>SQL (avanzado)</h5>
+                            <p class="card-text text-muted small mb-0">
+                                Escribís una consulta SELECT con tokens <code>@@param</code>. Más potente y flexible;
+                                pensado para administradores.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="row g-3">
+                <div class="col-12">
+                    <label class="form-label mb-1">Nombre del reporte</label>
+                    <DxTextBox @bind-Text="_nombre" NullText="Nombre visible en el menú…" />
+                </div>
+                @if (_tipo == ReporteTipo.Sql)
+                {
+                    <div class="col-md-6">
+                        <label class="form-label mb-1">Máx. filas</label>
+                        <DxSpinEdit @bind-Value="_maxFilas" MinValue="1" MaxValue="100000" />
+                    </div>
+                    <div class="col-md-6 d-flex align-items-end">
+                        <DxCheckBox @bind-Checked="_soloAdmin">Sólo administradores</DxCheckBox>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-12">
+                        <div class="alert alert-info py-2 mb-0 small">
+                            En el siguiente paso elegís la tabla raíz, los campos y el filtro. El acceso se rige por los
+                            permisos de lectura de las tablas involucradas.
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+        @if (_error is not null) { <div class="alert alert-danger py-2 mt-3 mb-0">@_error</div> }
+
+        <div class="d-flex gap-2 mt-4">
+            @if (_step > 1)
+            {
+                <DxButton Text="Atrás" IconCssClass="fa-solid fa-arrow-left" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => { _step--; _error = null; })" />
+            }
+            @if (_step == 1)
+            {
+                <DxButton Text="Siguiente" IconCssClass="fa-solid fa-arrow-right" RenderStyle="ButtonRenderStyle.Primary" Click="Next" />
+            }
+            else
+            {
+                <DxButton Text="Crear y continuar" IconCssClass="fa-solid fa-check" RenderStyle="ButtonRenderStyle.Primary" Click="Finish" />
+            }
+            <DxButton Text="Cancelar" RenderStyle="ButtonRenderStyle.Link" Click="@(() => Nav.NavigateTo("/reportes/medida"))" />
+        </div>
+    </div>
+}
+
+@code {
+    private bool _denied;
+    private int _step = 1;
+    private ReporteTipo? _tipo;
+    private string _nombre = string.Empty;
+    private bool _soloAdmin = true;
+    private int _maxFilas = 5000;
+    private string? _error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CurrentUser.EnsureLoadedAsync();
+        if (!CurrentUser.IsAdmin) _denied = true;
+    }
+
+    private void Next()
+    {
+        _error = null;
+        if (_tipo is null) { _error = "Elegí el tipo de reporte."; return; }
+        _step = 2;
+    }
+
+    private void Finish()
+    {
+        _error = null;
+        if (string.IsNullOrWhiteSpace(_nombre)) { _error = "Indicá un nombre."; return; }
+        var nombre = Uri.EscapeDataString(_nombre.Trim());
+        // El paso de definición es el constructor específico del tipo, sembrado con el nombre/opciones del wizard.
+        Nav.NavigateTo(_tipo == ReporteTipo.Sql
+            ? $"/reportes/sql/editor?nombre={nombre}&soloAdmin={_soloAdmin.ToString().ToLowerInvariant()}&maxFilas={_maxFilas}"
+            : $"/reportes/din/editor?nombre={nombre}");
+    }
+}

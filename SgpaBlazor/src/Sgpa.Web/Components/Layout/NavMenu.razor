@@ -6,8 +6,7 @@
 @using Sgpa.Data.Reporting
 @using Sgpa.Domain.Security
 @using Sgpa.Web.Security
-@inject IReporteDinamicoService ReportesDin
-@inject IReporteSqlService ReportesSql
+@inject IReportesMedidaCatalogo ReportesCatalogo
 @inject WebCurrentUser CurrentUser
 
 <div class="sgpa-brand">
@@ -85,36 +84,21 @@ else
             @* Reportes: agrupado por tipo, con subcarpeta para los reportes a medida del usuario. *@
             <DxTreeViewNode Text="Reportes" IconCssClass="fa-solid fa-chart-pie">
                 <Nodes>
-                    @* Reportes tabulares definidos por el usuario (el módulo dinámico). *@
+                    @* Reportes a medida (asistidos + SQL) en una sola sección. *@
                     @if (_reportes.Count > 0 || _isAdmin)
                     {
                         <DxTreeViewNode Text="Reportes a medida" IconCssClass="fa-solid fa-table-list">
                             <Nodes>
                                 @foreach (var r in _reportes)
                                 {
-                                    <DxTreeViewNode Text="@r.Nombre" IconCssClass="fa-solid fa-file-lines" NavigateUrl="@($"/reportes/din/{r.Id}")" />
+                                    <DxTreeViewNode Text="@r.Nombre"
+                                                    IconCssClass="@(r.Tipo == ReporteTipo.Sql ? "fa-solid fa-file-code" : "fa-solid fa-file-lines")"
+                                                    NavigateUrl="@r.VerUrl" />
                                 }
                                 @if (_isAdmin)
                                 {
-                                    <DxTreeViewNode Text="Nuevo reporte a medida…" IconCssClass="fa-solid fa-plus" NavigateUrl="/reportes/din/editor" BeginGroup="true" />
-                                    <DxTreeViewNode Text="Administrar reportes a medida…" IconCssClass="fa-solid fa-list-check" NavigateUrl="/reportes/din" />
-                                }
-                            </Nodes>
-                        </DxTreeViewNode>
-                    }
-                    @* Reportes basados en SQL crudo (con parámetros pedidos al abrir). *@
-                    @if (_reportesSql.Count > 0 || _isAdmin)
-                    {
-                        <DxTreeViewNode Text="Reportes SQL" IconCssClass="fa-solid fa-database">
-                            <Nodes>
-                                @foreach (var r in _reportesSql)
-                                {
-                                    <DxTreeViewNode Text="@r.Nombre" IconCssClass="fa-solid fa-file-code" NavigateUrl="@($"/reportes/sql/{r.Id}")" />
-                                }
-                                @if (_isAdmin)
-                                {
-                                    <DxTreeViewNode Text="Nuevo reporte SQL…" IconCssClass="fa-solid fa-plus" NavigateUrl="/reportes/sql/editor" BeginGroup="true" />
-                                    <DxTreeViewNode Text="Administrar reportes SQL…" IconCssClass="fa-solid fa-list-check" NavigateUrl="/reportes/sql" />
+                                    <DxTreeViewNode Text="Nuevo reporte…" IconCssClass="fa-solid fa-plus" NavigateUrl="/reportes/nuevo" BeginGroup="true" />
+                                    <DxTreeViewNode Text="Administrar reportes…" IconCssClass="fa-solid fa-list-check" NavigateUrl="/reportes/medida" />
                                 }
                             </Nodes>
                         </DxTreeViewNode>
@@ -148,8 +132,7 @@ else
 
     // Reportes dinámicos del menú: filtrados por permiso de lectura sobre la tabla raíz (el viewer hace la
     // verificación completa sobre TODAS las tablas involucradas). El admin ve todos + "Nuevo reporte…".
-    private IReadOnlyList<ReporteDinamicoInfo> _reportes = Array.Empty<ReporteDinamicoInfo>();
-    private IReadOnlyList<ReporteSqlInfo> _reportesSql = Array.Empty<ReporteSqlInfo>();
+    private IReadOnlyList<ReporteItem> _reportes = Array.Empty<ReporteItem>();
     private bool _isAdmin;
 
     protected override async Task OnInitializedAsync()
@@ -158,26 +141,20 @@ else
         _isAdmin = CurrentUser.IsAdmin;
         try
         {
-            var all = await ReportesDin.AllAsync();
+            // Catálogo unificado. Asistido: filtrado por permiso de lectura sobre su tabla raíz (el viewer verifica
+            // todas las tablas). SQL: el admin ve todos; el resto sólo los no marcados como "sólo admin".
+            var all = await ReportesCatalogo.AllAsync();
             _reportes = _isAdmin
                 ? all
-                : all.Where(r => CurrentUser.Can(r.RootTable, PermissionAction.Read)).ToList();
+                : all.Where(r => r.Tipo == ReporteTipo.Asistido
+                                 ? CurrentUser.Can(r.RootTable ?? "", PermissionAction.Read)
+                                 : !r.SoloAdmin).ToList();
         }
         catch
         {
             // El menú no debe caerse si la consulta de reportes falla (p. ej. tabla ausente en la base):
             // se deja la lista vacía; el resto de la navegación carga normalmente.
-            _reportes = Array.Empty<ReporteDinamicoInfo>();
-        }
-        try
-        {
-            // Reportes SQL: el admin ve todos; el resto sólo los marcados como accesibles a todos (no SoloAdmin).
-            var allSql = await ReportesSql.AllAsync();
-            _reportesSql = _isAdmin ? allSql : allSql.Where(r => !r.SoloAdmin).ToList();
-        }
-        catch
-        {
-            _reportesSql = Array.Empty<ReporteSqlInfo>();
+            _reportes = Array.Empty<ReporteItem>();
         }
     }
 
@@ -211,10 +188,8 @@ else
     // Ítems de reporting que sólo ve el admin (se agregan a la búsqueda sólo si corresponde).
     private static readonly (string Label, string Url, string Icon)[] _leafAdmin =
     {
-        ("Nuevo reporte a medida", "/reportes/din/editor", "fa-plus"),
-        ("Administrar reportes a medida", "/reportes/din", "fa-list-check"),
-        ("Nuevo reporte SQL", "/reportes/sql/editor", "fa-plus"),
-        ("Administrar reportes SQL", "/reportes/sql", "fa-list-check"),
+        ("Nuevo reporte", "/reportes/nuevo", "fa-plus"),
+        ("Administrar reportes a medida", "/reportes/medida", "fa-list-check"),
         ("Campos calculados", "/campos-calculados", "fa-calculator"),
     };
 
@@ -222,8 +197,7 @@ else
         _leaf
             .Concat(_isAdmin ? _leafAdmin : Array.Empty<(string Label, string Url, string Icon)>())
             .Concat(Catalogos.Select(c => (c.Label, $"/crud/{c.Entity}", "fa-tag")))
-            .Concat(_reportes.Select(r => (Label: r.Nombre, Url: $"/reportes/din/{r.Id}", Icon: "fa-file-lines")))
-            .Concat(_reportesSql.Select(r => (Label: r.Nombre, Url: $"/reportes/sql/{r.Id}", Icon: "fa-file-code")))
+            .Concat(_reportes.Select(r => (Label: r.Nombre, Url: r.VerUrl, Icon: r.Tipo == ReporteTipo.Sql ? "fa-file-code" : "fa-file-lines")))
             .Where(i => Norm(i.Label).Contains(Norm(_search)))
             .OrderBy(i => i.Label, StringComparer.OrdinalIgnoreCase);
 
