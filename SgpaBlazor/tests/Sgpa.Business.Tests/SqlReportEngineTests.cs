@@ -74,6 +74,21 @@ public class SqlReportEngineTests
     }
 
     [Fact]
+    public void ResolveDefault_fecha_calculable()
+    {
+        var hoy = System.DateTime.Today;
+        Assert.Equal(hoy, SqlReportEngine.ResolveDefault(SqlParamTipo.Fecha, "HOY"));
+        Assert.Equal(hoy.AddDays(-7), SqlReportEngine.ResolveDefault(SqlParamTipo.Fecha, "HOY-7"));
+        Assert.Equal(new System.DateTime(hoy.Year, hoy.Month, 1), SqlReportEngine.ResolveDefault(SqlParamTipo.Fecha, "inicio_mes"));
+        var finMes = new System.DateTime(hoy.Year, hoy.Month, 1).AddMonths(1).AddDays(-1);
+        Assert.Equal(finMes, SqlReportEngine.ResolveDefault(SqlParamTipo.Fecha, "FIN_MES"));
+        // Fallback al literal estático si no es palabra conocida.
+        Assert.Equal(new System.DateTime(2026, 1, 15), SqlReportEngine.ResolveDefault(SqlParamTipo.Fecha, "2026-01-15"));
+        // 'HOY' sólo es palabra para fechas; en texto es literal.
+        Assert.Equal("HOY", SqlReportEngine.ResolveDefault(SqlParamTipo.Texto, "HOY"));
+    }
+
+    [Fact]
     public async Task Describir_lista_columnas_del_select()
     {
         var svc = new DapperReporteSqlService(new DbExecutor(new SqlDbConnectionFactory(ConnectionString)));

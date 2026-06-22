@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Sgpa.Data.Reporting;
@@ -145,7 +146,56 @@ public static class SqlReportEngine
         return typeof(string);
     }
 
-    /// <summary>Convierte el texto de un default del editor al valor tipado (o null si no parsea).</summary>
+    /// <summary>
+    /// Resuelve el default de un parámetro al valor a precargar en el prompt. Para fechas admite <b>palabras
+    /// calculables</b> (HOY, AYER, MAÑANA, INICIO_MES, FIN_MES, INICIO_AÑO, FIN_AÑO) con desplazamiento en días
+    /// (ej. <c>HOY-7</c>, <c>INICIO_MES-1</c>); si no es una palabra conocida, cae al literal estático.
+    /// </summary>
+    public static object? ResolveDefault(SqlParamTipo tipo, string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return null;
+        if (tipo == SqlParamTipo.Fecha && TryResolveFecha(text) is DateTime d) return d;
+        return ParseDefault(tipo, text);
+    }
+
+    // Palabra de fecha calculable + desplazamiento opcional en días (+/-N). Devuelve null si no es una palabra conocida.
+    private static DateTime? TryResolveFecha(string text)
+    {
+        var s = NormalizarPalabra(text);
+        var off = 0;
+        var m = Regex.Match(s, @"([+-]\d+)$");
+        if (m.Success) { off = int.Parse(m.Groups[1].Value, CultureInfo.InvariantCulture); s = s[..m.Index]; }
+        var hoy = DateTime.Today;
+        DateTime? bas = s switch
+        {
+            "HOY" or "TODAY" => hoy,
+            "AYER" => hoy.AddDays(-1),
+            "MANANA" => hoy.AddDays(1),
+            "INICIOMES" => new DateTime(hoy.Year, hoy.Month, 1),
+            "FINMES" => new DateTime(hoy.Year, hoy.Month, 1).AddMonths(1).AddDays(-1),
+            "INICIOANIO" or "INICIOANO" => new DateTime(hoy.Year, 1, 1),
+            "FINANIO" or "FINANO" => new DateTime(hoy.Year, 12, 31),
+            _ => null
+        };
+        return bas?.AddDays(off);
+    }
+
+    // Normaliza para comparar: sin acentos/ñ, mayúsculas, sin espacios ni '_' (deja sólo letras y el ±offset).
+    private static string NormalizarPalabra(string s)
+    {
+        var d = s.Trim().Normalize(NormalizationForm.FormD);
+        var sb = new System.Text.StringBuilder(d.Length);
+        foreach (var ch in d)
+        {
+            if (System.Globalization.CharUnicodeInfo.GetUnicodeCategory(ch) == System.Globalization.UnicodeCategory.NonSpacingMark)
+                continue;
+            if (ch == ' ' || ch == '_') continue;
+            sb.Append(char.ToUpperInvariant(ch));
+        }
+        return sb.ToString();
+    }
+
+    /// <summary>Convierte el texto de un default del editor al valor tipado estático (o null si no parsea).</summary>
     public static object? ParseDefault(SqlParamTipo tipo, string? text)
     {
         if (string.IsNullOrWhiteSpace(text)) return null;

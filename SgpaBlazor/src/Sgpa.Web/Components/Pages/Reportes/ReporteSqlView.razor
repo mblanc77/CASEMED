@@ -139,7 +139,7 @@ else if (_rep is not null)
         var res = new List<FiltroParametroDef>();
         foreach (var p in def.Parametros)
         {
-            var defVal = SqlReportEngine.ParseDefault(p.Tipo, p.DefaultText);
+            var defVal = SqlReportEngine.ResolveDefault(p.Tipo, p.DefaultText);
             var defJson = defVal is null ? null : JsonSerializer.Serialize(defVal);
             res.Add(new FiltroParametroDef(p.Nombre, string.IsNullOrWhiteSpace(p.Caption) ? p.Nombre : p.Caption!,
                                            SqlReportEngine.ClrType(p.Tipo), null, defJson, p.Requerido));

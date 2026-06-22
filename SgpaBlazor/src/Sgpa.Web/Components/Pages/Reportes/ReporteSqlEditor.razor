@@ -66,7 +66,11 @@ else
                     </table>
                     <p class="mb-1"><strong>Búsqueda parcial (LIKE):</strong> <code>WHERE Nombre LIKE '%' + @@Filtro + '%'</code> (token sin comillas; los <code>%</code> aparte).</p>
                     <p class="mb-1"><strong>Lista (IN):</strong> usá un parámetro de texto: <code>WHERE x IN (SELECT value FROM STRING_SPLIT(@@Lista, ','))</code>.</p>
-                    <p class="mb-0"><strong>Tope de filas (TOP):</strong> <code>SELECT TOP (@@Top) ...</code> con <code>Top</code> de tipo Entero.</p>
+                    <p class="mb-1"><strong>Tope de filas (TOP):</strong> <code>SELECT TOP (@@Top) ...</code> con <code>Top</code> de tipo Entero.</p>
+                    <p class="mb-0"><strong>Default calculable (fecha):</strong> en el valor por defecto de un parámetro <em>Fecha</em> podés poner
+                        <code>HOY</code>, <code>AYER</code>, <code>MAÑANA</code>, <code>INICIO_MES</code>, <code>FIN_MES</code>,
+                        <code>INICIO_AÑO</code>, <code>FIN_AÑO</code>, con desplazamiento en días (<code>HOY-7</code>, <code>INICIO_MES-1</code>).
+                        Se resuelve al abrir el reporte.</p>
                 </div>
             </details>
         </div>

@@ -77,19 +77,31 @@ public sealed class DapperReporteSqlService : IReporteSqlService
         if (error is not null) throw new InvalidOperationException(error);
 
         var tsql = SqlReportEngine.SustituirParaDescribir(sql, defs);
-        // El DMV analiza la consulta sin ejecutarla y devuelve sus columnas; si el SQL es inválido, lanza.
+        // El DMV analiza la consulta sin ejecutarla y devuelve sus columnas; ante un error de la consulta NO lanza:
+        // devuelve una fila con error_message (y name NULL). Lo detectamos y lo propagamos como excepción legible.
         var rows = await _db.QueryAsync<DescribeRow>(
-            @"SELECT name AS Name, system_type_name AS SystemTypeName, is_hidden AS IsHidden, column_ordinal AS Ordinal
+            @"SELECT name AS Name, system_type_name AS SystemTypeName, is_hidden AS IsHidden, column_ordinal AS Ordinal,
+                     error_number AS ErrorNumber, error_message AS ErrorMessage
               FROM sys.dm_exec_describe_first_result_set(@tsql, NULL, 0)
               ORDER BY column_ordinal",
             new { tsql }, cancellationToken: ct).ConfigureAwait(false);
 
-        return rows
-            .Where(r => !r.IsHidden && !string.IsNullOrEmpty(r.Name))
+        var err = rows.FirstOrDefault(r => !string.IsNullOrEmpty(r.ErrorMessage));
+        if (err is not null)
+            throw new InvalidOperationException($"La consulta tiene un error: {err.ErrorMessage}");
+
+        var cols = rows
+            .Where(r => r.IsHidden != true && !string.IsNullOrEmpty(r.Name))
             .Select(r => new SqlColumnInfo(r.Name!, r.SystemTypeName, SqlReportEngine.ClrFromSqlType(r.SystemTypeName)))
             .ToList();
+
+        if (cols.Count == 0)
+            throw new InvalidOperationException(
+                "La consulta no devolvió columnas para describir. Verificá que sea un SELECT que retorna un conjunto de resultados.");
+
+        return cols;
     }
 
     private sealed record Row(int Id, string Nombre, string DefJson);
-    private sealed record DescribeRow(string? Name, string? SystemTypeName, bool IsHidden, int Ordinal);
+    private sealed record DescribeRow(string? Name, string? SystemTypeName, bool? IsHidden, int? Ordinal, int? ErrorNumber, string? ErrorMessage);
 }
