@@ -32,7 +32,7 @@ else
 
         <div class="col-12">
             <label class="form-label mb-1">
-                Consulta SQL <span class="text-muted small">— una sola sentencia SELECT; usá <code>@@Nombre</code> para parámetros</span>
+                Consulta SQL <span class="text-muted small">— una sola sentencia SELECT; usá <code>@@Nombre</code> para parámetros (sin comillas; el motor las pone según el tipo)</span>
             </label>
             <textarea class="form-control font-monospace" rows="10" spellcheck="false"
                       @bind="_sql" @bind:event="oninput"

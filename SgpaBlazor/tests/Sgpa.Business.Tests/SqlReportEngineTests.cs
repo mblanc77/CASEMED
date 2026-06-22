@@ -63,6 +63,16 @@ public class SqlReportEngineTests
     }
 
     [Fact]
+    public void Sustituir_quita_comillas_que_rodean_al_token()
+    {
+        var defs = new[] { new SqlParamDef("A", null, SqlParamTipo.Texto, null) };
+        var vals = new Dictionary<string, object?> { ["A"] = "blanc" };
+        // Da igual escribir @A o '@A': el motor aporta el entrecomillado por tipo.
+        Assert.Equal("WHERE Nombre = N'blanc'", SqlReportEngine.Sustituir("WHERE Nombre = '@A'", defs, vals));
+        Assert.Equal("WHERE Nombre = N'blanc'", SqlReportEngine.Sustituir("WHERE Nombre = @A", defs, vals));
+    }
+
+    [Fact]
     public async Task Describir_lista_columnas_del_select()
     {
         var svc = new DapperReporteSqlService(new DbExecutor(new SqlDbConnectionFactory(ConnectionString)));

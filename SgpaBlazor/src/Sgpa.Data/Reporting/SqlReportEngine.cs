@@ -63,7 +63,9 @@ public static class SqlReportEngine
     /// <summary>Sustituye cada token declarado por el literal SQL del valor ingresado (NULL si falta).</summary>
     public static string Sustituir(string sql, IEnumerable<SqlParamDef> defs, IReadOnlyDictionary<string, object?> valores)
     {
-        var porNombre = defs.ToDictionary(d => d.Nombre, StringComparer.OrdinalIgnoreCase);
+        var lista = defs as IReadOnlyCollection<SqlParamDef> ?? defs.ToList();
+        sql = QuitarComillasDeTokens(sql, lista);   // el motor entrecomilla por tipo; sacamos las que pusiera el usuario
+        var porNombre = lista.ToDictionary(d => d.Nombre, StringComparer.OrdinalIgnoreCase);
         return TokenRx.Replace(sql, m =>
         {
             var name = m.Groups[1].Value;
@@ -76,7 +78,9 @@ public static class SqlReportEngine
     /// <summary>Sustituye los tokens declarados por <c>CAST(NULL AS tipo)</c> para validar/describir la consulta.</summary>
     public static string SustituirParaDescribir(string sql, IEnumerable<SqlParamDef> defs)
     {
-        var porNombre = defs.ToDictionary(d => d.Nombre, StringComparer.OrdinalIgnoreCase);
+        var lista = defs as IReadOnlyCollection<SqlParamDef> ?? defs.ToList();
+        sql = QuitarComillasDeTokens(sql, lista);   // mismo criterio que al ejecutar (consistencia describe/ejecución)
+        var porNombre = lista.ToDictionary(d => d.Nombre, StringComparer.OrdinalIgnoreCase);
         return TokenRx.Replace(sql, m =>
         {
             var name = m.Groups[1].Value;
@@ -155,6 +159,15 @@ public static class SqlReportEngine
             };
         }
         catch { return null; }
+    }
+
+    // Si el usuario escribió el token entre comillas simples ('@Nombre'), las quita: el literal por tipo ya las aporta.
+    // Así da igual escribir @Nombre o '@Nombre' (común para parámetros de texto/fecha).
+    private static string QuitarComillasDeTokens(string sql, IEnumerable<SqlParamDef> defs)
+    {
+        foreach (var d in defs)
+            sql = Regex.Replace(sql, $@"'\s*@{Regex.Escape(d.Nombre)}(?![A-Za-z0-9_])\s*'", "@" + d.Nombre);
+        return sql;
     }
 
     private static bool StartsWithKeyword(string sql, string kw) =>
