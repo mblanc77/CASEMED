@@ -47,7 +47,7 @@ else
         </div>
         <div class="col-12">
             <label class="form-label mb-1">Expresión</label>
-            <FormulaEditor Tabla="_model.Tabla" @bind-Expression="_model.Expr" />
+            <FormulaEditor Tabla="@_model.Tabla" @bind-Expression="_model.Expr" />
         </div>
         <div class="col-lg-6">
             <label class="form-label mb-1">Formato (opcional)</label>
