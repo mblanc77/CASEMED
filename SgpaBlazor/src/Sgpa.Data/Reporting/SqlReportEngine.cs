@@ -22,8 +22,10 @@ public static class SqlReportEngine
     private static readonly Regex TokenRx = new(@"@([A-Za-z_][A-Za-z0-9_]*)", RegexOptions.Compiled);
 
     // Palabras que no pueden aparecer en una consulta de sólo lectura (se chequean sin comentarios, con límites de palabra).
+    // No se filtra el prefijo sp_/xp_: hay tablas que se llaman SP_* (SP_Afiliado, etc.) y ejecutar un proc igual
+    // requiere EXEC/EXECUTE (bloqueados) o ser el inicio del batch (bloqueado por "debe empezar con SELECT/WITH").
     private static readonly Regex ForbiddenRx = new(
-        @"\b(insert|update|delete|drop|alter|create|truncate|exec|execute|merge|grant|revoke|into|waitfor|shutdown|openrowset|opendatasource|openquery|bulk)\b|\bsp_|\bxp_",
+        @"\b(insert|update|delete|drop|alter|create|truncate|exec|execute|merge|grant|revoke|into|waitfor|shutdown|openrowset|opendatasource|openquery|bulk)\b",
         RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
     /// <summary>Devuelve null si la consulta es una única sentencia de sólo lectura; si no, el motivo del rechazo.</summary>

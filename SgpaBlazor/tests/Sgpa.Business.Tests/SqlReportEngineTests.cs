@@ -22,6 +22,7 @@ public class SqlReportEngineTests
     [InlineData("  with x as (select 1 a) select * from x", true)]
     [InlineData("SELECT * FROM dbo.Afiliado WHERE CI = @ci", true)]
     [InlineData("SELECT 1 -- ; DROP TABLE x", true)]            // el DROP queda en un comentario
+    [InlineData("SELECT * FROM dbo.SP_Afiliado", true)]         // tabla con prefijo SP_ (no es un proc)
     [InlineData("DELETE FROM dbo.Afiliado", false)]
     [InlineData("UPDATE dbo.Afiliado SET CI = 1", false)]
     [InlineData("SELECT 1; DROP TABLE x", false)]               // segunda sentencia
