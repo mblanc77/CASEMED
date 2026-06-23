@@ -17,6 +17,7 @@
         FooterDisplayMode="GridFooterDisplayMode.Always"
         GroupFooterDisplayMode="GridGroupFooterDisplayMode.Always"
         ContextMenus="GridContextMenus.All"
+        CustomizeContextMenu="OnCustomizeContextMenu"
         FilterMenuButtonDisplayMode="GridFilterMenuButtonDisplayMode.Always"
         @bind-PageSize="_pageSize" PageSizeSelectorVisible="true" PageSizeSelectorItems="_pageSizes"
         PageSizeSelectorAllRowsItemVisible="false"
@@ -57,10 +58,10 @@
         }
     </Columns>
     <GroupSummary>
-        @foreach (var s in Summaries) { <DxGridSummaryItem SummaryType="s.Type" FieldName="@s.FieldName" /> }
+        @foreach (var s in MergedSummaries()) { <DxGridSummaryItem SummaryType="s.Type" FieldName="@s.Field" /> }
     </GroupSummary>
     <TotalSummary>
-        @foreach (var s in Summaries) { <DxGridSummaryItem SummaryType="s.Type" FieldName="@s.FieldName" /> }
+        @foreach (var s in MergedSummaries()) { <DxGridSummaryItem SummaryType="s.Type" FieldName="@s.Field" /> }
     </TotalSummary>
 </DxGrid>
 
@@ -111,6 +112,18 @@
     private string _loadedKey = string.Empty;
     private CancellationTokenSource? _saveCts;
 
+    // Totales agregados por el usuario vía menú contextual (además de los fijos de la definición). Se persisten.
+    private List<SummaryDef> _userSummaries = new();
+
+    private static readonly (string Value, string Label)[] SummaryOptions =
+    {
+        (nameof(GridSummaryItemType.Sum), "Suma"),
+        (nameof(GridSummaryItemType.Count), "Cuenta"),
+        (nameof(GridSummaryItemType.Avg), "Promedio"),
+        (nameof(GridSummaryItemType.Min), "Mínimo"),
+        (nameof(GridSummaryItemType.Max), "Máximo"),
+    };
+
     protected override async Task OnParametersSetAsync()
     {
         if (_loadedKey == ViewKey) return;   // cargar la personalización una sola vez por reporte
@@ -118,6 +131,16 @@
         var json = VistaState.StripLayoutFilter(await VistaStore.GetAsync(CurrentUser.UserName, ViewKey));
         _saved = VistaState.FromJson(json);
         if (_saved?.PageSize is int ps && ps > 0) _pageSize = ps;
+        _userSummaries = _saved?.Summaries ?? new();
+    }
+
+    // Sumarios efectivos = los fijos de la definición + los del usuario (el del usuario gana si coinciden columna).
+    private IEnumerable<(string Field, GridSummaryItemType Type)> MergedSummaries()
+    {
+        var userCols = _userSummaries.Select(s => s.Column).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        foreach (var s in Summaries)
+            if (!userCols.Contains(s.FieldName)) yield return (s.FieldName, s.Type);
+        foreach (var s in _userSummaries) yield return (s.Column, s.Type);
     }
 
     private Task OnLayoutAutoLoading(GridPersistentLayoutEventArgs e)
@@ -128,8 +151,55 @@
 
     private async Task OnLayoutAutoSaving(GridPersistentLayoutEventArgs e)
     {
-        var json = VistaState.StripLayoutFilter(new VistaState { Layout = e.Layout, PageSize = _pageSize }.ToJson());
+        var json = VistaState.StripLayoutFilter(
+            new VistaState { Layout = e.Layout, Summaries = _userSummaries, PageSize = _pageSize }.ToJson());
         await SaveDebouncedAsync(json);
+    }
+
+    // Los totales no son parte del layout nativo: se guardan tomando el layout actual del grid.
+    private Task SaveVistaAsync()
+    {
+        if (_grid is null) return Task.CompletedTask;
+        string? json;
+        try { json = VistaState.StripLayoutFilter(new VistaState { Layout = _grid.SaveLayout(), Summaries = _userSummaries, PageSize = _pageSize }.ToJson()); }
+        catch { return Task.CompletedTask; }
+        return SaveDebouncedAsync(json);
+    }
+
+    // Menú contextual sobre cabecera/pie/pie de grupo de una columna: submenú "Totalizar esta columna".
+    private void OnCustomizeContextMenu(GridCustomizeContextMenuEventArgs e)
+    {
+        IGridColumn? col = e.Context switch
+        {
+            GridHeaderCommandContext h => h.Column,
+            GridFooterCommandContext f => f.Column,
+            GridGroupFooterCommandContext gf => gf.Column,
+            _ => null
+        };
+        if (col is not IGridDataColumn dataCol || string.IsNullOrEmpty(dataCol.FieldName)) return;
+
+        var current = SummaryTypeOf(dataCol.FieldName);
+        var menu = e.Items.AddCustomItem("Totalizar esta columna");
+        menu.BeginGroup = true;
+        menu.IconCssClass = "fa-solid fa-calculator";
+        foreach (var (val, label) in SummaryOptions)
+        {
+            var v = val;
+            menu.Items.AddCustomItem((current == v ? "✓ " : "") + label, () => SetSummary(dataCol.FieldName, v));
+        }
+        menu.Items.AddCustomItem("Quitar total", () => SetSummary(dataCol.FieldName, null));
+    }
+
+    private string SummaryTypeOf(string col)
+        => _userSummaries.FirstOrDefault(s => s.Column == col)?.Type.ToString() ?? string.Empty;
+
+    private void SetSummary(string col, string? type)
+    {
+        _userSummaries.RemoveAll(s => s.Column == col);
+        if (!string.IsNullOrEmpty(type) && Enum.TryParse<GridSummaryItemType>(type, out var t))
+            _userSummaries.Add(new SummaryDef { Column = col, Type = t });
+        StateHasChanged();
+        _ = SaveVistaAsync();
     }
 
     private async Task SaveDebouncedAsync(string? json)
@@ -150,6 +220,7 @@
     {
         _saved = null;
         _pageSize = 50;
+        _userSummaries = new();
         await VistaStore.ResetAsync(CurrentUser.UserName, ViewKey);
         _gridKey = new object();   // recrea el grid → carga el layout por defecto (orden del markup)
         StateHasChanged();
