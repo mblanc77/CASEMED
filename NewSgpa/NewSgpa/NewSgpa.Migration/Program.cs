@@ -157,6 +157,9 @@ class Program
                 int copied = 0;
                 if (File.Exists(SgpaServ2k3Mdb)) copied += await BackfillEmptyTablesVerbatimAsync(OleDbConn(PrepareSource(SgpaServ2k3Mdb)), "SGPA");
                 if (File.Exists(SpServ2k3Mdb)) copied += await BackfillEmptyTablesVerbatimAsync(OleDbConn(PrepareSource(SpServ2k3Mdb)), "SP");
+                Console.Write("Repairing legacy encoding (mojibake DOS/CP850)... ");
+                await FixEncodingMojibakeAsync(db);
+                Console.WriteLine("OK");
                 Console.WriteLine($"\n=== Backfill done === filas copiadas: {copied}");
                 return;
             }
@@ -255,6 +258,11 @@ class Program
 
             if (TotalRowsImported == 0)
                 throw new InvalidOperationException("Migration finished without importing rows. Verify source MDB format/provider and table mappings.");
+
+            // DESPUÉS de copiar los datos del Access: reparar el mojibake heredado (bytes DOS guardados como Unicode).
+            Console.Write("Repairing legacy encoding (mojibake DOS/CP850)... ");
+            await FixEncodingMojibakeAsync(db);
+            Console.WriteLine("OK");
 
             Console.WriteLine($"\n=== Done === Rows imported: {TotalRowsImported}");
         }
@@ -383,6 +391,51 @@ class Program
             "CodEmpresa, Nombre, Direccion, Telefono, Fax, EMail, AporteCasemed, AporteAguinaldo, PersonaContacto, " +
             "Autoridades, CodRegimenAporte, CodSituacionPago, Liquidar, Ficticia, Usr, Ts");
         Console.WriteLine("OK");
+    }
+
+    // Repara el mojibake heredado de los .mdb (textos cargados con bytes DOS/CP850 que quedaron guardados como
+    // Unicode, ej. 'í'->U+00A1, 'á'->U+00A0). Corre DESPUÉS de copiar los datos. SELECTIVO (sólo filas con
+    // marcadores DOS inequívocos) e idempotente; 100% ASCII (NCHAR) para no depender de la codificación del fuente.
+    static async Task FixEncodingMojibakeAsync(MigrationDbContext db)
+    {
+        await db.Database.ExecuteSqlRawAsync(
+            """
+            SET QUOTED_IDENTIFIER ON;
+            SET ANSI_NULLS ON;
+            SET NOCOUNT ON;
+            DECLARE @bin sysname = N'Latin1_General_BIN2';
+            DECLARE @flag nvarchar(60) = N'%[' +
+                NCHAR(129) + NCHAR(130) + NCHAR(144) + NCHAR(154) + NCHAR(160) + NCHAR(161) +
+                NCHAR(162) + NCHAR(163) + NCHAR(164) + NCHAR(165) + NCHAR(168) + NCHAR(173) + N']%';
+            DECLARE @map TABLE (ord int, cpf int, cpt int);
+            INSERT INTO @map (ord, cpf, cpt) VALUES
+                (1,233,218),(2,161,237),(3,160,225),(4,162,243),(5,163,250),(6,164,241),
+                (7,165,209),(8,144,201),(9,181,193),(10,214,205),(11,224,211),(12,129,252),
+                (13,154,220),(14,168,191),(15,130,233),(16,173,161);
+            DECLARE @sch sysname, @tbl sysname, @col sysname, @sql nvarchar(max), @expr nvarchar(max);
+            DECLARE cur CURSOR LOCAL FAST_FORWARD FOR
+                SELECT s.name, t.name, c.name
+                FROM sys.columns c
+                JOIN sys.tables  t  ON t.object_id = c.object_id
+                JOIN sys.schemas s  ON s.schema_id = t.schema_id
+                JOIN sys.types   ty ON ty.user_type_id = c.user_type_id
+                WHERE ty.name IN (N'nvarchar', N'nchar') AND c.is_computed = 0 AND t.is_ms_shipped = 0;
+            OPEN cur;
+            FETCH NEXT FROM cur INTO @sch, @tbl, @col;
+            WHILE @@FETCH_STATUS = 0
+            BEGIN
+                SET @expr = N'CAST(q.[' + @col + N'] AS nvarchar(max)) COLLATE ' + @bin;
+                SELECT @expr = N'REPLACE(' + @expr + N',NCHAR(' + CAST(cpf AS varchar(5)) + N'),NCHAR(' + CAST(cpt AS varchar(5)) + N'))'
+                FROM @map ORDER BY ord;
+                SET @sql = N'UPDATE q SET [' + @col + N'] = ' + @expr +
+                    N' FROM [' + @sch + N'].[' + @tbl + N'] q' +
+                    N' WHERE q.[' + @col + N'] COLLATE ' + @bin + N' LIKE N''' + @flag + N''' COLLATE ' + @bin + N';';
+                EXEC sys.sp_executesql @sql;
+                FETCH NEXT FROM cur INTO @sch, @tbl, @col;
+            END
+            CLOSE cur;
+            DEALLOCATE cur;
+            """);
     }
 
     // Tablas de infraestructura de la app Blazor (no provienen de los Access; las usa el front).
