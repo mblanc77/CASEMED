@@ -108,6 +108,7 @@ else
                                         <th style="width:60px"></th>
                                         <th>Campo</th>
                                         <th>Encabezado</th>
+                                        <th style="width:160px">Formato</th>
                                         <th style="width:80px">Agrupar</th>
                                         <th style="width:140px">Total</th>
                                         <th style="width:40px"></th>
@@ -127,6 +128,7 @@ else
                                             </td>
                                             <td class="small text-muted">@c.PathLabel</td>
                                             <td><DxTextBox @bind-Text="c.Caption" /></td>
+                                            <td><DxTextBox @bind-Text="c.DisplayFormat" NullText="ej. n2, d, #,##0.00" /></td>
                                             <td><DxCheckBox @bind-Checked="c.Group" /></td>
                                             <td>
                                                 <DxComboBox Data="_aggOptions" TData="AggOpt" TValue="AggKind?"
