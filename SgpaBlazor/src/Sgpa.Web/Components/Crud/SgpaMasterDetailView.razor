@@ -24,6 +24,7 @@
 @inject IPreferenciaVistaStore VistaStore
 @inject ITablaConfigService TablaConfig
 @inject IToastNotificationService Toasts
+@inject ICalculatedFieldCatalog CalcCatalog
 @implements IDisposable
 
 @*
@@ -175,7 +176,7 @@
                         @ToolbarActionsEnd
                     }
                     <span class="vr mx-1"></span>
-                    <SgpaGridFilter Grid="_grid" Meta="_meta" />
+                    <SgpaGridFilter Grid="_grid" Meta="_meta" CalcFields="_calc" />
                 </div>
             </ToolbarTemplate>
             <Columns>
@@ -193,6 +194,13 @@
                     </CellDisplayTemplate>
                 </DxGridCommandColumn>
                 @ListColumns
+                @* Campos calculados de la tabla (server-side): ordenables/filtrables/agrupables/totalizables. *@
+                @foreach (var cf in _calc)
+                {
+                    <DxGridDataColumn FieldName="@cf.Nombre" Caption="@($"ƒ {cf.Caption}")" AllowSort="true" AllowGroup="true">
+                        <CellDisplayTemplate Context="cell">@CalcText(cell.DataItem, cf.Nombre)</CellDisplayTemplate>
+                    </DxGridDataColumn>
+                }
             </Columns>
             <TotalSummary>
                 @foreach (var s in _summaries)
@@ -495,6 +503,12 @@ else
     private SgpaGridDataSource<TMaster>? _dataSource;
     private string _search = string.Empty;
 
+    // Campos calculados de la tabla (server-side, reutilizables). Si la tabla no tiene, queda vacío y todo es no-op.
+    private IReadOnlyList<CalculatedField> _calc = System.Array.Empty<CalculatedField>();
+    private readonly Dictionary<string, IReadOnlyDictionary<string, object?>> _calcValues = new(StringComparer.OrdinalIgnoreCase);
+    private Func<IReadOnlyList<TMaster>, CancellationToken, Task>? CalcCallback
+        => _calc.Count > 0 && _meta.Keys.Count == 1 ? ResolvePageCalcAsync : null;
+
     // --- Personalización por usuario de la lista (paridad XAF): export, totales, layout persistido ---
     private bool _summaryEditor;
     private bool _confirmReset;   // popup de confirmación de "Restablecer vista"
@@ -534,6 +548,30 @@ else
         Nav.LocationChanged += OnLocationChanged;
     }
 
+    protected override async Task OnInitializedAsync()
+    {
+        await CalcCatalog.EnsureLoadedAsync();
+        _calc = CalcCatalog.For(_meta.Table);   // vacío si la tabla no define calculados
+    }
+
+    // Side-fetch de los campos calculados de la página (por su PK) → _calcValues, para mostrarlos en las celdas.
+    private async Task ResolvePageCalcAsync(IReadOnlyList<TMaster> items, CancellationToken ct)
+    {
+        if (_calc.Count == 0 || _meta.Keys.Count != 1 || items.Count == 0) return;
+        var keys = items.Select(e => _meta.Key.GetValue(e)).Where(v => v is not null).Cast<object>().Distinct().ToList();
+        if (keys.Count == 0) return;
+        var map = await Service.GetCalcValuesAsync(keys, _calc, ct);
+        foreach (var kv in map) _calcValues[kv.Key] = kv.Value;
+    }
+
+    private string CalcText(object? dataItem, string nombre)
+    {
+        if (dataItem is not TMaster e || _meta.Keys.Count != 1) return string.Empty;
+        var key = _meta.Key.GetValue(e)?.ToString();
+        if (key is null || !_calcValues.TryGetValue(key, out var vals)) return string.Empty;
+        return vals.TryGetValue(nombre, out var v) ? v?.ToString() ?? string.Empty : string.Empty;
+    }
+
     public void Dispose() => Nav.LocationChanged -= OnLocationChanged;
 
     private async void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
@@ -550,7 +588,7 @@ else
         {
             _selectedItems = Array.Empty<object>();
             _keysTodoFiltro = null;
-            _dataSource = new SgpaGridDataSource<TMaster>(Service, baseFilter: FiltroBase, blocked: Bloqueada);
+            _dataSource = new SgpaGridDataSource<TMaster>(Service, baseFilter: FiltroBase, blocked: Bloqueada, onItemsLoaded: CalcCallback, calc: _calc.Count > 0 ? _calc : null);
             _filtroBaseEnDataSource = FiltroBase;
             _grid?.Reload();
         }
@@ -711,7 +749,7 @@ else
                         if (_savedVista.PageSize is int sps && sps > 0) _pageSize = sps;
                         if (_savedVista.MultiSelect is bool sms) _multiSelect = sms;
                     }
-                    _dataSource = new SgpaGridDataSource<TMaster>(Service, baseFilter: FiltroBase, blocked: Bloqueada);
+                    _dataSource = new SgpaGridDataSource<TMaster>(Service, baseFilter: FiltroBase, blocked: Bloqueada, onItemsLoaded: CalcCallback, calc: _calc.Count > 0 ? _calc : null);
                     _filtroBaseEnDataSource = FiltroBase;
                     break;
                 case Mode.New:

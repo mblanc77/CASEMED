@@ -514,6 +514,21 @@ class Program
                 CREATE UNIQUE INDEX UX_CampoCalculado_Tabla_Nombre ON dbo.CampoCalculado(Tabla, Nombre);
             END
             """);
+        // Calculados de Certificación que exponen la descripción de los FK (para ordenar/filtrar por nombre, no código).
+        // Mantener en sintonía con SgpaBlazor/tools/sql/campo-calculado-certificacion-seed.sql. Idempotente.
+        await db.Database.ExecuteSqlRawAsync(
+            """
+            MERGE dbo.CampoCalculado AS t
+            USING (VALUES
+                (N'Certificacion', N'CertificadorDesc', N'Certificador',     N'[Certificador.Descrip]', N'string'),
+                (N'Certificacion', N'AfeccionDesc',     N'Tipo de afección', N'[AfeccionTipo.Descrip]', N'string'),
+                (N'Certificacion', N'SalidaDesc',       N'Tipo de salida',   N'[SalidaTipo.Descrip]',   N'string')
+            ) AS s(Tabla, Nombre, Caption, Expr, TipoResultado)
+            ON t.Tabla = s.Tabla AND t.Nombre = s.Nombre
+            WHEN NOT MATCHED THEN
+                INSERT (Tabla, Nombre, Caption, Expr, TipoResultado, Activo)
+                VALUES (s.Tabla, s.Nombre, s.Caption, s.Expr, s.TipoResultado, 1);
+            """);
         // Reportes basados en SQL crudo (una sola consulta SELECT con tokens @param). Mantener en sintonía con
         // SgpaBlazor/tools/sql/reporte-sql.sql. Idempotente.
         await db.Database.ExecuteSqlRawAsync(
