@@ -3,9 +3,11 @@
 @page "/certificaciones/{NroLlamado:int}"
 @rendermode InteractiveServer
 @using Sgpa.Domain.Entities
+@using Sgpa.Data.Crud
 @using Sgpa.Web.Components.Crud
 @using Sgpa.Business.Certificaciones
 @inject CertificacionService Certi
+@inject ISgpaLookupService Lookups
 
 <PageTitle>Certificaciones</PageTitle>
 
@@ -25,9 +27,15 @@
         @* Resto de campos: ocultos por defecto, disponibles en "Columnas" para que el usuario los habilite. *@
         <DxGridDataColumn FieldName="NroRecibo" Caption="Nº recibo" Visible="false" />
         <DxGridDataColumn FieldName="FechaRecibido" Caption="Recibido" DisplayFormat="d" Visible="false" />
-        <DxGridDataColumn FieldName="CodAfeccionTipo" Caption="Tipo de afección" Visible="false" />
-        <DxGridDataColumn FieldName="CodCertificador" Caption="Certificador" Visible="false" />
-        <DxGridDataColumn FieldName="CodSalidaTipo" Caption="Tipo de salida" Visible="false" />
+        <DxGridDataColumn FieldName="CodAfeccionTipo" Caption="Tipo de afección" Visible="false">
+            <CellDisplayTemplate Context="ctx">@LookupText(_afeccion, ctx.Value)</CellDisplayTemplate>
+        </DxGridDataColumn>
+        <DxGridDataColumn FieldName="CodCertificador" Caption="Certificador" Visible="false">
+            <CellDisplayTemplate Context="ctx">@LookupText(_certificador, ctx.Value)</CellDisplayTemplate>
+        </DxGridDataColumn>
+        <DxGridDataColumn FieldName="CodSalidaTipo" Caption="Tipo de salida" Visible="false">
+            <CellDisplayTemplate Context="ctx">@LookupText(_salida, ctx.Value)</CellDisplayTemplate>
+        </DxGridDataColumn>
         <DxGridDataColumn FieldName="ImporteDeducible" Caption="Deducible" DisplayFormat="n2" Visible="false" />
         <DxGridDataColumn FieldName="Indicaciones" Caption="Indicaciones" Visible="false" />
         <DxGridDataColumn FieldName="Trabaja" Caption="Trabaja" Visible="false" />
@@ -48,4 +56,31 @@
 
 @code {
     [Parameter] public int NroLlamado { get; set; }
+
+    // Descripciones de los FK (código → texto) para los CellDisplayTemplate de las columnas FK.
+    private Dictionary<string, string> _afeccion = new(), _certificador = new(), _salida = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _afeccion = await DictAsync(typeof(AfeccionTipo));
+        _certificador = await DictAsync(typeof(Certificador));
+        _salida = await DictAsync(typeof(SalidaTipo));
+    }
+
+    private async Task<Dictionary<string, string>> DictAsync(Type entidad)
+    {
+        var d = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        var items = await Lookups.GetAsync(entidad);
+        if (items is not null)
+            foreach (var i in items)
+            {
+                var k = i.Value?.ToString();
+                if (!string.IsNullOrEmpty(k)) d[k] = i.Text;
+            }
+        return d;
+    }
+
+    private static string LookupText(Dictionary<string, string> dict, object? code)
+        => code is null ? string.Empty
+           : dict.TryGetValue(code.ToString()!, out var t) ? t : code.ToString()!;
 }
