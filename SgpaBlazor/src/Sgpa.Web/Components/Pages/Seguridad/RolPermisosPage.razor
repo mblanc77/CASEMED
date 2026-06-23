@@ -1,0 +1,145 @@
+@page "/seguridad/roles/{RolId:int}/permisos"
+@rendermode InteractiveServer
+@using Sgpa.Data.Configuracion
+@using Sgpa.Data.Security.Admin
+@using Sgpa.Domain.Metadata
+@using Sgpa.Domain.Security
+@using Sgpa.Web.Components.Crud
+@inject ISeguridadAdminService Admin
+@inject ITablaConfigService TablaConfig
+@inject WebCurrentUser CurrentUser
+@inject IToastNotificationService Toasts
+@inject NavigationManager Nav
+
+<PageTitle>Seguridad · Permisos del rol</PageTitle>
+
+@if (_denied)
+{
+    <div class="alert alert-danger mt-3">Solo un administrador puede gestionar permisos.</div>
+}
+else if (_rol is null)
+{
+    <div class="alert alert-warning mt-3">El rol indicado no existe. <a href="/seguridad/roles">Volver a roles</a>.</div>
+}
+else
+{
+    <div class="d-flex align-items-center gap-2 mb-2">
+        <a href="/seguridad/roles" class="btn btn-sm btn-outline-secondary"><i class="fa-solid fa-arrow-left"></i></a>
+        <h3 class="mb-0"><i class="fa-solid fa-shield-halved me-2"></i>Permisos · @_rol.Nombre</h3>
+    </div>
+
+    @if (_rol.EsAdmin)
+    {
+        <div class="alert alert-info">Este rol es <strong>administrador</strong>: tiene acceso total y omite los permisos por tabla.</div>
+    }
+    else
+    {
+        <p class="text-muted small mb-3">
+            Marcá las acciones permitidas por tabla. Los cambios se guardan al instante.
+            <strong>Leer</strong> = ver/listar · <strong>Crear</strong> = alta · <strong>Modificar</strong> = edición · <strong>Borrar</strong> = baja.
+        </p>
+
+        <div class="mb-3 d-flex gap-2">
+            <DxButton Text="Sólo lectura a todas" RenderStyle="ButtonRenderStyle.Secondary" SizeMode="SizeMode.Small" Click="@(() => SetTodasAsync(PermissionAction.Read))" />
+            <DxButton Text="Acceso total a todas" RenderStyle="ButtonRenderStyle.Secondary" SizeMode="SizeMode.Small" Click="@(() => SetTodasAsync(PermissionAction.All))" />
+            <DxButton Text="Quitar todo" RenderStyle="ButtonRenderStyle.Secondary" SizeMode="SizeMode.Small" Click="@(() => SetTodasAsync(PermissionAction.None))" />
+        </div>
+
+        <DxGrid Data="_items" PageSize="30" ShowSearchBox="true" CssClass="sgpa-grid">
+            <Columns>
+                <DxGridDataColumn FieldName="Display" Caption="Tabla" MinWidth="220">
+                    <CellDisplayTemplate Context="c">
+                        @{ var vm = (Vm)c.DataItem; }
+                        <span>@vm.Display</span> <span class="text-muted small">@vm.Tabla</span>
+                    </CellDisplayTemplate>
+                </DxGridDataColumn>
+                <DxGridDataColumn Caption="Leer" Width="90px" TextAlignment="GridTextAlignment.Center">
+                    <CellDisplayTemplate Context="c">
+                        @{ var vm = (Vm)c.DataItem; }
+                        <DxCheckBox Checked="vm.Read" CheckedChanged="@((bool v) => ToggleAsync(vm, PermissionAction.Read, v))" />
+                    </CellDisplayTemplate>
+                </DxGridDataColumn>
+                <DxGridDataColumn Caption="Crear" Width="90px" TextAlignment="GridTextAlignment.Center">
+                    <CellDisplayTemplate Context="c">
+                        @{ var vm = (Vm)c.DataItem; }
+                        <DxCheckBox Checked="vm.Create" CheckedChanged="@((bool v) => ToggleAsync(vm, PermissionAction.Create, v))" />
+                    </CellDisplayTemplate>
+                </DxGridDataColumn>
+                <DxGridDataColumn Caption="Modificar" Width="100px" TextAlignment="GridTextAlignment.Center">
+                    <CellDisplayTemplate Context="c">
+                        @{ var vm = (Vm)c.DataItem; }
+                        <DxCheckBox Checked="vm.Write" CheckedChanged="@((bool v) => ToggleAsync(vm, PermissionAction.Write, v))" />
+                    </CellDisplayTemplate>
+                </DxGridDataColumn>
+                <DxGridDataColumn Caption="Borrar" Width="90px" TextAlignment="GridTextAlignment.Center">
+                    <CellDisplayTemplate Context="c">
+                        @{ var vm = (Vm)c.DataItem; }
+                        <DxCheckBox Checked="vm.Delete" CheckedChanged="@((bool v) => ToggleAsync(vm, PermissionAction.Delete, v))" />
+                    </CellDisplayTemplate>
+                </DxGridDataColumn>
+            </Columns>
+        </DxGrid>
+    }
+}
+
+@code {
+    [Parameter] public int RolId { get; set; }
+
+    private bool _denied;
+    private RolAdmin? _rol;
+    private List<Vm> _items = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CurrentUser.EnsureLoadedAsync();
+        if (!CurrentUser.IsAdmin) { _denied = true; return; }
+
+        var roles = await Admin.ListRolesAsync();
+        _rol = roles.FirstOrDefault(r => r.Id == RolId);
+        if (_rol is null || _rol.EsAdmin) return;
+
+        await TablaConfig.EnsureLoadedAsync();
+        var permisos = (await Admin.ListPermisosAsync(RolId))
+            .ToDictionary(p => p.Tabla, p => p.Acciones, StringComparer.OrdinalIgnoreCase);
+
+        _items = EntityCatalog.CrudCapable
+            .Select(m => m.Table)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Select(t => new Vm
+            {
+                Tabla = t,
+                Display = TablaConfig.DisplayName(t),
+                Acciones = permisos.TryGetValue(t, out var a) ? a : PermissionAction.None
+            })
+            .OrderBy(v => v.Display, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+    }
+
+    private async Task ToggleAsync(Vm vm, PermissionAction action, bool on)
+    {
+        vm.Acciones = on ? vm.Acciones | action : vm.Acciones & ~action;
+        await Admin.SetPermisoAsync(RolId, vm.Tabla, vm.Acciones);
+    }
+
+    private async Task SetTodasAsync(PermissionAction acciones)
+    {
+        foreach (var vm in _items)
+        {
+            vm.Acciones = acciones;
+            await Admin.SetPermisoAsync(RolId, vm.Tabla, acciones);
+        }
+        Toasts.Exito(acciones == PermissionAction.None ? "Permisos quitados." : "Permisos aplicados a todas las tablas.");
+    }
+
+    private sealed class Vm
+    {
+        public string Tabla { get; set; } = "";
+        public string Display { get; set; } = "";
+        public PermissionAction Acciones { get; set; }
+        public bool Read { get => Has(PermissionAction.Read); }
+        public bool Create { get => Has(PermissionAction.Create); }
+        public bool Write { get => Has(PermissionAction.Write); }
+        public bool Delete { get => Has(PermissionAction.Delete); }
+        private bool Has(PermissionAction a) => (Acciones & a) == a;
+    }
+}

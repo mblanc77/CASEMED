@@ -1,0 +1,253 @@
+@page "/seguridad/usuarios"
+@rendermode InteractiveServer
+@using Sgpa.Data.Security.Admin
+@using Sgpa.Web.Components.Crud
+@inject ISeguridadAdminService Admin
+@inject WebCurrentUser CurrentUser
+@inject IToastNotificationService Toasts
+
+<PageTitle>Seguridad · Usuarios</PageTitle>
+
+@if (_denied)
+{
+    <div class="alert alert-danger mt-3">Solo un administrador puede gestionar usuarios.</div>
+}
+else
+{
+    <div class="d-flex align-items-center gap-2 mb-2">
+        <h3 class="mb-0"><i class="fa-solid fa-users me-2"></i>Usuarios</h3>
+        <a href="/seguridad/roles" class="btn btn-sm btn-outline-secondary ms-2"><i class="fa-solid fa-user-shield me-1"></i>Roles y permisos</a>
+        <DxButton Text="Nuevo usuario" IconCssClass="fa-solid fa-user-plus" RenderStyle="ButtonRenderStyle.Primary"
+                  CssClass="ms-auto" Click="OpenNuevo" />
+    </div>
+    <p class="text-muted small mb-3">Altas, bajas, estado (activo/inactivo), asignación de roles y restablecimiento de clave.</p>
+
+    <DxGrid Data="_items" PageSize="20" ShowFilterRow="true" ShowSearchBox="true" CssClass="sgpa-grid">
+        <Columns>
+            <DxGridDataColumn FieldName="Login" Caption="Login" Width="160px" />
+            <DxGridDataColumn FieldName="Nombre" Caption="Nombre" MinWidth="180" />
+            <DxGridDataColumn Caption="Roles" MinWidth="200">
+                <CellDisplayTemplate Context="c">
+                    @{ var u = (UsuarioAdmin)c.DataItem; }
+                    @if (u.EsAdmin)
+                    {
+                        <span class="badge bg-danger me-1">Admin</span>
+                    }
+                    <span class="text-muted small">@string.Join(", ", u.RolNombres)</span>
+                </CellDisplayTemplate>
+            </DxGridDataColumn>
+            <DxGridDataColumn Caption="Estado" Width="100px" TextAlignment="GridTextAlignment.Center">
+                <CellDisplayTemplate Context="c">
+                    @{ var u = (UsuarioAdmin)c.DataItem; }
+                    @if (u.Activo)
+                    {
+                        <span class="badge bg-success">Activo</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Inactivo</span>
+                    }
+                </CellDisplayTemplate>
+            </DxGridDataColumn>
+            <DxGridDataColumn FieldName="UltAcceso" Caption="Último acceso" Width="160px" DisplayFormat="dd/MM/yyyy HH:mm" />
+            <DxGridDataColumn Caption="" Width="230px" TextAlignment="GridTextAlignment.Right" AllowSort="false" AllowGroup="false">
+                <CellDisplayTemplate Context="c">
+                    @{ var u = (UsuarioAdmin)c.DataItem; }
+                    <DxButton Text="Editar" IconCssClass="fa-solid fa-pen" RenderStyle="ButtonRenderStyle.Link" Click="@(() => OpenEditar(u))" />
+                    <DxButton Text="Clave" IconCssClass="fa-solid fa-key" RenderStyle="ButtonRenderStyle.Link" Click="@(() => OpenClave(u))" />
+                    <DxButton Text="Borrar" IconCssClass="fa-solid fa-trash" RenderStyle="ButtonRenderStyle.Link" Click="@(() => OpenBorrar(u))" />
+                </CellDisplayTemplate>
+            </DxGridDataColumn>
+        </Columns>
+    </DxGrid>
+
+    @* ---- Alta / edición ---- *@
+    <DxPopup @bind-Visible="_editVisible" HeaderText="@(_edit.EsNuevo ? "Nuevo usuario" : $"Editar usuario · {_edit.Login}")" Width="520px" CloseOnEscape="true">
+        <BodyContentTemplate>
+            <div class="mb-3">
+                <label class="form-label small fw-semibold">Login</label>
+                <DxTextBox @bind-Text="_edit.Login" ReadOnly="!_edit.EsNuevo" NullText="usuario" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label small fw-semibold">Nombre</label>
+                <DxTextBox @bind-Text="_edit.Nombre" NullText="Nombre y apellido" />
+            </div>
+            @if (_edit.EsNuevo)
+            {
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Clave inicial</label>
+                    <DxTextBox @bind-Text="_edit.Password" Password="true" NullText="clave" />
+                </div>
+            }
+            <div class="mb-3">
+                <DxCheckBox @bind-Checked="_edit.Activo">Activo</DxCheckBox>
+            </div>
+            <div class="mb-2">
+                <label class="form-label small fw-semibold">Roles</label>
+                @if (_roles.Count == 0)
+                {
+                    <div class="text-muted small">No hay roles definidos. Creá uno en <a href="/seguridad/roles">Roles y permisos</a>.</div>
+                }
+                else
+                {
+                    <div class="border rounded p-2" style="max-height:220px;overflow:auto">
+                        @foreach (var r in _roles)
+                        {
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="@($"rol{r.Id}")"
+                                       checked="@_edit.Roles.Contains(r.Id)"
+                                       @onchange="@(e => ToggleRol(r.Id, (bool)e.Value!))" />
+                                <label class="form-check-label" for="@($"rol{r.Id}")">
+                                    @r.Nombre @if (r.EsAdmin) { <span class="badge bg-danger ms-1">Admin</span> }
+                                </label>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+            <div class="d-flex gap-2 justify-content-end mt-3">
+                <DxButton Text="Cancelar" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => _editVisible = false)" />
+                <DxButton Text="Guardar" IconCssClass="fa-solid fa-floppy-disk" RenderStyle="ButtonRenderStyle.Primary" Click="GuardarAsync" />
+            </div>
+        </BodyContentTemplate>
+    </DxPopup>
+
+    @* ---- Restablecer clave ---- *@
+    <DxPopup @bind-Visible="_claveVisible" HeaderText="@($"Restablecer clave · {_edit.Login}")" Width="440px" CloseOnEscape="true">
+        <BodyContentTemplate>
+            <div class="mb-3">
+                <label class="form-label small fw-semibold">Nueva clave</label>
+                <DxTextBox @bind-Text="_clave1" Password="true" NullText="nueva clave" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label small fw-semibold">Repetir clave</label>
+                <DxTextBox @bind-Text="_clave2" Password="true" NullText="repetir" />
+            </div>
+            <div class="d-flex gap-2 justify-content-end">
+                <DxButton Text="Cancelar" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => _claveVisible = false)" />
+                <DxButton Text="Cambiar clave" IconCssClass="fa-solid fa-key" RenderStyle="ButtonRenderStyle.Primary" Click="CambiarClaveAsync" />
+            </div>
+        </BodyContentTemplate>
+    </DxPopup>
+
+    @* ---- Borrar ---- *@
+    <DxPopup @bind-Visible="_borrarVisible" HeaderText="Borrar usuario" Width="460px" CloseOnEscape="true">
+        <BodyContentTemplate>
+            <p>¿Borrar al usuario <strong>@_edit.Login</strong>? Esta acción no se puede deshacer.</p>
+            <div class="d-flex gap-2 justify-content-end">
+                <DxButton Text="Cancelar" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => _borrarVisible = false)" />
+                <DxButton Text="Borrar" IconCssClass="fa-solid fa-trash" RenderStyle="ButtonRenderStyle.Danger" Click="BorrarAsync" />
+            </div>
+        </BodyContentTemplate>
+    </DxPopup>
+}
+
+@code {
+    private bool _denied;
+    private IReadOnlyList<UsuarioAdmin> _items = Array.Empty<UsuarioAdmin>();
+    private IReadOnlyList<RolAdmin> _roles = Array.Empty<RolAdmin>();
+
+    private bool _editVisible, _claveVisible, _borrarVisible;
+    private UsuarioEdit _edit = new();
+    private string _clave1 = "", _clave2 = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CurrentUser.EnsureLoadedAsync();
+        if (!CurrentUser.IsAdmin) { _denied = true; return; }
+        await ReloadAsync();
+    }
+
+    private async Task ReloadAsync()
+    {
+        _roles = await Admin.ListRolesAsync();
+        _items = await Admin.ListUsuariosAsync();
+    }
+
+    private void OpenNuevo()
+    {
+        _edit = new UsuarioEdit { EsNuevo = true, Activo = true };
+        _editVisible = true;
+    }
+
+    private void OpenEditar(UsuarioAdmin u)
+    {
+        _edit = new UsuarioEdit
+        {
+            EsNuevo = false,
+            Login = u.Login,
+            Nombre = u.Nombre,
+            Activo = u.Activo,
+            Roles = new HashSet<int>(u.RolIds)
+        };
+        _editVisible = true;
+    }
+
+    private void OpenClave(UsuarioAdmin u)
+    {
+        _edit = new UsuarioEdit { Login = u.Login };
+        _clave1 = _clave2 = "";
+        _claveVisible = true;
+    }
+
+    private void OpenBorrar(UsuarioAdmin u)
+    {
+        _edit = new UsuarioEdit { Login = u.Login };
+        _borrarVisible = true;
+    }
+
+    private void ToggleRol(int id, bool on)
+    {
+        if (on) _edit.Roles.Add(id); else _edit.Roles.Remove(id);
+    }
+
+    private async Task GuardarAsync()
+    {
+        try
+        {
+            if (_edit.EsNuevo)
+                await Admin.CreateUsuarioAsync(_edit.Login, _edit.Nombre, _edit.Password, _edit.Activo, _edit.Roles, CurrentUser.UserName);
+            else
+                await Admin.UpdateUsuarioAsync(_edit.Login, _edit.Nombre, _edit.Activo, _edit.Roles, CurrentUser.UserName);
+            _editVisible = false;
+            Toasts.Exito(_edit.EsNuevo ? "Usuario creado." : "Usuario actualizado.");
+            await ReloadAsync();
+        }
+        catch (SeguridadAdminException ex) { Toasts.Error(ex.Message); }
+    }
+
+    private async Task CambiarClaveAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_clave1)) { Toasts.Error("La clave no puede quedar vacía."); return; }
+        if (_clave1 != _clave2) { Toasts.Error("Las claves no coinciden."); return; }
+        try
+        {
+            await Admin.SetPasswordAsync(_edit.Login, _clave1, CurrentUser.UserName);
+            _claveVisible = false;
+            Toasts.Exito("Clave restablecida.");
+        }
+        catch (SeguridadAdminException ex) { Toasts.Error(ex.Message); }
+    }
+
+    private async Task BorrarAsync()
+    {
+        try
+        {
+            await Admin.DeleteUsuarioAsync(_edit.Login);
+            _borrarVisible = false;
+            Toasts.Exito("Usuario borrado.");
+            await ReloadAsync();
+        }
+        catch (SeguridadAdminException ex) { Toasts.Error(ex.Message); }
+    }
+
+    private sealed class UsuarioEdit
+    {
+        public bool EsNuevo { get; set; }
+        public string Login { get; set; } = "";
+        public string? Nombre { get; set; }
+        public bool Activo { get; set; } = true;
+        public string Password { get; set; } = "";
+        public HashSet<int> Roles { get; set; } = new();
+    }
+}

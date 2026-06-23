@@ -1,0 +1,164 @@
+@page "/seguridad/roles"
+@rendermode InteractiveServer
+@using Sgpa.Data.Security.Admin
+@using Sgpa.Web.Components.Crud
+@inject ISeguridadAdminService Admin
+@inject WebCurrentUser CurrentUser
+@inject IToastNotificationService Toasts
+@inject NavigationManager Nav
+
+<PageTitle>Seguridad · Roles</PageTitle>
+
+@if (_denied)
+{
+    <div class="alert alert-danger mt-3">Solo un administrador puede gestionar roles.</div>
+}
+else
+{
+    <div class="d-flex align-items-center gap-2 mb-2">
+        <h3 class="mb-0"><i class="fa-solid fa-user-shield me-2"></i>Roles y permisos</h3>
+        <a href="/seguridad/usuarios" class="btn btn-sm btn-outline-secondary ms-2"><i class="fa-solid fa-users me-1"></i>Usuarios</a>
+        <DxButton Text="Nuevo rol" IconCssClass="fa-solid fa-plus" RenderStyle="ButtonRenderStyle.Primary"
+                  CssClass="ms-auto" Click="OpenNuevo" />
+    </div>
+    <p class="text-muted small mb-3">
+        Un rol <strong>administrador</strong> concede acceso total (omite los permisos por tabla).
+        Para los demás, definí los permisos CRUD por tabla con <i class="fa-solid fa-shield-halved"></i> <strong>Permisos</strong>.
+    </p>
+
+    <DxGrid Data="_items" PageSize="20" ShowSearchBox="true" CssClass="sgpa-grid">
+        <Columns>
+            <DxGridDataColumn FieldName="Nombre" Caption="Rol" MinWidth="200" />
+            <DxGridDataColumn Caption="Tipo" Width="120px" TextAlignment="GridTextAlignment.Center">
+                <CellDisplayTemplate Context="c">
+                    @{ var r = (RolAdmin)c.DataItem; }
+                    @if (r.EsAdmin)
+                    {
+                        <span class="badge bg-danger">Administrador</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Estándar</span>
+                    }
+                </CellDisplayTemplate>
+            </DxGridDataColumn>
+            <DxGridDataColumn FieldName="CodSistema" Caption="Cód. sistema" Width="130px" />
+            <DxGridDataColumn FieldName="Usuarios" Caption="Usuarios" Width="100px" TextAlignment="GridTextAlignment.Center" />
+            <DxGridDataColumn Caption="" Width="240px" TextAlignment="GridTextAlignment.Right" AllowSort="false">
+                <CellDisplayTemplate Context="c">
+                    @{ var r = (RolAdmin)c.DataItem; }
+                    <DxButton Text="Permisos" IconCssClass="fa-solid fa-shield-halved" RenderStyle="ButtonRenderStyle.Link"
+                              Enabled="!r.EsAdmin" Click="@(() => Nav.NavigateTo($"/seguridad/roles/{r.Id}/permisos"))" />
+                    <DxButton Text="Editar" IconCssClass="fa-solid fa-pen" RenderStyle="ButtonRenderStyle.Link" Click="@(() => OpenEditar(r))" />
+                    <DxButton Text="Borrar" IconCssClass="fa-solid fa-trash" RenderStyle="ButtonRenderStyle.Link" Click="@(() => OpenBorrar(r))" />
+                </CellDisplayTemplate>
+            </DxGridDataColumn>
+        </Columns>
+    </DxGrid>
+
+    @* ---- Alta / edición ---- *@
+    <DxPopup @bind-Visible="_editVisible" HeaderText="@(_edit.EsNuevo ? "Nuevo rol" : $"Editar rol · {_edit.Nombre}")" Width="480px" CloseOnEscape="true">
+        <BodyContentTemplate>
+            <div class="mb-3">
+                <label class="form-label small fw-semibold">Nombre</label>
+                <DxTextBox @bind-Text="_edit.Nombre" NullText="nombre del rol" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label small fw-semibold">Código de sistema (opcional)</label>
+                <DxTextBox @bind-Text="_edit.CodSistema" NullText="p. ej. SGPA / SP" />
+            </div>
+            <div class="mb-2">
+                <DxCheckBox @bind-Checked="_edit.EsAdmin">Administrador (acceso total)</DxCheckBox>
+                <div class="text-muted small ms-4">Omite los permisos por tabla y habilita los módulos de administración.</div>
+            </div>
+            <div class="d-flex gap-2 justify-content-end mt-3">
+                <DxButton Text="Cancelar" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => _editVisible = false)" />
+                <DxButton Text="Guardar" IconCssClass="fa-solid fa-floppy-disk" RenderStyle="ButtonRenderStyle.Primary" Click="GuardarAsync" />
+            </div>
+        </BodyContentTemplate>
+    </DxPopup>
+
+    @* ---- Borrar ---- *@
+    <DxPopup @bind-Visible="_borrarVisible" HeaderText="Borrar rol" Width="480px" CloseOnEscape="true">
+        <BodyContentTemplate>
+            <p>¿Borrar el rol <strong>@_edit.Nombre</strong>?</p>
+            @if (_edit.Usuarios > 0)
+            {
+                <div class="alert alert-warning small py-2">
+                    Está asignado a <strong>@_edit.Usuarios</strong> usuario(s). Se les quitará la asignación.
+                </div>
+            }
+            <div class="d-flex gap-2 justify-content-end">
+                <DxButton Text="Cancelar" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => _borrarVisible = false)" />
+                <DxButton Text="Borrar" IconCssClass="fa-solid fa-trash" RenderStyle="ButtonRenderStyle.Danger" Click="BorrarAsync" />
+            </div>
+        </BodyContentTemplate>
+    </DxPopup>
+}
+
+@code {
+    private bool _denied;
+    private IReadOnlyList<RolAdmin> _items = Array.Empty<RolAdmin>();
+    private bool _editVisible, _borrarVisible;
+    private RolEdit _edit = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CurrentUser.EnsureLoadedAsync();
+        if (!CurrentUser.IsAdmin) { _denied = true; return; }
+        await ReloadAsync();
+    }
+
+    private async Task ReloadAsync() => _items = await Admin.ListRolesAsync();
+
+    private void OpenNuevo() { _edit = new RolEdit { EsNuevo = true }; _editVisible = true; }
+
+    private void OpenEditar(RolAdmin r)
+    {
+        _edit = new RolEdit { Id = r.Id, Nombre = r.Nombre, EsAdmin = r.EsAdmin, CodSistema = r.CodSistema };
+        _editVisible = true;
+    }
+
+    private void OpenBorrar(RolAdmin r)
+    {
+        _edit = new RolEdit { Id = r.Id, Nombre = r.Nombre, Usuarios = r.Usuarios };
+        _borrarVisible = true;
+    }
+
+    private async Task GuardarAsync()
+    {
+        try
+        {
+            if (_edit.EsNuevo)
+                await Admin.CreateRolAsync(_edit.Nombre, _edit.EsAdmin, _edit.CodSistema, CurrentUser.UserName);
+            else
+                await Admin.UpdateRolAsync(_edit.Id, _edit.Nombre, _edit.EsAdmin, _edit.CodSistema, CurrentUser.UserName);
+            _editVisible = false;
+            Toasts.Exito(_edit.EsNuevo ? "Rol creado." : "Rol actualizado.");
+            await ReloadAsync();
+        }
+        catch (SeguridadAdminException ex) { Toasts.Error(ex.Message); }
+    }
+
+    private async Task BorrarAsync()
+    {
+        try
+        {
+            await Admin.DeleteRolAsync(_edit.Id);
+            _borrarVisible = false;
+            Toasts.Exito("Rol borrado.");
+            await ReloadAsync();
+        }
+        catch (SeguridadAdminException ex) { Toasts.Error(ex.Message); }
+    }
+
+    private sealed class RolEdit
+    {
+        public bool EsNuevo { get; set; }
+        public int Id { get; set; }
+        public string Nombre { get; set; } = "";
+        public bool EsAdmin { get; set; }
+        public string? CodSistema { get; set; }
+        public int Usuarios { get; set; }
+    }
+}

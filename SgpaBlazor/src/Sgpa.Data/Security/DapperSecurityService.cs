@@ -10,8 +10,9 @@ public sealed class DapperSecurityService : ISecurityService
 
     public async Task<UserSecurityContext?> AuthenticateAsync(string login, string password, CancellationToken cancellationToken = default)
     {
+        // Sólo usuarios activos pueden autenticarse (los desactivados desde el módulo de seguridad quedan bloqueados).
         var user = await _db.QuerySingleOrDefaultAsync<UserRow>(
-            "SELECT Login, Pass, Nombre FROM seg.Usuario WHERE Login = @login",
+            "SELECT Login, Pass, Nombre FROM seg.Usuario WHERE Login = @login AND Activo = 1",
             new { login }, cancellationToken: cancellationToken).ConfigureAwait(false);
 
         if (user is null || !PasswordHasher.Verify(password, user.Pass))

@@ -118,6 +118,15 @@ else
                     <DxTreeViewNode Text="Tablas" IconCssClass="fa-solid fa-table-list" NavigateUrl="/entidades" />
                     <DxTreeViewNode Text="Parámetros" IconCssClass="fa-solid fa-sliders" NavigateUrl="/parametros" />
                     <DxTreeViewNode Text="Configuración de tablas" IconCssClass="fa-solid fa-table-list" NavigateUrl="/config/tablas" />
+                    @if (_isAdmin)
+                    {
+                        <DxTreeViewNode Text="Seguridad" IconCssClass="fa-solid fa-user-shield">
+                            <Nodes>
+                                <DxTreeViewNode Text="Usuarios" IconCssClass="fa-solid fa-users" NavigateUrl="/seguridad/usuarios" />
+                                <DxTreeViewNode Text="Roles y permisos" IconCssClass="fa-solid fa-shield-halved" NavigateUrl="/seguridad/roles" />
+                            </Nodes>
+                        </DxTreeViewNode>
+                    }
                     <DxTreeViewNode Text="Auditoría" IconCssClass="fa-solid fa-clock-rotate-left" NavigateUrl="/auditoria" />
                     <DxTreeViewNode Text="Diagnóstico" IconCssClass="fa-solid fa-heart-pulse" NavigateUrl="/diagnostico" />
                 </Nodes>
@@ -191,6 +200,8 @@ else
         ("Nuevo reporte", "/reportes/nuevo", "fa-plus"),
         ("Administrar reportes a medida", "/reportes/medida", "fa-list-check"),
         ("Campos calculados", "/campos-calculados", "fa-calculator"),
+        ("Usuarios", "/seguridad/usuarios", "fa-users"),
+        ("Roles y permisos", "/seguridad/roles", "fa-shield-halved"),
     };
 
     private IEnumerable<(string Label, string Url, string Icon)> Filtered =>

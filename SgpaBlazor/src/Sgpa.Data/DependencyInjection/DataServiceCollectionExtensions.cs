@@ -25,6 +25,7 @@ public static class DataServiceCollectionExtensions
         services.AddScoped<ISgpaLookupService, DapperLookupService>();
         services.AddScoped<ISavedFilterService, DapperSavedFilterService>();
         services.AddScoped<ISecurityService, DapperSecurityService>();
+        services.AddScoped<Security.Admin.ISeguridadAdminService, Security.Admin.SeguridadAdminService>();
         services.AddScoped<IErrorLog, ErrorLog>();
         services.AddScoped<IPreferenciaVistaStore, DapperPreferenciaVistaStore>();
         // Config dinámica por tabla (inline / confirmar borrado / auditar): singleton con cache en memoria.
