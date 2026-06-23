@@ -20,7 +20,7 @@
     frmLiquidaSubsidio del VB6). Incluye los exports bancarios y los imports BPS/líquidos (punto 1).
 *@
 
-<DxPopup @bind-Visible="Visible" HeaderText="Liquidación de subsidios" Width="min(960px, 96vw)"
+<DxPopup Visible="Visible" VisibleChanged="SetVisibleAsync" HeaderText="Liquidación de subsidios" Width="min(960px, 96vw)"
          ShowFooter="false" CloseOnEscape="true">
     <BodyContentTemplate Context="popup">
         @if (!CurrentUser.IsAdmin)
@@ -170,6 +170,16 @@
     [Parameter] public EventCallback<bool> VisibleChanged { get; set; }
     /// <summary>Se dispara tras una liquidación exitosa (para que el ABM recargue la lista).</summary>
     [Parameter] public EventCallback OnLiquidado { get; set; }
+
+    // El DxPopup interno notifica apertura/cierre por acá → se propaga al padre (VisibleChanged). Sin esto, al
+    // cerrar el popup sólo se actualizaba el parámetro local y el padre seguía con Visible=true: al re-renderizar
+    // el ABM (p. ej. al cambiar el período) el popup se reabría solo en vez de refrescar la grilla.
+    private async Task SetVisibleAsync(bool value)
+    {
+        if (Visible == value) return;
+        Visible = value;
+        if (VisibleChanged.HasDelegate) await VisibleChanged.InvokeAsync(value);
+    }
 
     private int _anio = DateTime.Today.Year;
     private int _mes = DateTime.Today.Month;
