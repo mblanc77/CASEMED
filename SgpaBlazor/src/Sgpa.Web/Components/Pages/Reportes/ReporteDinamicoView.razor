@@ -102,6 +102,15 @@ else if (_rep is not null)
         if (_missingTables.Count > 0) { _denied = true; return; }
 
         _promptDefs = FiltroParametros.DeserializarDefs(_def.ParametrosJson);
+        // Red de seguridad: si el criterio referencia parámetros pero no hay defs (p. ej. un reporte guardado antes
+        // de preservarlos), se sintetizan prompts de texto a partir de los nombres del criterio para no quedar
+        // pidiendo nada y mostrando vacío.
+        if (_promptDefs.Count == 0)
+        {
+            var nombres = FiltroParametros.Nombres(ParseCriteria());
+            if (nombres.Count > 0)
+                _promptDefs = nombres.Select(n => new FiltroParametroDef(n, n, "System.String", null, null)).ToList();
+        }
         if (_promptDefs.Count == 0)
             await RunAsync(null);   // sin parámetros: ejecutar directo
     }

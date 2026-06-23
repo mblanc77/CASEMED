@@ -260,6 +260,8 @@ else
     private IReadOnlyList<FiltroLeaf> _leaves = Array.Empty<FiltroLeaf>();
     private readonly Dictionary<int, bool> _leafChecked = new();
     private readonly Dictionary<int, string> _leafNames = new();
+    // Defs de parámetros del reporte al cargarlo (para conservarlos si se guarda sin reconfigurar el filtro).
+    private IReadOnlyList<FiltroParametroDef> _loadedParamDefs = System.Array.Empty<FiltroParametroDef>();
 
     private IReadOnlyList<RootOpt> _rootOptions = Array.Empty<RootOpt>();
     private static readonly AggOpt[] _aggOptions =
@@ -321,6 +323,7 @@ else
             });
         }
         _criteria = string.IsNullOrWhiteSpace(rep.Def.Criteria) ? null : CriteriaOperator.Parse(rep.Def.Criteria);
+        _loadedParamDefs = FiltroParametros.DeserializarDefs(rep.Def.ParametrosJson);
     }
 
     private static bool SameRef(ReportFieldRef a, ReportFieldRef b)
@@ -469,13 +472,28 @@ else
                     if (string.IsNullOrWhiteSpace(nm)) { _error = $"Falta la etiqueta del parámetro para «{lf.Caption}»."; return; }
                     chosen[lf.Indice] = nm;
                 }
+            var finalCrit = _criteria;
+            var nuevasDefs = new List<FiltroParametroDef>();
             if (chosen.Count > 0)
             {
                 var (pc, defs) = FiltroParametros.Parametrizar(_criteria, _root.EntityType, chosen, CalcType);
-                criteriaText = pc!.ToString();
-                paramsJson = FiltroParametros.SerializarDefs(defs);
+                finalCrit = pc;
+                nuevasDefs.AddRange(defs);
             }
-            else criteriaText = _criteria.ToString();
+            criteriaText = finalCrit?.ToString();
+
+            // Conserva los parámetros: los recién definidos + los que el reporte ya tenía y siguen referenciados en el
+            // filtro. Así, editar y guardar sin reabrir "Parámetros…" no los pierde.
+            var enUso = FiltroParametros.Nombres(finalCrit);
+            var merged = new List<FiltroParametroDef>();
+            foreach (var nombre in enUso)
+            {
+                var d = nuevasDefs.FirstOrDefault(x => x.Nombre.Equals(nombre, StringComparison.OrdinalIgnoreCase))
+                        ?? _loadedParamDefs.FirstOrDefault(x => x.Nombre.Equals(nombre, StringComparison.OrdinalIgnoreCase));
+                if (d is not null && merged.All(m => !m.Nombre.Equals(d.Nombre, StringComparison.OrdinalIgnoreCase)))
+                    merged.Add(d);
+            }
+            paramsJson = merged.Count > 0 ? FiltroParametros.SerializarDefs(merged) : null;
         }
 
         var def = new ReporteDinamicoDef
