@@ -1,8 +1,15 @@
--- FIX ValorJornal: el promedio por empresa debe dividirse por los días de la VENTANA COMPLETA
--- (meses de la ventana × 30), no por Sum(DiasTrabajados) de los meses con registros.
--- Coincide con la regla del negocio y con la query Casemed (Sum(Importe/180)).
--- El bug original (heredado de la query Access 300_AfiliadoDiasImporte) sólo daba el resultado
--- correcto cuando existían registros de imponible (incluso importe 0) para todos los meses.
+-- FIX ValorJornal: el promedio por empresa se divide por los DÍAS REALMENTE TRABAJADOS de los meses
+-- con aporte (Sum(DiasTrabajados)), NO por la ventana completa (meses × 30).
+--
+-- Es el port exacto de la query Access de producción 300_AfiliadoDiasImporte:
+--     Iif(Dias > 0, Importe / Dias, 0)   con Dias = Sum(DiasTrabajados), Importe = Sum(Importe)
+--
+-- El divisor "ventana × 30" (= 180 para la ventana de 6 meses) sólo corresponde a la query CASEMED
+-- (300_AfiliadoValorJornalCasemed = Sum(Importe/180)); el migrador lo generalizó por error a TODAS las
+-- empresas. Eso daba el resultado correcto sólo cuando el afiliado tenía aportes en los 6 meses (Dias=180),
+-- pero la MITAD del jornal cuando computaban menos meses (p. ej. 3 meses → Dias=90 → dividía por 180).
+-- Verificado contra la liquidación VB6 05/2026 (CI 29119448: 3 meses, jornal 2867.558 = 258080.25/90).
+-- La query Casemed sigue usando Importe/180 sobre la columna Importe (no Promedio), así que no se afecta.
 ALTER FUNCTION [dbo].[acc_sgpa_300_AfiliadoDiasImporte_q]
     (@pCI INT, @pMesIni INT, @pMesFin INT, @pLiquidar NVARCHAR(MAX), @pDias NVARCHAR(MAX), @pMes NVARCHAR(MAX), @pMesIniImp INT)
 RETURNS TABLE
@@ -13,8 +20,9 @@ RETURN
            Sum(Imponible.DiasTrabajados) AS Dias,
            Imponible.CodEmpresa,
            Sum(Imponible.Importe) AS Importe,
-           Sum(Imponible.Importe)
-             / (((@pMesFin / 100 - @pMesIni / 100) * 12 + (@pMesFin % 100 - @pMesIni % 100) + 1) * 30.0) AS Promedio
+           CASE WHEN Sum(Imponible.DiasTrabajados) > 0
+                THEN CAST(Sum(Imponible.Importe) AS float) / Sum(Imponible.DiasTrabajados)
+                ELSE 0 END AS Promedio
     FROM ((Imponible
           INNER JOIN [acc_sgpa_300_TrabajaActivo_q](@pMes) AS [300_TrabajaActivo]
               ON (Imponible.CI = [300_TrabajaActivo].CI)
