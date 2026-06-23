@@ -1629,15 +1629,11 @@ WHERE o.type = 'U' AND s.name = 'dbo' AND o.name = @tbl";
             finalScript = finalScript.Replace("GROUP BY acc_sgpa_Rpt_Certificacion_q.CI, acc_sgpa_Rpt_Certificacion_q.CodAfeccionTipo\n    ORDER BY [FechaIni];", "GROUP BY acc_sgpa_Rpt_Certificacion_q.CI, acc_sgpa_Rpt_Certificacion_q.CodAfeccionTipo;", StringComparison.OrdinalIgnoreCase);
             finalScript = finalScript.Replace("FROM [805_CertificacionesxAnio](@pFechaIni, @pFechaFin);", "FROM [805_CertificacionesxAnio](NULL, NULL);", StringComparison.OrdinalIgnoreCase);
             finalScript = finalScript.Replace("FROM [805_Certificados_AnioCI]", "FROM [805_Certificados_AnioCI](NULL, NULL)", StringComparison.OrdinalIgnoreCase);
-            // FIX ValorJornal (300_AfiliadoDiasImporte): el promedio por empresa debe dividirse por los días de la
-            // VENTANA COMPLETA (meses de la ventana × 30), no por Sum(DiasTrabajados) de los meses con registro.
-            // La query Access original (Importe/Dias) sólo daba bien cuando existían imponibles (incluso importe 0)
-            // para todos los meses; al faltar registros undercounteaba. Coincide con la regla de negocio y con la
-            // query Casemed (Sum(Importe/180)). Ver tools/sql/fix-diasimporte.sql en SgpaBlazor.
-            finalScript = finalScript.Replace(
-                "(CASE WHEN Sum(Imponible.DiasTrabajados)>0 THEN Sum(Imponible.Importe)/Sum(Imponible.DiasTrabajados) ELSE 0 END) AS Promedio",
-                "Sum(Imponible.Importe) / (((@pMesFin / 100 - @pMesIni / 100) * 12 + (@pMesFin % 100 - @pMesIni % 100) + 1) * 30.0) AS Promedio",
-                StringComparison.OrdinalIgnoreCase);
+            // ValorJornal (300_AfiliadoDiasImporte): el promedio por empresa se divide por los días REALMENTE
+            // trabajados de los meses con aporte (Sum(DiasTrabajados)), que es el port exacto de la query Access
+            // de producción: Iif(Dias>0, Importe/Dias, 0). El traductor ya deja esa expresión correcta; NO se
+            // pisa por "ventana × 30" (eso es sólo la query Casemed = Sum(Importe/180), empresa 900). Pisarla daba
+            // la mitad del jornal cuando el afiliado computaba < 6 meses (Dias < 180). Ver tools/sql/fix-diasimporte.sql.
             File.WriteAllText(outSql, finalScript);
 
             Console.WriteLine($"Generated SQL procedures: {outSql} ({effectiveQueries.Count} queries)");
