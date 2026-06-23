@@ -36,9 +36,19 @@
     <ListColumns>
         <DxGridDataColumn FieldName="IdSubsidio" Caption="Id" Width="100px" />
         <DxGridDataColumn FieldName="CI" Caption="Cédula" Width="130px" DisplayFormat="0" />
-        <DxGridDataColumn FieldName="Anio" Caption="Año" Width="90px" />
-        <DxGridDataColumn FieldName="Mes" Caption="Mes" Width="80px" />
+        @* Año/Mes ya se eligen en el combo de período de la toolbar: ocultos por defecto, pero disponibles
+           en el selector de columnas (Visible="false" no los quita del column chooser). *@
+        <DxGridDataColumn FieldName="Anio" Caption="Año" Width="90px" Visible="false" />
+        <DxGridDataColumn FieldName="Mes" Caption="Mes" Width="80px" Visible="false" />
+        <DxGridDataColumn FieldName="Dias" Caption="Días" Width="80px" DisplayFormat="0" />
+        <DxGridDataColumn FieldName="ImpNominal" Caption="Imp. Nominal" DisplayFormat="n2" />
+        <DxGridDataColumn FieldName="ImpAguinaldo" Caption="Imp. Aguinaldo" DisplayFormat="n2" />
         <DxGridDataColumn FieldName="ImpLiquido" Caption="Líquido" DisplayFormat="n2" />
+        @* Cabezal BPS (LEFT JOIN por IdSubsidio vía la vista SubsidioCabezalLista): columnas reales →
+           ordenables, filtrables, agrupables y totalizables server-side. *@
+        <DxGridDataColumn FieldName="DiasBPS" Caption="Días BPS" Width="100px" DisplayFormat="0" />
+        <DxGridDataColumn FieldName="LiquidoBPS" Caption="Líquido BPS" Width="120px" DisplayFormat="n2" />
+        <DxGridDataColumn FieldName="LiquidoPagarBPS" Caption="Líquido a pagar" Width="130px" DisplayFormat="n2" />
     </ListColumns>
     <DetailHeader Context="s">
         Subsidio #@s.IdSubsidio — cédula @s.CI (@s.Mes/@s.Anio)

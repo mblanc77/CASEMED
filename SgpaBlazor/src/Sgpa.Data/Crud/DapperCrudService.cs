@@ -57,7 +57,7 @@ public class DapperCrudService<TEntity> : ISgpaCrudService<TEntity> where TEntit
         var orderBy = BuildOrderBy(query.Sort, query.Calc, p, ref n);
 
         var total = await _db.ExecuteScalarAsync<int>(
-            $"SELECT COUNT(*) FROM {Meta.QualifiedTable}{where}", p, cancellationToken: cancellationToken)
+            $"SELECT COUNT(*) FROM {Meta.QualifiedReadSource}{where}", p, cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
         var take = Math.Clamp(query.Take, 1, 50000); // tope alto para permitir export-all
@@ -94,7 +94,7 @@ public class DapperCrudService<TEntity> : ISgpaCrudService<TEntity> where TEntit
 
         if (query.Filter is not null)
         {
-            var sql = FilterSqlTranslator.Translate(query.Filter, p, ref n, Meta, Meta.QualifiedTable, "", CalcLookup(query.Calc));
+            var sql = FilterSqlTranslator.Translate(query.Filter, p, ref n, Meta, Meta.QualifiedReadSource, "", CalcLookup(query.Calc));
             if (!string.IsNullOrEmpty(sql)) conds.Add(sql);
         }
 
@@ -114,7 +114,7 @@ public class DapperCrudService<TEntity> : ISgpaCrudService<TEntity> where TEntit
     {
         var cf = calc?.FirstOrDefault(c => c.Nombre.Equals(name, StringComparison.OrdinalIgnoreCase));
         if (cf is not null)
-            return "(" + ScalarSqlTranslator.Translate(cf.Expr, ScalarSqlTranslator.ColumnResolver(Meta, "", Meta.QualifiedTable), p, ref n) + ")";
+            return "(" + ScalarSqlTranslator.Translate(cf.Expr, ScalarSqlTranslator.ColumnResolver(Meta, "", Meta.QualifiedReadSource), p, ref n) + ")";
         return $"[{ResolveColumn(name).Name}]";
     }
 
@@ -158,8 +158,8 @@ public class DapperCrudService<TEntity> : ISgpaCrudService<TEntity> where TEntit
         {
             var pc = new DynamicParameters();
             int n = 0;
-            var expr = ScalarSqlTranslator.Translate(calc.Expr, ScalarSqlTranslator.ColumnResolver(Meta, "", Meta.QualifiedTable), pc, ref n);
-            var sqlc = $"SELECT DISTINCT TOP ({top}) ({expr}) AS V FROM {Meta.QualifiedTable} ORDER BY ({expr})";
+            var expr = ScalarSqlTranslator.Translate(calc.Expr, ScalarSqlTranslator.ColumnResolver(Meta, "", Meta.QualifiedReadSource), pc, ref n);
+            var sqlc = $"SELECT DISTINCT TOP ({top}) ({expr}) AS V FROM {Meta.QualifiedReadSource} ORDER BY ({expr})";
             var rowsc = await _db.QueryAsync<DistinctRow>(sqlc, pc, cancellationToken: cancellationToken).ConfigureAwait(false);
             return rowsc.Select(r => r.V).ToList();
         }
@@ -168,7 +168,7 @@ public class DapperCrudService<TEntity> : ISgpaCrudService<TEntity> where TEntit
         var p = new DynamicParameters();
         int wn = 0;
         var where = BuildWhere(filterContext, p, ref wn);
-        var sql = $"SELECT DISTINCT TOP ({top}) [{col.Name}] AS V FROM {Meta.QualifiedTable}{where} ORDER BY [{col.Name}]";
+        var sql = $"SELECT DISTINCT TOP ({top}) [{col.Name}] AS V FROM {Meta.QualifiedReadSource}{where} ORDER BY [{col.Name}]";
         var rows = await _db.QueryAsync<DistinctRow>(sql, p, cancellationToken: cancellationToken).ConfigureAwait(false);
         return rows.Select(r => r.V).ToList();
     }
@@ -184,7 +184,7 @@ public class DapperCrudService<TEntity> : ISgpaCrudService<TEntity> where TEntit
 
         var keyName = Meta.Key.Name;
         var distinct = keys.Where(k => k is not null).Distinct().ToList();
-        var resolver = ScalarSqlTranslator.ColumnResolver(Meta, "", Meta.QualifiedTable);   // columnas desnudas + FK por subconsulta
+        var resolver = ScalarSqlTranslator.ColumnResolver(Meta, "", Meta.QualifiedReadSource);   // columnas desnudas + FK por subconsulta
 
         foreach (var chunk in distinct.Chunk(1000))
         {
@@ -197,7 +197,7 @@ public class DapperCrudService<TEntity> : ISgpaCrudService<TEntity> where TEntit
             var keyParams = new List<string>();
             foreach (var k in chunk) { var pn = "@k" + n++; p.Add(pn, k); keyParams.Add(pn); }
 
-            var sql = $"SELECT [{keyName}] AS __k, {string.Join(", ", exprs)} FROM {Meta.QualifiedTable} " +
+            var sql = $"SELECT [{keyName}] AS __k, {string.Join(", ", exprs)} FROM {Meta.QualifiedReadSource} " +
                       $"WHERE [{keyName}] IN ({string.Join(",", keyParams)})";
             var rows = await _db.QueryAsync<dynamic>(sql, p, cancellationToken: cancellationToken).ConfigureAwait(false);
             foreach (IDictionary<string, object> r in rows.Cast<IDictionary<string, object>>())
@@ -221,7 +221,7 @@ public class DapperCrudService<TEntity> : ISgpaCrudService<TEntity> where TEntit
         var where = BuildWhere(filterContext, p, ref n);
         var groupSql = SortableSql(groupColumn, filterContext.Calc, p, ref n);   // [col] o (expr) si es calculado
         var aggs = BuildAggSelects(summaries, filterContext.Calc, p, ref n);
-        var sql = $"SELECT {groupSql} AS GroupKey, COUNT(*) AS Cnt{aggs} FROM {Meta.QualifiedTable}{where} " +
+        var sql = $"SELECT {groupSql} AS GroupKey, COUNT(*) AS Cnt{aggs} FROM {Meta.QualifiedReadSource}{where} " +
                   $"GROUP BY {groupSql} ORDER BY {groupSql}{(descending ? " DESC" : string.Empty)}";
 
         // Columnas dinámicas (A0..An según la cantidad de sumarios) → filas dinámicas de Dapper (DBNull→null).
@@ -245,7 +245,7 @@ public class DapperCrudService<TEntity> : ISgpaCrudService<TEntity> where TEntit
         int n = 0;
         var where = BuildWhere(filterContext, p, ref n);
         var aggs = BuildAggSelects(summaries, filterContext.Calc, p, ref n).TrimStart(',', ' ');
-        var sql = $"SELECT {aggs} FROM {Meta.QualifiedTable}{where}";
+        var sql = $"SELECT {aggs} FROM {Meta.QualifiedReadSource}{where}";
 
         var rows = await _db.QueryAsync<dynamic>(sql, p, cancellationToken: cancellationToken).ConfigureAwait(false);
         var res = new object?[summaries.Count];
@@ -377,21 +377,23 @@ public class DapperCrudService<TEntity> : ISgpaCrudService<TEntity> where TEntit
         var selectList = string.Join(",", m.Columns.Select(c => $"[{c.Name}] AS [{c.Property.Name}]"));
         var where = string.Join(" AND ", m.Keys.Select(k => $"[{k.Name}]=@{k.Property.Name}"));
 
-        // INSERT: todas las columnas salvo la clave identity (sólo aplica a clave simple).
-        var insertCols = m.Columns.Where(c => !(c.IsKey && c.IsIdentity && m.Keys.Count == 1)).ToArray();
+        // INSERT: todas las columnas salvo la clave identity (sólo aplica a clave simple) y las calculadas
+        // (traídas por la vista de lectura, no existen en la tabla → fuera de INSERT/UPDATE).
+        var insertCols = m.Columns.Where(c => !c.Computed && !(c.IsKey && c.IsIdentity && m.Keys.Count == 1)).ToArray();
         var insertList = string.Join(",", insertCols.Select(c => $"[{c.Name}]"));
         var insertVals = string.Join(",", insertCols.Select(c => $"@{c.Property.Name}"));
         var insert = $"INSERT INTO {m.QualifiedTable} ({insertList}) VALUES ({insertVals})";
         if (m.Keys.Count == 1 && m.Key.IsIdentity)
             insert += $"; SELECT CAST(SCOPE_IDENTITY() AS {SqlTypeFor(m.Key.UnderlyingType)})";
 
-        // UPDATE: SET columnas no-clave; WHERE todas las claves.
-        var setCols = m.Columns.Where(c => !c.IsKey).Select(c => $"[{c.Name}]=@{c.Property.Name}");
+        // UPDATE: SET columnas no-clave y no-calculadas; WHERE todas las claves.
+        var setCols = m.Columns.Where(c => !c.IsKey && !c.Computed).Select(c => $"[{c.Name}]=@{c.Property.Name}");
         var update = $"UPDATE {m.QualifiedTable} SET {string.Join(",", setCols)} WHERE {where}";
 
+        // Lectura desde la vista (si la entidad declara [SgpaReadSource]); escritura siempre contra la tabla.
         return new Sql(
-            SelectAll: $"SELECT {selectList} FROM {m.QualifiedTable}",
-            SelectByKey: $"SELECT {selectList} FROM {m.QualifiedTable} WHERE {where}",
+            SelectAll: $"SELECT {selectList} FROM {m.QualifiedReadSource}",
+            SelectByKey: $"SELECT {selectList} FROM {m.QualifiedReadSource} WHERE {where}",
             Insert: insert,
             Update: update,
             Delete: $"DELETE FROM {m.QualifiedTable} WHERE {where}",

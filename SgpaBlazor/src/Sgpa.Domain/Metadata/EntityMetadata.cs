@@ -16,6 +16,8 @@ public sealed class ColumnMetadata
     public bool VisibleInList { get; init; }
     public bool VisibleInDetail { get; init; }
     public bool ReadOnly { get; init; }
+    /// <summary>Columna traída por el origen de lectura (vista/JOIN) que NO se persiste: fuera de INSERT/UPDATE.</summary>
+    public bool Computed { get; init; }
     public string? DisplayFormat { get; init; }
     /// <summary>Columna NOT NULL no autogenerada → obligatoria al editar.</summary>
     public bool Required { get; init; }
@@ -41,6 +43,10 @@ public sealed class EntityMetadata
     public required Type EntityType { get; init; }
     public required string Table { get; init; }
     public required string Schema { get; init; }
+    /// <summary>Origen de lectura (vista) si difiere de la tabla; null = se lee de la propia tabla.</summary>
+    public string? ReadSource { get; init; }
+    /// <summary>Esquema del origen de lectura.</summary>
+    public string ReadSchema { get; init; } = "dbo";
     public required IReadOnlyList<ColumnMetadata> Columns { get; init; }
 
     /// <summary>Columnas que forman la clave primaria (1 o más). Vacío si la tabla no tiene PK.</summary>
@@ -54,6 +60,10 @@ public sealed class EntityMetadata
     public bool HasCompositeKey => Keys.Count > 1;
 
     public string QualifiedTable => $"[{Schema}].[{Table}]";
+
+    /// <summary>Origen para las consultas de lectura: la vista declarada con <see cref="SgpaReadSourceAttribute"/>
+    /// o, por defecto, la propia tabla. Las escrituras siempre usan <see cref="QualifiedTable"/>.</summary>
+    public string QualifiedReadSource => ReadSource is null ? QualifiedTable : $"[{ReadSchema}].[{ReadSource}]";
 
     public IEnumerable<ColumnMetadata> ListColumns =>
         Columns.Where(c => c.VisibleInList && !c.IsAudit).OrderBy(c => c.Order);
@@ -94,6 +104,7 @@ public sealed class EntityMetadata
     {
         var table = type.GetCustomAttribute<SgpaTableAttribute>()
             ?? throw new InvalidOperationException($"La entidad {type.Name} no tiene [SgpaTable].");
+        var readSource = type.GetCustomAttribute<SgpaReadSourceAttribute>();
 
         var columns = new List<ColumnMetadata>();
 
@@ -120,7 +131,8 @@ public sealed class EntityMetadata
                 Audit = auditAttr?.Kind,
                 VisibleInList = col?.VisibleInList ?? auditAttr is null,
                 VisibleInDetail = col?.VisibleInDetail ?? auditAttr is null,
-                ReadOnly = (col?.ReadOnly ?? false) || keyAttr is not null,
+                ReadOnly = (col?.ReadOnly ?? false) || (col?.Computed ?? false) || keyAttr is not null,
+                Computed = col?.Computed ?? false,
                 DisplayFormat = col?.DisplayFormat,
                 // NOT NULL detectado por el generador (Required) o por ser un tipo de valor no anulable
                 // declarado a mano que no es clave identity.
@@ -144,6 +156,8 @@ public sealed class EntityMetadata
             EntityType = type,
             Table = table.Name,
             Schema = table.Schema,
+            ReadSource = readSource?.Name,
+            ReadSchema = readSource?.Schema ?? "dbo",
             Columns = columns,
             Keys = keys
         };
