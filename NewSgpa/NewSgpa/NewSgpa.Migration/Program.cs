@@ -1633,7 +1633,8 @@ WHERE o.type = 'U' AND s.name = 'dbo' AND o.name = @tbl";
             // trabajados de los meses con aporte (Sum(DiasTrabajados)), que es el port exacto de la query Access
             // de producción: Iif(Dias>0, Importe/Dias, 0). El traductor ya deja esa expresión correcta; NO se
             // pisa por "ventana × 30" (eso es sólo la query Casemed = Sum(Importe/180), empresa 900). Pisarla daba
-            // la mitad del jornal cuando el afiliado computaba < 6 meses (Dias < 180). Ver tools/sql/fix-diasimporte.sql.
+            // la mitad del jornal cuando el afiliado computaba < 6 meses (Dias < 180). Esta es la única fuente de
+            // verdad del jornal: ya no existe un paso posterior fix-diasimporte.sql.
             File.WriteAllText(outSql, finalScript);
 
             Console.WriteLine($"Generated SQL procedures: {outSql} ({effectiveQueries.Count} queries)");

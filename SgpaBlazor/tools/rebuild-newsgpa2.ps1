@@ -5,8 +5,9 @@
 #   - Los .mdb 97 están protegidos: sgpaserv/spserv abren con $MdbPwd; seguserv con $MdbPwd + 's'
 #     (ese sufijo final lo agrega internamente migrate-seguridad.ps1).
 # El migrador (EnsureDeleted+EnsureCreated) sólo crea el esquema de negocio + importa datos; el resto
-# (seguridad, QA, filtros guardados, fix de ValorJornal, valores de SubsidioItemCod) son pasos manuales
+# (seguridad, QA, filtros guardados, vista de subsidios BPS, valores de SubsidioItemCod) son pasos manuales
 # que ESTE script orquesta. Pensado para correr varias veces. Varios pasos usan Jet 4.0 (PS 32-bit).
+# Nota: el ValorJornal correcto ya lo genera el migrador (no hay paso de fix-diasimporte.sql).
 #
 # Uso:   powershell -ExecutionPolicy Bypass -File tools\rebuild-newsgpa2.ps1
 #        -SkipMigrator   (re-aplica sólo los post-pasos, sin dropear/reimportar)
@@ -52,7 +53,7 @@ function ApplySqlFile($path) {
 }
 
 if (-not $SkipMigrator) {
-    Step "1/8  Migrador 97 (x86/Jet4.0; drop+create+import desde sgpaserv.mdb/spserv.mdb) -> $SqlDb"
+    Step "1/7  Migrador 97 (x86/Jet4.0; drop+create+import desde sgpaserv.mdb/spserv.mdb) -> $SqlDb"
     foreach ($m in @($SgpaMdb, $SpMdb)) { if (-not (Test-Path $m)) { throw "No existe el backend Access: $m" } }
     # Access 97 = Jet 3: requiere proveedor Jet 4.0 (32-bit) => el proceso debe ser x86.
     $pub = Join-Path $migDir 'publish-x86'
@@ -64,31 +65,28 @@ if (-not $SkipMigrator) {
     $migConn = "Data Source=$SqlServer;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Command Timeout=300;Initial Catalog=$SqlDb"
     & $exe --sgpa-mdb="$SgpaMdb" --sp-mdb="$SpMdb" --oledb-provider="Microsoft.Jet.OLEDB.4.0" --mdb-pwd="$MdbPwd" --sql="$migConn"
     if ($LASTEXITCODE -ne 0) { throw "Migrador falló (exit $LASTEXITCODE)" }
-} else { Step '1/8  Migrador OMITIDO (--SkipMigrator)' }
+} else { Step '1/7  Migrador OMITIDO (--SkipMigrator)' }
 
-Step '2/8  Esquema de seguridad (seg.*)'
+Step '2/7  Esquema de seguridad (seg.*)'
 ApplySqlFile "$tools\sql\seg-schema.sql"
 
-Step "3/8  Usuarios/roles desde seguserv.mdb 97 (Jet 32-bit): $SeguMdb"
+Step "3/7  Usuarios/roles desde seguserv.mdb 97 (Jet 32-bit): $SeguMdb"
 if (-not (Test-Path $SeguMdb)) { throw "No existe seguserv.mdb: $SeguMdb" }
 & $ps32 -NoProfile -ExecutionPolicy Bypass -File "$tools\migrate-seguridad.ps1" -Mdb $SeguMdb -SqlServer $SqlServer -SqlDb $SqlDb
 if ($LASTEXITCODE -ne 0) { throw "migrate-seguridad.ps1 falló (exit $LASTEXITCODE)" }
 
-Step '4/8  Usuario QA (admin)'
+Step '4/7  Usuario QA (admin)'
 & powershell -NoProfile -ExecutionPolicy Bypass -File "$tools\create-qa-user.ps1" -SqlServer $SqlServer -SqlDb $SqlDb
 
-Step '5/8  Filtros guardados (SgpaFiltro + seed)'
+Step '5/7  Filtros guardados (SgpaFiltro + seed)'
 ApplySqlFile "$tools\sql\sgpa-filtro.sql"
 ApplySqlFile "$tools\sql\sgpa-filtro-seed.sql"
 
-Step '6/8  Fix ValorJornal (acc_sgpa_300_AfiliadoDiasImporte_q)'
-ApplySqlFile "$tools\sql\fix-diasimporte.sql"
-
-Step '7/8  Vista de lista de subsidios (SubsidioCabezal + cabezal BPS)'
+Step '6/7  Vista de lista de subsidios (SubsidioCabezal + cabezal BPS)'
 # La entidad SubsidioCabezal lee de esta vista (columnas BPS totalizables); las escrituras van a la tabla.
 ApplySqlFile "$tools\sql\subsidio-cabezal-lista-view.sql"
 
-Step "8/8  Valores de SubsidioItemCod desde sgpaserv.mdb 97 (Jet 32-bit): $SgpaMdb"
+Step "7/7  Valores de SubsidioItemCod desde sgpaserv.mdb 97 (Jet 32-bit): $SgpaMdb"
 & $ps32 -NoProfile -ExecutionPolicy Bypass -File "$tools\migrate-itemcod.ps1" -Mdb $SgpaMdb -Password $MdbPwd -SqlServer $SqlServer -SqlDb $SqlDb
 if ($LASTEXITCODE -ne 0) { throw "migrate-itemcod.ps1 falló (exit $LASTEXITCODE)" }
 
