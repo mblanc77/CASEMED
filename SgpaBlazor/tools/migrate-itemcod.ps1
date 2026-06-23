@@ -39,4 +39,4 @@ WHERE CodSubsidioItemCod=@Cod
     $updated += $cmd.ExecuteNonQuery()
 }
 $sql.Close()
-Write-Output ("Filas actualizadas en NewSgpa2: $updated")
+Write-Output ("Filas actualizadas en ${SqlDb}: $updated")

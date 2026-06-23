@@ -21,10 +21,35 @@ class Program
     static string SpServ2k3Mdb   = @"C:\Personal\Gestion\CASEMED\VB6\sp\Data\spserv2k3.mdb";
     static string SqlConn        = "Data Source=localhost;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Command Timeout=300;Initial Catalog=NewSgpa2";
     static string OleDbProvider  = "Microsoft.ACE.OLEDB.12.0";
+    // Password de los .mdb protegidos (los *serv.mdb de Access 97 lo están; los *serv2k3.mdb no).
+    // Vacío => no se agrega a la cadena (comportamiento previo). Ver ConfigurarDesde().
+    static string MdbPassword    = "";
     static int TotalRowsImported;
 
     static string OleDbConn(string mdb) =>
-        $"Provider={OleDbProvider};Data Source={mdb};";
+        string.IsNullOrEmpty(MdbPassword)
+            ? $"Provider={OleDbProvider};Data Source={mdb};"
+            : $"Provider={OleDbProvider};Data Source={mdb};Jet OLEDB:Database Password={MdbPassword};";
+
+    /// <summary>
+    /// Indica si la tabla existe en el backend Access. Algunos backends antiguos (p. ej. los .mdb de
+    /// Access 97) no tienen tablas que sí están en los *serv2k3.mdb (ej. MapeoAbitab); en ese caso
+    /// los lectores la saltean en vez de abortar la migración.
+    /// </summary>
+    static bool SourceTableExists(string cs, string tbl)
+    {
+        try
+        {
+            using var cn = new OleDbConnection(cs);
+            cn.Open();
+            var schema = cn.GetOleDbSchemaTable(OleDbSchemaGuid.Tables, new object?[] { null, null, tbl, "TABLE" });
+            return schema != null && schema.Rows.Count > 0;
+        }
+        catch
+        {
+            return true; // ante la duda, dejá que el lector intente (mantiene el comportamiento previo).
+        }
+    }
 
     /// <summary>
     /// Resuelve la configuración (rutas de los .mdb, cadena/nombre de la base SQL, proveedor OLEDB) desde
@@ -42,6 +67,7 @@ class Program
         SpServ2k3Mdb   = Resolver(args, "--sp-mdb",   "NEWSGPA_SP_MDB",   SpServ2k3Mdb);
         SqlConn        = Resolver(args, "--sql",      "NEWSGPA_SQL",      SqlConn);
         OleDbProvider  = Resolver(args, "--oledb-provider", "NEWSGPA_OLEDB_PROVIDER", OleDbProvider);
+        MdbPassword    = Resolver(args, "--mdb-pwd", "CASEMED_MDB_PWD", MdbPassword);
 
         var dbName = Resolver(args, "--db", "NEWSGPA_DB", "");
         if (!string.IsNullOrWhiteSpace(dbName))
@@ -51,6 +77,7 @@ class Program
         Console.WriteLine($"  SGPA mdb : {SgpaServ2k3Mdb}");
         Console.WriteLine($"  SP mdb   : {SpServ2k3Mdb}");
         Console.WriteLine($"  OLEDB    : {OleDbProvider}");
+        Console.WriteLine($"  MDB pwd  : {(string.IsNullOrEmpty(MdbPassword) ? "(sin password)" : "***")}");
         Console.WriteLine($"  SQL      : {Regex.Replace(SqlConn, @"(?i)(Password|Pwd)\s*=\s*[^;]*", "$1=***")}\n");
     }
 
@@ -823,6 +850,11 @@ class Program
     static async Task R<T>(string cs, MigrationDbContext db, string tbl, Func<OleDbDataReader,T> map, int bs=500) where T : class
     {
         Console.Write($"  {tbl}... ");
+        if (!SourceTableExists(cs, tbl))
+        {
+            Console.WriteLine("SKIP (no existe en el origen)");
+            return;
+        }
         var entityType = db.Model.FindEntityType(typeof(T));
         if (entityType?.FindPrimaryKey() == null)
         {
@@ -1091,6 +1123,11 @@ class Program
     static async Task RNoKey(string cs, MigrationDbContext db, string tbl)
     {
         Console.Write($"  {tbl}... ");
+        if (!SourceTableExists(cs, tbl))
+        {
+            Console.WriteLine("SKIP (no existe en el origen)");
+            return;
+        }
         int n = 0;
         try
         {
