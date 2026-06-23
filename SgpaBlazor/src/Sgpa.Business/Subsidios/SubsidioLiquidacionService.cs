@@ -131,10 +131,14 @@ public sealed class SubsidioLiquidacionService : ISubsidioLiquidacionService
 
         if (calcularPromedio)
         {
-            // Promedio de imponibles por empresa (≥3 meses de aporte), excepto CASEMED.
+            // pMes = corte de actividad de TrabajaActivo. El jornal se promedia sobre imponibles PREVIOS al
+            // período (ventana hasta mesFin = mes anterior), así que la actividad se evalúa a mesFin, NO al mes
+            // del período. Con lMes se excluían afiliados con baja en el propio mes del período (jornal 0),
+            // p. ej. CI 27788467 (baja 31/03) en 03/2026. Con mesFin coincide con la liquidación VB6 (8427.578).
+            // Es equivalente a la selección (FechaBaja >= lMes): para meses-enteros, > mesFin ⟺ >= lMes.
             decimal promedio = 0m;
             var emp = await db.QueryProcAsync<PromedioEmpresaRow>("dbo.acc_sgpa_300_AfiliadoValorJornalxEmpresa",
-                new { pCodCasemed = _codCasemed, pCI = ci, pMesIni = lMesIni, pMesFin = mesFin, pLiquidar = liquidar, pDias = 3, pMes = lMes, pMesIniImp = lMesIniImp },
+                new { pCodCasemed = _codCasemed, pCI = ci, pMesIni = lMesIni, pMesFin = mesFin, pLiquidar = liquidar, pDias = 3, pMes = mesFin, pMesIniImp = lMesIniImp },
                 ct).ConfigureAwait(false);
             foreach (var e in emp)
             {
@@ -146,7 +150,7 @@ public sealed class SubsidioLiquidacionService : ISubsidioLiquidacionService
 
             // Promedio sólo de CASEMED (≥1 mes).
             var cas = (await db.QueryProcAsync<PromedioRow>("dbo.acc_sgpa_300_AfiliadoValorJornalCasemed",
-                new { pCodCasemed = _codCasemed, pCI = ci, pMesIni = lMesIni, pMesFin = mesFin, pLiquidar = liquidar, pDias = 1, pMes = lMes, pMesIniImp = lMesIniImp },
+                new { pCodCasemed = _codCasemed, pCI = ci, pMesIni = lMesIni, pMesFin = mesFin, pLiquidar = liquidar, pDias = 1, pMes = mesFin, pMesIniImp = lMesIniImp },
                 ct).ConfigureAwait(false)).FirstOrDefault();
             if (cas is not null)
             {
@@ -156,7 +160,7 @@ public sealed class SubsidioLiquidacionService : ISubsidioLiquidacionService
             }
 
             // Persistir los imponibles utilizados.
-            var p = new { pCI = ci, pMesIni = lMesIni, pMesFin = mesFin, pUsr = usr, pIdSubsidio = idSubsidio, pLiquidar = liquidar, pDias = 3, pCodCasemed = _codCasemed, pMes = lMes, pMesIniImp = lMesIniImp };
+            var p = new { pCI = ci, pMesIni = lMesIni, pMesFin = mesFin, pUsr = usr, pIdSubsidio = idSubsidio, pLiquidar = liquidar, pDias = 3, pCodCasemed = _codCasemed, pMes = mesFin, pMesIniImp = lMesIniImp };
             await db.ExecuteProcAsync("dbo.acc_sgpa_300_InsertSubsidioImponible", p, ct).ConfigureAwait(false);
             await db.ExecuteProcAsync("dbo.acc_sgpa_300_InsertSubsidioImponibleCasemed",
                 new { p.pCI, p.pMesIni, p.pMesFin, p.pUsr, p.pIdSubsidio, p.pLiquidar, pDias = 1, p.pCodCasemed, p.pMes, p.pMesIniImp }, ct).ConfigureAwait(false);

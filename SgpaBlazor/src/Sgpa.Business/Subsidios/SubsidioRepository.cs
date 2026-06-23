@@ -25,7 +25,10 @@ WHERE @lMes BETWEEN (YEAR(c.FechaIni) * 100 + MONTH(c.FechaIni))
         FROM dbo.Trabaja t
         INNER JOIN dbo.Empresa e ON t.CodEmpresa = e.CodEmpresa
         WHERE e.Liquidar = @liquidar
-          AND (t.FechaBaja IS NULL OR (YEAR(t.FechaBaja) * 100 + MONTH(t.FechaBaja)) > @lMes)
+          -- La baja en el MISMO mes del período aún cuenta: el afiliado trabajó parte del mes y puede tener
+          -- certificación vigente (>= y no >). Verificado contra la liquidación VB6 05/2026/04/03: con > se
+          -- perdían afiliados con FechaBaja en el mes (p. ej. CI 17535941 baja 13/03, CI 27788467 baja 31/03).
+          AND (t.FechaBaja IS NULL OR (YEAR(t.FechaBaja) * 100 + MONTH(t.FechaBaja)) >= @lMes)
           AND (YEAR(t.FechaIngCasemed) * 100 + MONTH(t.FechaIngCasemed)) <= @lMes
   )";
         if (ci.HasValue)
