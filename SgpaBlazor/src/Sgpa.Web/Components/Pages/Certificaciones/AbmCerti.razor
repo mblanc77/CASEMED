@@ -18,9 +18,19 @@
     <ListColumns>
         <DxGridDataColumn FieldName="NroLlamado" Caption="Nº llamado" Width="120px" />
         <DxGridDataColumn FieldName="CI" Caption="Cédula" Width="130px" DisplayFormat="0" />
+        <DxGridDataColumn FieldName="FechaCertificacion" Caption="Fecha certif." DisplayFormat="d" Width="130px" />
         <DxGridDataColumn FieldName="FechaIni" Caption="Desde" DisplayFormat="d" Width="120px" />
         <DxGridDataColumn FieldName="FechaFin" Caption="Hasta" DisplayFormat="d" Width="120px" />
         <DxGridDataColumn FieldName="Efectiva" Caption="Efectiva" Width="100px" />
+        @* Resto de campos: ocultos por defecto, disponibles en "Columnas" para que el usuario los habilite. *@
+        <DxGridDataColumn FieldName="NroRecibo" Caption="Nº recibo" Visible="false" />
+        <DxGridDataColumn FieldName="FechaRecibido" Caption="Recibido" DisplayFormat="d" Visible="false" />
+        <DxGridDataColumn FieldName="CodAfeccionTipo" Caption="Tipo de afección" Visible="false" />
+        <DxGridDataColumn FieldName="CodCertificador" Caption="Certificador" Visible="false" />
+        <DxGridDataColumn FieldName="CodSalidaTipo" Caption="Tipo de salida" Visible="false" />
+        <DxGridDataColumn FieldName="ImporteDeducible" Caption="Deducible" DisplayFormat="n2" Visible="false" />
+        <DxGridDataColumn FieldName="Indicaciones" Caption="Indicaciones" Visible="false" />
+        <DxGridDataColumn FieldName="Trabaja" Caption="Trabaja" Visible="false" />
     </ListColumns>
     <DetailHeader Context="c">
         Certificación Nº @c.NroLlamado — cédula @c.CI
