@@ -124,6 +124,22 @@ builder.Services.AddScoped<FluentValidation.IValidator<Sgpa.Domain.Entities.Camp
 
 var app = builder.Build();
 
+// Migraciones de esquema embebidas (estilo XAF): al arrancar, se aplica lo pendiente sobre NewSgpa2.
+// Controlado por Migrations:AutoApply — default true en Development, opt-in en producción (appsettings.json).
+// Si una migración falla, se loguea y la app NO arranca (no servir contra una base a medio migrar).
+if (app.Configuration.GetValue("Migrations:AutoApply", app.Environment.IsDevelopment()))
+{
+    var migLogger = app.Services.GetRequiredService<ILoggerFactory>().CreateLogger("Migraciones");
+    var migracion = Sgpa.Data.Migrations.DatabaseMigrator.Upgrade(connectionString, migLogger);
+    if (!migracion.Successful)
+        throw new InvalidOperationException("Falló la migración de base de datos al arranque.", migracion.Error);
+    if (migracion.AppliedScripts.Count > 0)
+        migLogger.LogInformation("Migraciones aplicadas ({Cantidad}): {Scripts}",
+            migracion.AppliedScripts.Count, string.Join(", ", migracion.AppliedScripts));
+    else
+        migLogger.LogInformation("Base de datos al día: sin migraciones pendientes.");
+}
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {

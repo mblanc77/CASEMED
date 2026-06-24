@@ -6,8 +6,18 @@
 
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.79" />
+    <PackageReference Include="dbup-sqlserver" Version="5.0.41" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.9" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.9" />
+  </ItemGroup>
+
+  <!-- Scripts de migración embebidos en el .dll: viajan dentro del publish, no hay archivos sueltos que copiar
+       a producción. Run-once (Scripts) se journaliza en dbo.SchemaVersions; run-always (ScriptsAlways) se re-aplica
+       en cada arranque (vistas/SPs idempotentes con CREATE OR ALTER). Ver Migrations/README.md. -->
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\Scripts\**\*.sql" />
+    <EmbeddedResource Include="Migrations\ScriptsAlways\**\*.sql" />
   </ItemGroup>
 
   <PropertyGroup>

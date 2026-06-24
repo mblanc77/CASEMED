@@ -1,0 +1,2 @@
+# Scripts run-always (se re-aplican en cada arranque). Vistas/SPs/seeds idempotentes con CREATE OR ALTER.
+# Ver ../README.md
