@@ -1,0 +1,59 @@
+@*
+    Auto-servicio de cambio de clave para el usuario logueado. Vive en la barra superior (sección
+    del usuario) como isla InteractiveServer: el botón abre un popup que pide la clave actual + la
+    nueva (repetida). Comparte circuito con el DxToastProvider de MainLayout, así sus toasts llegan.
+*@
+@rendermode InteractiveServer
+@using Sgpa.Data.Security.Admin
+@inject WebCurrentUser CurrentUser
+@inject ISeguridadAdminService Admin
+@inject IToastNotificationService Toasts
+
+<DxButton Text="Cambiar clave" IconCssClass="fa-solid fa-key" RenderStyle="ButtonRenderStyle.Secondary"
+          CssClass="btn-sm" Click="Open" />
+
+<DxPopup @bind-Visible="_visible" HeaderText="Cambiar mi clave" Width="420px" CloseOnEscape="true">
+    <BodyContentTemplate>
+        <div class="mb-3">
+            <label class="form-label small fw-semibold">Clave actual</label>
+            <DxTextBox @bind-Text="_actual" Password="true" NullText="clave actual" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label small fw-semibold">Nueva clave</label>
+            <DxTextBox @bind-Text="_nueva" Password="true" NullText="nueva clave" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label small fw-semibold">Repetir nueva clave</label>
+            <DxTextBox @bind-Text="_repetir" Password="true" NullText="repetir" />
+        </div>
+        <div class="d-flex gap-2 justify-content-end">
+            <DxButton Text="Cancelar" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => _visible = false)" />
+            <DxButton Text="Cambiar clave" IconCssClass="fa-solid fa-key" RenderStyle="ButtonRenderStyle.Primary" Click="CambiarAsync" />
+        </div>
+    </BodyContentTemplate>
+</DxPopup>
+
+@code {
+    private bool _visible;
+    private string _actual = "", _nueva = "", _repetir = "";
+
+    private void Open()
+    {
+        _actual = _nueva = _repetir = "";
+        _visible = true;
+    }
+
+    private async Task CambiarAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_nueva)) { Toasts.Error("La nueva clave no puede quedar vacía."); return; }
+        if (_nueva != _repetir) { Toasts.Error("Las claves no coinciden."); return; }
+        try
+        {
+            await CurrentUser.EnsureLoadedAsync();
+            await Admin.ChangeOwnPasswordAsync(CurrentUser.UserName, _actual, _nueva);
+            _visible = false;
+            Toasts.Exito("Tu clave fue cambiada.");
+        }
+        catch (SeguridadAdminException ex) { Toasts.Error(ex.Message); }
+    }
+}

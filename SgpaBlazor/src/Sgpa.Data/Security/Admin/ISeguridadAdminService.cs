@@ -24,6 +24,12 @@ public interface ISeguridadAdminService
     /// <summary>Restablece la clave de un usuario (la hashea).</summary>
     Task SetPasswordAsync(string login, string password, string actor, CancellationToken ct = default);
 
+    /// <summary>
+    /// Cambio de clave de auto-servicio: el propio usuario verifica su clave actual antes de fijar la nueva.
+    /// Lanza <see cref="SeguridadAdminException"/> si la clave actual es incorrecta o la nueva es inválida.
+    /// </summary>
+    Task ChangeOwnPasswordAsync(string login, string currentPassword, string newPassword, CancellationToken ct = default);
+
     Task DeleteUsuarioAsync(string login, CancellationToken ct = default);
 
     // ---- Roles ----

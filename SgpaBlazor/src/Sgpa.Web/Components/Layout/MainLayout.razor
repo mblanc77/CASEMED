@@ -14,6 +14,7 @@
                 @(CurrentUser.Context?.Nombre ?? CurrentUser.UserName)
                 @if (CurrentUser.IsAdmin) { <span class="badge bg-secondary ms-1">admin</span> }
             </span>
+            <CambiarClaveButton />
             <form method="post" action="/auth/logout" class="m-0">
                 <button type="submit" class="btn btn-sm btn-outline-secondary">Salir</button>
             </form>

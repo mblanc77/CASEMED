@@ -101,6 +101,25 @@ public sealed class SeguridadAdminService : ISeguridadAdminService
             cancellationToken: ct).ConfigureAwait(false);
     }
 
+    public async Task ChangeOwnPasswordAsync(string login, string currentPassword, string newPassword, CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(newPassword))
+            throw new SeguridadAdminException("La nueva clave no puede quedar vacía.");
+
+        // Sólo usuarios activos: el hash guardado se valida contra la clave actual antes de pisarlo.
+        var hash = await _db.QuerySingleOrDefaultAsync<string>(
+            "SELECT Pass FROM seg.Usuario WHERE Login = @login AND Activo = 1",
+            new { login }, cancellationToken: ct).ConfigureAwait(false);
+        if (hash is null || !PasswordHasher.Verify(currentPassword, hash))
+            throw new SeguridadAdminException("La clave actual es incorrecta.");
+
+        await _db.ExecuteAsync(
+            @"UPDATE seg.Usuario SET Pass = @pass, FechaClave = SYSDATETIME(), Usr = @actor, Ts = SYSDATETIME()
+              WHERE Login = @login",
+            new { login, pass = PasswordHasher.Hash(newPassword), actor = Actor(login) },
+            cancellationToken: ct).ConfigureAwait(false);
+    }
+
     public async Task DeleteUsuarioAsync(string login, CancellationToken ct = default)
     {
         // No permitir borrar al último administrador activo.
