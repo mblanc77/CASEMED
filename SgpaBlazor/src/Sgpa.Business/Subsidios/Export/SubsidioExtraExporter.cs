@@ -55,20 +55,37 @@ public sealed class SubsidioExtraExporter
     /// <summary>Planilla BPS: subsidios del período cruzados con la liquidación BPS cargada.</summary>
     public async Task<string> GenerarBpsAsync(int mes, int anio, bool liquidar, CancellationToken ct = default)
     {
+        // Pareo posicional subsidio <-> entrega BPS por CI: las fechas no siempre coinciden exacto, así que se
+        // ordenan los subsidios por FechaIniSubsidio y las entregas de Liquidacion_BPS por FECHA_PER_DESDE y se
+        // emparejan por orden (1º con 1º, 2º con 2º, ...). Evita el producto cartesiano del join por CI (que
+        // duplicaba y cruzaba mal a quien tiene >1 subsidio y >1 entrega en el mes). 1 fila por subsidio.
         var rows = await _db.QueryAsync<BpsExportRow>(
-            @"SELECT c.IdSubsidio, c.CI, a.Apellido1, a.Apellido2, a.Nombres, c.Dias, c.NroRecibo,
-                     c.ImpNominal, c.ImpAguinaldo, c.ImpLiquido,
+            @"WITH sub AS (
+                  SELECT c.IdSubsidio, c.CI, c.Dias, c.NroRecibo, c.ImpNominal, c.ImpAguinaldo, c.ImpLiquido,
+                         ROW_NUMBER() OVER (PARTITION BY c.CI ORDER BY e.FechaIniSubsidio, c.IdSubsidio) AS rn
+                  FROM dbo.SubsidioCabezal c
+                  LEFT JOIN dbo.SubsidioEnfermedad e ON e.IdSubsidio = c.IdSubsidio
+                  WHERE c.Mes=@mes AND c.Anio=@anio AND c.Liquidar=@liquidar
+              ),
+              bps AS (
+                  SELECT lb.CI, lb.MONTO_TOTAL, lb.LIQUIDO, lb.MES_DE_CARGO, lb.NOM_EMPRESA, lb.PCT_POR_EMPRESA,
+                         lb.FECHA_PER_DESDE, lb.FECHA_PER_HASTA, lb.[N_ ENTREGA] AS NroEntrega, lb.FECHA_DE_ENTREGA,
+                         ROW_NUMBER() OVER (PARTITION BY lb.CI ORDER BY lb.FECHA_PER_DESDE, lb.Id) AS rn
+                  FROM dbo.Liquidacion_BPS lb
+                  WHERE lb.MES=@mes AND lb.ANIO=@anio
+              )
+              SELECT sub.IdSubsidio, sub.CI, a.Apellido1, a.Apellido2, a.Nombres, sub.Dias, sub.NroRecibo,
+                     sub.ImpNominal, sub.ImpAguinaldo, sub.ImpLiquido,
                      b.DiasBPS, b.LiquidoBPS, b.LiquidoPagar,
                      a.CodBanco AS Banco, a.NroCuenta,
                      lb.MONTO_TOTAL, lb.LIQUIDO AS LiquidoBpsEmpresa, lb.MES_DE_CARGO, lb.NOM_EMPRESA,
                      lb.PCT_POR_EMPRESA, lb.FECHA_PER_DESDE, lb.FECHA_PER_HASTA,
-                     lb.[N_ ENTREGA] AS NroEntrega, lb.FECHA_DE_ENTREGA
-              FROM dbo.SubsidioCabezal c
-              INNER JOIN dbo.Afiliado a ON c.CI = a.CI
-              LEFT JOIN dbo.SubsidioCabezal_BPS b ON b.IdSubsidio = c.IdSubsidio
-              LEFT JOIN dbo.Liquidacion_BPS lb ON lb.CI = c.CI AND lb.MES = c.Mes AND lb.ANIO = c.Anio
-              WHERE c.Mes=@mes AND c.Anio=@anio AND c.Liquidar=@liquidar
-              ORDER BY c.CI, c.IdSubsidio",
+                     lb.NroEntrega, lb.FECHA_DE_ENTREGA
+              FROM sub
+              INNER JOIN dbo.Afiliado a ON sub.CI = a.CI
+              LEFT JOIN dbo.SubsidioCabezal_BPS b ON b.IdSubsidio = sub.IdSubsidio
+              LEFT JOIN bps lb ON lb.CI = sub.CI AND lb.rn = sub.rn
+              ORDER BY sub.CI, sub.IdSubsidio",
             new { mes, anio, liquidar }, cancellationToken: ct).ConfigureAwait(false);
 
         return SubsidioXls.Build("BPS",
