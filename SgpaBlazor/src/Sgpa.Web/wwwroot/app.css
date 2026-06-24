@@ -12,8 +12,16 @@ a, .btn-link {
     border-color: #1861ac;
 }
 
+/* Foco sutil, alineado al verde de marca (#009242) en vez del azul brillante del template Blazor. */
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+  box-shadow: 0 0 0 0.18rem rgba(0, 146, 66, .22);
+}
+.form-control:focus, .form-check-input:focus {
+  border-color: rgba(0, 146, 66, .55);
+}
+.form-check-input:checked {
+  background-color: #009242;
+  border-color: #009242;
 }
 
 .content {
@@ -88,6 +96,25 @@ h1:focus {
 .sgpa-field--invalid .dxbl-text-edit {
     --dxbl-text-edit-border-color: var(--bs-danger, #dc3545);
     --dxbl-text-edit-border-width: 2px;
+    /* Fondo rojo pálido para reforzar el resaltado del campo con error. */
+    --dxbl-text-edit-bg: #fdecec;
+    /* En error, el foco también queda rojo (no verde). */
+    --dxbl-text-edit-focus-border-color: var(--bs-danger, #dc3545);
+    --dxbl-text-edit-focus-shadow-color: rgba(220, 53, 69, .22);
+}
+
+/* Foco verde de marca (#009242) en los editores DevExpress (textbox/spin/combo/fecha = .dxbl-text-edit),
+   en vez del azul del tema — para que coincida con el foco de los controles nativos del login. */
+.dxbl-text-edit {
+    --dxbl-text-edit-focus-border-color: rgba(0, 146, 66, .55);
+    --dxbl-text-edit-focus-shadow-color: rgba(0, 146, 66, .22);
+}
+
+/* El DxFormLayout trae overflow:hidden con padding 0, así que el aro de foco (~2px) de los editores de la
+   PRIMERA fila se recortaba por arriba. Un respiro mínimo evita el recorte sin mover el layout. */
+.dxbl-fl {
+    --dxbl-fl-padding-y: 3px;
+    --dxbl-fl-padding-x: 2px;
 }
 .sgpa-field__error {
     color: var(--bs-danger, #dc3545);
@@ -199,6 +226,37 @@ body { font-family: var(--bs-body-font-family); font-weight: 500; }
 }
 /* Botones del header (orden/filtro) legibles sobre el verde */
 .dxbl-grid-header-content > .dxbl-btn { --dxbl-btn-color: #fff; }
+
+/* Cabezal de los popups/diálogos (DxPopup): verde de marca con texto blanco, en vez del
+   fondo gris claro con letra oscura del tema. Incluye el botón de cerrar (X), que queda
+   blanco y, en hover, sobre un velo claro para dar feedback sin perder contraste. */
+.dxbl-popup {
+    --dxbl-popup-header-bg: #009242;
+    --dxbl-popup-header-color: #fff;
+    --dxbl-popup-header-btn-bg: transparent;
+    --dxbl-popup-header-btn-color: #fff;
+    --dxbl-popup-header-btn-hover-bg: rgba(255, 255, 255, .18);
+    --dxbl-popup-header-btn-hover-color: #fff;
+}
+
+/* Cabezales de tarjeta (.card-header = los "form headers" de las pantallas): verde de marca con
+   texto blanco, en vez del gris claro con letra oscura. El tema (sgpa-theme.css) pinta el fondo
+   con un valor LITERAL (rgba(34,34,34,.03)) sobre .card-header, no por variable, así que hay que
+   pisarlo directo en .card-header (app.css carga después → gana sin !important). */
+.card-header {
+    background-color: #009242;
+    color: #fff;
+}
+/* Dentro del header verde, los textos auxiliares (muted/secondary) y los íconos quedan en blanco
+   (translúcido los secundarios) para no perder contraste. text-secondary está pisado a verde de
+   marca en esta app, así que sin esto sería invisible sobre el verde. */
+.card-header .text-muted,
+.card-header .text-secondary,
+.card-header small {
+    color: rgba(255, 255, 255, .8) !important;
+}
+/* Etiqueta de un DxCheckBox dentro del header (ej. RecetaEditor): blanco sobre el verde. */
+.card-header .dxbl-checkbox { color: #fff; }
 
 /* Tab activo: texto + indicador (línea inferior) en verde */
 .dxbl-tabs { --dxbl-tabs-tab-selected-color: #009242; }
