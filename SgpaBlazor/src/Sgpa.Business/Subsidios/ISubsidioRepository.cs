@@ -25,6 +25,14 @@ public interface ISubsidioRepository
     Task<int> ProximoIdSubsidioAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Fecha tope para los días de certificación cuando el afiliado fue dado de baja DENTRO del mes y ese
+    /// era su único puesto real activo (empresas &lt; 900; las &gt;= 900 son subsidios, no cuentan). Devuelve
+    /// la FechaBaja a la que topar (no se liquidan días posteriores); o null si todavía tiene otro puesto
+    /// real activo más allá del mes (en cuyo caso se liquida completo, sin tope).
+    /// </summary>
+    Task<DateTime?> GetFechaBajaTopeAsync(long ci, SubsidioPeriodo periodo, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// VerificarConsistencia (port): ¿hay cabezales del mes anterior sin su SubsidioEnfermedad?
     /// Síntoma de datos borrados/incompletos; si los hay no se debe liquidar.
     /// </summary>

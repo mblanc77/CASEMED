@@ -25,10 +25,11 @@ WHERE @lMes BETWEEN (YEAR(c.FechaIni) * 100 + MONTH(c.FechaIni))
         FROM dbo.Trabaja t
         INNER JOIN dbo.Empresa e ON t.CodEmpresa = e.CodEmpresa
         WHERE e.Liquidar = @liquidar
-          -- Baja ESTRICTA (mes de FechaBaja > @lMes), igual que el VB6 (frmLiquidaSubsidio.frm: la
-          -- condicion FechaBaja Is Null Or Val(Format(FechaBaja, yyyymm)) > lMes). El afiliado dado de
-          -- baja DENTRO del mes del periodo NO se liquida.
-          AND (t.FechaBaja IS NULL OR (YEAR(t.FechaBaja) * 100 + MONTH(t.FechaBaja)) > @lMes)
+          -- Baja en el mes INCLUYENTE (mes de FechaBaja >= @lMes): el dado de baja DENTRO del mes del
+          -- período sí se liquida (los días de certificación hasta la baja se topan en ProcesarCertificaciones,
+          -- ver GetFechaBajaTope). Si tiene otro puesto activo se liquida completo. [Regla de negocio nueva:
+          -- el VB6 original usaba > (estricto). Para paridad hay que cambiarlo allá también.]
+          AND (t.FechaBaja IS NULL OR (YEAR(t.FechaBaja) * 100 + MONTH(t.FechaBaja)) >= @lMes)
           AND (YEAR(t.FechaIngCasemed) * 100 + MONTH(t.FechaIngCasemed)) <= @lMes
   )";
         if (ci.HasValue)
@@ -82,6 +83,26 @@ WHERE @lMes BETWEEN (YEAR(c.FechaIni) * 100 + MONTH(c.FechaIni))
         => await _db.ExecuteScalarAsync<int>(
             "SELECT ISNULL(MAX(IdSubsidio), 0) + 1 FROM dbo.SubsidioCabezal", cancellationToken: cancellationToken)
             .ConfigureAwait(false);
+
+    public Task<DateTime?> GetFechaBajaTopeAsync(long ci, SubsidioPeriodo periodo,
+        CancellationToken cancellationToken = default)
+        // Sólo puestos reales (empresa < 900). Si existe alguno todavía activo más allá del mes
+        // (FechaBaja NULL o mes > @lMes) -> sin tope (NULL): se liquida completo. Si no -> topar a la
+        // última baja que cae en el mes (no se liquidan días posteriores a esa baja).
+        => _db.QuerySingleOrDefaultAsync<DateTime?>(
+            @"SELECT CASE WHEN EXISTS (
+                  SELECT 1 FROM dbo.Trabaja t
+                  WHERE t.CI = @ci AND t.CodEmpresa < 900
+                    AND (YEAR(t.FechaIngCasemed) * 100 + MONTH(t.FechaIngCasemed)) <= @lMes
+                    AND (t.FechaBaja IS NULL OR (YEAR(t.FechaBaja) * 100 + MONTH(t.FechaBaja)) > @lMes))
+                THEN NULL
+                ELSE (
+                  SELECT MAX(t.FechaBaja) FROM dbo.Trabaja t
+                  WHERE t.CI = @ci AND t.CodEmpresa < 900
+                    AND (YEAR(t.FechaIngCasemed) * 100 + MONTH(t.FechaIngCasemed)) <= @lMes
+                    AND (YEAR(t.FechaBaja) * 100 + MONTH(t.FechaBaja)) = @lMes)
+              END",
+            new { ci, lMes = periodo.YyyyMm }, cancellationToken: cancellationToken);
 
     public async Task<bool> ExistenCabezalesSinEnfermedadAsync(int anio, int mes, CancellationToken cancellationToken = default)
         => await _db.ExecuteScalarAsync<int>(

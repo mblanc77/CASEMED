@@ -65,6 +65,9 @@ public sealed class SubsidioLiquidacionService : ISubsidioLiquidacionService
         {
             procesados++;
             var certs = await repo.GenerarCertificacionesAsync(afiliado, periodo, cancellationToken).ConfigureAwait(false);
+            // Tope por baja en el mes (único puesto real activo): los días de certificación no pasan de la baja.
+            // Es por afiliado (no por tramo); null = sin tope (tiene otro puesto activo → se liquida completo).
+            var fechaBajaTope = await repo.GetFechaBajaTopeAsync(afiliado, periodo, cancellationToken).ConfigureAwait(false);
             for (int i = 0; i < certs.Count; i++)
             {
                 var idSub = await repo.ProximoIdSubsidioAsync(cancellationToken).ConfigureAwait(false);
@@ -73,7 +76,7 @@ public sealed class SubsidioLiquidacionService : ISubsidioLiquidacionService
                 var acum = new LiquidacionAcumulador { CI = afiliado };
                 await ValorJornalAsync(uow, repo, acum, idSub, afiliado, periodo, esPrimera: i == 0, liquidar,
                     certs[i].FechaIni, cancellationToken).ConfigureAwait(false);
-                await ProcesarCertificacionesAsync(repo, acum, idSub, periodo, certs[i], cancellationToken).ConfigureAwait(false);
+                await ProcesarCertificacionesAsync(repo, acum, idSub, periodo, certs[i], fechaBajaTope, cancellationToken).ConfigureAwait(false);
                 await ProcesarItemsAsync(repo, acum, idSub, afiliado, periodo, prm, cancellationToken).ConfigureAwait(false);
                 await InsertarBpsAsync(repo, acum, idSub, afiliado, periodo, prm, cancellationToken).ConfigureAwait(false);
 
@@ -131,12 +134,13 @@ public sealed class SubsidioLiquidacionService : ISubsidioLiquidacionService
 
         if (calcularPromedio)
         {
-            // pMes = corte de actividad de TrabajaActivo. El VB6 pasa pMes = el mes del período (plMes),
-            // ver frmLiquidaSubsidio.frm (300_AfiliadoValorJornalxEmpresa: qdf!pMes = plMes; idem Casemed).
-            // Coincide con la selección (FechaBaja > @lMes): el dado de baja dentro del mes NO se liquida.
+            // pMes = corte de actividad de TrabajaActivo. Se usa mesFin (mes anterior) para que la empresa con
+            // baja DENTRO del mes del período siga contando en el promedio del jornal (si fuera lMes, el dado de
+            // baja en el mes daría jornal 0). Va de la mano con la selección (FechaBaja >= lMes) y el tope de
+            // días (GetFechaBajaTope). [Regla nueva: el VB6 pasa plMes; para paridad hay que cambiarlo a mesFin.]
             decimal promedio = 0m;
             var emp = await db.QueryProcAsync<PromedioEmpresaRow>("dbo.acc_sgpa_300_AfiliadoValorJornalxEmpresa",
-                new { pCodCasemed = _codCasemed, pCI = ci, pMesIni = lMesIni, pMesFin = mesFin, pLiquidar = liquidar, pDias = 3, pMes = lMes, pMesIniImp = lMesIniImp },
+                new { pCodCasemed = _codCasemed, pCI = ci, pMesIni = lMesIni, pMesFin = mesFin, pLiquidar = liquidar, pDias = 3, pMes = mesFin, pMesIniImp = lMesIniImp },
                 ct).ConfigureAwait(false);
             foreach (var e in emp)
             {
@@ -148,7 +152,7 @@ public sealed class SubsidioLiquidacionService : ISubsidioLiquidacionService
 
             // Promedio sólo de CASEMED (≥1 mes).
             var cas = (await db.QueryProcAsync<PromedioRow>("dbo.acc_sgpa_300_AfiliadoValorJornalCasemed",
-                new { pCodCasemed = _codCasemed, pCI = ci, pMesIni = lMesIni, pMesFin = mesFin, pLiquidar = liquidar, pDias = 1, pMes = lMes, pMesIniImp = lMesIniImp },
+                new { pCodCasemed = _codCasemed, pCI = ci, pMesIni = lMesIni, pMesFin = mesFin, pLiquidar = liquidar, pDias = 1, pMes = mesFin, pMesIniImp = lMesIniImp },
                 ct).ConfigureAwait(false)).FirstOrDefault();
             if (cas is not null)
             {
@@ -158,7 +162,7 @@ public sealed class SubsidioLiquidacionService : ISubsidioLiquidacionService
             }
 
             // Persistir los imponibles utilizados.
-            var p = new { pCI = ci, pMesIni = lMesIni, pMesFin = mesFin, pUsr = usr, pIdSubsidio = idSubsidio, pLiquidar = liquidar, pDias = 3, pCodCasemed = _codCasemed, pMes = lMes, pMesIniImp = lMesIniImp };
+            var p = new { pCI = ci, pMesIni = lMesIni, pMesFin = mesFin, pUsr = usr, pIdSubsidio = idSubsidio, pLiquidar = liquidar, pDias = 3, pCodCasemed = _codCasemed, pMes = mesFin, pMesIniImp = lMesIniImp };
             await db.ExecuteProcAsync("dbo.acc_sgpa_300_InsertSubsidioImponible", p, ct).ConfigureAwait(false);
             await db.ExecuteProcAsync("dbo.acc_sgpa_300_InsertSubsidioImponibleCasemed",
                 new { p.pCI, p.pMesIni, p.pMesFin, p.pUsr, p.pIdSubsidio, p.pLiquidar, pDias = 1, p.pCodCasemed, p.pMes, p.pMesIniImp }, ct).ConfigureAwait(false);
@@ -170,7 +174,7 @@ public sealed class SubsidioLiquidacionService : ISubsidioLiquidacionService
     /// inserta el período de enfermedad y reparte el importe nominal/aguinaldo entre las empresas.
     /// </summary>
     private async Task ProcesarCertificacionesAsync(ISubsidioRepository repo, LiquidacionAcumulador acum,
-        int idSubsidio, SubsidioPeriodo periodo, CertificacionSpan cert, CancellationToken ct)
+        int idSubsidio, SubsidioPeriodo periodo, CertificacionSpan cert, DateTime? fechaBajaTope, CancellationToken ct)
     {
         var primerDia = new DateTime(periodo.Anio, periodo.Mes, 1);
         var ultimoDia = primerDia.AddMonths(1).AddDays(-1);
@@ -178,8 +182,15 @@ public sealed class SubsidioLiquidacionService : ISubsidioLiquidacionService
         var dIni = cert.FechaIni < primerDia ? primerDia : cert.FechaIni;
         var dFin = cert.FechaFin > ultimoDia ? ultimoDia : cert.FechaFin;
 
+        // Tope por baja en el mes (único puesto real): no se liquidan días posteriores a la baja (inclusive el
+        // día de baja). Al recortar dFin dentro del mes, el atajo "mes completo = 30 días" deja de aplicar.
+        if (fechaBajaTope is DateTime tope && tope < dFin)
+            dFin = tope;
+
         var dias = (dFin - dIni).Days + 1;
-        if (dIni == primerDia && dFin == ultimoDia)
+        if (dias < 0)
+            dias = 0; // la certificación empieza después de la baja → sin días a liquidar
+        else if (dIni == primerDia && dFin == ultimoDia)
             dias = 30; // mes completo cuenta como 30 días
 
         if (dIni == cert.FechaIni && await DescontarPrimerDiaAsync(repo, cert, ct).ConfigureAwait(false))
