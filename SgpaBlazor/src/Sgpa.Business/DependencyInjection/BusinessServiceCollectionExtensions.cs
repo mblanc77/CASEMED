@@ -35,10 +35,12 @@ public static class BusinessServiceCollectionExtensions
         services.AddScoped<SubsidioExtraExporter>();
         services.AddScoped<SubsidioImporter>();
         services.AddScoped<PrestamoRepository>();
+        services.AddScoped<PagoParcialService>();
         services.AddScoped<PrestamoGrabadoService>();
         services.AddScoped<PrestamoAccionesService>();
         services.AddScoped<RefinanciacionService>();
         services.AddScoped<PagoService>();
+        services.AddScoped<ImpLiquidoService>();
         services.AddScoped<RetencionService>();
         services.AddScoped<CertificacionService>();
         services.AddScoped<PrimaService>();

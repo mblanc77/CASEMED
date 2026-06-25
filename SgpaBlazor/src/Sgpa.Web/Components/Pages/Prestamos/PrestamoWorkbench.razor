@@ -427,7 +427,7 @@
 
     <DxPopup @bind-Visible="_showPagosParciales" HeaderText="@($"Pagos parciales — préstamo Nº {IDPrestamo:00000}")" Width="760px" CloseOnEscape="true">
         <BodyContentTemplate Context="popup">
-            <SgpaCrudView TEntity="SP_PagoParcial" Title="" FilterColumn="IDPrestamo" FilterValue="_edit.IDPrestamo" />
+            <PagoParcialPanel IDPrestamo="_edit.IDPrestamo" />
         </BodyContentTemplate>
     </DxPopup>
 
@@ -662,9 +662,11 @@
     }
 
     // Enter en la cédula → busca el afiliado (paridad con txtCI_KeyPress vbKeyReturn del VB6).
+    // F1 → abre el popup de búsqueda de afiliados (mismo atajo que en los campos FK de cédula del CRUD genérico).
     private async Task OnCedulaKeyDown(KeyboardEventArgs e)
     {
         if (e.Key is "Enter" or "NumpadEnter") await BuscarAfiliadoAsync();
+        else if (e.Key == "F1" && !_editMode) AbrirBuscarAfiliado();
     }
 
     // Enter en "Abrir Nº préstamo" → abre el préstamo existente (port de txtNroPrestamo_KeyPress).

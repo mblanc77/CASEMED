@@ -1,0 +1,141 @@
+@page "/pagos/imp-liquido"
+@rendermode InteractiveServer
+@using Sgpa.Business.Pagos
+@using Sgpa.Data.Errors
+@using Sgpa.Web.Components.Crud
+@inject ImpLiquidoService Liquidos
+@inject IToastNotificationService Toasts
+
+@*
+    Carga manual del importe líquido por afiliado/empresa/período (port de frmIngImpLiquido, app SP). Se busca
+    el afiliado por cédula, se elige una de sus empresas con empleo vigente y se cargan/borran importes por
+    mes/año. La fecha de ingreso y el id de empleo los toma de SP_Trabaja.
+*@
+
+<PageTitle>Importe líquido</PageTitle>
+
+<h3 class="mb-3">Carga de importe líquido</h3>
+
+<div class="card mb-3" style="max-width: 820px;">
+    <div class="card-body">
+        <div class="d-flex flex-wrap gap-3 align-items-end">
+            <div>
+                <label class="form-label mb-1">Cédula</label>
+                <div class="d-flex gap-2">
+                    <DxSpinEdit @bind-Value="_ci" MinValue="0" ShowSpinButtons="false" CssClass="cedula" />
+                    <DxButton Text="Buscar" IconCssClass="fa-solid fa-magnifying-glass" Click="BuscarAsync" />
+                </div>
+            </div>
+            @if (_empresas.Count > 0)
+            {
+                <div style="min-width:280px">
+                    <label class="form-label mb-1">Empresa</label>
+                    <DxComboBox Data="_empresas" @bind-Value="_empresa" @bind-Value:after="CargarLiquidosAsync"
+                                TextFieldName="@nameof(EmpresaTrabaja.DescEmpresa)" NullText="Elegí una empresa…" CssClass="w-100" />
+                </div>
+            }
+        </div>
+        @if (_buscado && _empresas.Count == 0)
+        {
+            <div class="alert alert-warning py-2 mt-3 mb-0">El afiliado no tiene empleos vigentes (no se puede cargar el líquido).</div>
+        }
+    </div>
+</div>
+
+@if (_empresa is not null)
+{
+    <div class="card mb-3" style="max-width: 820px;">
+        <div class="card-body">
+            <h6 class="mb-2">Nuevo importe</h6>
+            <div class="d-flex flex-wrap gap-3 align-items-end">
+                <div><label class="form-label mb-1">Mes</label><DxSpinEdit @bind-Value="_mes" MinValue="1" MaxValue="12" /></div>
+                <div><label class="form-label mb-1">Año</label><DxSpinEdit @bind-Value="_anio" MinValue="2000" MaxValue="2100" /></div>
+                <div><label class="form-label mb-1">Importe</label><DxSpinEdit @bind-Value="_importe" MinValue="0" /></div>
+                <DxButton Text="Grabar" IconCssClass="fa-solid fa-check" RenderStyle="ButtonRenderStyle.Primary"
+                          Click="GrabarAsync" Enabled="@(!_guardando)" />
+            </div>
+        </div>
+    </div>
+
+    <DxGrid Data="_liquidos" PageSize="10" CssClass="mb-3" style="max-width: 820px;">
+        <Columns>
+            <DxGridDataColumn FieldName="Anio" Caption="Año" Width="90px" />
+            <DxGridDataColumn FieldName="Mes" Caption="Mes" Width="90px" />
+            <DxGridDataColumn FieldName="Importe" Caption="Importe" DisplayFormat="N2" />
+            <DxGridDataColumn Caption="" Width="100px" AllowSort="false">
+                <CellDisplayTemplate Context="cell">
+                    @{ var l = (ImpLiquidoView)cell.DataItem; }
+                    <DxButton Text="Borrar" IconCssClass="fa-solid fa-trash" RenderStyle="ButtonRenderStyle.Danger" SizeMode="SizeMode.Small"
+                              Click="@(() => BorrarAsync(l))" />
+                </CellDisplayTemplate>
+            </DxGridDataColumn>
+        </Columns>
+    </DxGrid>
+}
+
+@code {
+    private long _ci;
+    private bool _buscado;
+    private IReadOnlyList<EmpresaTrabaja> _empresas = Array.Empty<EmpresaTrabaja>();
+    private EmpresaTrabaja? _empresa;
+
+    private IReadOnlyList<ImpLiquidoView> _liquidos = Array.Empty<ImpLiquidoView>();
+    private int _mes = DateTime.Today.Month;
+    private int _anio = DateTime.Today.Year;
+    private double _importe;
+    private bool _guardando;
+
+    private async Task BuscarAsync()
+    {
+        _empresa = null;
+        _liquidos = Array.Empty<ImpLiquidoView>();
+        if (_ci <= 0) { Toasts.Aviso("Ingresá la cédula."); return; }
+        try
+        {
+            _empresas = await Liquidos.GetEmpresasAsync(_ci);
+            _buscado = true;
+            if (_empresas.Count == 1) { _empresa = _empresas[0]; await CargarLiquidosAsync(); }
+        }
+        catch (Exception ex) { Toasts.Error(SqlErrorMessages.Amigable(ex)); }
+    }
+
+    private async Task CargarLiquidosAsync()
+    {
+        if (_empresa is null) { _liquidos = Array.Empty<ImpLiquidoView>(); return; }
+        try { _liquidos = await Liquidos.GetLiquidosAsync(_ci, _empresa.CodEmpresa); }
+        catch (Exception ex) { Toasts.Error(SqlErrorMessages.Amigable(ex)); }
+    }
+
+    private async Task GrabarAsync()
+    {
+        // Port de frmIngImpLiquido.cmdGrabar: cédula, empresa, mes, año e importe.
+        if (_ci <= 0) { Toasts.Aviso("Ingresá la cédula."); return; }
+        if (_empresa is null) { Toasts.Aviso("Elegí la empresa."); return; }
+        if (_mes is < 1 or > 12) { Toasts.Aviso("Ingresá el mes (1 a 12)."); return; }
+        if (_anio <= 0) { Toasts.Aviso("Ingresá el año."); return; }
+        if (_importe <= 0) { Toasts.Aviso("Ingresá un importe mayor a cero."); return; }
+
+        _guardando = true;
+        try
+        {
+            await Liquidos.IngresarAsync(_ci, _empresa.CodEmpresa, _mes, _anio, _importe);
+            Toasts.Exito("Importe líquido registrado.");
+            _importe = 0;
+            await CargarLiquidosAsync();
+        }
+        catch (Exception ex) { Toasts.Error(SqlErrorMessages.Amigable(ex)); }
+        finally { _guardando = false; }
+    }
+
+    private async Task BorrarAsync(ImpLiquidoView l)
+    {
+        if (_empresa is null) return;
+        try
+        {
+            await Liquidos.BorrarAsync(_ci, _empresa.CodEmpresa, l.Mes, l.Anio);
+            Toasts.Exito("Importe líquido eliminado.");
+            await CargarLiquidosAsync();
+        }
+        catch (Exception ex) { Toasts.Error(SqlErrorMessages.Amigable(ex)); }
+    }
+}

@@ -1,0 +1,123 @@
+@using Sgpa.Business.Prestamos
+@using Sgpa.Data.Errors
+@using Sgpa.Web.Components.Crud
+@inject PagoParcialService Pagos
+@inject IToastNotificationService Toasts
+
+@*
+    Pagos parciales de un préstamo (port de frmIngPagoParcial / cAdmPagoParcial, app SP). Adelantos contra el
+    préstamo; cada uno se guarda con la tasa de cambio de la moneda del préstamo al momento del pago.
+*@
+
+<div class="p-2">
+    <div class="d-flex flex-wrap gap-3 align-items-center mb-3">
+        <span class="text-muted">Total de pagos parciales:</span>
+        <span><strong>@_total.ToString("N2")</strong></span>
+        <div class="ms-auto">
+            <DxButton Text="Nuevo pago parcial" IconCssClass="fa-solid fa-money-bill-wave" RenderStyle="ButtonRenderStyle.Primary"
+                      Click="AbrirAsync" />
+        </div>
+    </div>
+
+    <DxGrid Data="_pagos" PageSize="8">
+        <Columns>
+            <DxGridDataColumn FieldName="Fecha" Caption="Fecha" DisplayFormat="d" Width="130px" />
+            <DxGridDataColumn FieldName="Importe" Caption="Importe" DisplayFormat="N2" />
+            <DxGridDataColumn FieldName="TasaCambio" Caption="Tasa cambio" DisplayFormat="N2" Width="130px" />
+            <DxGridDataColumn Caption="" Width="100px" AllowSort="false">
+                <CellDisplayTemplate Context="cell">
+                    @{ var p = (PagoParcialView)cell.DataItem; }
+                    <DxButton Text="Borrar" IconCssClass="fa-solid fa-trash" RenderStyle="ButtonRenderStyle.Danger" SizeMode="SizeMode.Small"
+                              Click="@(() => BorrarAsync(p))" />
+                </CellDisplayTemplate>
+            </DxGridDataColumn>
+        </Columns>
+    </DxGrid>
+</div>
+
+@* --- Diálogo: nuevo pago parcial --- *@
+<DxPopup @bind-Visible="_visible" HeaderText="Nuevo pago parcial" Width="420px" CloseOnEscape="true">
+    <BodyContentTemplate Context="popup">
+        <DxFormLayout>
+            <DxFormLayoutItem Caption="Fecha" ColSpanMd="12"><DxDateEdit @bind-Date="_fecha" TValue="DateTime" /></DxFormLayoutItem>
+            <DxFormLayoutItem Caption="Importe" ColSpanMd="12"><DxSpinEdit @bind-Value="_importe" MinValue="0" /></DxFormLayoutItem>
+            <DxFormLayoutItem Caption="Tasa de cambio" ColSpanMd="12">
+                <span class="form-text">@_tasa.ToString("N2") (de la moneda del préstamo)</span>
+            </DxFormLayoutItem>
+        </DxFormLayout>
+        <div class="d-flex justify-content-end gap-2 mt-3">
+            <DxButton Text="Cancelar" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => _visible = false)" Enabled="@(!_guardando)" />
+            <DxButton Text="Grabar" RenderStyle="ButtonRenderStyle.Primary" Click="GrabarAsync" Enabled="@(!_guardando)" />
+        </div>
+    </BodyContentTemplate>
+</DxPopup>
+
+@code {
+    [Parameter] public int IDPrestamo { get; set; }
+
+    private IReadOnlyList<PagoParcialView> _pagos = Array.Empty<PagoParcialView>();
+    private double _total;
+
+    private bool _visible;
+    private bool _guardando;
+    private DateTime _fecha = DateTime.Today;
+    private double _importe;
+    private double _tasa = 1;
+
+    private int _loadedFor = -1;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (IDPrestamo != _loadedFor)
+        {
+            _loadedFor = IDPrestamo;
+            await CargarAsync();
+        }
+    }
+
+    private async Task CargarAsync()
+    {
+        try
+        {
+            _pagos = await Pagos.GetPagosAsync(IDPrestamo);
+            _total = await Pagos.GetTotalAsync(IDPrestamo);
+        }
+        catch (Exception ex) { Toasts.Error(SqlErrorMessages.Amigable(ex)); }
+    }
+
+    private async Task AbrirAsync()
+    {
+        _fecha = DateTime.Today;
+        _importe = 0;
+        _tasa = await Pagos.GetTasaCambioAsync(IDPrestamo);
+        _visible = true;
+    }
+
+    private async Task GrabarAsync()
+    {
+        // Port de frmIngPagoParcial.DatosOk: fecha (siempre seteada) e importe mayor a cero.
+        if (_importe <= 0) { Toasts.Aviso("Ingresá un importe mayor a cero."); return; }
+
+        _guardando = true;
+        try
+        {
+            await Pagos.IngresarAsync(IDPrestamo, _fecha, _importe);
+            Toasts.Exito("Pago parcial registrado.");
+            _visible = false;
+            await CargarAsync();
+        }
+        catch (Exception ex) { Toasts.Error(SqlErrorMessages.Amigable(ex)); }
+        finally { _guardando = false; }
+    }
+
+    private async Task BorrarAsync(PagoParcialView p)
+    {
+        try
+        {
+            await Pagos.BorrarAsync(IDPrestamo, p.Fecha);
+            Toasts.Exito("Pago parcial eliminado.");
+            await CargarAsync();
+        }
+        catch (Exception ex) { Toasts.Error(SqlErrorMessages.Amigable(ex)); }
+    }
+}

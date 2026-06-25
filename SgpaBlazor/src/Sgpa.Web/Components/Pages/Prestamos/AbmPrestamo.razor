@@ -44,7 +44,7 @@
             <div class="p-2"><SgpaCrudView TEntity="SP_CuadroAmortizacion" Title="Cuadro de amortización" FilterColumn="IDPrestamo" FilterValue="p.IDPrestamo" /></div>
         </DxTabPage>
         <DxTabPage Text="Pagos parciales" TabIconCssClass="fa-solid fa-coins">
-            <div class="p-2"><SgpaCrudView TEntity="SP_PagoParcial" Title="Pagos parciales" FilterColumn="IDPrestamo" FilterValue="p.IDPrestamo" /></div>
+            <PagoParcialPanel IDPrestamo="p.IDPrestamo" />
         </DxTabPage>
         <DxTabPage Text="Retenciones" TabIconCssClass="fa-solid fa-hand">
             <RetencionesPanel IDPrestamo="p.IDPrestamo" CI="p.CI ?? 0" />
