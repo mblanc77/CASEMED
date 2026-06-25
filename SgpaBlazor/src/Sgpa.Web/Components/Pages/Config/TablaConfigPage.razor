@@ -32,24 +32,36 @@ else
                 </CellDisplayTemplate>
             </DxGridDataColumn>
             <DxGridDataColumn Caption="Edición inline" Width="150px" TextAlignment="GridTextAlignment.Center">
+                <HeaderCaptionTemplate>
+                    @SelectAllHeader(context.Caption, v => v.Inline, (vm, b) => vm.Inline = b)
+                </HeaderCaptionTemplate>
                 <CellDisplayTemplate Context="c">
                     @{ var vm = (Vm)c.DataItem; }
                     <DxCheckBox Checked="vm.Inline" CheckedChanged="@((bool v) => { vm.Inline = v; return SaveAsync(vm); })" />
                 </CellDisplayTemplate>
             </DxGridDataColumn>
             <DxGridDataColumn Caption="Confirmar borrado" Width="170px" TextAlignment="GridTextAlignment.Center">
+                <HeaderCaptionTemplate>
+                    @SelectAllHeader(context.Caption, v => v.Confirmar, (vm, b) => vm.Confirmar = b)
+                </HeaderCaptionTemplate>
                 <CellDisplayTemplate Context="c">
                     @{ var vm = (Vm)c.DataItem; }
                     <DxCheckBox Checked="vm.Confirmar" CheckedChanged="@((bool v) => { vm.Confirmar = v; return SaveAsync(vm); })" />
                 </CellDisplayTemplate>
             </DxGridDataColumn>
             <DxGridDataColumn Caption="Auditar" Width="120px" TextAlignment="GridTextAlignment.Center">
+                <HeaderCaptionTemplate>
+                    @SelectAllHeader(context.Caption, v => v.Auditar, (vm, b) => vm.Auditar = b)
+                </HeaderCaptionTemplate>
                 <CellDisplayTemplate Context="c">
                     @{ var vm = (Vm)c.DataItem; }
                     <DxCheckBox Checked="vm.Auditar" CheckedChanged="@((bool v) => { vm.Auditar = v; return SaveAsync(vm); })" />
                 </CellDisplayTemplate>
             </DxGridDataColumn>
             <DxGridDataColumn Caption="Disponible p/ reportes" Width="170px" TextAlignment="GridTextAlignment.Center">
+                <HeaderCaptionTemplate>
+                    @SelectAllHeader(context.Caption, v => v.Disponible, (vm, b) => vm.Disponible = b)
+                </HeaderCaptionTemplate>
                 <CellDisplayTemplate Context="c">
                     @{ var vm = (Vm)c.DataItem; }
                     <DxCheckBox Checked="vm.Disponible" CheckedChanged="@((bool v) => { vm.Disponible = v; return SaveAsync(vm); })" />
@@ -91,6 +103,35 @@ else
     private Task SaveAsync(Vm vm)
         => Config.SetAsync(vm.Tabla, new TablaConfig(vm.Inline, vm.Confirmar, vm.Auditar,
             string.IsNullOrWhiteSpace(vm.Alias) ? null : vm.Alias.Trim(), vm.Disponible));
+
+    // Cabezal con checkbox "marcar/desmarcar todas" para una columna booleana. stopPropagation evita que el clic
+    // en el checkbox dispare el ordenamiento de la columna.
+    private RenderFragment SelectAllHeader(string caption, Func<Vm, bool> getter, Action<Vm, bool> setter) =>
+        @<div class="d-flex align-items-center justify-content-center gap-1">
+            <span @onclick:stopPropagation="true">
+                <DxCheckBox Checked="@HeaderState(getter)" AllowIndeterminateStateByClick="false"
+                            CheckedChanged="@((bool? v) => SetAllAsync(getter, setter, v == true))"
+                            Tooltip="Marcar/desmarcar en todas las tablas" />
+            </span>
+            <span>@caption</span>
+        </div>;
+
+    // Estado del check del cabezal: todas marcadas → marcado; ninguna → desmarcado; mezcla → indeterminado.
+    private bool? HeaderState(Func<Vm, bool> getter)
+        => _items.Count == 0 ? false
+           : _items.All(getter) ? true
+           : _items.Any(getter) ? (bool?)null
+           : false;
+
+    // Aplica el valor a TODAS las tablas y persiste sólo las filas que cambian.
+    private async Task SetAllAsync(Func<Vm, bool> getter, Action<Vm, bool> setter, bool value)
+    {
+        var cambiadas = _items.Where(vm => getter(vm) != value).ToList();
+        if (cambiadas.Count == 0) return;
+        foreach (var vm in cambiadas) setter(vm, value);
+        StateHasChanged();
+        foreach (var vm in cambiadas) await SaveAsync(vm);
+    }
 
     public sealed class Vm
     {
