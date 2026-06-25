@@ -20,13 +20,47 @@
 
 <body>
     <Routes />
+    @* Guard de "cambios sin guardar" a nivel documento. Va ANTES de blazor.web.js para registrar el listener de
+       clics en fase de captura antes que la navegación mejorada (enhanced nav) del Router estático, donde
+       NavigationLock no intercepta. Blazor sólo togglea el flag vía window.sgpaSetUnsaved (ver UnsavedChangesGuard). *@
+    <script>
+        window.sgpaUnsaved = { dirty: false, msg: 'Tenés cambios sin guardar. Si salís de la página se van a perder.' };
+        window.sgpaSetUnsaved = function (v) { window.sgpaUnsaved.dirty = !!v; };
+        // Confirma salir si hay cambios sin guardar; al aceptar baja el flag (lo usa el listener de clics y sgpaGoBack).
+        window.sgpaConfirmLeave = function () {
+            if (!window.sgpaUnsaved.dirty) return true;
+            if (window.confirm(window.sgpaUnsaved.msg)) { window.sgpaUnsaved.dirty = false; return true; }
+            return false;
+        };
+        (function () {
+            // Recarga / cierre de pestaña / navegación externa o full-page.
+            window.addEventListener('beforeunload', function (e) {
+                if (window.sgpaUnsaved.dirty) { e.preventDefault(); e.returnValue = ''; }
+            });
+            // Navegación interna (clic en un <a> → enhanced nav). Captura para poder cancelar antes que Blazor.
+            document.addEventListener('click', function (e) {
+                if (!window.sgpaUnsaved.dirty || e.defaultPrevented || e.button !== 0
+                    || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+                var a = e.target.closest ? e.target.closest('a[href]') : null;
+                if (!a || a.target === '_blank' || a.hasAttribute('download')) return;
+                var raw = a.getAttribute('href');
+                if (raw && (raw.charAt(0) === '#' || raw.toLowerCase().indexOf('javascript:') === 0)) return;
+                var url = new URL(a.href, window.location.href);          // a.href resuelve href="" a la URL actual
+                if (url.origin !== window.location.origin) return;        // externo → lo cubre beforeunload
+                if (url.pathname === window.location.pathname && url.search === window.location.search) return;
+                if (!window.sgpaConfirmLeave()) { e.preventDefault(); e.stopImmediatePropagation(); }
+            }, true);
+        })();
+    </script>
     <script src="_framework/blazor.web.js"></script>
     <script>
         // "Volver" inteligente: si hay historial de navegación, vuelve a la página ANTERIOR (no a una ruta fija);
         // si no hay (deep-link / primera carga), navega a la ruta de fallback. Reemplaza los NavigateTo fijos.
         window.sgpaGoBack = (fallbackUrl) => {
-            if (window.history.length > 1) { window.history.back(); }
-            else if (fallbackUrl) { window.location.assign(fallbackUrl); }
+            if (!window.sgpaConfirmLeave || window.sgpaConfirmLeave()) {
+                if (window.history.length > 1) { window.history.back(); }
+                else if (fallbackUrl) { window.location.assign(fallbackUrl); }
+            }
         };
         window.sgpaDownloadText = (fileName, content) => {
             const blob = new Blob([content], { type: 'text/plain' });

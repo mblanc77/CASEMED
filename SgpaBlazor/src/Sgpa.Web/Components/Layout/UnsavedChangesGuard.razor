@@ -1,52 +1,25 @@
-@* Guard global de "cambios sin guardar". Isla interactiva (va en MainLayout). Usa el componente nativo de Blazor
-   NavigationLock: intercepta la navegación interna (muestra una confirmación propia) y, para recargar/cerrar la
-   pestaña o ir a un sitio externo, dispara el prompt nativo del navegador. El estado lo aporta UnsavedChangesService
-   (scoped, compartido por el circuito), que las páginas reportan al editar en memoria. *@
-@using Microsoft.AspNetCore.Components.Routing
+@* Guard global de "cambios sin guardar". Isla interactiva (va en MainLayout). No renderiza nada: su única tarea
+   es reflejar el estado de UnsavedChangesService (scoped, compartido por el circuito) en el flag de documento
+   window.sgpaUnsaved, que el listener JS de App.razor usa para advertir antes de navegar/recargar. Se hace por JS
+   (y no con NavigationLock) porque el Router del proyecto es estático: la navegación interna va por enhanced nav y
+   NavigationLock no la intercepta. *@
 @using Sgpa.Web.State
 @implements IDisposable
 @inject UnsavedChangesService Unsaved
-@inject NavigationManager Nav
-
-<NavigationLock ConfirmExternalNavigation="@Unsaved.HasUnsavedChanges"
-                OnBeforeInternalNavigation="OnBeforeInternalNavigation" />
-
-<DxPopup @bind-Visible="_visible" HeaderText="Cambios sin guardar" Width="440px" CloseOnEscape="true">
-    <BodyContentTemplate>
-        <p class="mb-3">Tenés cambios sin guardar. Si salís de la página se van a perder.</p>
-        <div class="d-flex justify-content-end gap-2">
-            <DxButton Text="Seguir editando" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => _visible = false)" />
-            <DxButton Text="Salir sin guardar" IconCssClass="fa-solid fa-triangle-exclamation"
-                      RenderStyle="ButtonRenderStyle.Danger" Click="SalirSinGuardar" />
-        </div>
-    </BodyContentTemplate>
-</DxPopup>
+@inject IJSRuntime JS
 
 @code {
-    private bool _visible;
-    private string? _destino;
-    private bool _bypass;   // permite UNA navegación tras confirmar, sin volver a bloquear
+    protected override void OnInitialized() => Unsaved.Changed += OnChanged;
 
-    protected override void OnInitialized() => Unsaved.Changed += OnUnsavedChanged;
+    private void OnChanged() => InvokeAsync(StateHasChanged);
 
-    private void OnUnsavedChanged() => InvokeAsync(StateHasChanged);
-
-    private void OnBeforeInternalNavigation(LocationChangingContext context)
+    // En cada render empuja el estado actual al flag de documento (idempotente). El try/catch cubre el prerender,
+    // donde el interop JS todavía no está disponible.
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (_bypass) { _bypass = false; return; }       // navegación ya confirmada por el usuario
-        if (!Unsaved.HasUnsavedChanges) return;          // nada pendiente → dejar pasar
-        context.PreventNavigation();
-        _destino = context.TargetLocation;
-        _visible = true;
-        StateHasChanged();
+        try { await JS.InvokeVoidAsync("sgpaSetUnsaved", Unsaved.HasUnsavedChanges); }
+        catch { /* interop aún no disponible (prerender) */ }
     }
 
-    private void SalirSinGuardar()
-    {
-        _visible = false;
-        _bypass = true;
-        if (_destino is not null) Nav.NavigateTo(_destino);
-    }
-
-    public void Dispose() => Unsaved.Changed -= OnUnsavedChanged;
+    public void Dispose() => Unsaved.Changed -= OnChanged;
 }
