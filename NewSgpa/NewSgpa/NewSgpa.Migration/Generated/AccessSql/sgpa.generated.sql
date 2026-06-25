@@ -1,5 +1,5 @@
 -- Auto-generated from sgpa.mdb-specs.txt
--- Query count: 429
+-- Query count: 427
 -- Ordered by dependencies (nested queries first)
 
 -- ===== DATA OBJECT FOR QUERY: 001_AfeccionGrupo_Max =====
@@ -2176,13 +2176,6 @@ WHERE (((Afiliado.CodBanco)=5) AND ((SubsidioCabezal.Mes)=@pMes) AND ((SubsidioC
 )
 GO
 
--- ===== DATA OBJECT FOR QUERY: Rs_Export_BROU_Excel =====
-CREATE OR ALTER VIEW [dbo].[acc_sgpa_Rs_Export_BROU_Excel_q]
-AS
-SELECT BROU.CI, BROU.NroCuenta, BROU.ImpLiquido, BROU.Fecha
-FROM BROU;
-GO
-
 -- ===== DATA OBJECT FOR QUERY: Rs_Export_NBC =====
 CREATE OR ALTER FUNCTION [dbo].[acc_sgpa_Rs_Export_NBC_q](@pMes NVARCHAR(MAX), @pAnio NVARCHAR(MAX), @pLiquidar NVARCHAR(MAX), @pFecha DATETIME2(0))
 RETURNS TABLE
@@ -2273,13 +2266,6 @@ AS
 SELECT Mutualista.*
 FROM Mutualista
 WHERE (((Mutualista.CodMutualista)>0));
-GO
-
--- ===== DATA OBJECT FOR QUERY: Rs_MutualistaBps =====
-CREATE OR ALTER VIEW [dbo].[acc_sgpa_Rs_MutualistaBps_q]
-AS
-SELECT TRY_CONVERT(float,BpsFormat.Cedula) AS Cedula, BpsFormat.Mutualista, Mutu.Codigo
-FROM BpsFormat INNER JOIN Mutu ON BpsFormat.Mutualista = Mutu.Mutualista;
 GO
 
 -- ===== DATA OBJECT FOR QUERY: Rs_Mutualista_Desc =====
@@ -5177,10 +5163,6 @@ RETURN
 )')
 GO
 
--- ===== COMPAT OBJECT FOR QUERY: Rs_Export_BROU_Excel =====
-IF OBJECT_ID('dbo.Rs_Export_BROU_Excel') IS NULL EXEC('CREATE VIEW [dbo].[Rs_Export_BROU_Excel] AS SELECT * FROM [dbo].[acc_sgpa_Rs_Export_BROU_Excel_q];')
-GO
-
 -- ===== COMPAT OBJECT FOR QUERY: Rs_Export_NBC =====
 IF OBJECT_ID('dbo.Rs_Export_NBC') IS NULL EXEC('CREATE FUNCTION [dbo].[Rs_Export_NBC](@pMes NVARCHAR(MAX), @pAnio NVARCHAR(MAX), @pLiquidar NVARCHAR(MAX), @pFecha DATETIME2(0))
 RETURNS TABLE
@@ -5229,10 +5211,6 @@ GO
 
 -- ===== COMPAT OBJECT FOR QUERY: Rs_Mutualista =====
 IF OBJECT_ID('dbo.Rs_Mutualista') IS NULL EXEC('CREATE VIEW [dbo].[Rs_Mutualista] AS SELECT * FROM [dbo].[acc_sgpa_Rs_Mutualista_q];')
-GO
-
--- ===== COMPAT OBJECT FOR QUERY: Rs_MutualistaBps =====
-IF OBJECT_ID('dbo.Rs_MutualistaBps') IS NULL EXEC('CREATE VIEW [dbo].[Rs_MutualistaBps] AS SELECT * FROM [dbo].[acc_sgpa_Rs_MutualistaBps_q];')
 GO
 
 -- ===== COMPAT OBJECT FOR QUERY: Rs_Mutualista_Desc =====
@@ -9475,17 +9453,6 @@ END;
 
 GO
 
--- ===== WRAPPER PROCEDURE FOR QUERY: Rs_Export_BROU_Excel =====
-CREATE OR ALTER PROCEDURE [dbo].[acc_sgpa_Rs_Export_BROU_Excel]
-AS
-BEGIN
-    SET NOCOUNT ON;
-    SELECT BROU.CI, BROU.NroCuenta, BROU.ImpLiquido, BROU.Fecha
-    FROM BROU;
-END;
-
-GO
-
 -- ===== WRAPPER PROCEDURE FOR QUERY: Rs_Export_NBC =====
 CREATE OR ALTER PROCEDURE [dbo].[acc_sgpa_Rs_Export_NBC]
     @pMes NVARCHAR(MAX),
@@ -9622,17 +9589,6 @@ BEGIN
     SELECT Mutualista.*
     FROM Mutualista
     WHERE (((Mutualista.CodMutualista)>0));
-END;
-
-GO
-
--- ===== WRAPPER PROCEDURE FOR QUERY: Rs_MutualistaBps =====
-CREATE OR ALTER PROCEDURE [dbo].[acc_sgpa_Rs_MutualistaBps]
-AS
-BEGIN
-    SET NOCOUNT ON;
-    SELECT TRY_CONVERT(float,BpsFormat.Cedula) AS Cedula, BpsFormat.Mutualista, Mutu.Codigo
-    FROM BpsFormat INNER JOIN Mutu ON BpsFormat.Mutualista = Mutu.Mutualista;
 END;
 
 GO

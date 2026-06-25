@@ -1305,6 +1305,15 @@ WHERE o.type = 'U' AND s.name = 'dbo' AND o.name = @tbl";
     static bool B(OleDbDataReader r,string c){try{int i=r.GetOrdinal(c);return!r.IsDBNull(i)&&Convert.ToBoolean(r.GetValue(i));}catch{return false;}}
     static DateTime? Dt(OleDbDataReader r,string c){try{int i=r.GetOrdinal(c);return r.IsDBNull(i)?null:Convert.ToDateTime(r.GetValue(i));}catch{return null;}}
 
+    // Queries Access que NO se migran: dependen de columnas/objetos inexistentes en el modelo SQL nuevo y
+    // ninguna la usa el app (el export BROU del app usa Rs_Export_BROU, no la variante _Excel). Sin esto
+    // quedaban como batches fallidos en _artifact_apply_failures.txt.
+    static readonly HashSet<string> ExcludedQueries = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "Rs_Export_BROU_Excel",   // FROM BROU: columnas NroCuenta/ImpLiquido/Fecha inexistentes
+        "Rs_MutualistaBps",       // referencia el objeto 'Mutu' inexistente
+    };
+
     static void GenerateAccessQueriesSqlArtifacts()
     {
         var projectDir = FindProjectDirectory();
@@ -1320,7 +1329,9 @@ WHERE o.type = 'U' AND s.name = 'dbo' AND o.name = @tbl";
 
         foreach (var spec in specFiles)
         {
-            var parsed = AccessQueryParser.ParseFile(spec);
+            var parsed = AccessQueryParser.ParseFile(spec)
+                .Where(q => !ExcludedQueries.Contains(q.Name))
+                .ToList();
             var initialPlan = AccessQueryDependencyPlanner.BuildPlan(parsed);
             var effectiveQueries = BuildQueriesWithPropagatedParameters(parsed, initialPlan);
             allQueries.AddRange(effectiveQueries);
