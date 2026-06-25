@@ -79,6 +79,8 @@ DevExpress.Utils.DeserializationSettings.RegisterTrustedAssembly(typeof(Sgpa.Dom
 DevExpress.Utils.DeserializationSettings.RegisterTrustedAssembly(typeof(Sgpa.Web.Reporting.Predefinidos.PrestamoCuadroLinea).Assembly);
 
 builder.Services.AddControllers();
+// Caché en memoria: handoff del contenido del archivo Abitab subido por DxUpload (controller → página).
+builder.Services.AddMemoryCache();
 builder.Services.AddDevExpressBlazorReporting();
 builder.Services.AddDevExpressServerSideBlazorReportViewer();
 builder.Services.AddScoped<ReportStorageWebExtension, SgpaReportStorage>();

@@ -1,0 +1,27 @@
+/* Zona de arrastre que envuelve al DxUpload (drop zone externa). El recuadro punteado se resalta al
+   arrastrar un archivo encima (clase sgpa-dropzone--over que agrega DevExpress sobre este mismo div). */
+.sgpa-dropzone {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem;
+    padding: 1rem;
+    border: 2px dashed #adb5bd;
+    border-radius: .5rem;
+    background: #f8f9fa;
+    transition: background-color .15s ease, border-color .15s ease;
+}
+
+.sgpa-dropzone__icon {
+    font-size: 1.25rem;
+    color: #1C3680;
+}
+
+.sgpa-dropzone__hint {
+    color: #6c757d;
+}
+
+.sgpa-dropzone--over {
+    border-color: #1C3680;
+    background: #eef2fb;
+}

@@ -3,8 +3,11 @@
 @using Sgpa.Business.Pagos
 @using Sgpa.Data.Errors
 @using Sgpa.Web.Components.Crud
+@using Sgpa.Web.Controllers
+@using Microsoft.Extensions.Caching.Memory
 @inject PagoService Pagos
 @inject IToastNotificationService Toasts
+@inject Microsoft.Extensions.Caching.Memory.IMemoryCache Cache
 
 @*
     Carga batch de pagos desde archivo de cobranza Abitab (port de frmCargaPago + cAdmPago.ProcesarPagos).
@@ -24,7 +27,19 @@
                 <DxDateEdit @bind-Date="_fecha" TValue="DateTime" />
             </DxFormLayoutItem>
             <DxFormLayoutItem Caption="Archivo" ColSpanMd="12">
-                <InputFile OnChange="CargarArchivoAsync" accept=".dat,.txt" class="form-control" />
+                @* DxUpload (localizado al español por la cultura es-UY + satélite DevExpress). La zona punteada que lo
+                   envuelve actúa de drop zone: se puede arrastrar el archivo encima o usar el botón "Seleccionar". *@
+                <div id="abitab-dropzone" class="sgpa-dropzone">
+                    <i class="fa-solid fa-cloud-arrow-up sgpa-dropzone__icon"></i>
+                    <span class="sgpa-dropzone__hint">Arrastrá el archivo .dat/.txt acá o</span>
+                    <DxUpload Name="file" UploadUrl="@_uploadUrl"
+                              ExternalDropZoneCssSelector="#abitab-dropzone"
+                              ExternalDropZoneDragOverCssClass="sgpa-dropzone--over"
+                              AllowMultiFileUpload="false"
+                              AllowedFileExtensions="@_extensiones"
+                              MaxFileSize="16777216"
+                              FileUploaded="OnFileUploaded" />
+                </div>
                 @if (_fileName is not null)
                 {
                     <small class="text-muted">@_fileName — @_lineas.Length línea(s)</small>
@@ -68,22 +83,32 @@
     private bool _procesando;
     private CargaPagosResultado? _result;
 
-    private async Task CargarArchivoAsync(InputFileChangeEventArgs e)
+    // DxUpload: extensiones aceptadas + token efímero del handoff controller→página (ver CargaAbitabController).
+    private readonly List<string> _extensiones = new() { ".dat", ".txt" };
+    private string _token = "";
+    private string _uploadUrl = "";
+
+    protected override void OnInitialized()
     {
-        try
+        _token = Guid.NewGuid().ToString("N");
+        _uploadUrl = $"/pagos/carga/upload?token={_token}";
+    }
+
+    // El DxUpload terminó de subir el archivo al controller; recuperamos su contenido (ya parseado en líneas) de la
+    // caché por el token y habilitamos "Procesar carga". El archivo se leyó fuera del circuito, no en SignalR.
+    private void OnFileUploaded(FileUploadEventArgs e)
+    {
+        if (Cache.TryGetValue(CargaAbitabController.CacheKey(_token), out AbitabUpload? up) && up is not null)
         {
-            using var reader = new StreamReader(e.File.OpenReadStream(maxAllowedSize: 16 * 1024 * 1024));
-            var texto = await reader.ReadToEndAsync();
-            _lineas = texto.Replace("\r\n", "\n").Replace('\r', '\n')
-                           .Split('\n', StringSplitOptions.RemoveEmptyEntries);
-            _fileName = e.File.Name;
+            _fileName = up.FileName;
+            _lineas = up.Lineas;
             _result = null;
         }
-        catch (Exception ex)
+        else
         {
             _lineas = Array.Empty<string>();
             _fileName = null;
-            Toasts.Error($"No se pudo leer el archivo: {ex.Message}");
+            Toasts.Error("No se pudo leer el archivo subido.");
         }
     }
 
