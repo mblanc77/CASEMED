@@ -1,0 +1,267 @@
+@using DevExpress.Data.Filtering
+@using Sgpa.Data.Security.Admin
+@using Sgpa.Domain.Metadata
+@using Sgpa.Domain.Security
+@using Sgpa.Web.Components.Crud
+@inject ISeguridadAdminService Admin
+@inject IToastNotificationService Toasts
+
+@*
+    DetailView de los permisos de un rol sobre UNA tabla (estilo XAF): los checkboxes de acción + dos ListViews
+    anidadas (Campos y Registros). Se instancia diferido al expandir la fila de la grilla maestra de tablas.
+*@
+<div class="p-3 sgpa-perm-detalle">
+    @if (_meta is null)
+    {
+        <div class="text-muted">No se encontró metadata para la tabla <strong>@Tabla</strong>.</div>
+    }
+    else
+    {
+        <div class="d-flex align-items-center gap-3 mb-3 flex-wrap">
+            <span class="fw-semibold"><i class="fa-solid fa-key me-1 text-muted"></i>Acciones:</span>
+            <DxCheckBox Checked="Has(PermissionAction.Read)" CheckedChanged="@((bool v) => ToggleAccionAsync(PermissionAction.Read, v))">Leer</DxCheckBox>
+            <DxCheckBox Checked="Has(PermissionAction.Create)" CheckedChanged="@((bool v) => ToggleAccionAsync(PermissionAction.Create, v))">Crear</DxCheckBox>
+            <DxCheckBox Checked="Has(PermissionAction.Write)" CheckedChanged="@((bool v) => ToggleAccionAsync(PermissionAction.Write, v))">Modificar</DxCheckBox>
+            <DxCheckBox Checked="Has(PermissionAction.Delete)" CheckedChanged="@((bool v) => ToggleAccionAsync(PermissionAction.Delete, v))">Borrar</DxCheckBox>
+        </div>
+
+        @* ---- ListView anidada: Campos (restricciones por columna) ---- *@
+        <div class="mb-1 d-flex align-items-center gap-2">
+            <i class="fa-solid fa-table-columns text-muted"></i>
+            <span class="fw-semibold">Campos</span>
+            <span class="text-muted small">— por defecto todo se lee y modifica; desmarcá para restringir (la lectura denegada se enmascara).</span>
+        </div>
+        <DxGrid Data="_campos" PageSize="10" ShowSearchBox="true" CssClass="sgpa-grid mb-4">
+            <Columns>
+                <DxGridDataColumn FieldName="Caption" Caption="Campo" MinWidth="220">
+                    <CellDisplayTemplate Context="c">
+                        @{ var vm = (CampoVm)c.DataItem; }
+                        <span>@vm.Caption</span> <span class="text-muted small">@vm.Columna</span>
+                    </CellDisplayTemplate>
+                </DxGridDataColumn>
+                <DxGridDataColumn Caption="Leer" Width="90px" TextAlignment="GridTextAlignment.Center">
+                    <CellDisplayTemplate Context="c">
+                        @{ var vm = (CampoVm)c.DataItem; }
+                        <DxCheckBox Checked="vm.Leer" CheckedChanged="@((bool v) => ToggleCampoAsync(vm, leer: v, modificar: vm.Modificar))" />
+                    </CellDisplayTemplate>
+                </DxGridDataColumn>
+                <DxGridDataColumn Caption="Modificar" Width="100px" TextAlignment="GridTextAlignment.Center">
+                    <CellDisplayTemplate Context="c">
+                        @{ var vm = (CampoVm)c.DataItem; }
+                        <DxCheckBox Checked="vm.Modificar" CheckedChanged="@((bool v) => ToggleCampoAsync(vm, leer: vm.Leer, modificar: v))" />
+                    </CellDisplayTemplate>
+                </DxGridDataColumn>
+            </Columns>
+        </DxGrid>
+
+        @* ---- ListView anidada: Registros (filtros por fila) ---- *@
+        <div class="mb-1 d-flex align-items-center gap-2">
+            <i class="fa-solid fa-filter text-muted"></i>
+            <span class="fw-semibold">Registros</span>
+            <span class="text-muted small">— limitan qué filas ve/edita/borra el rol (varios criterios se combinan con O).</span>
+            <DxButton Text="Nuevo criterio" IconCssClass="fa-solid fa-plus" RenderStyle="ButtonRenderStyle.Primary"
+                      SizeMode="SizeMode.Small" Click="@(() => AbrirEditor(null))" />
+        </div>
+        @if (_registros.Count == 0)
+        {
+            <p class="text-muted small mb-0">Sin criterios: el rol ve/edita todas las filas de la tabla.</p>
+        }
+        else
+        {
+            <DxGrid Data="_registros" PageSize="10" CssClass="sgpa-grid">
+                <Columns>
+                    <DxGridDataColumn FieldName="Criteria" Caption="Criterio" MinWidth="320" />
+                    <DxGridDataColumn Caption="Aplica a" Width="180px">
+                        <CellDisplayTemplate Context="c">
+                            @{ var r = (RolPermisoRegistro)c.DataItem; }
+                            <span>@DescribirAcciones(r.Acciones)</span>
+                        </CellDisplayTemplate>
+                    </DxGridDataColumn>
+                    <DxGridDataColumn Caption="" Width="110px" TextAlignment="GridTextAlignment.Center">
+                        <CellDisplayTemplate Context="c">
+                            @{ var r = (RolPermisoRegistro)c.DataItem; }
+                            <DxButton IconCssClass="fa-solid fa-pen" RenderStyle="ButtonRenderStyle.Link" Tooltip="Editar" Click="@(() => AbrirEditor(r))" />
+                            <DxButton IconCssClass="fa-solid fa-trash" RenderStyle="ButtonRenderStyle.Link" Tooltip="Borrar" Click="@(() => BorrarAsync(r))" />
+                        </CellDisplayTemplate>
+                    </DxGridDataColumn>
+                </Columns>
+            </DxGrid>
+        }
+    }
+</div>
+
+@* ---- Popup: editor de criterio por registro ---- *@
+<DxPopup @bind-Visible="_editorVisible" HeaderText="@($"Criterio · {Tabla}")" Width="680px" CloseOnEscape="true">
+    <BodyContentTemplate>
+        @if (_meta is not null)
+        {
+            <p class="text-muted small mb-2">
+                Podés usar el placeholder <code>@("{CurrentUserLogin}")</code> para el usuario actual
+                (ej. <code>@("[Usr] = '{CurrentUserLogin}'")</code>).
+            </p>
+            <DxFilterBuilder @bind-FilterCriteria="_crit">
+                <Fields>
+                    @foreach (var col in _meta.ListColumns)
+                    {
+                        <DxFilterBuilderField FieldName="@col.Name" Caption="@col.Caption" Type="col.UnderlyingType" />
+                    }
+                    @foreach (var rel in EntityRelations.For(_meta.EntityType))
+                    {
+                        @if (rel.IsCollection)
+                        {
+                            <DxFilterBuilderField FieldName="@rel.FieldPrefix" Caption="@($"☰ {rel.Label}")" IsCollection="true">
+                                <Fields>
+                                    @foreach (var col in rel.Child.ListColumns)
+                                    {
+                                        <DxFilterBuilderField FieldName="@col.Name" Caption="@col.Caption" Type="col.UnderlyingType" />
+                                    }
+                                </Fields>
+                            </DxFilterBuilderField>
+                        }
+                        else
+                        {
+                            <DxFilterBuilderField FieldName="@rel.FieldPrefix" Caption="@($"↗ {rel.Label}")" AllowSelection="false">
+                                <Fields>
+                                    @foreach (var col in rel.Child.ListColumns)
+                                    {
+                                        <DxFilterBuilderField FieldName="@($"{rel.FieldPrefix}.{col.Name}")" Caption="@col.Caption"
+                                                              CaptionFullPath="@($"{rel.Label}.{col.Caption}")" Type="col.UnderlyingType" />
+                                    }
+                                </Fields>
+                            </DxFilterBuilderField>
+                        }
+                    }
+                </Fields>
+            </DxFilterBuilder>
+
+            <div class="d-flex align-items-center gap-3 mt-3">
+                <span class="text-muted small">Aplica a:</span>
+                <DxCheckBox @bind-Checked="_edLeer">Leer</DxCheckBox>
+                <DxCheckBox @bind-Checked="_edModificar">Modificar</DxCheckBox>
+                <DxCheckBox @bind-Checked="_edBorrar">Borrar</DxCheckBox>
+            </div>
+            @if (_edError is not null) { <div class="alert alert-danger py-2 mt-2 mb-0">@_edError</div> }
+            <div class="d-flex gap-2 mt-3">
+                <DxButton Text="Guardar" IconCssClass="fa-solid fa-floppy-disk" RenderStyle="ButtonRenderStyle.Primary" Click="GuardarAsync" />
+                <DxButton Text="Cancelar" RenderStyle="ButtonRenderStyle.Link" Click="@(() => _editorVisible = false)" />
+            </div>
+        }
+    </BodyContentTemplate>
+</DxPopup>
+
+@code {
+    [Parameter, EditorRequired] public int RolId { get; set; }
+    [Parameter, EditorRequired] public string Tabla { get; set; } = default!;
+    /// <summary>Permisos de tabla actuales (referencia compartida con la grilla maestra para el resumen).</summary>
+    [Parameter, EditorRequired] public PermisoTablaVm Vm { get; set; } = default!;
+    /// <summary>Se invoca al cambiar las acciones de tabla (para refrescar el resumen de la fila maestra).</summary>
+    [Parameter] public EventCallback OnAccionesChanged { get; set; }
+
+    private EntityMetadata? _meta;
+    private List<CampoVm> _campos = new();
+    private List<RolPermisoRegistro> _registros = new();
+
+    private bool _editorVisible;
+    private int _editId;
+    private CriteriaOperator? _crit;
+    private bool _edLeer = true, _edModificar, _edBorrar;
+    private string? _edError;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _meta = EntityCatalog.CrudCapable.FirstOrDefault(m => m.Table.Equals(Tabla, StringComparison.OrdinalIgnoreCase));
+        if (_meta is null) return;
+
+        var restric = (await Admin.ListPermisosColumnaAsync(RolId, Tabla))
+            .ToDictionary(c => c.Columna, c => c, StringComparer.OrdinalIgnoreCase);
+        _campos = _meta.Columns
+            .Where(c => !c.IsAudit && !c.IsKey)
+            .OrderBy(c => c.Order)
+            .Select(c => new CampoVm
+            {
+                Columna = c.Name,
+                Caption = c.Caption,
+                Leer = !restric.TryGetValue(c.Name, out var r) || r.Leer,
+                Modificar = !restric.TryGetValue(c.Name, out var r2) || r2.Modificar
+            })
+            .ToList();
+
+        _registros = (await Admin.ListPermisosRegistroAsync(RolId, Tabla)).ToList();
+    }
+
+    // ---- Acciones de tabla ----
+    private bool Has(PermissionAction a) => (Vm.Acciones & a) == a;
+
+    private async Task ToggleAccionAsync(PermissionAction a, bool on)
+    {
+        Vm.Acciones = on ? Vm.Acciones | a : Vm.Acciones & ~a;
+        await Admin.SetPermisoAsync(RolId, Tabla, Vm.Acciones);
+        await OnAccionesChanged.InvokeAsync();
+    }
+
+    // ---- Campos ----
+    private async Task ToggleCampoAsync(CampoVm vm, bool leer, bool modificar)
+    {
+        vm.Leer = leer;
+        vm.Modificar = modificar;
+        await Admin.SetPermisoColumnaAsync(RolId, Tabla, vm.Columna, leer, modificar);
+    }
+
+    // ---- Registros ----
+    private void AbrirEditor(RolPermisoRegistro? r)
+    {
+        _edError = null;
+        _editId = r?.Id ?? 0;
+        _crit = string.IsNullOrWhiteSpace(r?.Criteria) ? null : CriteriaOperator.Parse(r!.Criteria);
+        var acc = r?.Acciones ?? PermissionAction.Read;
+        _edLeer = (acc & PermissionAction.Read) != 0;
+        _edModificar = (acc & PermissionAction.Write) != 0;
+        _edBorrar = (acc & PermissionAction.Delete) != 0;
+        _editorVisible = true;
+    }
+
+    private async Task GuardarAsync()
+    {
+        _edError = null;
+        var criteria = _crit?.ToString();
+        if (string.IsNullOrWhiteSpace(criteria)) { _edError = "Definí un criterio."; return; }
+
+        var acciones = PermissionAction.None;
+        if (_edLeer) acciones |= PermissionAction.Read;
+        if (_edModificar) acciones |= PermissionAction.Write;
+        if (_edBorrar) acciones |= PermissionAction.Delete;
+        if (acciones == PermissionAction.None) { _edError = "Elegí al menos una acción."; return; }
+
+        try
+        {
+            await Admin.SavePermisoRegistroAsync(_editId, RolId, Tabla, acciones, criteria);
+            _editorVisible = false;
+            _registros = (await Admin.ListPermisosRegistroAsync(RolId, Tabla)).ToList();
+            Toasts.Exito("Criterio guardado.");
+        }
+        catch (SeguridadAdminException ex) { _edError = ex.Message; }
+    }
+
+    private async Task BorrarAsync(RolPermisoRegistro r)
+    {
+        await Admin.DeletePermisoRegistroAsync(r.Id);
+        _registros = (await Admin.ListPermisosRegistroAsync(RolId, Tabla)).ToList();
+    }
+
+    private static string DescribirAcciones(PermissionAction a)
+    {
+        var partes = new List<string>();
+        if ((a & PermissionAction.Read) != 0) partes.Add("Leer");
+        if ((a & PermissionAction.Write) != 0) partes.Add("Modificar");
+        if ((a & PermissionAction.Delete) != 0) partes.Add("Borrar");
+        return partes.Count == 0 ? "—" : string.Join(" · ", partes);
+    }
+
+    private sealed class CampoVm
+    {
+        public string Columna { get; set; } = "";
+        public string Caption { get; set; } = "";
+        public bool Leer { get; set; } = true;
+        public bool Modificar { get; set; } = true;
+    }
+}
