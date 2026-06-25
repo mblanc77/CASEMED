@@ -43,6 +43,7 @@ public static class BusinessServiceCollectionExtensions
         services.AddScoped<CertificacionService>();
         services.AddScoped<PrimaService>();
         services.AddScoped<AfiliadoService>();
+        services.AddScoped<AdPreJubService>();
         services.AddScoped<ReintegroService>();
         services.AddScoped<PrestacionService>();
         services.AddScoped<RecetaService>();
