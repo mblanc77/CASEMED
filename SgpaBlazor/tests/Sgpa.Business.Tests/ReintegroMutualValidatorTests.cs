@@ -1,3 +1,4 @@
+using Sgpa.Business.Afiliados;
 using Sgpa.Business.Reintegros;
 using Sgpa.Domain.Entities;
 using Xunit;
@@ -9,7 +10,7 @@ public class ReintegroMutualValidatorTests
 {
     // Los avisos (ruleset "Avisos", async, consulta a base) no se ejecutan en Validate() por defecto, así que el
     // service con db nula nunca se toca: estos tests cubren sólo las reglas síncronas (mes/año).
-    private readonly ReintegroMutualValidator _v = new(new ReintegroService(null!));
+    private readonly ReintegroMutualValidator _v = new(new ReintegroService(null!), new AfiliadoService(null!));
 
     [Fact]
     public void Mes_y_anio_validos_es_valido()

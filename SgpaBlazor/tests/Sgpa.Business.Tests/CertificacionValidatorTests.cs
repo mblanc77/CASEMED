@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Sgpa.Business.Afiliados;
 using Sgpa.Business.Certificaciones;
 using Sgpa.Domain.Entities;
 using Xunit;
@@ -11,7 +12,7 @@ public class CertificacionValidatorTests
 {
     // Los avisos por días (ruleset "Avisos", async, consulta a base) no se ejecutan en Validate() por defecto, así
     // que el service con db nula nunca se toca: estos tests cubren sólo las reglas síncronas (fechas).
-    private readonly CertificacionValidator _v = new(new CertificacionService(null!));
+    private readonly CertificacionValidator _v = new(new CertificacionService(null!), new AfiliadoService(null!));
 
     [Fact]
     public void No_efectiva_no_exige_fechas()

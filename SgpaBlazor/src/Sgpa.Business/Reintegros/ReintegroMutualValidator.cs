@@ -1,5 +1,6 @@
 using FluentValidation;
 using FluentValidation.Results;
+using Sgpa.Business.Afiliados;
 using Sgpa.Domain.Entities;
 
 namespace Sgpa.Business.Reintegros;
@@ -13,13 +14,21 @@ namespace Sgpa.Business.Reintegros;
 /// </summary>
 public sealed class ReintegroMutualValidator : AbstractValidator<ReintegroMutual>
 {
-    public ReintegroMutualValidator(ReintegroService service)
+    public ReintegroMutualValidator(ReintegroService service, AfiliadoService afiliados)
     {
         RuleFor(r => r.Mes).InclusiveBetween(1, 12).WithMessage("Ingresá un mes válido (1 a 12).");
         RuleFor(r => r.Anio).GreaterThan(0).WithMessage("Ingresá un año válido.");
 
         RuleSet("Avisos", () =>
         {
+            // FK del afiliado: la cédula debe corresponder a un afiliado existente (bloquea).
+            RuleFor(r => r).CustomAsync(async (r, ctx, ct) =>
+            {
+                if (r.CI > 0 && !await afiliados.ExisteAsync(r.CI, ct))
+                    ctx.AddFailure(new ValidationFailure(nameof(ReintegroMutual.CI),
+                        "No existe la cédula ingresada en los afiliados.") { Severity = Severity.Error });
+            });
+
             RuleFor(r => r).CustomAsync(async (r, ctx, ct) =>
             {
                 foreach (var aviso in await service.GetAvisosAsync(r, ct))

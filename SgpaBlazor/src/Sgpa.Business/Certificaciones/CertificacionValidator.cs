@@ -1,5 +1,6 @@
 using FluentValidation;
 using FluentValidation.Results;
+using Sgpa.Business.Afiliados;
 using Sgpa.Domain.Entities;
 
 namespace Sgpa.Business.Certificaciones;
@@ -13,7 +14,7 @@ namespace Sgpa.Business.Certificaciones;
 /// </summary>
 public sealed class CertificacionValidator : AbstractValidator<Certificacion>
 {
-    public CertificacionValidator(CertificacionService service)
+    public CertificacionValidator(CertificacionService service, AfiliadoService afiliados)
     {
         // Estructural: una certificación es siempre de un afiliado. En el VB6 la cédula se validaba contra
         // Afiliado (txtCI_LostFocus) antes de grabar; acá, como mínimo, no se permite una certificación huérfana.
@@ -36,6 +37,23 @@ public sealed class CertificacionValidator : AbstractValidator<Certificacion>
 
         RuleSet("Avisos", () =>
         {
+            // FK del afiliado (port de txtCI_LostFocus): la cédula debe existir en Afiliado —bloquea (Error)— y el
+            // afiliado debería estar activo (≥3 aportes/últimos 12) —en el VB6 era un aviso, acá Warning no bloqueante.
+            RuleFor(c => c).CustomAsync(async (c, ctx, ct) =>
+            {
+                if (c.CI is not > 0) return;
+                if (!await afiliados.ExisteAsync(c.CI.Value, ct))
+                {
+                    ctx.AddFailure(new ValidationFailure(nameof(Certificacion.CI),
+                        "No existe la cédula ingresada en los afiliados.") { Severity = Severity.Error });
+                    return;
+                }
+                if (!await afiliados.EsActivoAsync(c.CI.Value, ct))
+                    ctx.AddFailure(new ValidationFailure(nameof(Certificacion.CI),
+                        "El afiliado no está activo (no aportó al menos 3 meses en los últimos 12). Verificá antes de certificar.")
+                        { Severity = Severity.Warning });
+            });
+
             RuleFor(c => c).CustomAsync(async (c, ctx, ct) =>
             {
                 foreach (var aviso in await service.GetAvisosDiasAsync(c, ct))

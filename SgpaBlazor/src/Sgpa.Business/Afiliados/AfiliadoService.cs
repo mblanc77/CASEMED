@@ -63,6 +63,28 @@ public sealed class AfiliadoService
             new { ci = (int)ci, mes, mesIni }, cancellationToken: ct);
     }
 
+    /// <summary>True si la cédula corresponde a un afiliado existente (port de la verificación 100_Afiliado_CI
+    /// que el VB6 hacía en txtCI_LostFocus antes de aceptar una certificación/prestación/reintegro).</summary>
+    public async Task<bool> ExisteAsync(long ci, CancellationToken ct = default)
+    {
+        if (ci <= 0) return false;
+        return await _db.ExecuteScalarAsync<int?>(
+            "SELECT 1 FROM dbo.Afiliado WHERE CI=@ci", new { ci = (int)ci }, cancellationToken: ct).ConfigureAwait(false) is not null;
+    }
+
+    /// <summary>
+    /// True si el afiliado está "activo" según el VB6 (Bcpart.AfiliadoActivo): al menos 3 aportes mensuales
+    /// (concepto 1, empleo vigente) en los últimos 12 meses (403_AportesUlt12xCI). Si no existe o no aportó, false.
+    /// </summary>
+    public async Task<bool> EsActivoAsync(long ci, CancellationToken ct = default)
+    {
+        if (ci <= 0) return false;
+        var aportes = await _db.ExecuteScalarAsync<int?>(
+            "SELECT COUNT(*) FROM dbo.acc_sgpa_403_AportesUlt12xCI_q(@ci)",
+            new { ci = (int)ci }, cancellationToken: ct).ConfigureAwait(false) ?? 0;
+        return aportes >= 3;
+    }
+
     // Umbral de elegibilidad compartido (reintegros, prestaciones): 1,25 SMN.
     private const double FactorElegibilidad = 1.25;
 

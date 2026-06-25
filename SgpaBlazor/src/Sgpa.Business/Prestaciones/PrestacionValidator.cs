@@ -1,5 +1,6 @@
 using FluentValidation;
 using FluentValidation.Results;
+using Sgpa.Business.Afiliados;
 using Sgpa.Domain.Entities;
 
 namespace Sgpa.Business.Prestaciones;
@@ -13,10 +14,18 @@ namespace Sgpa.Business.Prestaciones;
 /// </summary>
 public sealed class PrestacionValidator : AbstractValidator<Prestacion>
 {
-    public PrestacionValidator(PrestacionService service)
+    public PrestacionValidator(PrestacionService service, AfiliadoService afiliados)
     {
         RuleSet("Avisos", () =>
         {
+            // FK del afiliado: la cédula debe corresponder a un afiliado existente (bloquea).
+            RuleFor(p => p).CustomAsync(async (p, ctx, ct) =>
+            {
+                if (p.CI > 0 && !await afiliados.ExisteAsync(p.CI, ct))
+                    ctx.AddFailure(new ValidationFailure(nameof(Prestacion.CI),
+                        "No existe la cédula ingresada en los afiliados.") { Severity = Severity.Error });
+            });
+
             RuleFor(p => p).CustomAsync(async (p, ctx, ct) =>
             {
                 foreach (var aviso in await service.GetAvisosAsync(p, ct))
