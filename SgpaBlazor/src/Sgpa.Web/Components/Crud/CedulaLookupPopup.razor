@@ -1,0 +1,102 @@
+@using Sgpa.Business.Afiliados
+@inject AfiliadoService Afiliado
+@*
+    Popup de búsqueda de afiliados para los campos FK de cédula (CI). Se abre con F1 desde el editor
+    de cédula (SgpaPropertyEditor). Presenta una caja de búsqueda por cédula/nombre/apellido y una
+    grilla simplificada (cédula, apellidos, nombres, fecha de nacimiento, especialidad). Al elegir un
+    registro (clic en la fila o botón "Elegir") devuelve la cédula al invocante por OnSeleccionado y se
+    cierra. Pensado para reutilizarse en cualquier formulario con una FK a Afiliado.
+*@
+
+<DxPopup @bind-Visible="_visible" HeaderText="Buscar afiliado (F1)" Width="min(820px, 96vw)"
+         CloseOnEscape="true" ShowFooter="false">
+    <BodyContentTemplate>
+        <div class="mb-2" @onkeydown="OnSearchKeyDown">
+            <DxTextBox @ref="_searchBox" Text="@_termino" TextChanged="OnTextChanged"
+                       NullText="Cédula, nombre o apellido…" BindValueMode="BindValueMode.OnInput" />
+        </div>
+        <div class="small text-muted mb-1">Hacé clic en una fila (o en “Elegir”) para seleccionar el afiliado.</div>
+        <DxGrid Data="_resultados" PageSize="10" CssClass="w-100"
+                SelectionMode="GridSelectionMode.Single" AllowSelectRowByClick="true"
+                SelectedDataItemChanged="OnRowSelected">
+            <Columns>
+                <DxGridDataColumn Width="64px" AllowSort="false">
+                    <CellDisplayTemplate Context="cell">
+                        <DxButton Text="Elegir" RenderStyle="ButtonRenderStyle.Link" SizeMode="SizeMode.Small"
+                                  Click="@(() => Seleccionar((AfiliadoBusqueda)cell.DataItem))" />
+                    </CellDisplayTemplate>
+                </DxGridDataColumn>
+                <DxGridDataColumn FieldName="CI" Caption="Cédula" Width="120px" DisplayFormat="0" />
+                <DxGridDataColumn FieldName="Apellidos" Caption="Apellidos" />
+                <DxGridDataColumn FieldName="Nombres" Caption="Nombres" />
+                <DxGridDataColumn FieldName="FechaNacimiento" Caption="Fecha nac." Width="120px" DisplayFormat="d" />
+                <DxGridDataColumn FieldName="Especialidades" Caption="Especialidad" />
+            </Columns>
+        </DxGrid>
+    </BodyContentTemplate>
+</DxPopup>
+
+@code {
+    /// <summary>Se invoca con la cédula elegida; el invocante rellena su campo CI.</summary>
+    [Parameter] public EventCallback<long> OnSeleccionado { get; set; }
+
+    private bool _visible;
+    private DxTextBox? _searchBox;
+    private bool _focusPending;
+    private string _termino = "";
+    private IReadOnlyList<AfiliadoBusqueda> _resultados = Array.Empty<AfiliadoBusqueda>();
+    private CancellationTokenSource? _cts;
+
+    /// <summary>Abre el popup en limpio (lo llama el editor de cédula al recibir F1).</summary>
+    public Task AbrirAsync()
+    {
+        _termino = "";
+        _resultados = Array.Empty<AfiliadoBusqueda>();
+        _visible = true;
+        _focusPending = true;
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_focusPending && _searchBox is not null)
+        {
+            _focusPending = false;
+            try { await _searchBox.FocusAsync(); } catch { /* el popup todavía no montó el input */ }
+        }
+    }
+
+    // Búsqueda en vivo (estilo XAF) con un pequeño debounce para no consultar en cada tecla.
+    private async Task OnTextChanged(string texto)
+    {
+        _termino = texto;
+        _cts?.Cancel();
+        _cts = new CancellationTokenSource();
+        var ct = _cts.Token;
+        try
+        {
+            await Task.Delay(250, ct);
+            _resultados = await Afiliado.BuscarAsync(_termino, ct: ct);
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (OperationCanceledException) { /* tecla siguiente canceló esta búsqueda */ }
+    }
+
+    // Enter: si hay una sola coincidencia, la elige directamente (atajo cómodo).
+    private async Task OnSearchKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key is "Enter" or "NumpadEnter" && _resultados.Count == 1)
+            await Seleccionar(_resultados[0]);
+    }
+
+    private Task OnRowSelected(object? item)
+        => item is AfiliadoBusqueda b ? Seleccionar(b) : Task.CompletedTask;
+
+    private async Task Seleccionar(AfiliadoBusqueda b)
+    {
+        _visible = false;
+        _cts?.Cancel();
+        await OnSeleccionado.InvokeAsync(b.CI);
+    }
+}

@@ -8,10 +8,14 @@ namespace Sgpa.Business.Afiliados;
 /// ingresos (cmdPromedio / Promedio), que promedia los imponibles mensuales (concepto 1, empleos activos)
 /// de los 6 meses que terminan 2 meses atrás. No depende de IMS.
 /// </summary>
-/// <summary>Una coincidencia de la búsqueda de afiliados (cédula + nombre).</summary>
-public sealed record AfiliadoBusqueda(long CI, string? Apellido1, string? Apellido2, string? Nombres)
+/// <summary>Una coincidencia de la búsqueda de afiliados (cédula + nombre + datos para el lookup F1).</summary>
+public sealed record AfiliadoBusqueda(long CI, string? Apellido1, string? Apellido2, string? Nombres,
+    DateTime? FechaNacimiento = null, string? Especialidades = null)
 {
     public string NombreCompleto => $"{Apellido1} {Apellido2}, {Nombres}".Replace("  ", " ").Trim().Trim(',').Trim();
+
+    /// <summary>Apellidos concatenados (sin nombres), para la grilla del lookup.</summary>
+    public string Apellidos => $"{Apellido1} {Apellido2}".Replace("  ", " ").Trim();
 }
 
 public sealed class AfiliadoService
@@ -37,13 +41,18 @@ public sealed class AfiliadoService
         {
             p.Add($"w{i}", "%" + palabras[i] + "%");
             p.Add($"c{i}", palabras[i] + "%");
-            conds.Add($"(Nombres LIKE @w{i} OR Apellido1 LIKE @w{i} OR Apellido2 LIKE @w{i} OR CAST(CI AS nvarchar(20)) LIKE @c{i})");
+            conds.Add($"(a.Nombres LIKE @w{i} OR a.Apellido1 LIKE @w{i} OR a.Apellido2 LIKE @w{i} OR CAST(a.CI AS nvarchar(20)) LIKE @c{i})");
         }
 
-        var sql = $@"SELECT TOP (@max) CI, Apellido1, Apellido2, Nombres
-                     FROM dbo.Afiliado
+        // Las especialidades del afiliado (0..n) se concatenan con STRING_AGG para mostrarlas en una sola columna.
+        var sql = $@"SELECT TOP (@max) a.CI, a.Apellido1, a.Apellido2, a.Nombres, a.FechaNacimiento,
+                            (SELECT STRING_AGG(e.Descrip, ', ')
+                             FROM dbo.AfiliadoEspecialidad ae
+                             JOIN dbo.Especialidad e ON e.CodEspecialidad = ae.CodEspecialidad
+                             WHERE ae.CI = a.CI) AS Especialidades
+                     FROM dbo.Afiliado a
                      WHERE {string.Join(" AND ", conds)}
-                     ORDER BY Apellido1, Apellido2, Nombres";
+                     ORDER BY a.Apellido1, a.Apellido2, a.Nombres";
         return _db.QueryAsync<AfiliadoBusqueda>(sql, p, cancellationToken: ct);
     }
 

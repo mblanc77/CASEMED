@@ -38,9 +38,16 @@ else if (string.Equals(Column.Name, "CI", StringComparison.OrdinalIgnoreCase)
          && (t == typeof(long) || t == typeof(int)))
 {
     @* Cédula: textbox numérico sin spinners ni separadores de miles (DisplayFormat="0"). El rango (7-9 dígitos)
-       lo valida AfiliadoValidator; NO se usa MinValue/MaxValue porque DxSpinEdit clampea el valor. *@
-    <DxSpinEdit @ref="_cedulaEdit" T="long?" Value="@(GetNullable<long>())" ValueChanged="@((long? v) => Set(v))"
-                ReadOnly="ReadOnly" ValidationEnabled="false" NullText=" " ShowSpinButtons="false" DisplayFormat="0" />
+       lo valida AfiliadoValidator; NO se usa MinValue/MaxValue porque DxSpinEdit clampea el valor.
+       Si la columna es una FK a Afiliado (no la identidad propia) y es editable, F1 abre el lookup de afiliados. *@
+    <div @onkeydown="OnCedulaKeyDown">
+        <DxSpinEdit @ref="_cedulaEdit" T="long?" Value="@(GetNullable<long>())" ValueChanged="@((long? v) => Set(v))"
+                    ReadOnly="ReadOnly" ValidationEnabled="false" NullText=" " ShowSpinButtons="false" DisplayFormat="0" />
+    </div>
+    @if (_ciIsAfiliadoFk)
+    {
+        <CedulaLookupPopup @ref="_lookupPopup" OnSeleccionado="OnAfiliadoSeleccionado" />
+    }
 }
 else if (t == typeof(int) || t == typeof(long) || t == typeof(short) || t == typeof(byte))
 {
@@ -71,6 +78,10 @@ else
 
     private DxSpinEdit<long?>? _cedulaEdit;
 
+    // Popup de búsqueda de afiliados (F1) cuando la cédula es una FK a Afiliado.
+    private CedulaLookupPopup? _lookupPopup;
+    private bool _ciIsAfiliadoFk;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && AutoFocus && _cedulaEdit is not null)
@@ -85,11 +96,28 @@ else
         if (Owner is null) return;
         // La cédula (CI) siempre es un textbox numérico que se tipea, nunca un combo (Afiliado es enorme y, además,
         // se quiere ingresar el número). Evita cargar el lookup de Afiliado y caer en un combo vacío.
-        if (IsCedula) return;
+        if (IsCedula)
+        {
+            // ¿Es una FK a Afiliado (no la identidad propia del registro)? Sólo entonces tiene sentido el lookup F1.
+            _ciIsAfiliadoFk = EntityCatalog.LookupDisplayTargetFor(Column, Owner) is { } tgt
+                && tgt.Table.Equals("Afiliado", StringComparison.OrdinalIgnoreCase);
+            return;
+        }
         var target = EntityCatalog.LookupTargetFor(Column, Owner);
         if (target is not null)
             _lookup = await Lookups.GetAsync(target.EntityType);
     }
+
+    // F1 sobre el editor de cédula (si es FK a Afiliado y está editable): abre el popup de búsqueda de afiliados.
+    private async Task OnCedulaKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "F1" && _ciIsAfiliadoFk && !ReadOnly && _lookupPopup is not null)
+            await _lookupPopup.AbrirAsync();
+    }
+
+    // El usuario eligió un afiliado en el popup: se rellena la cédula como si la hubiera tipeado (Set re-resuelve
+    // la descripción FK y valida la existencia vía OnFieldCommitted).
+    private Task OnAfiliadoSeleccionado(long ci) => Set(ci);
 
     private bool IsCedula => string.Equals(Column.Name, "CI", StringComparison.OrdinalIgnoreCase)
         && (Column.UnderlyingType == typeof(long) || Column.UnderlyingType == typeof(int));

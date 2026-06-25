@@ -461,34 +461,8 @@
     </BodyContentTemplate>
 </DxPopup>
 
-@* --- Buscar afiliado (port de cmdBuscar / frmBuscarxNombre): por cédula o nombre/apellido --- *@
-<DxPopup @bind-Visible="_showBuscar" HeaderText="Buscar afiliado" Width="820px" CloseOnEscape="true">
-    <BodyContentTemplate Context="popup">
-        <div class="mb-2">
-            @* Una sola caja: escribí cédula o nombre/apellido (varias palabras); busca en vivo. *@
-            <DxTextBox Text="@_buscarTermino" TextChanged="OnBuscarTextChanged" BindValueMode="BindValueMode.OnInput"
-                       NullText="Buscar por cédula o nombre…" ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto" />
-        </div>
-        <div class="small text-muted mb-1">Hacé clic en una fila (o en “Elegir”) para cargar el afiliado.</div>
-        <DxGrid Data="_buscarResultados" PageSize="10" CssClass="w-100"
-                SelectionMode="GridSelectionMode.Single" AllowSelectRowByClick="true"
-                SelectedDataItemChanged="OnBuscarRowSelected">
-            <Columns>
-                <DxGridDataColumn  Width="60px" AllowSort="false">
-                    <CellDisplayTemplate Context="cell">
-                        <DxButton Text="Elegir" RenderStyle="ButtonRenderStyle.Link" SizeMode="SizeMode.Small"
-                                  Click="@(() => SeleccionarAfiliadoAsync((AfiliadoBusqueda)cell.DataItem))" />
-                    </CellDisplayTemplate>
-                </DxGridDataColumn>
-                <DxGridDataColumn FieldName="CI" Caption="Cédula" Width="130px" DisplayFormat="0" />
-                <DxGridDataColumn Caption="Afiliado">
-                    <CellDisplayTemplate Context="cell">@(((AfiliadoBusqueda)cell.DataItem).NombreCompleto)</CellDisplayTemplate>
-                </DxGridDataColumn>
-         
-            </Columns>
-        </DxGrid>
-    </BodyContentTemplate>
-</DxPopup>
+@* --- Buscar afiliado (port de cmdBuscar / frmBuscarxNombre): popup reutilizable compartido con los campos FK de cédula --- *@
+<CedulaLookupPopup @ref="_lookupPopup" OnSeleccionado="SeleccionarAfiliadoAsync" />
 
 <Sgpa.Web.Components.Reportes.PrestamoReportesDialog @ref="_reportesDialog" />
 
@@ -506,9 +480,7 @@
     private int? _nroPrestamoBuscar;
     private bool _showComentarios, _showDetalleIngreso;
     private bool _showFacturas, _showCuotas, _showPagosParciales, _showRetenciones;
-    private bool _showBuscar;
-    private string _buscarTermino = "";
-    private IReadOnlyList<AfiliadoBusqueda> _buscarResultados = Array.Empty<AfiliadoBusqueda>();
+    private CedulaLookupPopup? _lookupPopup;
     private IReadOnlyList<ImpLiquidoVm> _impLiquidos = Array.Empty<ImpLiquidoVm>();
     private List<TipoVm> _tipos = new();
     private List<MonedaInfo> _monedas = new();
@@ -666,7 +638,7 @@
     private async Task OnCedulaKeyDown(KeyboardEventArgs e)
     {
         if (e.Key is "Enter" or "NumpadEnter") await BuscarAfiliadoAsync();
-        else if (e.Key == "F1" && !_editMode) AbrirBuscarAfiliado();
+        else if (e.Key == "F1" && !_editMode) await AbrirBuscarAfiliado();
     }
 
     // Enter en "Abrir Nº préstamo" → abre el préstamo existente (port de txtNroPrestamo_KeyPress).
@@ -699,39 +671,15 @@
         public double Importe { get; set; }
     }
 
-    // Buscar afiliado (popup): por cédula o nombre/apellido. Al elegir, carga como si se hubiera tipeado el CI.
-    private void AbrirBuscarAfiliado()
+    // Buscar afiliado (popup reutilizable): por cédula o nombre/apellido. Al elegir, carga como si se hubiera tipeado el CI.
+    private async Task AbrirBuscarAfiliado()
     {
-        _buscarTermino = "";
-        _buscarResultados = Array.Empty<AfiliadoBusqueda>();
-        _showBuscar = true;
+        if (_lookupPopup is not null) await _lookupPopup.AbrirAsync();
     }
 
-    private CancellationTokenSource? _buscarCts;
-
-    // Búsqueda en vivo (estilo XAF) con un pequeño debounce para no consultar en cada tecla.
-    private async Task OnBuscarTextChanged(string texto)
+    private async Task SeleccionarAfiliadoAsync(long ci)
     {
-        _buscarTermino = texto;
-        _buscarCts?.Cancel();
-        _buscarCts = new CancellationTokenSource();
-        var ct = _buscarCts.Token;
-        try
-        {
-            await Task.Delay(250, ct);
-            _buscarResultados = await Afiliado.BuscarAsync(_buscarTermino, ct: ct);
-            await InvokeAsync(StateHasChanged);
-        }
-        catch (OperationCanceledException) { /* tecla siguiente canceló esta búsqueda */ }
-    }
-
-    private Task OnBuscarRowSelected(object? item)
-        => item is AfiliadoBusqueda b ? SeleccionarAfiliadoAsync(b) : Task.CompletedTask;
-
-    private async Task SeleccionarAfiliadoAsync(AfiliadoBusqueda b)
-    {
-        _ci = b.CI;
-        _showBuscar = false;
+        _ci = ci;
         await BuscarAfiliadoAsync();
     }
 

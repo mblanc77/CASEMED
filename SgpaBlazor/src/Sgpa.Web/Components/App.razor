@@ -38,6 +38,11 @@
             return false;
         };
         (function () {
+            // F1 es el atajo de "buscar afiliado" en los campos FK de cédula. Suprimimos la ayuda del navegador
+            // (que F1 abre por defecto) en fase de captura; el evento igual llega al handler keydown de Blazor.
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'F1') e.preventDefault();
+            }, true);
             // Recarga / cierre de pestaña / navegación externa o full-page.
             window.addEventListener('beforeunload', function (e) {
                 if (window.sgpaUnsaved.dirty) { e.preventDefault(); e.returnValue = ''; }
