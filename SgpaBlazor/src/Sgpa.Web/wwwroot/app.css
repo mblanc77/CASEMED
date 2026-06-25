@@ -318,7 +318,7 @@ body { font-family: var(--bs-body-font-family); font-weight: 500; }
 }
 
 /* Fila de grilla atenuada (ej. empleos dados de baja en AbmAfili): SgpaCrudView.RowCssClass la aplica al <tr>. */
-.sgpa-fila-baja, .sgpa-fila-baja td { color: #9ca3af; }
+.sgpa-fila-baja, .sgpa-fila-baja td { color: #d40000; text-decoration: line-through; opacity: .75;}
 
 /* Fichas (DxTabs) en varias filas cuando no entran en el ancho: DxTabs no trae modo multi-fila nativo
    (sólo scroll). Con ScrollMode=NoScroll + flex-wrap, la barra de fichas envuelve en varias líneas. */
