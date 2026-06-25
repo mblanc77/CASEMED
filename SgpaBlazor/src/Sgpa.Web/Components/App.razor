@@ -43,6 +43,41 @@
             document.addEventListener('keydown', function (e) {
                 if (e.key === 'F1') e.preventDefault();
             }, true);
+
+            // --- Atajos de teclado de las vistas CRUD (SgpaCrudView) ---
+            // Cada vista CRUD activa se registra acá; el último registrado (tope de la pila) recibe el atajo. Se
+            // bloquea el default del navegador SOLO para los chords que mapeamos; Supr/F2 se ignoran si el foco
+            // está en un campo editable (para no romper la edición de texto). El esquema evita choques con el
+            // navegador: Alt+N nuevo, Ctrl+S guardar, Supr eliminar, F2 editar, Alt+R refrescar, Ctrl+B buscar.
+            window.sgpaShortcutHandlers = window.sgpaShortcutHandlers || [];
+            window.sgpaRegisterShortcuts = function (ref) { window.sgpaShortcutHandlers.push(ref); };
+            window.sgpaUnregisterShortcuts = function (ref) {
+                var i = window.sgpaShortcutHandlers.indexOf(ref);
+                if (i >= 0) window.sgpaShortcutHandlers.splice(i, 1);
+            };
+            function sgpaIsEditable(el) {
+                if (!el) return false;
+                var tag = el.tagName;
+                return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || el.isContentEditable === true;
+            }
+            document.addEventListener('keydown', function (e) {
+                if (e.repeat) return;
+                var handlers = window.sgpaShortcutHandlers;
+                if (!handlers.length) return;
+                var action = null, needsNoEdit = false;
+                var k = (e.key || '').toLowerCase();
+                if (e.altKey && !e.ctrlKey && !e.metaKey && k === 'n') action = 'new';
+                else if (e.ctrlKey && !e.altKey && !e.metaKey && k === 's') action = 'save';
+                else if (e.altKey && !e.ctrlKey && !e.metaKey && k === 'r') action = 'refresh';
+                else if (e.ctrlKey && !e.altKey && !e.metaKey && k === 'b') action = 'search';
+                else if (!e.ctrlKey && !e.altKey && !e.metaKey && e.key === 'F2') { action = 'edit'; needsNoEdit = true; }
+                else if (!e.ctrlKey && !e.altKey && !e.metaKey && (e.key === 'Delete' || e.key === 'Del')) { action = 'delete'; needsNoEdit = true; }
+                if (!action) return;
+                if (needsNoEdit && sgpaIsEditable(document.activeElement)) return;
+                e.preventDefault();
+                e.stopPropagation();
+                handlers[handlers.length - 1].invokeMethodAsync('HandleShortcutAsync', action);
+            }, true);
             // Recarga / cierre de pestaña / navegación externa o full-page.
             window.addEventListener('beforeunload', function (e) {
                 if (window.sgpaUnsaved.dirty) { e.preventDefault(); e.returnValue = ''; }

@@ -25,6 +25,8 @@
 @inject IColumnaConfigService ColCfg
 @inject IToastNotificationService Toasts
 @inject ICalculatedFieldCatalog CalcCatalog
+@inject IJSRuntime JS
+@implements IAsyncDisposable
 
 @*
     Componente CRUD genérico (estilo XAF ListView + DetailView en popup).
@@ -89,16 +91,17 @@ else
         <div class="sgpa-toolbar d-flex align-items-center gap-2 flex-wrap p-1">
             @if (CanCreate)
             {
-                <DxButton Text="Nuevo" IconCssClass="fa-solid fa-plus" RenderStyle="ButtonRenderStyle.Primary" Click="NewRowAsync" />
+                <DxButton Text="Nuevo" IconCssClass="fa-solid fa-plus" RenderStyle="ButtonRenderStyle.Primary"
+                          Click="NewRowAsync" Tooltip="Nuevo (Alt+N)" />
             }
             <span class="sgpa-search">
-                <DxTextBox @bind-Text="_search" @bind-Text:after="LimpiarSelTodo" NullText="Buscar…"
+                <DxTextBox @ref="_searchBox" @bind-Text="_search" @bind-Text:after="LimpiarSelTodo" NullText="Buscar… (Ctrl+B)"
                            ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto" />
             </span>
             @* Grupo de herramientas de la vista: refrescar, seleccionar, columnas, totales, restablecer. *@
             <div class="btn-group sgpa-toolbar-group" role="group">
                 <DxButton IconCssClass="fa-solid fa-arrows-rotate" RenderStyle="ButtonRenderStyle.Secondary"
-                          Click="RefreshAsync" Tooltip="Refrescar" />
+                          Click="RefreshAsync" Tooltip="Refrescar (Alt+R)" />
                 @if (CanDelete)
                 {
                     <DxButton IconCssClass="@(_multiSelect ? "fa-solid fa-square-check" : "fa-regular fa-square-check")"
@@ -430,6 +433,7 @@ else
     private const int ClientModeMaxRows = 2000;
 
     private DxGrid? _grid;
+    private DxTextBox? _searchBox;   // para enfocar la búsqueda con Ctrl+B
     private IReadOnlyList<object> _selectedItems = Array.Empty<object>();   // filas seleccionadas (multi)
     private IReadOnlyList<ReporteInfo> _reportes = Array.Empty<ReporteInfo>();   // reportes asociados a esta tabla
     private bool _multiSelect;          // selección múltiple activa (para borrado masivo)
@@ -1267,5 +1271,84 @@ else
             _summaries.Add(new SummaryDef { Column = col, Type = t });
         StateHasChanged();
         _ = SaveVistaAsync();   // los sumarios no son layout nativo: se persisten aparte
+    }
+
+    // ---- Atajos de teclado (esquema sin conflictos con el navegador) ----
+    // Alt+N nuevo · Ctrl+S guardar · Supr eliminar · F2 editar · Alt+R refrescar · Ctrl+B buscar. El listener
+    // global (App.razor) despacha al CRUD activo; acá se ejecuta respetando los permisos (si la acción no está
+    // disponible, no hace nada, igual que cuando el botón no se muestra).
+    private DotNetObjectReference<SgpaCrudView<TEntity>>? _shortcutRef;
+    private bool _shortcutsRegistered;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // Sólo la vista CRUD de nivel superior toma atajos (no las grillas hijas de un master-detail, que tienen
+        // FilterColumn). Se registra post-render para asegurar que el JS de App.razor ya esté cargado.
+        if (firstRender && !_denied && FilterColumn is null && !_shortcutsRegistered)
+        {
+            _shortcutsRegistered = true;
+            _shortcutRef = DotNetObjectReference.Create(this);
+            await JS.InvokeVoidAsync("sgpaRegisterShortcuts", _shortcutRef);
+        }
+    }
+
+    [JSInvokable]
+    public async Task HandleShortcutAsync(string action)
+    {
+        switch (action)
+        {
+            case "new":
+                if (CanCreate) await NewRowAsync();   // NewRowAsync revalida el permiso igual
+                break;
+            case "save":
+                // No-op si no hay edición abierta; los permisos se revalidan en OnEditModelSavingAsync.
+                if (_grid is not null) await _grid.SaveChangesAsync();
+                break;
+            case "edit":
+                if (CanWrite && _grid is not null && _selectedItems.Count == 1 && _selectedItems[0] is TEntity sel)
+                    await _grid.StartEditDataItemAsync(sel);
+                break;
+            case "delete":
+                ShortcutDelete();
+                break;
+            case "refresh":
+                await RefreshAsync();
+                break;
+            case "search":
+                if (_searchBox is not null) await _searchBox.FocusAsync();
+                break;
+        }
+        StateHasChanged();
+    }
+
+    // Borrado por atajo (Supr): abre la confirmación que corresponda según el modo/selección. Respeta CanDelete.
+    private void ShortcutDelete()
+    {
+        if (!CanDelete) return;
+        if (_multiSelect && SelCount > 0)
+        {
+            _confirmText = string.Empty;
+            _confirmBulkDelete = true;
+        }
+        else if (_selectedItems.Count == 1 && _selectedItems[0] is TEntity one)
+        {
+            _itemToDelete = one;
+            _confirmText = string.Empty;
+            _confirmDelete = true;
+        }
+        else
+        {
+            Toasts.Aviso("Seleccioná una fila para eliminar (clic en la fila).");
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_shortcutRef is not null)
+        {
+            try { await JS.InvokeVoidAsync("sgpaUnregisterShortcuts", _shortcutRef); }
+            catch { /* el circuito ya se cerró: nada que desregistrar */ }
+            _shortcutRef.Dispose();
+        }
     }
 }
