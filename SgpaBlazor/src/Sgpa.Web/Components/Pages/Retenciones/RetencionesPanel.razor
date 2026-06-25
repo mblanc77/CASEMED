@@ -228,6 +228,8 @@
     {
         var seleccionadas = _facturasSel.Where(s => s.Sel).Select(s => new FacturaRetencion(s.F.NroFactura, s.F.Importe, s.F.ImpMora)).ToList();
         if (seleccionadas.Count == 0) { Toasts.Aviso("Seleccioná al menos una factura."); return; }
+        // Port de frmIngRetencion: el tipo de cambio convierte el importe a pesos; con 0 anularía el total.
+        if (_retTipoCambio <= 0) { Toasts.Aviso("Ingresá un tipo de cambio mayor a cero."); return; }
 
         _guardando = true;
         try
@@ -245,6 +247,11 @@
 
     private async Task GrabarPagoAsync()
     {
+        // Port de frmIngRetencionPago: mes/año a cobrar válidos e importe mayor a cero.
+        if (_pagoMes is < 1 or > 12) { Toasts.Aviso("Ingresá el mes a cobrar (1 a 12)."); return; }
+        if (_pagoAnio <= 0) { Toasts.Aviso("Ingresá el año a cobrar."); return; }
+        if (_pagoImporte <= 0) { Toasts.Aviso("Ingresá un importe mayor a cero."); return; }
+
         _guardando = true;
         try
         {
