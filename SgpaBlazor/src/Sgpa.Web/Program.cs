@@ -115,6 +115,9 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<WebCurrentUser>();
 builder.Services.AddScoped<ICurrentUser>(sp => sp.GetRequiredService<WebCurrentUser>());
 
+// Compilador real de criterios de seguridad por registro (DevExpress → FilterNode). Sustituye al no-op de AddSgpaData.
+builder.Services.AddScoped<Sgpa.Data.Security.ISecurityCriteriaCompiler, Sgpa.Web.Security.SgpaSecurityCriteriaCompiler>();
+
 // Enriquece el logging con el usuario del circuito (para que las no controladas registren quién las disparó).
 builder.Services.AddScoped<Microsoft.AspNetCore.Components.Server.Circuits.CircuitHandler, Sgpa.Web.Logging.UserLogCircuitHandler>();
 

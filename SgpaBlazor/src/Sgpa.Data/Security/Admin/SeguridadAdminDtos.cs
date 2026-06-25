@@ -35,3 +35,25 @@ public sealed record RolPermiso
     public required string Tabla { get; init; }
     public PermissionAction Acciones { get; init; } = PermissionAction.None;
 }
+
+/// <summary>Restricción por columna de un rol (seg.RolPermisoColumna). Sin fila = acceso pleno (Leer=Modificar=true).</summary>
+public sealed record RolPermisoColumna
+{
+    public int RolId { get; init; }
+    public required string Tabla { get; init; }
+    public required string Columna { get; init; }
+    public bool Leer { get; init; } = true;
+    public bool Modificar { get; init; } = true;
+}
+
+/// <summary>Filtro por registro de un rol (seg.RolPermisoRegistro): criterio + a qué acciones aplica.</summary>
+public sealed record RolPermisoRegistro
+{
+    public int Id { get; init; }
+    public int RolId { get; init; }
+    public required string Tabla { get; init; }
+    /// <summary>Acciones gateadas por el criterio (flags acotado a Read/Write/Delete).</summary>
+    public PermissionAction Acciones { get; init; } = PermissionAction.Read;
+    /// <summary>String CriteriaOperator (DevExpress) que limita las filas.</summary>
+    public required string Criteria { get; init; }
+}

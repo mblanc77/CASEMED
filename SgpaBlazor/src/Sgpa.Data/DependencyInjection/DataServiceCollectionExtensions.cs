@@ -25,6 +25,9 @@ public static class DataServiceCollectionExtensions
         services.AddScoped<ISgpaLookupService, DapperLookupService>();
         services.AddScoped<ISavedFilterService, DapperSavedFilterService>();
         services.AddScoped<ISecurityService, DapperSecurityService>();
+        // Compilador de criterios de seguridad por registro: no-op por defecto (sin DevExpress); la capa Web
+        // registra la implementación real que traduce el CriteriaOperator a FilterNode.
+        services.TryAddScoped<ISecurityCriteriaCompiler, NoopSecurityCriteriaCompiler>();
         services.AddScoped<Security.Admin.ISeguridadAdminService, Security.Admin.SeguridadAdminService>();
         services.AddScoped<IErrorLog, ErrorLog>();
         services.AddScoped<IPreferenciaVistaStore, DapperPreferenciaVistaStore>();

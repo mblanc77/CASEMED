@@ -1,5 +1,6 @@
 @page "/seguridad/roles/{RolId:int}/permisos"
 @rendermode InteractiveServer
+@using DevExpress.Data.Filtering
 @using Sgpa.Data.Configuracion
 @using Sgpa.Data.Security.Admin
 @using Sgpa.Domain.Metadata
@@ -30,57 +31,212 @@ else
 
     @if (_rol.EsAdmin)
     {
-        <div class="alert alert-info">Este rol es <strong>administrador</strong>: tiene acceso total y omite los permisos por tabla.</div>
+        <div class="alert alert-info">Este rol es <strong>administrador</strong>: tiene acceso total y omite todos los permisos (tabla, campo y registro).</div>
     }
     else
     {
-        <p class="text-muted small mb-3">
-            Marcá las acciones permitidas por tabla. Los cambios se guardan al instante.
-            <strong>Leer</strong> = ver/listar · <strong>Crear</strong> = alta · <strong>Modificar</strong> = edición · <strong>Borrar</strong> = baja.
-        </p>
+        <DxTabs>
+            <DxTabPage Text="Tablas" TabIconCssClass="fa-solid fa-table">
+                <div class="p-2">
+                    <p class="text-muted small mb-3">
+                        Marcá las acciones permitidas por tabla. Los cambios se guardan al instante.
+                        <strong>Leer</strong> = ver/listar · <strong>Crear</strong> = alta · <strong>Modificar</strong> = edición · <strong>Borrar</strong> = baja.
+                    </p>
 
-        <div class="mb-3 d-flex gap-2">
-            <DxButton Text="Sólo lectura a todas" RenderStyle="ButtonRenderStyle.Secondary" SizeMode="SizeMode.Small" Click="@(() => SetTodasAsync(PermissionAction.Read))" />
-            <DxButton Text="Acceso total a todas" RenderStyle="ButtonRenderStyle.Secondary" SizeMode="SizeMode.Small" Click="@(() => SetTodasAsync(PermissionAction.All))" />
-            <DxButton Text="Quitar todo" RenderStyle="ButtonRenderStyle.Secondary" SizeMode="SizeMode.Small" Click="@(() => SetTodasAsync(PermissionAction.None))" />
-        </div>
+                    <div class="mb-3 d-flex gap-2">
+                        <DxButton Text="Sólo lectura a todas" RenderStyle="ButtonRenderStyle.Secondary" SizeMode="SizeMode.Small" Click="@(() => SetTodasAsync(PermissionAction.Read))" />
+                        <DxButton Text="Acceso total a todas" RenderStyle="ButtonRenderStyle.Secondary" SizeMode="SizeMode.Small" Click="@(() => SetTodasAsync(PermissionAction.All))" />
+                        <DxButton Text="Quitar todo" RenderStyle="ButtonRenderStyle.Secondary" SizeMode="SizeMode.Small" Click="@(() => SetTodasAsync(PermissionAction.None))" />
+                    </div>
 
-        <DxGrid Data="_items" PageSize="30" ShowSearchBox="true" CssClass="sgpa-grid">
-            <Columns>
-                <DxGridDataColumn FieldName="Display" Caption="Tabla" MinWidth="220">
-                    <CellDisplayTemplate Context="c">
-                        @{ var vm = (Vm)c.DataItem; }
-                        <span>@vm.Display</span> <span class="text-muted small">@vm.Tabla</span>
-                    </CellDisplayTemplate>
-                </DxGridDataColumn>
-                <DxGridDataColumn Caption="Leer" Width="90px" TextAlignment="GridTextAlignment.Center">
-                    <CellDisplayTemplate Context="c">
-                        @{ var vm = (Vm)c.DataItem; }
-                        <DxCheckBox Checked="vm.Read" CheckedChanged="@((bool v) => ToggleAsync(vm, PermissionAction.Read, v))" />
-                    </CellDisplayTemplate>
-                </DxGridDataColumn>
-                <DxGridDataColumn Caption="Crear" Width="90px" TextAlignment="GridTextAlignment.Center">
-                    <CellDisplayTemplate Context="c">
-                        @{ var vm = (Vm)c.DataItem; }
-                        <DxCheckBox Checked="vm.Create" CheckedChanged="@((bool v) => ToggleAsync(vm, PermissionAction.Create, v))" />
-                    </CellDisplayTemplate>
-                </DxGridDataColumn>
-                <DxGridDataColumn Caption="Modificar" Width="100px" TextAlignment="GridTextAlignment.Center">
-                    <CellDisplayTemplate Context="c">
-                        @{ var vm = (Vm)c.DataItem; }
-                        <DxCheckBox Checked="vm.Write" CheckedChanged="@((bool v) => ToggleAsync(vm, PermissionAction.Write, v))" />
-                    </CellDisplayTemplate>
-                </DxGridDataColumn>
-                <DxGridDataColumn Caption="Borrar" Width="90px" TextAlignment="GridTextAlignment.Center">
-                    <CellDisplayTemplate Context="c">
-                        @{ var vm = (Vm)c.DataItem; }
-                        <DxCheckBox Checked="vm.Delete" CheckedChanged="@((bool v) => ToggleAsync(vm, PermissionAction.Delete, v))" />
-                    </CellDisplayTemplate>
-                </DxGridDataColumn>
-            </Columns>
-        </DxGrid>
+                    <DxGrid Data="_items" PageSize="30" ShowSearchBox="true" CssClass="sgpa-grid">
+                        <Columns>
+                            <DxGridDataColumn FieldName="Display" Caption="Tabla" MinWidth="220">
+                                <CellDisplayTemplate Context="c">
+                                    @{ var vm = (Vm)c.DataItem; }
+                                    <span>@vm.Display</span> <span class="text-muted small">@vm.Tabla</span>
+                                </CellDisplayTemplate>
+                            </DxGridDataColumn>
+                            <DxGridDataColumn Caption="Leer" Width="90px" TextAlignment="GridTextAlignment.Center">
+                                <CellDisplayTemplate Context="c">
+                                    @{ var vm = (Vm)c.DataItem; }
+                                    <DxCheckBox Checked="vm.Read" CheckedChanged="@((bool v) => ToggleAsync(vm, PermissionAction.Read, v))" />
+                                </CellDisplayTemplate>
+                            </DxGridDataColumn>
+                            <DxGridDataColumn Caption="Crear" Width="90px" TextAlignment="GridTextAlignment.Center">
+                                <CellDisplayTemplate Context="c">
+                                    @{ var vm = (Vm)c.DataItem; }
+                                    <DxCheckBox Checked="vm.Create" CheckedChanged="@((bool v) => ToggleAsync(vm, PermissionAction.Create, v))" />
+                                </CellDisplayTemplate>
+                            </DxGridDataColumn>
+                            <DxGridDataColumn Caption="Modificar" Width="100px" TextAlignment="GridTextAlignment.Center">
+                                <CellDisplayTemplate Context="c">
+                                    @{ var vm = (Vm)c.DataItem; }
+                                    <DxCheckBox Checked="vm.Write" CheckedChanged="@((bool v) => ToggleAsync(vm, PermissionAction.Write, v))" />
+                                </CellDisplayTemplate>
+                            </DxGridDataColumn>
+                            <DxGridDataColumn Caption="Borrar" Width="90px" TextAlignment="GridTextAlignment.Center">
+                                <CellDisplayTemplate Context="c">
+                                    @{ var vm = (Vm)c.DataItem; }
+                                    <DxCheckBox Checked="vm.Delete" CheckedChanged="@((bool v) => ToggleAsync(vm, PermissionAction.Delete, v))" />
+                                </CellDisplayTemplate>
+                            </DxGridDataColumn>
+                        </Columns>
+                    </DxGrid>
+                </div>
+            </DxTabPage>
+
+            <DxTabPage Text="Campos" TabIconCssClass="fa-solid fa-table-columns">
+                <div class="p-2">
+                    <p class="text-muted small mb-2">
+                        Restricciones por columna (estilo XAF). Por defecto todas las columnas se pueden leer y modificar;
+                        desmarcá para <strong>quitar</strong> ese acceso. La lectura denegada se enmascara en la capa de datos.
+                    </p>
+                    <div class="d-flex align-items-center gap-2 mb-3" style="max-width:520px">
+                        <span class="text-muted small">Tabla:</span>
+                        <DxComboBox Data="_tablas" Value="_tablaCampos" TextFieldName="@nameof(TablaItem.Display)" ValueFieldName="@nameof(TablaItem.Tabla)"
+                                    ValueChanged="@((string t) => CargarCamposAsync(t))" FilteringMode="DataGridFilteringMode.Contains"
+                                    NullText="Elegí una tabla…" CssClass="flex-grow-1" />
+                    </div>
+
+                    @if (_tablaCampos is not null)
+                    {
+                        <DxGrid Data="_campos" PageSize="40" ShowSearchBox="true" CssClass="sgpa-grid">
+                            <Columns>
+                                <DxGridDataColumn FieldName="Caption" Caption="Campo" MinWidth="220">
+                                    <CellDisplayTemplate Context="c">
+                                        @{ var vm = (CampoVm)c.DataItem; }
+                                        <span>@vm.Caption</span> <span class="text-muted small">@vm.Columna</span>
+                                    </CellDisplayTemplate>
+                                </DxGridDataColumn>
+                                <DxGridDataColumn Caption="Leer" Width="90px" TextAlignment="GridTextAlignment.Center">
+                                    <CellDisplayTemplate Context="c">
+                                        @{ var vm = (CampoVm)c.DataItem; }
+                                        <DxCheckBox Checked="vm.Leer" CheckedChanged="@((bool v) => ToggleCampoAsync(vm, leer: v, modificar: vm.Modificar))" />
+                                    </CellDisplayTemplate>
+                                </DxGridDataColumn>
+                                <DxGridDataColumn Caption="Modificar" Width="100px" TextAlignment="GridTextAlignment.Center">
+                                    <CellDisplayTemplate Context="c">
+                                        @{ var vm = (CampoVm)c.DataItem; }
+                                        <DxCheckBox Checked="vm.Modificar" CheckedChanged="@((bool v) => ToggleCampoAsync(vm, leer: vm.Leer, modificar: v))" />
+                                    </CellDisplayTemplate>
+                                </DxGridDataColumn>
+                            </Columns>
+                        </DxGrid>
+                    }
+                </div>
+            </DxTabPage>
+
+            <DxTabPage Text="Registros" TabIconCssClass="fa-solid fa-filter">
+                <div class="p-2">
+                    <p class="text-muted small mb-2">
+                        Filtros por registro (estilo XAF): limitan qué filas ve/edita/borra el rol. Si el rol tiene varios
+                        criterios sobre la misma tabla se combinan con <strong>O</strong>. Podés usar el placeholder
+                        <code>@("{CurrentUserLogin}")</code> para referirte al usuario actual
+                        (ej. <code>@("[Usr] = '{CurrentUserLogin}'")</code>).
+                    </p>
+                    <div class="d-flex align-items-center gap-2 mb-3" style="max-width:640px">
+                        <span class="text-muted small">Tabla:</span>
+                        <DxComboBox Data="_tablas" Value="_tablaReg" TextFieldName="@nameof(TablaItem.Display)" ValueFieldName="@nameof(TablaItem.Tabla)"
+                                    ValueChanged="@((string t) => CargarRegistrosAsync(t))" FilteringMode="DataGridFilteringMode.Contains"
+                                    NullText="Elegí una tabla…" CssClass="flex-grow-1" />
+                        @if (_tablaReg is not null)
+                        {
+                            <DxButton Text="Nuevo criterio" IconCssClass="fa-solid fa-plus" RenderStyle="ButtonRenderStyle.Primary"
+                                      SizeMode="SizeMode.Small" Click="@(() => AbrirEditorRegistro(null))" />
+                        }
+                    </div>
+
+                    @if (_tablaReg is not null)
+                    {
+                        @if (_registros.Count == 0)
+                        {
+                            <p class="text-muted">No hay criterios para esta tabla (el rol ve/edita todas las filas).</p>
+                        }
+                        else
+                        {
+                            <DxGrid Data="_registros" PageSize="20" CssClass="sgpa-grid">
+                                <Columns>
+                                    <DxGridDataColumn FieldName="Criteria" Caption="Criterio" MinWidth="320" />
+                                    <DxGridDataColumn Caption="Aplica a" Width="180px">
+                                        <CellDisplayTemplate Context="c">
+                                            @{ var r = (RolPermisoRegistro)c.DataItem; }
+                                            <span>@DescribirAcciones(r.Acciones)</span>
+                                        </CellDisplayTemplate>
+                                    </DxGridDataColumn>
+                                    <DxGridDataColumn Caption="" Width="120px" TextAlignment="GridTextAlignment.Center">
+                                        <CellDisplayTemplate Context="c">
+                                            @{ var r = (RolPermisoRegistro)c.DataItem; }
+                                            <DxButton IconCssClass="fa-solid fa-pen" RenderStyle="ButtonRenderStyle.Link" Tooltip="Editar"
+                                                      Click="@(() => AbrirEditorRegistro(r))" />
+                                            <DxButton IconCssClass="fa-solid fa-trash" RenderStyle="ButtonRenderStyle.Link" Tooltip="Borrar"
+                                                      Click="@(() => BorrarRegistroAsync(r))" />
+                                        </CellDisplayTemplate>
+                                    </DxGridDataColumn>
+                                </Columns>
+                            </DxGrid>
+                        }
+                    }
+                </div>
+            </DxTabPage>
+        </DxTabs>
     }
 }
+
+@* ---- Popup: editor de criterio por registro ---- *@
+<DxPopup @bind-Visible="_regEditorVisible" HeaderText="Criterio por registro" Width="680px" CloseOnEscape="true">
+    <BodyContentTemplate>
+        @if (_metaReg is not null)
+        {
+            <DxFilterBuilder @bind-FilterCriteria="_critReg">
+                <Fields>
+                    @foreach (var col in _metaReg.ListColumns)
+                    {
+                        <DxFilterBuilderField FieldName="@col.Name" Caption="@col.Caption" Type="col.UnderlyingType" />
+                    }
+                    @foreach (var rel in EntityRelations.For(_metaReg.EntityType))
+                    {
+                        @if (rel.IsCollection)
+                        {
+                            <DxFilterBuilderField FieldName="@rel.FieldPrefix" Caption="@($"☰ {rel.Label}")" IsCollection="true">
+                                <Fields>
+                                    @foreach (var col in rel.Child.ListColumns)
+                                    {
+                                        <DxFilterBuilderField FieldName="@col.Name" Caption="@col.Caption" Type="col.UnderlyingType" />
+                                    }
+                                </Fields>
+                            </DxFilterBuilderField>
+                        }
+                        else
+                        {
+                            <DxFilterBuilderField FieldName="@rel.FieldPrefix" Caption="@($"↗ {rel.Label}")" AllowSelection="false">
+                                <Fields>
+                                    @foreach (var col in rel.Child.ListColumns)
+                                    {
+                                        <DxFilterBuilderField FieldName="@($"{rel.FieldPrefix}.{col.Name}")" Caption="@col.Caption"
+                                                              CaptionFullPath="@($"{rel.Label}.{col.Caption}")" Type="col.UnderlyingType" />
+                                    }
+                                </Fields>
+                            </DxFilterBuilderField>
+                        }
+                    }
+                </Fields>
+            </DxFilterBuilder>
+
+            <div class="d-flex align-items-center gap-3 mt-3">
+                <span class="text-muted small">Aplica a:</span>
+                <DxCheckBox @bind-Checked="_regLeer">Leer</DxCheckBox>
+                <DxCheckBox @bind-Checked="_regModificar">Modificar</DxCheckBox>
+                <DxCheckBox @bind-Checked="_regBorrar">Borrar</DxCheckBox>
+            </div>
+            @if (_regError is not null) { <div class="alert alert-danger py-2 mt-2 mb-0">@_regError</div> }
+            <div class="d-flex gap-2 mt-3">
+                <DxButton Text="Guardar" IconCssClass="fa-solid fa-floppy-disk" RenderStyle="ButtonRenderStyle.Primary" Click="GuardarRegistroAsync" />
+                <DxButton Text="Cancelar" RenderStyle="ButtonRenderStyle.Link" Click="@(() => _regEditorVisible = false)" />
+            </div>
+        }
+    </BodyContentTemplate>
+</DxPopup>
 
 @code {
     [Parameter] public int RolId { get; set; }
@@ -88,6 +244,21 @@ else
     private bool _denied;
     private RolAdmin? _rol;
     private List<Vm> _items = new();
+    private List<TablaItem> _tablas = new();
+
+    // Campos
+    private string? _tablaCampos;
+    private List<CampoVm> _campos = new();
+
+    // Registros
+    private string? _tablaReg;
+    private EntityMetadata? _metaReg;
+    private List<RolPermisoRegistro> _registros = new();
+    private bool _regEditorVisible;
+    private int _regEditId;
+    private CriteriaOperator? _critReg;
+    private bool _regLeer = true, _regModificar, _regBorrar;
+    private string? _regError;
 
     protected override async Task OnInitializedAsync()
     {
@@ -99,21 +270,27 @@ else
         if (_rol is null || _rol.EsAdmin) return;
 
         await TablaConfig.EnsureLoadedAsync();
+
+        var tablas = EntityCatalog.CrudCapable.Select(m => m.Table).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+        _tablas = tablas
+            .Select(t => new TablaItem(t, TablaConfig.DisplayName(t)))
+            .OrderBy(t => t.Display, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
         var permisos = (await Admin.ListPermisosAsync(RolId))
             .ToDictionary(p => p.Tabla, p => p.Acciones, StringComparer.OrdinalIgnoreCase);
 
-        _items = EntityCatalog.CrudCapable
-            .Select(m => m.Table)
-            .Distinct(StringComparer.OrdinalIgnoreCase)
+        _items = _tablas
             .Select(t => new Vm
             {
-                Tabla = t,
-                Display = TablaConfig.DisplayName(t),
-                Acciones = permisos.TryGetValue(t, out var a) ? a : PermissionAction.None
+                Tabla = t.Tabla,
+                Display = t.Display,
+                Acciones = permisos.TryGetValue(t.Tabla, out var a) ? a : PermissionAction.None
             })
-            .OrderBy(v => v.Display, StringComparer.OrdinalIgnoreCase)
             .ToList();
     }
+
+    // -------------------------------------------------------------- Tablas
 
     private async Task ToggleAsync(Vm vm, PermissionAction action, bool on)
     {
@@ -131,15 +308,120 @@ else
         Toasts.Exito(acciones == PermissionAction.None ? "Permisos quitados." : "Permisos aplicados a todas las tablas.");
     }
 
+    // -------------------------------------------------------------- Campos
+
+    private async Task CargarCamposAsync(string? tabla)
+    {
+        _tablaCampos = tabla;
+        _campos = new();
+        if (tabla is null) return;
+
+        var meta = EntityCatalog.CrudCapable.FirstOrDefault(m => m.Table.Equals(tabla, StringComparison.OrdinalIgnoreCase));
+        if (meta is null) return;
+
+        var restric = (await Admin.ListPermisosColumnaAsync(RolId, tabla))
+            .ToDictionary(c => c.Columna, c => c, StringComparer.OrdinalIgnoreCase);
+
+        _campos = meta.Columns
+            .Where(c => !c.IsAudit && !c.IsKey)
+            .OrderBy(c => c.Order)
+            .Select(c => new CampoVm
+            {
+                Columna = c.Name,
+                Caption = c.Caption,
+                Leer = !restric.TryGetValue(c.Name, out var r) || r.Leer,
+                Modificar = !restric.TryGetValue(c.Name, out var r2) || r2.Modificar
+            })
+            .ToList();
+    }
+
+    private async Task ToggleCampoAsync(CampoVm vm, bool leer, bool modificar)
+    {
+        vm.Leer = leer;
+        vm.Modificar = modificar;
+        await Admin.SetPermisoColumnaAsync(RolId, _tablaCampos!, vm.Columna, leer, modificar);
+    }
+
+    // ------------------------------------------------------------ Registros
+
+    private async Task CargarRegistrosAsync(string? tabla)
+    {
+        _tablaReg = tabla;
+        _registros = new();
+        _metaReg = tabla is null ? null
+            : EntityCatalog.CrudCapable.FirstOrDefault(m => m.Table.Equals(tabla, StringComparison.OrdinalIgnoreCase));
+        if (tabla is not null)
+            _registros = (await Admin.ListPermisosRegistroAsync(RolId, tabla)).ToList();
+    }
+
+    private void AbrirEditorRegistro(RolPermisoRegistro? r)
+    {
+        _regError = null;
+        _regEditId = r?.Id ?? 0;
+        _critReg = string.IsNullOrWhiteSpace(r?.Criteria) ? null : CriteriaOperator.Parse(r!.Criteria);
+        var acc = r?.Acciones ?? PermissionAction.Read;
+        _regLeer = (acc & PermissionAction.Read) != 0;
+        _regModificar = (acc & PermissionAction.Write) != 0;
+        _regBorrar = (acc & PermissionAction.Delete) != 0;
+        _regEditorVisible = true;
+    }
+
+    private async Task GuardarRegistroAsync()
+    {
+        _regError = null;
+        var criteria = _critReg?.ToString();
+        if (string.IsNullOrWhiteSpace(criteria)) { _regError = "Definí un criterio."; return; }
+
+        var acciones = PermissionAction.None;
+        if (_regLeer) acciones |= PermissionAction.Read;
+        if (_regModificar) acciones |= PermissionAction.Write;
+        if (_regBorrar) acciones |= PermissionAction.Delete;
+        if (acciones == PermissionAction.None) { _regError = "Elegí al menos una acción."; return; }
+
+        try
+        {
+            await Admin.SavePermisoRegistroAsync(_regEditId, RolId, _tablaReg!, acciones, criteria);
+            _regEditorVisible = false;
+            await CargarRegistrosAsync(_tablaReg);
+            Toasts.Exito("Criterio guardado.");
+        }
+        catch (SeguridadAdminException ex) { _regError = ex.Message; }
+    }
+
+    private async Task BorrarRegistroAsync(RolPermisoRegistro r)
+    {
+        await Admin.DeletePermisoRegistroAsync(r.Id);
+        await CargarRegistrosAsync(_tablaReg);
+    }
+
+    private static string DescribirAcciones(PermissionAction a)
+    {
+        var partes = new List<string>();
+        if ((a & PermissionAction.Read) != 0) partes.Add("Leer");
+        if ((a & PermissionAction.Write) != 0) partes.Add("Modificar");
+        if ((a & PermissionAction.Delete) != 0) partes.Add("Borrar");
+        return partes.Count == 0 ? "—" : string.Join(" · ", partes);
+    }
+
+    private sealed record TablaItem(string Tabla, string Display);
+
     private sealed class Vm
     {
         public string Tabla { get; set; } = "";
         public string Display { get; set; } = "";
         public PermissionAction Acciones { get; set; }
-        public bool Read { get => Has(PermissionAction.Read); }
-        public bool Create { get => Has(PermissionAction.Create); }
-        public bool Write { get => Has(PermissionAction.Write); }
-        public bool Delete { get => Has(PermissionAction.Delete); }
+        public bool Read => Has(PermissionAction.Read);
+        public bool Create => Has(PermissionAction.Create);
+        public bool Write => Has(PermissionAction.Write);
+        public bool Delete => Has(PermissionAction.Delete);
         private bool Has(PermissionAction a) => (Acciones & a) == a;
+    }
+
+    private sealed class CampoVm
+    {
+        public string Columna { get; set; } = "";
+        public string Caption { get; set; } = "";
+        public bool Leer { get; set; } = true;
+        public bool Modificar { get; set; } = true;
     }
 }

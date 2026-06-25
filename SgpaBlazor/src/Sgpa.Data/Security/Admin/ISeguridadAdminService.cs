@@ -44,6 +44,22 @@ public interface ISeguridadAdminService
 
     /// <summary>Fija las acciones de un rol sobre una tabla. None borra la fila.</summary>
     Task SetPermisoAsync(int rolId, string tabla, PermissionAction acciones, CancellationToken ct = default);
+
+    // ---- Permisos por columna (estilo XAF) ----
+    /// <summary>Restricciones por columna de un rol sobre una tabla. Sin fila para una columna = acceso pleno.</summary>
+    Task<IReadOnlyList<RolPermisoColumna>> ListPermisosColumnaAsync(int rolId, string tabla, CancellationToken ct = default);
+
+    /// <summary>Fija el permiso de una columna. Si Leer y Modificar son ambos true (acceso pleno) borra la fila.</summary>
+    Task SetPermisoColumnaAsync(int rolId, string tabla, string columna, bool leer, bool modificar, CancellationToken ct = default);
+
+    // ---- Permisos por registro (estilo XAF) ----
+    /// <summary>Filtros por registro de un rol sobre una tabla.</summary>
+    Task<IReadOnlyList<RolPermisoRegistro>> ListPermisosRegistroAsync(int rolId, string tabla, CancellationToken ct = default);
+
+    /// <summary>Alta o modificación (por Id, 0 = alta) de un filtro por registro. Devuelve el Id.</summary>
+    Task<int> SavePermisoRegistroAsync(int id, int rolId, string tabla, PermissionAction acciones, string criteria, CancellationToken ct = default);
+
+    Task DeletePermisoRegistroAsync(int id, CancellationToken ct = default);
 }
 
 /// <summary>Se lanza cuando una operación dejaría al sistema sin un administrador activo.</summary>

@@ -241,6 +241,77 @@ public sealed class SeguridadAdminService : ISeguridadAdminService
             new { rolId, tabla, acc = (int)acciones }, cancellationToken: ct).ConfigureAwait(false);
     }
 
+    // ------------------------------------------------------ Permisos por columna
+
+    public async Task<IReadOnlyList<RolPermisoColumna>> ListPermisosColumnaAsync(int rolId, string tabla, CancellationToken ct = default)
+    {
+        var rows = await _db.QueryAsync<ColumnaRow>(
+            "SELECT Columna, Leer, Modificar FROM seg.RolPermisoColumna WHERE RolId = @rolId AND Tabla = @tabla",
+            new { rolId, tabla }, cancellationToken: ct).ConfigureAwait(false);
+        return rows.Select(r => new RolPermisoColumna
+        {
+            RolId = rolId, Tabla = tabla, Columna = r.Columna, Leer = r.Leer, Modificar = r.Modificar
+        }).ToList();
+    }
+
+    public async Task SetPermisoColumnaAsync(int rolId, string tabla, string columna, bool leer, bool modificar, CancellationToken ct = default)
+    {
+        // Acceso pleno (leer y modificar) = sin restricción → no se guarda fila (la borra si existía).
+        if (leer && modificar)
+        {
+            await _db.ExecuteAsync(
+                "DELETE FROM seg.RolPermisoColumna WHERE RolId = @rolId AND Tabla = @tabla AND Columna = @columna",
+                new { rolId, tabla, columna }, cancellationToken: ct).ConfigureAwait(false);
+            return;
+        }
+        await _db.ExecuteAsync(
+            @"MERGE seg.RolPermisoColumna AS t
+              USING (SELECT @rolId AS RolId, @tabla AS Tabla, @columna AS Columna) AS s
+                 ON t.RolId = s.RolId AND t.Tabla = s.Tabla AND t.Columna = s.Columna
+              WHEN MATCHED THEN UPDATE SET Leer = @leer, Modificar = @modificar
+              WHEN NOT MATCHED THEN INSERT (RolId, Tabla, Columna, Leer, Modificar)
+                   VALUES (@rolId, @tabla, @columna, @leer, @modificar);",
+            new { rolId, tabla, columna, leer, modificar }, cancellationToken: ct).ConfigureAwait(false);
+    }
+
+    // ----------------------------------------------------- Permisos por registro
+
+    public async Task<IReadOnlyList<RolPermisoRegistro>> ListPermisosRegistroAsync(int rolId, string tabla, CancellationToken ct = default)
+    {
+        var rows = await _db.QueryAsync<RegistroRow>(
+            "SELECT Id, Acciones, Criteria FROM seg.RolPermisoRegistro WHERE RolId = @rolId AND Tabla = @tabla ORDER BY Id",
+            new { rolId, tabla }, cancellationToken: ct).ConfigureAwait(false);
+        return rows.Select(r => new RolPermisoRegistro
+        {
+            Id = r.Id, RolId = rolId, Tabla = tabla, Acciones = (PermissionAction)r.Acciones, Criteria = r.Criteria
+        }).ToList();
+    }
+
+    public async Task<int> SavePermisoRegistroAsync(int id, int rolId, string tabla, PermissionAction acciones, string criteria, CancellationToken ct = default)
+    {
+        criteria = (criteria ?? string.Empty).Trim();
+        if (string.IsNullOrWhiteSpace(criteria))
+            throw new SeguridadAdminException("El criterio no puede quedar vacío.");
+        if (acciones == PermissionAction.None)
+            throw new SeguridadAdminException("Hay que indicar al menos una acción (leer, modificar o borrar).");
+
+        if (id > 0)
+        {
+            await _db.ExecuteAsync(
+                "UPDATE seg.RolPermisoRegistro SET Acciones = @acc, Criteria = @criteria WHERE Id = @id",
+                new { id, acc = (int)acciones, criteria }, cancellationToken: ct).ConfigureAwait(false);
+            return id;
+        }
+        return await _db.ExecuteScalarAsync<int>(
+            @"INSERT INTO seg.RolPermisoRegistro (RolId, Tabla, Acciones, Criteria)
+              VALUES (@rolId, @tabla, @acc, @criteria);
+              SELECT CAST(SCOPE_IDENTITY() AS int);",
+            new { rolId, tabla, acc = (int)acciones, criteria }, cancellationToken: ct).ConfigureAwait(false);
+    }
+
+    public Task DeletePermisoRegistroAsync(int id, CancellationToken ct = default)
+        => _db.ExecuteAsync("DELETE FROM seg.RolPermisoRegistro WHERE Id = @id", new { id }, cancellationToken: ct);
+
     // --------------------------------------------------------------- Internos
 
     private async Task ReemplazarRolesAsync(string login, IEnumerable<int> rolIds, CancellationToken ct)
@@ -294,4 +365,6 @@ public sealed class SeguridadAdminService : ISeguridadAdminService
     private sealed record UsuarioRow(string Login, string? Nombre, bool Activo, DateTime? UltAcceso);
     private sealed record AsignRow(string Login, int RolId, string Nombre, bool EsAdmin);
     private sealed record PermRow(string Tabla, int Acciones);
+    private sealed record ColumnaRow(string Columna, bool Leer, bool Modificar);
+    private sealed record RegistroRow(int Id, int Acciones, string Criteria);
 }

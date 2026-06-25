@@ -36,6 +36,15 @@ public sealed class WebCurrentUser : ICurrentUser
     public PermissionAction PermissionsFor(string table) =>
         _context?.PermissionsFor(table) ?? PermissionAction.None;
 
+    public bool CanReadColumn(string table, string column) =>
+        _context?.CanReadColumn(table, column) ?? true;
+
+    public bool CanWriteColumn(string table, string column) =>
+        _context?.CanWriteColumn(table, column) ?? true;
+
+    public RecordRule? RecordFilter(string table, PermissionAction action) =>
+        _context?.RecordFilter(table, action);
+
     /// <summary>
     /// Carga el contexto desde la identidad autenticada. Idempotente y seguro ante
     /// llamadas concurrentes: cachea la misma Task para que todos vean el contexto cargado.
