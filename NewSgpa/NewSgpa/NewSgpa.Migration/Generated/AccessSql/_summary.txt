@@ -1,4 +1,4 @@
-GeneratedAtUtc=2026-06-15T21:08:03.0269723Z
+GeneratedAtUtc=2026-06-23T19:10:56.8783864Z
 SpecsDirectory=C:\Personal\Gestion\CASEMED\NewSgpa\Migration\Access
 TotalSpecFiles=6
 TotalQueries=598

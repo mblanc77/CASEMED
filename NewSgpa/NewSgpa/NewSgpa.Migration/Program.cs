@@ -599,6 +599,24 @@ class Program
                 );
             END
             """);
+        // Vista de lectura del listview de Subsidios: SubsidioCabezal + cabezal BPS (1:1 por IdSubsidio). La usa
+        // el CRUD genérico (entidad SubsidioCabezal con [SgpaReadSource("SubsidioCabezalLista")]) para que las
+        // columnas BPS (DiasBPS, LiquidoBPS, LiquidoPagarBPS) sean ordenables/filtrables/totalizables server-side.
+        // Las escrituras siguen yendo a dbo.SubsidioCabezal. Mantener en sintonía con
+        // SgpaBlazor/tools/sql/subsidio-cabezal-lista-view.sql. Las tablas base se crean en el paso de artefactos
+        // generados (antes de este método), así que ya existen al crear la vista.
+        await db.Database.ExecuteSqlRawAsync(
+            """
+            CREATE OR ALTER VIEW dbo.SubsidioCabezalLista
+            AS
+                SELECT
+                    sc.*,
+                    bps.DiasBPS,
+                    bps.LiquidoBPS,
+                    bps.LiquidoPagar AS LiquidoPagarBPS
+                FROM dbo.SubsidioCabezal sc
+                LEFT JOIN dbo.SubsidioCabezal_BPS bps ON bps.IdSubsidio = sc.IdSubsidio;
+            """);
         // Reportes ad-hoc de DevExpress (REPX, End-User Designer). La app los lee/escribe vía SgpaReportStorage;
         // si la tabla falta, el catálogo de reportes y el menú fallan. Mantener en sintonía con tools/sql/reporte.sql.
         await db.Database.ExecuteSqlRawAsync(
