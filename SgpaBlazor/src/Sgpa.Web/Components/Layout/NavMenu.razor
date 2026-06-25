@@ -118,6 +118,7 @@ else
                     <DxTreeViewNode Text="Tablas" IconCssClass="fa-solid fa-table-list" NavigateUrl="/entidades" />
                     <DxTreeViewNode Text="Parámetros" IconCssClass="fa-solid fa-sliders" NavigateUrl="/parametros" />
                     <DxTreeViewNode Text="Configuración de tablas" IconCssClass="fa-solid fa-table-list" NavigateUrl="/config/tablas" />
+                    <DxTreeViewNode Text="Configuración de columnas" IconCssClass="fa-solid fa-table-columns" NavigateUrl="/config/columnas" />
                     @if (_isAdmin)
                     {
                         <DxTreeViewNode Text="Seguridad" IconCssClass="fa-solid fa-user-shield">
@@ -188,6 +189,7 @@ else
         ("Tablas", "/entidades", "fa-table-list"),
         ("Parámetros", "/parametros", "fa-sliders"),
         ("Configuración de tablas", "/config/tablas", "fa-table-list"),
+        ("Configuración de columnas", "/config/columnas", "fa-table-columns"),
         ("Auditoría", "/auditoria", "fa-clock-rotate-left"),
         ("Diseñador de reportes", "/reportes", "fa-pen-ruler"),
         ("Informes estadísticos", "/informes-estadisticos", "fa-chart-column"),

@@ -33,6 +33,8 @@ public static class DataServiceCollectionExtensions
         services.AddScoped<IPreferenciaVistaStore, DapperPreferenciaVistaStore>();
         // Config dinámica por tabla (inline / confirmar borrado / auditar): singleton con cache en memoria.
         services.AddSingleton<ITablaConfigService, TablaConfigService>();
+        // Override de metadata por columna (caption / formato / visibilidad / etc.): "Application Model" liviano.
+        services.AddSingleton<IColumnaConfigService, ColumnaConfigService>();
         services.AddScoped<IAuditService, AuditService>();
         services.AddScoped<Reporting.IReportGraphLoader, Reporting.ReportGraphLoader>();
         services.AddScoped<Reporting.IReporteDinamicoService, Reporting.DapperReporteDinamicoService>();

@@ -1,6 +1,8 @@
 @using Sgpa.Domain.Metadata
 @using Sgpa.Data.Crud
+@using Sgpa.Data.Configuracion
 @inject ISgpaLookupService Lookups
+@inject IColumnaConfigService ColCfg
 @implements IDisposable
 @*
     DetailView genérico (estilo XAF): arma un formulario con un editor por columna.
@@ -66,6 +68,10 @@
     private readonly Dictionary<string, string?> _fkDescriptions = new();
     private object? _resolvedModel;   // para re-resolver las descripciones al cambiar de registro
 
+    // El overlay de columnas es un singleton cacheado; lo aseguramos por si el form se usa fuera del CRUD genérico
+    // (que ya lo precarga). Si aún no cargó, los Get devuelven null y se usan los defaults del código.
+    protected override Task OnInitializedAsync() => ColCfg.EnsureLoadedAsync();
+
     protected override void OnInitialized()
     {
         // Columnas FK por convención (CI→Afiliado, CodEmpresa→Empresa, etc.): se les muestra la descripción.
@@ -81,10 +87,17 @@
         if (ciFk.Col is not null) _ciFieldName = ciFk.Col.Property.Name;
     }
 
-    private IEnumerable<ColumnMetadata> DetailColumns =>
-        HiddenColumns is null or { Count: 0 }
-            ? Meta.DetailColumns
-            : Meta.DetailColumns.Where(c => !HiddenColumns.Contains(c.Name));
+    // Columnas del detalle con overrides de ColumnaConfig: VisibleDetalle (mostrar/ocultar) y Orden (reordenar).
+    private IEnumerable<ColumnMetadata> DetailColumns
+    {
+        get
+        {
+            var cols = Meta.Columns
+                .Where(c => !c.IsAudit && (ColCfg.Get(Meta.Table, c.Name)?.VisibleDetalle ?? c.VisibleInDetail))
+                .OrderBy(c => ColCfg.Get(Meta.Table, c.Name)?.Orden ?? c.Order);
+            return HiddenColumns is null or { Count: 0 } ? cols : cols.Where(c => !HiddenColumns.Contains(c.Name));
+        }
+    }
 
     // Mensajes de validación del EditContext para una columna (los puebla SgpaMetadataValidator).
     private IReadOnlyList<string> MessagesFor(ColumnMetadata col)
@@ -192,6 +205,8 @@
         if (col.IsKey)
             return col.IsIdentity || !IsNew; // editable sólo al crear y si no es identity
         if (col.ReadOnly) return true;
+        // Override del admin: forzar sólo lectura (XAF AllowEdit = false).
+        if (ColCfg.Get(Meta.Table, col.Name)?.SoloLectura == true) return true;
         // Regla de negocio data-driven (ej. AdPreJub: ciertos campos editables sólo al crear).
         if (FieldEditable is not null && !FieldEditable(Model, col, IsNew)) return true;
         return false;
@@ -200,7 +215,8 @@
     // Agrega un asterisco a las columnas obligatorias editables (no a las read-only/identity que el usuario no toca).
     private string Caption(ColumnMetadata col)
     {
+        var baseCaption = ColCfg.Get(Meta.Table, col.Name)?.Caption is { Length: > 0 } c ? c : col.Caption;
         var required = col.Required && !IsReadOnly(col);
-        return required ? col.Caption + " *" : col.Caption;
+        return required ? baseCaption + " *" : baseCaption;
     }
 }

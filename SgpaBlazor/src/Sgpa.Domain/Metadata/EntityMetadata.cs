@@ -28,6 +28,22 @@ public sealed class ColumnMetadata
 
     public bool IsAudit => Audit is not null;
 
+    /// <summary>¿La columna es de un tipo numérico? (gobierna qué agregados —Suma/Promedio— son válidos en SQL).</summary>
+    public bool IsNumeric => IsNumericType(UnderlyingType);
+
+    /// <summary>
+    /// True si <paramref name="type"/> es un tipo numérico de CLR. Útil para decidir si SUM/AVG son válidos:
+    /// sobre texto/fecha/bool SQL Server rechaza esos agregados ("Operand data type ... is invalid for sum operator").
+    /// </summary>
+    public static bool IsNumericType(Type? type)
+    {
+        if (type is null) return false;
+        type = Nullable.GetUnderlyingType(type) ?? type;
+        return type == typeof(int) || type == typeof(long) || type == typeof(short) || type == typeof(byte)
+            || type == typeof(sbyte) || type == typeof(uint) || type == typeof(ulong) || type == typeof(ushort)
+            || type == typeof(decimal) || type == typeof(double) || type == typeof(float);
+    }
+
     public object? GetValue(object entity) => Property.GetValue(entity);
     public void SetValue(object entity, object? value) => Property.SetValue(entity, value);
 }
@@ -133,7 +149,9 @@ public sealed class EntityMetadata
                 VisibleInDetail = col?.VisibleInDetail ?? auditAttr is null,
                 ReadOnly = (col?.ReadOnly ?? false) || (col?.Computed ?? false) || keyAttr is not null,
                 Computed = col?.Computed ?? false,
-                DisplayFormat = col?.DisplayFormat,
+                // Formato explícito del atributo; si no hay, un default por tipo (fechas → dd/MM/yyyy). El override
+                // por columna (ColumnaConfig, en Sgpa.Data) se aplica después, en los componentes de UI.
+                DisplayFormat = col?.DisplayFormat ?? FormatoPorDefecto(underlying),
                 // NOT NULL detectado por el generador (Required) o por ser un tipo de valor no anulable
                 // declarado a mano que no es clave identity.
                 Required = (col?.Required ?? false)
@@ -162,6 +180,12 @@ public sealed class EntityMetadata
             Keys = keys
         };
     }
+
+    // Formato de display por defecto según el tipo CLR, cuando la columna no trae [SgpaColumn(DisplayFormat)].
+    // Hoy sólo las fechas (que si no DevExpress muestra con hora/timestamp); el resto queda sin formato. El admin
+    // puede sobrescribirlo por columna vía ColumnaConfig.
+    private static string? FormatoPorDefecto(Type underlying)
+        => underlying == typeof(DateTime) || underlying == typeof(DateOnly) ? "dd/MM/yyyy" : null;
 
     // Una nav prop de reportes: colección genérica (List<Entidad>) o referencia a otra entidad ([SgpaTable]).
     private static bool IsNavigationProperty(Type t)

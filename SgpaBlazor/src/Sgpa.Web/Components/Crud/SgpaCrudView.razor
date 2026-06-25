@@ -22,6 +22,7 @@
 @inject IErrorLog ErrorLog
 @inject IPreferenciaVistaStore VistaStore
 @inject ITablaConfigService TablaConfig
+@inject IColumnaConfigService ColCfg
 @inject IToastNotificationService Toasts
 @inject ICalculatedFieldCatalog CalcCatalog
 
@@ -191,14 +192,15 @@ else
             {
                 @* Columna FK: la celda muestra la descripción (texto) → alineada a la izquierda, aunque el
                    campo sea numérico (si no, DevExpress la alinearía a la derecha por ser int). *@
-                <DxGridDataColumn FieldName="@col.Name" Caption="@lookupCaption" TextAlignment="GridTextAlignment.Left">
+                <DxGridDataColumn FieldName="@col.Name" Caption="@EffCaptionOr(col, lookupCaption)" Width="@EffWidth(col)"
+                                  TextAlignment="GridTextAlignment.Left">
                     <CellDisplayTemplate Context="cell">@LookupTextFor(col.Name, cell.Value)</CellDisplayTemplate>
                 </DxGridDataColumn>
             }
             else
             {
-                <DxGridDataColumn FieldName="@col.Name" Caption="@col.Caption" DisplayFormat="@DisplayFormatFor(col)"
-                                  TextAlignment="@AlignFor(col)" />
+                <DxGridDataColumn FieldName="@col.Name" Caption="@EffCaption(col)" DisplayFormat="@EffFormat(col)"
+                                  Width="@EffWidth(col)" TextAlignment="@EffAlign(col)" />
             }
         }
         @* Columnas calculadas (server-side): valor resuelto por página vía side-fetch por PK. Sólo display
@@ -219,14 +221,14 @@ else
     <TotalSummary>
         @foreach (var s in _summaries)
         {
-            <DxGridSummaryItem SummaryType="s.Type" FieldName="@s.Column" />
+            <DxGridSummaryItem SummaryType="s.Type" FieldName="@s.Column" ValueDisplayFormat="@SummaryValueFormat(s)" />
         }
     </TotalSummary>
     @* Mismos sumarios a nivel grupo: aparecen en el pie de cada grupo al agrupar. *@
     <GroupSummary>
         @foreach (var s in _summaries)
         {
-            <DxGridSummaryItem SummaryType="s.Type" FieldName="@s.Column" />
+            <DxGridSummaryItem SummaryType="s.Type" FieldName="@s.Column" ValueDisplayFormat="@SummaryValueFormat(s)" />
         }
     </GroupSummary>
     <EditFormTemplate Context="ctx">
@@ -324,7 +326,7 @@ else
                         <td style="width:200px">
                             <select class="form-select form-select-sm" value="@SummaryTypeOf(col.Name)"
                                     @onchange="@(e => SetSummary(col.Name, e.Value?.ToString()))">
-                                @foreach (var (val, label) in SummaryOptions)
+                                @foreach (var (val, label) in SummaryOptionsFor(col))
                                 {
                                     <option value="@val">@label</option>
                                 }
@@ -499,14 +501,27 @@ else
     {
         get
         {
+            var baseCols = EffectiveListColumns().ToList();
+            IEnumerable<ColumnMetadata> ordered;
             if (ColumnOrder is { Length: > 0 })
-                return ColumnOrder
-                    .Select(n => Meta.ListColumns.FirstOrDefault(c => string.Equals(c.Name, n, StringComparison.OrdinalIgnoreCase)))
-                    .Where(c => c is not null && (_filterCol is null || c.Name != _filterCol.Name))
-                    .Cast<ColumnMetadata>();
-            return _filterCol is null ? Meta.ListColumns : Meta.ListColumns.Where(c => c.Name != _filterCol.Name);
+                // Respeta el layout guardado por el usuario; las columnas no incluidas (ej. recién forzadas a
+                // visibles por un override) se agregan al final para que no desaparezcan.
+                ordered = ColumnOrder
+                    .Select(n => baseCols.FirstOrDefault(c => string.Equals(c.Name, n, StringComparison.OrdinalIgnoreCase)))
+                    .Where(c => c is not null).Cast<ColumnMetadata>()
+                    .Concat(baseCols.Where(c => !ColumnOrder.Contains(c.Name, StringComparer.OrdinalIgnoreCase)));
+            else
+                ordered = baseCols;
+            return _filterCol is null ? ordered : ordered.Where(c => c.Name != _filterCol.Name);
         }
     }
+
+    // Columnas visibles efectivas en la grilla: parte de la metadata pero aplica los overrides de ColumnaConfig
+    // (VisibleLista para mostrar/ocultar, Orden para reordenar). La auditoría nunca entra por esta vía.
+    private IEnumerable<ColumnMetadata> EffectiveListColumns()
+        => Meta.Columns
+            .Where(c => !c.IsAudit && (ColCfg.Get(Meta.Table, c.Name)?.VisibleLista ?? c.VisibleInList))
+            .OrderBy(c => ColCfg.Get(Meta.Table, c.Name)?.Orden ?? c.Order);
 
     private bool CanCreate => (_perms & PermissionAction.Create) != 0;
     private bool CanWrite => (_perms & PermissionAction.Write) != 0;
@@ -519,6 +534,7 @@ else
         _perms = Permissions ?? CurrentUser.PermissionsFor(Meta.Table);
         _viewKey = ViewKey ?? (FilterColumn is null ? Meta.Table : $"{Meta.Table}:{FilterColumn}");
         await TablaConfig.EnsureLoadedAsync();
+        await ColCfg.EnsureLoadedAsync();
         await CalcCatalog.EnsureLoadedAsync();
         _calc = CalcCatalog.For(Meta.Table);
         var cfg = TablaConfig.Get(Meta.Table);
@@ -688,6 +704,42 @@ else
     // La cédula (CI) se muestra sin separadores de miles en toda la app; el resto usa su formato de metadata.
     private static string? DisplayFormatFor(ColumnMetadata col)
         => string.Equals(col.Name, "CI", StringComparison.OrdinalIgnoreCase) ? "0" : col.DisplayFormat;
+
+    // --- "Effective": valor del override de ColumnaConfig (admin) o, si no hay, el default del código/metadata. ---
+    private string EffCaption(ColumnMetadata col) => EffCaptionOr(col, col.Caption);
+
+    private string EffCaptionOr(ColumnMetadata col, string fallback)
+        => ColCfg.Get(Meta.Table, col.Name)?.Caption is { Length: > 0 } c ? c : fallback;
+
+    private string? EffFormat(ColumnMetadata col)
+        => ColCfg.Get(Meta.Table, col.Name)?.DisplayFormat is { Length: > 0 } f ? f : DisplayFormatFor(col);
+
+    private string? EffWidth(ColumnMetadata col)
+        => ColCfg.Get(Meta.Table, col.Name)?.Ancho is { Length: > 0 } w ? w : null;
+
+    private GridTextAlignment EffAlign(ColumnMetadata col)
+        => (ColCfg.Get(Meta.Table, col.Name)?.Alineacion?.ToLowerInvariant()) switch
+        {
+            "left" => GridTextAlignment.Left,
+            "center" => GridTextAlignment.Center,
+            "right" => GridTextAlignment.Right,
+            _ => AlignFor(col)
+        };
+
+    // Formato del valor en el pie (ValueDisplayFormat de DevExpress, patrón compuesto "{0:...}"). Reusa el formato
+    // de la columna/campo calculado para que un Mín/Máx de fecha salga como fecha (no timestamp) y los agregados
+    // numéricos respeten su formato. Count se excluye: es un entero y no debe heredar el formato de fecha/número.
+    private string? SummaryValueFormat(SummaryDef s)
+    {
+        if (s.Type == GridSummaryItemType.Count) return null;
+        var col = Meta.Columns.FirstOrDefault(c =>
+            c.Name.Equals(s.Column, StringComparison.OrdinalIgnoreCase)
+            || c.Property.Name.Equals(s.Column, StringComparison.OrdinalIgnoreCase));
+        var fmt = col is not null
+            ? EffFormat(col)
+            : _calc.FirstOrDefault(c => c.Nombre.Equals(s.Column, StringComparison.OrdinalIgnoreCase))?.DisplayFormat;
+        return string.IsNullOrEmpty(fmt) ? null : "{0:" + fmt + "}";
+    }
 
     // Alineación por tipo (regla general): texto a la izquierda, fechas y booleanos centrados, números a la
     // derecha. Las columnas FK (que muestran descripción) se fuerzan a la izquierda en el markup.
@@ -1097,12 +1149,39 @@ else
         var menu = items.AddCustomItem("Totalizar esta columna");
         menu.BeginGroup = true;
         menu.IconCssClass = "fa-solid fa-calculator";
-        foreach (var (val, label) in SummaryOptions.Where(o => o.Value.Length > 0))
+        foreach (var (val, label) in SummaryOptionsForField(field).Where(o => o.Value.Length > 0))
         {
             var v = val;
             menu.Items.AddCustomItem((current == v ? "✓ " : "") + label, () => SetSummary(field, v));
         }
         menu.Items.AddCustomItem("Quitar total", () => SetSummary(field, null));
+    }
+
+    // Opciones de total válidas según el tipo de la columna: Suma/Promedio sólo en numéricas; Mín/Máx en todo
+    // salvo booleanas (SQL Server rechaza esos agregados sobre texto/fecha/bool). Cuenta y "(ninguno)" siempre.
+    private IEnumerable<(string Value, string Label)> SummaryOptionsFor(ColumnMetadata col)
+        => FilterSummaryOptions(col.IsNumeric, col.UnderlyingType == typeof(bool));
+
+    private IEnumerable<(string Value, string Label)> SummaryOptionsForField(string field)
+    {
+        var cf = _calc.FirstOrDefault(c => c.Nombre.Equals(field, StringComparison.OrdinalIgnoreCase));
+        var type = cf?.ClrType ?? Meta.Columns.FirstOrDefault(c =>
+            c.Name.Equals(field, StringComparison.OrdinalIgnoreCase)
+            || c.Property.Name.Equals(field, StringComparison.OrdinalIgnoreCase))?.UnderlyingType;
+        var underlying = type is null ? null : Nullable.GetUnderlyingType(type) ?? type;
+        return FilterSummaryOptions(ColumnMetadata.IsNumericType(type), underlying == typeof(bool));
+    }
+
+    private static IEnumerable<(string Value, string Label)> FilterSummaryOptions(bool numeric, bool boolean)
+    {
+        foreach (var o in SummaryOptions)
+        {
+            var esSumaProm = o.Value == nameof(GridSummaryItemType.Sum) || o.Value == nameof(GridSummaryItemType.Avg);
+            var esMinMax = o.Value == nameof(GridSummaryItemType.Min) || o.Value == nameof(GridSummaryItemType.Max);
+            if (esSumaProm && !numeric) continue;
+            if (esMinMax && boolean) continue;
+            yield return o;
+        }
     }
 
     // Al agrupar por una columna FK, muestra la descripción (no el código) en el encabezado del grupo,

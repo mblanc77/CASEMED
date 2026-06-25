@@ -1,0 +1,203 @@
+@page "/config/columnas"
+@rendermode InteractiveServer
+@using Sgpa.Domain.Metadata
+@using Sgpa.Data.Configuracion
+@inject IColumnaConfigService ColCfg
+@inject WebCurrentUser CurrentUser
+
+<PageTitle>Configuración de columnas</PageTitle>
+
+<h3 class="mb-2">Configuración por columna</h3>
+<p class="text-muted">
+    Override de metadata por columna (estilo <em>Model Editor</em> de XAF): <strong>etiqueta</strong>,
+    <strong>formato</strong>, <strong>orden</strong>, <strong>ancho</strong>, <strong>alineación</strong>,
+    <strong>visibilidad</strong> en grilla/formulario y <strong>sólo lectura</strong>. Cada campo en blanco usa el
+    valor por defecto del código (el placeholder lo muestra); los tildes en gris (indeterminado) también significan
+    «usar el default».
+</p>
+
+@if (!CurrentUser.IsAdmin)
+{
+    <div class="alert alert-warning">Esta configuración es sólo para administradores.</div>
+}
+else
+{
+    <div class="d-flex align-items-center gap-2 mb-3" style="max-width:520px">
+        <span class="text-muted">Tabla:</span>
+        <DxComboBox Data="_tablas" @bind-Value="_tablaSel" FilteringMode="DataGridFilteringMode.Contains"
+                    NullText="Elegí una tabla…" CssClass="flex-grow-1" />
+    </div>
+
+    @if (_tablaSel is not null)
+    {
+        <DxGrid Data="_items" PageSize="50" ShowFilterRow="true" ShowSearchBox="true">
+            <Columns>
+                <DxGridDataColumn FieldName="Columna" Caption="Columna" Width="170px" />
+                <DxGridDataColumn FieldName="Tipo" Caption="Tipo" Width="120px" />
+                <DxGridDataColumn Caption="Etiqueta" MinWidth="160">
+                    <CellDisplayTemplate Context="c">
+                        @{ var vm = (Vm)c.DataItem; }
+                        <DxTextBox Text="@vm.Caption" NullText="@vm.DefCaption" SizeMode="SizeMode.Small"
+                                   TextChanged="@((string v) => { vm.Caption = v; return SaveAsync(vm); })" />
+                    </CellDisplayTemplate>
+                </DxGridDataColumn>
+                <DxGridDataColumn Caption="Formato" Width="150px">
+                    <CellDisplayTemplate Context="c">
+                        @{ var vm = (Vm)c.DataItem; }
+                        <DxTextBox Text="@vm.DisplayFormat" NullText="@(vm.DefFormat ?? "(sin formato)")" SizeMode="SizeMode.Small"
+                                   TextChanged="@((string v) => { vm.DisplayFormat = v; return SaveAsync(vm); })" />
+                    </CellDisplayTemplate>
+                </DxGridDataColumn>
+                <DxGridDataColumn Caption="Orden" Width="110px">
+                    <CellDisplayTemplate Context="c">
+                        @{ var vm = (Vm)c.DataItem; }
+                        <DxSpinEdit Value="vm.Orden" NullText="@vm.DefOrden.ToString()" SizeMode="SizeMode.Small"
+                                    ShowSpinButtons="false" ValueChanged="@((int? v) => { vm.Orden = v; return SaveAsync(vm); })" />
+                    </CellDisplayTemplate>
+                </DxGridDataColumn>
+                <DxGridDataColumn Caption="Ancho" Width="110px">
+                    <CellDisplayTemplate Context="c">
+                        @{ var vm = (Vm)c.DataItem; }
+                        <DxTextBox Text="@vm.Ancho" NullText="auto" SizeMode="SizeMode.Small"
+                                   TextChanged="@((string v) => { vm.Ancho = v; return SaveAsync(vm); })" />
+                    </CellDisplayTemplate>
+                </DxGridDataColumn>
+                <DxGridDataColumn Caption="Alineación" Width="130px">
+                    <CellDisplayTemplate Context="c">
+                        @{ var vm = (Vm)c.DataItem; }
+                        <DxComboBox Data="_alineaciones" Value="@(vm.Alineacion ?? "(auto)")" SizeMode="SizeMode.Small"
+                                    ValueChanged="@((string v) => { vm.Alineacion = v == "(auto)" ? null : v; return SaveAsync(vm); })" />
+                    </CellDisplayTemplate>
+                </DxGridDataColumn>
+                <DxGridDataColumn Caption="Visible grilla" Width="120px" TextAlignment="GridTextAlignment.Center">
+                    <CellDisplayTemplate Context="c">
+                        @{ var vm = (Vm)c.DataItem; }
+                        <DxCheckBox Checked="vm.VisibleLista" AllowIndeterminateStateByClick="true"
+                                    CheckedChanged="@((bool? v) => { vm.VisibleLista = v; return SaveAsync(vm); })" />
+                    </CellDisplayTemplate>
+                </DxGridDataColumn>
+                <DxGridDataColumn Caption="Visible form" Width="120px" TextAlignment="GridTextAlignment.Center">
+                    <CellDisplayTemplate Context="c">
+                        @{ var vm = (Vm)c.DataItem; }
+                        <DxCheckBox Checked="vm.VisibleDetalle" AllowIndeterminateStateByClick="true"
+                                    CheckedChanged="@((bool? v) => { vm.VisibleDetalle = v; return SaveAsync(vm); })" />
+                    </CellDisplayTemplate>
+                </DxGridDataColumn>
+                <DxGridDataColumn Caption="Sólo lectura" Width="120px" TextAlignment="GridTextAlignment.Center">
+                    <CellDisplayTemplate Context="c">
+                        @{ var vm = (Vm)c.DataItem; }
+                        <DxCheckBox Checked="vm.SoloLectura" AllowIndeterminateStateByClick="true"
+                                    CheckedChanged="@((bool? v) => { vm.SoloLectura = v; return SaveAsync(vm); })" />
+                    </CellDisplayTemplate>
+                </DxGridDataColumn>
+                <DxGridDataColumn Caption="" Width="60px" TextAlignment="GridTextAlignment.Center">
+                    <CellDisplayTemplate Context="c">
+                        @{ var vm = (Vm)c.DataItem; }
+                        @if (!vm.SinOverride)
+                        {
+                            <DxButton IconCssClass="fa-solid fa-rotate-left" RenderStyle="ButtonRenderStyle.Link"
+                                      Tooltip="Restablecer (volver a los defaults)" Click="@(() => ResetAsync(vm))" />
+                        }
+                    </CellDisplayTemplate>
+                </DxGridDataColumn>
+            </Columns>
+        </DxGrid>
+    }
+}
+
+@code {
+    private List<string> _tablas = new();
+    private static readonly string[] _alineaciones = { "(auto)", "left", "center", "right" };
+
+    private string? _tablaSelValue;
+    private string? _tablaSel
+    {
+        get => _tablaSelValue;
+        set { _tablaSelValue = value; BuildRows(); }
+    }
+
+    private List<Vm> _items = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CurrentUser.EnsureLoadedAsync();
+        if (!CurrentUser.IsAdmin) return;
+        await ColCfg.EnsureLoadedAsync();
+        _tablas = EntityCatalog.CrudCapable
+            .Select(m => m.Table)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(t => t, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+    }
+
+    private void BuildRows()
+    {
+        _items = new();
+        if (_tablaSelValue is null) return;
+        var meta = EntityCatalog.TryGet(_tablaSelValue);
+        if (meta is null) return;
+        foreach (var col in meta.Columns.Where(c => !c.IsAudit).OrderBy(c => c.Order))
+        {
+            var ov = ColCfg.Get(meta.Table, col.Name);
+            _items.Add(new Vm
+            {
+                Columna = col.Name,
+                Tipo = (Nullable.GetUnderlyingType(col.UnderlyingType) ?? col.UnderlyingType).Name,
+                DefCaption = col.Caption,
+                DefFormat = col.DisplayFormat,
+                DefOrden = col.Order,
+                Caption = ov?.Caption,
+                DisplayFormat = ov?.DisplayFormat,
+                Orden = ov?.Orden,
+                Ancho = ov?.Ancho,
+                Alineacion = ov?.Alineacion,
+                VisibleLista = ov?.VisibleLista,
+                VisibleDetalle = ov?.VisibleDetalle,
+                SoloLectura = ov?.SoloLectura,
+            });
+        }
+    }
+
+    private Task SaveAsync(Vm vm)
+        => ColCfg.SetAsync(new ColumnaConfig(
+            _tablaSelValue!, vm.Columna,
+            Caption: Limpiar(vm.Caption),
+            DisplayFormat: Limpiar(vm.DisplayFormat),
+            Orden: vm.Orden,
+            Ancho: Limpiar(vm.Ancho),
+            Alineacion: Limpiar(vm.Alineacion),
+            VisibleLista: vm.VisibleLista,
+            VisibleDetalle: vm.VisibleDetalle,
+            SoloLectura: vm.SoloLectura));
+
+    private async Task ResetAsync(Vm vm)
+    {
+        vm.Caption = null; vm.DisplayFormat = null; vm.Orden = null; vm.Ancho = null; vm.Alineacion = null;
+        vm.VisibleLista = null; vm.VisibleDetalle = null; vm.SoloLectura = null;
+        await ColCfg.DeleteAsync(_tablaSelValue!, vm.Columna);
+    }
+
+    private static string? Limpiar(string? s) => string.IsNullOrWhiteSpace(s) ? null : s.Trim();
+
+    public sealed class Vm
+    {
+        public string Columna { get; set; } = string.Empty;
+        public string Tipo { get; set; } = string.Empty;
+        // Defaults (placeholders)
+        public string DefCaption { get; set; } = string.Empty;
+        public string? DefFormat { get; set; }
+        public int DefOrden { get; set; }
+        // Overrides (null = usar default)
+        public string? Caption { get; set; }
+        public string? DisplayFormat { get; set; }
+        public int? Orden { get; set; }
+        public string? Ancho { get; set; }
+        public string? Alineacion { get; set; }
+        public bool? VisibleLista { get; set; }
+        public bool? VisibleDetalle { get; set; }
+        public bool? SoloLectura { get; set; }
+
+        public bool SinOverride => Caption is null && DisplayFormat is null && Orden is null && Ancho is null
+            && Alineacion is null && VisibleLista is null && VisibleDetalle is null && SoloLectura is null;
+    }
+}
