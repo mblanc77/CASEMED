@@ -14,6 +14,18 @@ using Sgpa.Web.Components;
 using Sgpa.Web.Reporting;
 using Sgpa.Web.Security;
 
+// Cultura es-UY para toda la app: además del formato de fechas/números, hace que los textos integrados de
+// DevExpress (botones Guardar/Cancelar del popup de edición del grid, "Buscar...", filtros, paginador, calendarios)
+// salgan en español. Requiere los paquetes satélite DevExpress.*.es (ver Sgpa.Web.csproj); como sólo existe el
+// satélite "es", la cultura es-UY resuelve a él por el fallback de recursos. Se fija como cultura por defecto de
+// todos los hilos para que también aplique a los hilos del circuito de Blazor Server.
+var culturaApp = System.Globalization.CultureInfo.GetCultureInfo("es-UY");
+System.Globalization.CultureInfo.DefaultThreadCurrentCulture = culturaApp;
+System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = culturaApp;
+
+// Completa al español las cadenas de DevExpress que el satélite "es" deja sin traducir (FilterBuilder, etc.).
+Sgpa.Web.Localization.DevExpressEsLocalization.Install();
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Logging a archivo por fecha (logs/sgpa-AAAAMMDD.log, retención 31 días) + consola.
@@ -151,6 +163,16 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Fija es-UY como cultura de cada petición HTTP (visor/diseñador de reportes, endpoints de PDF), que corren fuera
+// del circuito de Blazor y no heredan necesariamente DefaultThreadCurrentCulture.
+var culturasSoportadas = new[] { culturaApp };
+app.UseRequestLocalization(new Microsoft.AspNetCore.Builder.RequestLocalizationOptions
+{
+    DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture(culturaApp),
+    SupportedCultures = culturasSoportadas,
+    SupportedUICultures = culturasSoportadas,
+});
 
 app.UseAuthentication();
 app.UseAuthorization();

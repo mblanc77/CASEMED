@@ -7,6 +7,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="DevExpress.Xpo.es" Version="25.2.6-pre-26075" />
     <PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
   </ItemGroup>
@@ -22,6 +23,18 @@
     <PackageReference Include="DevExpress.Blazor.Reporting.JSBasedControls" Version="25.2.6-pre-26075" />
     <!-- Backend ASP.NET Core del reporting (lo carga UseDevExpressBlazorReporting por reflexión; no es transitivo). -->
     <PackageReference Include="DevExpress.AspNetCore.Reporting" Version="25.2.6-pre-26075" />
+    <!-- Localización al español de los textos integrados de DevExpress (botones Guardar/Cancelar del popup de
+         edición del grid, buscador, filtros, paginador, calendarios...). Trae los assembly satélite "es"; sólo se
+         aplican si la cultura de la app resuelve a "es" (ver Program.cs). -->
+    <PackageReference Include="DevExpress.Blazor.es" Version="25.2.6-pre-26075" />
+    <PackageReference Include="DevExpress.Blazor.Reporting.Viewer.es" Version="25.2.6-pre-26075" />
+    <!-- Localización al español del backend del diseñador End-User / visor de reportes. El paquete .Services.es
+         arrastra transitivamente Web.Reporting.Common.es, Reporting.Core.es, DataAccess.es y el resto de la cadena
+         (charts/pdf/printing). No se incluye DevExpress.DataAccess.UI.es porque arrastra satélites de WinForms que
+         no se usan en web. -->
+    <PackageReference Include="DevExpress.Web.Reporting.Common.Services.es" Version="25.2.6-pre-26075" />
+    <PackageReference Include="DevExpress.AspNetCore.Core.es" Version="25.2.6-pre-26075" />
+    <PackageReference Include="DevExpress.Web.Resources.es" Version="25.2.6-pre-26075" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\CrystalReports\" />
