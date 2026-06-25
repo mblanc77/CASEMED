@@ -39,7 +39,7 @@ else if (string.Equals(Column.Name, "CI", StringComparison.OrdinalIgnoreCase)
 {
     @* Cédula: textbox numérico sin spinners ni separadores de miles (DisplayFormat="0"). El rango (7-9 dígitos)
        lo valida AfiliadoValidator; NO se usa MinValue/MaxValue porque DxSpinEdit clampea el valor. *@
-    <DxSpinEdit @ref="_cedulaEdit" T="long?" Value="@(GetNullable<long>())" ValueChanged="@((long? v) => SetCedula(v))"
+    <DxSpinEdit @ref="_cedulaEdit" T="long?" Value="@(GetNullable<long>())" ValueChanged="@((long? v) => Set(v))"
                 ReadOnly="ReadOnly" ValidationEnabled="false" NullText=" " ShowSpinButtons="false" DisplayFormat="0" />
 }
 else if (t == typeof(int) || t == typeof(long) || t == typeof(short) || t == typeof(byte))
@@ -104,13 +104,12 @@ else
         catch { return null; }
     }
 
-    private void Set(object? value) => Column.SetValue(Model, Coerce(value, Column.ClrType, Column.UnderlyingType));
-
-    // Set + aviso al padre (al salir del foco) para que dispare la validación de existencia de la cédula.
-    // Sólo lo usa el editor de CI; el resto no notifica (validan en el guardado).
-    private async Task SetCedula(object? value)
+    // Set + aviso al padre (cuando el editor confirma el valor — al salir del foco / elegir en combo) para que
+    // el EditContext revalide ESE campo: si ya no tiene errores, vuelve a su estado normal (limpia rojo/mensaje);
+    // si la columna es FK, además re-resuelve su descripción (y, para la cédula, valida la existencia).
+    private async Task Set(object? value)
     {
-        Set(value);
+        Column.SetValue(Model, Coerce(value, Column.ClrType, Column.UnderlyingType));
         await OnFieldCommitted.InvokeAsync(Column.Property.Name);
     }
 

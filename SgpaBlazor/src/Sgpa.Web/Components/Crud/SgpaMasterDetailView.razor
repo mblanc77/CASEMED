@@ -13,6 +13,7 @@
 @using Sgpa.Data.Preferencias
 @using Sgpa.Web.Reporting
 @using Sgpa.Web.Components.Reportes
+@using Sgpa.Web.Components.Shared
 @inject IServiceProvider Services
 @inject IReporteCatalogo Reportes
 @inject Sgpa.Web.Reporting.Predefinidos.IReportesPredefinidos ReportesPredef
@@ -34,6 +35,9 @@
     Las grillas hijas las define el llamador en <ChildTabs Context="m">, enlazando
     FilterValue a la propiedad del master que corresponda (la PK u otra columna, ej. CI).
 *@
+
+@* Overlay de espera: borrado/operaciones que pueden tardar (el handler CUD recalcula imponibles, etc.). *@
+<SgpaWaitDialog Visible="_procesando" Text="@_procesandoTexto" />
 
 @if (_mode == Mode.List)
 {
@@ -63,8 +67,7 @@
                 PageSizeSelectorVisible="true" PageSizeSelectorItems="_pageSizes" PageSizeSelectorAllRowsItemVisible="false"
                 SearchText="@_search" ShowSearchBox="false" ShowFilterRow="true"
                 FilterMenuButtonDisplayMode="GridFilterMenuButtonDisplayMode.Always"
-                SelectionMode="@(_multiSelect ? GridSelectionMode.Multiple : GridSelectionMode.Single)" AllowSelectRowByClick="true"
-                SelectAllCheckboxMode="GridSelectAllCheckboxMode.AllPages"
+                SelectionMode="GridSelectionMode.Multiple" AllowSelectRowByClick="true"
                 SelectedDataItems="_selectedItems" SelectedDataItemsChanged="OnSelectionChanged"
                 ShowGroupPanel="true"
                 AllowGroup="true"
@@ -95,12 +98,6 @@
                     <div class="btn-group sgpa-toolbar-group" role="group">
                         <DxButton IconCssClass="fa-solid fa-arrows-rotate" RenderStyle="ButtonRenderStyle.Secondary"
                                   Click="RefreshListAsync" Tooltip="Refrescar" />
-                        @if (_canDelete || ReportesEntidad is not null)
-                        {
-                            <DxButton IconCssClass="@(_multiSelect ? "fa-solid fa-square-check" : "fa-regular fa-square-check")"
-                                      RenderStyle="@(_multiSelect ? ButtonRenderStyle.Primary : ButtonRenderStyle.Secondary)"
-                                      Click="ToggleMultiSelect" Tooltip="Seleccionar" />
-                        }
                         <DxButton IconCssClass="fa-solid fa-table-columns"
                                   RenderStyle="ButtonRenderStyle.Secondary" Click="ShowColumnChooser" Tooltip="Columnas" />
                         <DxButton IconCssClass="fa-solid fa-calculator"
@@ -108,7 +105,7 @@
                         <DxButton IconCssClass="fa-solid fa-rotate-left"
                                   RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => _confirmReset = true)" Tooltip="Restablecer vista" />
                     </div>
-                    @if (_canDelete && (_multiSelect || _keysTodoFiltro is not null) && SelCount > 0)
+                    @if (_canDelete && SelCount > 0)
                     {
                         <DxButton Text="@($"({SelCount})")" IconCssClass="fa-solid fa-trash" Tooltip="Eliminar seleccionados"
                                   RenderStyle="ButtonRenderStyle.Danger"
@@ -135,23 +132,14 @@
                             </Items>
                         </DxDropDownButton>
                     }
-                    @* Reportes predefinidos por selección (XtraReports): corren sobre las filas tildadas, o sobre
-                       TODO el filtro activo si se usó "Seleccionar todo". *@
-                    @* "Seleccionar todo lo del filtro" (todas las páginas): en cualquier grilla, sólo con el modo
-                       selección activo. Sirve para Reportes y Eliminar masivo. *@
-                    @if (_multiSelect)
+                    @* "Seleccionar todo del filtro" (todas las páginas) vive en el checkbox del encabezado de la grilla.
+                       Acá sólo el badge con el conteo cuando está activo (con ✕ para deseleccionar). *@
+                    @if (_keysTodoFiltro is not null)
                     {
-                        <DxButton IconCssClass="@(SelCount > 0 ? "fa-solid fa-square-minus" : "fa-solid fa-list-check")"
-                                  RenderStyle="ButtonRenderStyle.Secondary"
-                                  Tooltip="@(SelCount > 0 ? "Deseleccionar todo" : "Seleccionar todos los registros del filtro actual (todas las páginas)")"
-                                  Click="ToggleSeleccionTodoAsync" />
-                        @if (_keysTodoFiltro is not null)
-                        {
-                            <span class="badge rounded-pill text-bg-success d-inline-flex align-items-center gap-1">
-                                <i class="fa-solid fa-circle-check"></i> Todos los del filtro: @_keysTodoFiltro.Count
-                                <a href="#" class="text-white text-decoration-none ms-1" @onclick="DeseleccionarTodo" @onclick:preventDefault title="Quitar">✕</a>
-                            </span>
-                        }
+                        <span class="badge rounded-pill text-bg-success d-inline-flex align-items-center gap-1">
+                            <i class="fa-solid fa-circle-check"></i> Todos los del filtro: @_keysTodoFiltro.Count
+                            <a href="#" class="text-white text-decoration-none ms-1" @onclick="DeseleccionarTodo" @onclick:preventDefault title="Quitar">✕</a>
+                        </span>
                     }
                     @if (ReportesEntidad is not null)
                     {
@@ -180,10 +168,15 @@
                 </div>
             </ToolbarTemplate>
             <Columns>
-                @if (_multiSelect)
-                {
-                    <DxGridSelectionColumn Width="40px" VisibleIndex="0" />
-                }
+                @* Selección siempre disponible. El checkbox del ENCABEZADO selecciona TODOS los registros del filtro
+                   (todas las páginas, liviano por claves vía _keysTodoFiltro); los checkbox de fila, la página visible. *@
+                <DxGridSelectionColumn Width="40px" VisibleIndex="0">
+                    <HeaderTemplate>
+                        <DxCheckBox Checked="@(_keysTodoFiltro is not null)"
+                                    CheckedChanged="@((bool v) => OnHeaderSelectAllAsync(v))"
+                                    Attributes="@SelectAllAttrs" />
+                    </HeaderTemplate>
+                </DxGridSelectionColumn>
                 @* Columna de comando (no participa de búsqueda/orden/filtro). Si fuera DxGridDataColumn sin
                    FieldName, el motor de full-text search del DxGrid intenta tipar una columna sin tipo y
                    revienta al refrescar con texto buscado (Nullable.GetUnderlyingType(null)). *@
@@ -338,6 +331,11 @@ else
             </div>
         </BodyContentTemplate>
     </DxPopup>
+
+    @* Soft validations (FluentValidation Severity.Warning), estilo XAF: el usuario debe tildar cada advertencia
+       para habilitar "Guardar de todos modos". Lo dispara el gate de SaveMasterAsync. *@
+    <SgpaSoftValidationDialog Visible="_softPopupVisible" VisibleChanged="@(v => _softPopupVisible = v)"
+                              Warnings="_softWarnings" Que="@TitleSingular" OnConfirmar="ConfirmarSoftValidationAsync" />
 
     @if (_mode == Mode.New && !AllowNew)
     {
@@ -527,6 +525,8 @@ else
     private object? _keyValue;
     private string? _keyDisplay;
     private bool _denied, _notFound, _saving, _confirmDelete;
+    private bool _procesando;                      // overlay de espera (borrados/operaciones que pueden tardar)
+    private string _procesandoTexto = "Procesando…";
     private bool _requiereTextoEliminar = true;   // ¿pide tipear ELIMINAR? (config por tabla)
     private bool _auditada;                        // ¿la tabla audita cambios? → muestra tab Historial
     private bool _deleteCfgLoaded;
@@ -536,6 +536,11 @@ else
     private bool _canCreate, _canWrite, _canDelete;
     private string? _error;
     private IReadOnlyList<string> _warnings = Array.Empty<string>();
+
+    // Soft validations (Severity.Warning) — popup "continuar / cancelar" al guardar (estilo XAF).
+    private bool _softPopupVisible;
+    private bool _softConfirmadas;
+    private IReadOnlyList<string> _softWarnings = Array.Empty<string>();
 
     private string _baseTrim = string.Empty;
     private string? _loadedUri;
@@ -644,13 +649,6 @@ else
         _selectedItems = _dataSource.LastPageItems.Cast<object>().ToList();
     }
 
-    // El botón es toggle: si ya hay algo seleccionado, deselecciona todo; si no, selecciona todo el filtro.
-    private async Task ToggleSeleccionTodoAsync()
-    {
-        if (SelCount > 0) { DeseleccionarTodo(); return; }
-        await SeleccionarTodoFiltroAsync();
-    }
-
     private void DeseleccionarTodo()
     {
         _keysTodoFiltro = null;
@@ -702,6 +700,8 @@ else
 
         _error = null;
         _warnings = Array.Empty<string>();
+        _softPopupVisible = false;
+        _softConfirmadas = false;
         _notFound = false;
         _master = null;
         _keyValue = null;
@@ -773,10 +773,23 @@ else
         }
     }
 
+    // Avisos en vivo del panel amarillo (al abrir el detalle y tras guardar). Fuente única: las soft validations
+    // del validador (Severity.Warning, ruleset "Avisos") + el callback a medida GetWarningsAsync si se proveyó.
     private async Task RecomputeWarningsAsync()
     {
-        if (GetWarningsAsync is not null && _master is not null)
-            _warnings = await GetWarningsAsync(_master);
+        if (_master is null) { _warnings = Array.Empty<string>(); return; }
+        var avisos = new List<string>();
+
+        var fluent = Services.GetService<IValidator<TMaster>>();
+        if (fluent is not null)
+        {
+            var result = await fluent.ValidateAsync(_master, opt => opt.IncludeAllRuleSets());
+            avisos.AddRange(result.Errors.Where(e => e.Severity == Severity.Warning).Select(e => e.ErrorMessage));
+        }
+        if (GetWarningsAsync is not null)
+            avisos.AddRange(await GetWarningsAsync(_master));
+
+        _warnings = avisos.Distinct().ToList();
     }
 
     private object? CoerceKey(string seg)
@@ -857,12 +870,17 @@ else
 
     private void RefreshListAsync() { _keysTodoFiltro = null; _grid?.Reload(); }
 
-    private async Task ToggleMultiSelect()
+    // Checkbox del encabezado de la grilla: marca/desmarca TODOS los registros del filtro (todas las páginas).
+    private async Task OnHeaderSelectAllAsync(bool seleccionar)
     {
-        _multiSelect = !_multiSelect;
-        _selectedItems = Array.Empty<object>();
-        await SaveVistaAsync();   // persiste la elección (como las demás prefs de la grilla)
+        if (seleccionar) await SeleccionarTodoFiltroAsync();
+        else DeseleccionarTodo();
     }
+
+    private static readonly Dictionary<string, object> SelectAllAttrs = new()
+    {
+        ["title"] = "Seleccionar todos los registros del filtro actual (todas las páginas)"
+    };
 
     // El checkbox "deseleccionar todo" del header sólo quita la página visible (en server-mode el grid no tiene
     // las otras). Detectamos la deselección EN LOTE (más de una de una) y limpiamos TODA la selección.
@@ -898,21 +916,39 @@ else
         {
             items = _selectedItems.OfType<TMaster>().ToList();
         }
-        int ok = 0, fail = 0;
-        foreach (var it in items)
+        var total = items.Count;
+        // Overlay una sola vez (sin re-render por ítem: re-renderizar el DxGrid en medio del loop puede dejar el
+        // DataProvider en un estado inválido y, al hacer Reload, tirar el circuito → "la pantalla no carga").
+        await MostrarEsperaAsync(total > 1 ? $"Eliminando {total:N0} registros…" : "Eliminando…");
+        bool ok;
+        try
         {
-            try { await Service.DeleteAsync(it); ok++; }
-            catch (Exception ex)
-            {
-                fail++;
-                await ErrorLog.LogAsync($"{_meta.Table}.Delete", ex, CurrentUser.UserName);
-            }
+            // Borrado atómico en una sola transacción (un commit en vez de uno por fila → mucho más rápido).
+            await Service.DeleteManyAsync(items);
+            ok = true;
+        }
+        catch (Exception ex)
+        {
+            ok = false;
+            await ErrorLog.LogAsync($"{_meta.Table}.Delete", ex, CurrentUser.UserName);
+        }
+        finally
+        {
+            _procesando = false;
         }
         _selectedItems = Array.Empty<object>();
         _keysTodoFiltro = null;
-        if (fail == 0) Toasts.Exito($"{ok:N0} registro(s) eliminado(s).");
-        else Toasts.Aviso($"{ok:N0} eliminado(s); {fail:N0} con error (ver registro de errores).");
-        _grid?.Reload();
+        if (ok) Toasts.Exito($"{total:N0} registro(s) eliminado(s).");
+        else Toasts.Error($"No se pudo eliminar (la operación se revirtió por completo). Ver el registro de errores.");
+        RecargarGrid();
+    }
+
+    // Reload defensivo del grid: si el DataProvider ya se descartó (re-render/navegación durante la operación),
+    // recrear la grilla por @key en vez de propagar la excepción y tirar el circuito Blazor.
+    private void RecargarGrid()
+    {
+        try { _grid?.Reload(); }
+        catch (ObjectDisposedException) { _gridKey = new object(); }
     }
 
     // Menú contextual del DxGrid (right-click). Sobre el pie (total) o el pie de grupo de una columna,
@@ -994,12 +1030,30 @@ else
             }
 
             // Backstop de reglas de negocio (FluentValidation), incluidas las async. Las síncronas ya bloquean
-            // el EditForm y se ven por campo; acá se cubren las async (consultas a base).
+            // el EditForm y se ven por campo; acá se cubren las async (consultas a base). Se separa por severidad:
+            //  - Severity.Error  → bloquea (toast) como siempre.
+            //  - Severity.Warning → "soft validation" estilo XAF: popup con las advertencias que deja continuar o
+            //    cancelar. Si el usuario ya confirmó (_softConfirmadas), se saltea y guarda.
             var fluent = Services.GetService<IValidator<TMaster>>();
             if (fluent is not null)
             {
-                var result = await fluent.ValidateAsync(_master);
-                if (!result.IsValid) { Toasts.Error(string.Join(" ", result.Errors.Select(x => x.ErrorMessage))); return; }
+                // IncludeAllRuleSets para correr también el ruleset "Avisos" (soft validations asíncronas).
+                var result = await fluent.ValidateAsync(_master, opt => opt.IncludeAllRuleSets());
+                var errores = result.Errors.Where(e => e.Severity == Severity.Error).Select(e => e.ErrorMessage).ToList();
+                if (errores.Count > 0) { Toasts.Error(string.Join(" ", errores)); return; }
+
+                if (!_softConfirmadas)
+                {
+                    var avisos = result.Errors.Where(e => e.Severity == Severity.Warning)
+                                              .Select(e => e.ErrorMessage).Distinct().ToList();
+                    if (avisos.Count > 0)
+                    {
+                        _softWarnings = avisos;
+                        _softPopupVisible = true;
+                        _saving = false;          // liberá el botón mientras el usuario decide
+                        return;                   // ConfirmarSoftValidationAsync re-invoca el guardado al continuar
+                    }
+                }
             }
 
             if (_mode == Mode.New)
@@ -1026,14 +1080,26 @@ else
         }
     }
 
+    // El usuario aceptó las soft validations (Severity.Warning) en el popup: re-ejecuta el guardado marcándolas
+    // como confirmadas para saltear el gate. El flag se resetea siempre, así un guardado posterior vuelve a avisar.
+    private async Task ConfirmarSoftValidationAsync()
+    {
+        _softPopupVisible = false;
+        _softConfirmadas = true;
+        try { await SaveMasterAsync(); }
+        finally { _softConfirmadas = false; }
+    }
+
     private async Task DeleteMasterAsync()
     {
         if (_master is null || !_canDelete || !PuedeEliminar) return;
         _saving = true;
+        _confirmDelete = false;
+        // Overlay visible mientras corre el borrado (puede disparar el recálculo de imponibles, etc.).
+        await MostrarEsperaAsync("Eliminando…");
         try
         {
             await Service.DeleteAsync(_master);
-            _confirmDelete = false;
             Toasts.Exito("Registro eliminado.");
             Nav.NavigateTo(_baseTrim);
         }
@@ -1045,7 +1111,18 @@ else
         finally
         {
             _saving = false;
+            _procesando = false;
         }
+    }
+
+    // Muestra el overlay de espera y fuerza un render antes de arrancar la operación bloqueante
+    // (sin el yield, Blazor recién repinta al terminar y el usuario no vería el spinner).
+    private async Task MostrarEsperaAsync(string texto)
+    {
+        _procesandoTexto = texto;
+        _procesando = true;
+        StateHasChanged();
+        await Task.Yield();
     }
 
     private static string CapitalizeFirst(string s) =>

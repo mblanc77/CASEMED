@@ -9,7 +9,9 @@ namespace Sgpa.Business.Tests;
 /// <summary>Unit puro del validador síncrono de la certificación (FluentValidation).</summary>
 public class CertificacionValidatorTests
 {
-    private readonly CertificacionValidator _v = new();
+    // Los avisos por días (ruleset "Avisos", async, consulta a base) no se ejecutan en Validate() por defecto, así
+    // que el service con db nula nunca se toca: estos tests cubren sólo las reglas síncronas (fechas).
+    private readonly CertificacionValidator _v = new(new CertificacionService(null!));
 
     [Fact]
     public void No_efectiva_no_exige_fechas()

@@ -10,8 +10,7 @@
 <PageTitle>Afiliados</PageTitle>
 
 <SgpaMasterDetailView TMaster="Afiliado" BaseRoute="/afiliados"
-                      TitlePlural="Afiliados" TitleSingular="el afiliado" NewLabel="Nuevo afiliado"
-                      GetWarningsAsync="@(a => Afiliado.GetAvisosAsync(a))">
+                      TitlePlural="Afiliados" TitleSingular="el afiliado" NewLabel="Nuevo afiliado">
     <ListColumns>
         <DxGridDataColumn FieldName="CI" Caption="Cédula" Width="120px" DisplayFormat="0" />
         <DxGridDataColumn FieldName="Apellido1" Caption="1er apellido" />
@@ -49,6 +48,9 @@
             <div class="p-2"><SgpaCrudView TEntity="Certificacion" Title="Certificaciones" FilterColumn="CI" FilterValue="a.CI"
                                            ColumnOrder="_ordenCertificacion" /></div>
         </DxTabPage>
+        <DxTabPage Text="Prórrogas" TabIconCssClass="fa-solid fa-calendar-plus">
+            <div class="p-2"><SgpaCrudView TEntity="CertificacionProrroga" Title="Prórrogas" FilterColumn="CI" FilterValue="a.CI" /></div>
+        </DxTabPage>
         <DxTabPage Text="Especialidades" TabIconCssClass="fa-solid fa-stethoscope">
             <div class="p-2"><SgpaCrudView TEntity="AfiliadoEspecialidad" Title="Especialidades" FilterColumn="CI" FilterValue="a.CI" /></div>
         </DxTabPage>
@@ -64,7 +66,7 @@
         <DxTabPage Text="Préstamos" TabIconCssClass="fa-solid fa-landmark">
             <AfiliadoPrestamosHist CI="a.CI" />
         </DxTabPage>
-        <DxTabPage Text="Prima por fallecimiento" TabIconCssClass="fa-solid fa-hand-holding-heart">
+        <DxTabPage Text="Prima" TabIconCssClass="fa-solid fa-hand-holding-heart">
             <div class="p-2"><PrimaPanel CI="a.CI" /></div>
         </DxTabPage>
     </ChildTabs>

@@ -86,8 +86,12 @@ public sealed class SgpaMetadataValidator : ComponentBase
         try { result = _fluent.Validate(new ValidationContext<object>(model)); }
         catch (AsyncValidatorInvokedSynchronouslyException) { /* reglas async → gate de guardado */ }
         if (result is not null)
+            // Sólo los errores (Severity.Error) bloquean y se muestran en rojo por campo. Las advertencias
+            // (Severity.Warning, ej. dígito verificador de la cédula) son "soft": no bloquean el EditForm; el
+            // CRUD las junta en un popup "continuar / cancelar" al guardar (ver SgpaMasterDetailView).
             foreach (var f in result.Errors)
-                yield return (f.PropertyName, f.ErrorMessage);
+                if (f.Severity == Severity.Error)
+                    yield return (f.PropertyName, f.ErrorMessage);
     }
 
     protected override void OnAfterRender(bool firstRender)

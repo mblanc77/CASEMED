@@ -13,7 +13,6 @@
                       TitlePlural="Certificaciones" TitleSingular="la certificación" NewLabel="Nueva certificación"
                       ReportesEntidad="Certificacion"
                       ValidateAsync="@(c => Certi.ValidarAsync(c))"
-                      GetWarningsAsync="@(c => Certi.GetAvisosDiasAsync(c))"
                       OnNewAsync="@(async c => c.NroLlamado = await Certi.ProximoNroLlamadoAsync())">
     <ListColumns>
         <DxGridDataColumn FieldName="NroLlamado" Caption="Nº llamado" Width="120px" />

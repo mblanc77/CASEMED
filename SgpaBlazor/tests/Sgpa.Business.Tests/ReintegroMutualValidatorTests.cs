@@ -7,7 +7,9 @@ namespace Sgpa.Business.Tests;
 /// <summary>Unit puro del validador del reintegro mutual (FluentValidation).</summary>
 public class ReintegroMutualValidatorTests
 {
-    private readonly ReintegroMutualValidator _v = new();
+    // Los avisos (ruleset "Avisos", async, consulta a base) no se ejecutan en Validate() por defecto, así que el
+    // service con db nula nunca se toca: estos tests cubren sólo las reglas síncronas (mes/año).
+    private readonly ReintegroMutualValidator _v = new(new ReintegroService(null!));
 
     [Fact]
     public void Mes_y_anio_validos_es_valido()

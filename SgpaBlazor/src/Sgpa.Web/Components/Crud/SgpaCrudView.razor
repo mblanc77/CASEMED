@@ -343,6 +343,11 @@ else
 </DxPopup>
 
 <SgpaReportLauncher @ref="_launcher" />
+
+@* Soft validations (Severity.Warning), estilo XAF: el usuario tilda cada advertencia para habilitar continuar.
+   Lo dispara el gate de OnEditModelSavingAsync (que cancela el guardado del grid hasta confirmar). *@
+<SgpaSoftValidationDialog Visible="_softPopupVisible" VisibleChanged="@(v => _softPopupVisible = v)"
+                          Warnings="_softWarnings" OnConfirmar="ConfirmarSoftValidationAsync" />
 }
 
 @code {
@@ -388,9 +393,6 @@ else
     /// <summary>Acción opcional tras guardar (alta o modificación): efectos colaterales del negocio.</summary>
     [Parameter] public Func<TEntity, Task>? OnAfterSaveAsync { get; set; }
 
-    /// <summary>Avisos no bloqueantes opcionales calculados tras guardar; se muestran como banner informativo.</summary>
-    [Parameter] public Func<TEntity, Task<IReadOnlyList<string>>>? GetWarningsAfterSaveAsync { get; set; }
-
     /// <summary>Acciones extra por fila (recibe la entidad), ej. abrir un sub-formulario relacionado.</summary>
     [Parameter] public RenderFragment<TEntity>? RowActions { get; set; }
 
@@ -433,6 +435,12 @@ else
     private bool _multiSelect;          // selección múltiple activa (para borrado masivo)
     private bool _confirmDelete;
     private bool _confirmBulkDelete;
+
+    // Soft validations (Severity.Warning) — popup XAF "tildar cada advertencia para continuar" en el gate de guardado.
+    private bool _softPopupVisible;
+    private bool _softConfirmadas;
+    private IReadOnlyList<string> _softWarnings = Array.Empty<string>();
+
     private TEntity? _itemToDelete;
     private bool _requiereTextoEliminar = true;   // ¿pide tipear ELIMINAR? (config por tabla)
     private string _confirmText = string.Empty;
@@ -848,17 +856,33 @@ else
             if (validationError is not null) { Toasts.Error(validationError); e.Cancel = true; return; }
         }
 
-        // Backstop de las reglas de negocio (FluentValidation), incluidas las async. Las síncronas ya se
-        // muestran por campo (SgpaMetadataValidator); acá se garantiza el bloqueo aunque el editor no valide.
+        // Backstop de reglas de negocio (FluentValidation) con IncludeAllRuleSets para correr también el ruleset
+        // "Avisos" (soft validations asíncronas). Se separa por severidad:
+        //  - Severity.Error  → bloquea el guardado (toast + Cancel).
+        //  - Severity.Warning → popup XAF (tildar cada advertencia para continuar). Se cancela el guardado y, al
+        //    confirmar, ConfirmarSoftValidationAsync re-dispara el guardado (_grid.SaveChangesAsync) ya confirmado.
         var fluent = Services.GetService<IValidator<TEntity>>();
         if (fluent is not null)
         {
-            var result = await fluent.ValidateAsync(entity);
-            if (!result.IsValid)
+            var result = await fluent.ValidateAsync(entity, opt => opt.IncludeAllRuleSets());
+            var errores = result.Errors.Where(x => x.Severity == Severity.Error).Select(x => x.ErrorMessage).ToList();
+            if (errores.Count > 0)
             {
-                Toasts.Error(string.Join(" ", result.Errors.Select(x => x.ErrorMessage)));
+                Toasts.Error(string.Join(" ", errores));
                 e.Cancel = true;
                 return;
+            }
+            if (!_softConfirmadas)
+            {
+                var avisos = result.Errors.Where(x => x.Severity == Severity.Warning)
+                                          .Select(x => x.ErrorMessage).Distinct().ToList();
+                if (avisos.Count > 0)
+                {
+                    _softWarnings = avisos;
+                    _softPopupVisible = true;
+                    e.Cancel = true;          // el editor queda abierto; el popup re-dispara el guardado al confirmar
+                    return;
+                }
             }
         }
 
@@ -882,12 +906,23 @@ else
         }
 
         Toasts.Exito(e.IsNew ? "Registro creado." : "Cambios guardados.");
-        if (GetWarningsAfterSaveAsync is not null)
-            foreach (var w in await GetWarningsAfterSaveAsync(entity))
-                Toasts.Aviso(w);
 
         await RefreshAsync();
         await OnChanged.InvokeAsync();
+    }
+
+    // El usuario aceptó las soft validations en el popup (todas tildadas): re-dispara el guardado del grid
+    // marcándolas como confirmadas para saltear el gate. El flag se resetea siempre, así un guardado posterior
+    // (otra fila u otra edición) vuelve a advertir.
+    private async Task ConfirmarSoftValidationAsync()
+    {
+        _softPopupVisible = false;
+        _softConfirmadas = true;
+        try
+        {
+            if (_grid is not null) await _grid.SaveChangesAsync();
+        }
+        finally { _softConfirmadas = false; }
     }
 
     private async Task ConfirmarBorradoAsync()

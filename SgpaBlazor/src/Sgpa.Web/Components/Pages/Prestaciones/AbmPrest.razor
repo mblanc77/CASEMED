@@ -15,8 +15,7 @@
     PeriodoRenovacion real, no el 0 que hardcodea la query migrada) y por elegibilidad 1,25 SMN; y acceso a
     la receta óptica (cerca/lejos) para los tipos de prestación que la llevan.
 *@
-<SgpaCrudView TEntity="Prestacion" Title="Prestaciones"
-              GetWarningsAfterSaveAsync="@(p => Prestacion.GetAvisosAsync(p))">
+<SgpaCrudView TEntity="Prestacion" Title="Prestaciones">
     <RowActions Context="p">
         @if (_tiposConReceta.Contains(p.CodPrestacionTipo))
         {

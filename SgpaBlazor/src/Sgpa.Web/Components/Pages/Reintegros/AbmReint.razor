@@ -13,5 +13,4 @@
     (1,25 SMN, no bloqueante) y actualización de la cuota del mutualista al grabar (ActualizarCuota).
 *@
 <SgpaCrudView TEntity="ReintegroMutual" Title="Reintegros mutuales"
-              OnAfterSaveAsync="@(r => Reintegro.ActualizarCuotaMutualAsync(r))"
-              GetWarningsAfterSaveAsync="@(r => Reintegro.GetAvisosAsync(r))" />
+              OnAfterSaveAsync="@(r => Reintegro.ActualizarCuotaMutualAsync(r))" />

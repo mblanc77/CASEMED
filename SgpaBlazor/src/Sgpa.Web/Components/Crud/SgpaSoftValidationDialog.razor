@@ -1,0 +1,77 @@
+@*
+    Popup de "soft validations" (FluentValidation Severity.Warning), estilo XAF: lista las advertencias y
+    exige que el usuario TILDE cada una para confirmar que las revisó; recién ahí se habilita "Guardar de
+    todos modos". Lo usan los engines genéricos (SgpaMasterDetailView y SgpaCrudView) en el gate de guardado.
+*@
+<DxPopup Visible="Visible" VisibleChanged="OnVisibleChanged" HeaderText="Advertencias de validación"
+         Width="560px" CloseOnEscape="true">
+    <BodyContentTemplate Context="ctx">
+        <p class="mb-3">
+            <i class="fa-solid fa-triangle-exclamation text-warning me-1"></i>
+            Se detectaron advertencias en @Que. Tildá cada una para confirmar que la verificaste y poder continuar:
+        </p>
+        <div class="mb-3">
+            @for (var i = 0; i < Warnings.Count; i++)
+            {
+                var idx = i;
+                <div class="mb-2">
+                    <DxCheckBox Checked="@_checks[idx]" CheckedChanged="@((bool v) => SetCheck(idx, v))">
+                        @Warnings[idx]
+                    </DxCheckBox>
+                </div>
+            }
+        </div>
+        <div class="d-flex justify-content-end gap-2">
+            <DxButton Text="Cancelar" RenderStyle="ButtonRenderStyle.Secondary" Click="CancelarAsync" />
+            <DxButton Text="Guardar de todos modos" RenderStyle="ButtonRenderStyle.Primary"
+                      Click="ConfirmarAsync" Enabled="@TodasTildadas" />
+        </div>
+    </BodyContentTemplate>
+</DxPopup>
+
+@code {
+    [Parameter] public bool Visible { get; set; }
+    [Parameter] public EventCallback<bool> VisibleChanged { get; set; }
+
+    /// <summary>Advertencias a mostrar. El padre asigna una lista nueva en cada gate (se usa la referencia para
+    /// resetear los tildes).</summary>
+    [Parameter] public IReadOnlyList<string> Warnings { get; set; } = Array.Empty<string>();
+
+    /// <summary>Texto del sujeto ("el afiliado", "la certificación"…) para el encabezado.</summary>
+    [Parameter] public string Que { get; set; } = "el registro";
+
+    /// <summary>Se invoca cuando el usuario confirma (todas tildadas): el padre re-ejecuta el guardado.</summary>
+    [Parameter] public EventCallback OnConfirmar { get; set; }
+
+    private bool[] _checks = Array.Empty<bool>();
+    private IReadOnlyList<string>? _bound;
+
+    protected override void OnParametersSet()
+    {
+        // Resetea los tildes cada vez que cambia la lista (el padre asigna una nueva por cada apertura).
+        if (!ReferenceEquals(_bound, Warnings))
+        {
+            _bound = Warnings;
+            _checks = new bool[Warnings.Count];
+        }
+    }
+
+    private bool TodasTildadas => Warnings.Count > 0 && Array.TrueForAll(_checks, c => c);
+
+    private void SetCheck(int i, bool v) { if (i >= 0 && i < _checks.Length) _checks[i] = v; }
+
+    private Task OnVisibleChanged(bool v) => VisibleChanged.InvokeAsync(v);
+
+    private async Task CancelarAsync()
+    {
+        Array.Clear(_checks, 0, _checks.Length);
+        await VisibleChanged.InvokeAsync(false);
+    }
+
+    private async Task ConfirmarAsync()
+    {
+        await VisibleChanged.InvokeAsync(false);
+        await OnConfirmar.InvokeAsync();
+        Array.Clear(_checks, 0, _checks.Length);
+    }
+}
