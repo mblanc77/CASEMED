@@ -4,6 +4,7 @@
 @using Sgpa.Data.Configuracion
 @inject ITablaConfigService Config
 @inject WebCurrentUser CurrentUser
+@inject NavigationManager Nav
 
 <PageTitle>Configuración de tablas</PageTitle>
 
@@ -11,6 +12,7 @@
 <p class="text-muted">
     Settings dinámicos por tabla: <strong>edición inline</strong> (catálogos editables en la grilla),
     <strong>confirmación de borrado</strong> (exige tipear ELIMINAR) y <strong>auditoría</strong> de cambios por campo.
+    El botón <strong>Columnas</strong> de cada fila abre el detalle de configuración por columna de esa tabla.
 </p>
 
 @if (!CurrentUser.IsAdmin)
@@ -51,6 +53,14 @@ else
                 <CellDisplayTemplate Context="c">
                     @{ var vm = (Vm)c.DataItem; }
                     <DxCheckBox Checked="vm.Disponible" CheckedChanged="@((bool v) => { vm.Disponible = v; return SaveAsync(vm); })" />
+                </CellDisplayTemplate>
+            </DxGridDataColumn>
+            @* Acción por fila: abre la configuración por columna de esta tabla (evita un ítem de menú suelto). *@
+            <DxGridDataColumn Caption="Columnas" Width="120px" TextAlignment="GridTextAlignment.Center">
+                <CellDisplayTemplate Context="c">
+                    @{ var vm = (Vm)c.DataItem; }
+                    <DxButton Text="Columnas" IconCssClass="fa-solid fa-table-columns" RenderStyle="ButtonRenderStyle.Link"
+                              Click="@(() => Nav.NavigateTo($"/config/columnas?tabla={Uri.EscapeDataString(vm.Tabla)}"))" />
                 </CellDisplayTemplate>
             </DxGridDataColumn>
         </Columns>

@@ -106,6 +106,9 @@ else
 }
 
 @code {
+    // Tabla a preseleccionar (la pasa "Configuración de tablas" al abrir desde la acción por fila).
+    [Parameter, SupplyParameterFromQuery] public string? Tabla { get; set; }
+
     private List<string> _tablas = new();
     private static readonly string[] _alineaciones = { "(auto)", "left", "center", "right" };
 
@@ -128,6 +131,13 @@ else
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .OrderBy(t => t, StringComparer.OrdinalIgnoreCase)
             .ToList();
+        // Si vino ?tabla= (desde "Configuración de tablas"), preseleccionarla (con el casing canónico del catálogo).
+        if (!string.IsNullOrWhiteSpace(Tabla)
+            && _tablas.FirstOrDefault(t => t.Equals(Tabla, StringComparison.OrdinalIgnoreCase)) is { } match)
+        {
+            _tablaSelValue = match;
+            BuildRows();
+        }
     }
 
     private void BuildRows()
