@@ -28,6 +28,9 @@ public abstract record FilterNode;
 /// <summary>Comparación binaria columna ↔ valor.</summary>
 public sealed record FilterCompare(string Column, FilterOp Op, object? Value) : FilterNode;
 
+/// <summary>Comparación columna ↔ otra columna de la MISMA tabla (ej. <c>[FechaBaja] &gt;= [FechaAlta]</c>).</summary>
+public sealed record FilterCompareColumns(string Column, FilterOp Op, string OtherColumn) : FilterNode;
+
 /// <summary>Función de texto (Contains/StartsWith/EndsWith) sobre una columna.</summary>
 public sealed record FilterText(string Column, FilterFunc Func, string Value) : FilterNode;
 

@@ -86,6 +86,12 @@ public static class SgpaCriteriaTranslator
                 if (fop is not null && b.RightOperand is AggregateOperand aggR)
                     return AggregateCompare(aggR, Flip(fop.Value), ValueOf(b.LeftOperand), relations);
 
+                // Comparación campo ↔ campo de la MISMA tabla (ambos operandos son columnas sin prefijo de relación):
+                // ej. [FechaBaja] >= [FechaAlta]. Las rutas con punto (relación/padre) no se soportan por esta vía.
+                if (fop is not null && b.LeftOperand is OperandProperty lp && b.RightOperand is OperandProperty rp
+                    && lp.PropertyName.IndexOf('.') < 0 && rp.PropertyName.IndexOf('.') < 0)
+                    return new FilterCompareColumns(lp.PropertyName, fop.Value, rp.PropertyName);
+
                 var (col, value) = PropAndValue(b.LeftOperand, b.RightOperand);
                 if (col is null) return null;
                 return fop is null ? null : Leaf(col, lc => new FilterCompare(lc, fop.Value, value), relations);

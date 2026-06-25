@@ -117,6 +117,24 @@ public static class FilterSqlTranslator
                 };
                 return $"{lhs} {op} {pn}";
             }
+            case FilterCompareColumns fcc:
+            {
+                // Comparación columna ↔ columna (misma tabla): ambos lados se resuelven como columnas/campos calculados.
+                var lhs = ResolveLhs(fcc.Column, scope, rootMeta, rootRef, calc, p, ref n);
+                var rhs = ResolveLhs(fcc.OtherColumn, scope, rootMeta, rootRef, calc, p, ref n);
+                var op = fcc.Op switch
+                {
+                    FilterOp.Equal => "=",
+                    FilterOp.NotEqual => "<>",
+                    FilterOp.Greater => ">",
+                    FilterOp.Less => "<",
+                    FilterOp.GreaterOrEqual => ">=",
+                    FilterOp.LessOrEqual => "<=",
+                    FilterOp.Like => "LIKE",
+                    _ => "="
+                };
+                return $"{lhs} {op} {rhs}";
+            }
             case FilterExists fe:
             {
                 var alias = "ex" + n++;

@@ -105,6 +105,24 @@ public class SeguridadGranularCrudTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task Filtro_campo_contra_campo_genera_SQL_valido()
+    {
+        var db = NewDb();
+        var ctx = Ctx(registros: new()
+        {
+            [("Banco", PermissionAction.Read)] = new RecordRule(false, new[] { "dummy" })
+        });
+        // CodBanco = CodBanco → siempre verdadero: devuelve nuestras dos filas (valida la traducción columna↔columna).
+        var compiler = new TestCriteriaCompiler(new FilterCompareColumns("CodBanco", FilterOp.Equal, "CodBanco"));
+        var svc = TestCrud.Create<Banco>(db, new FakeCurrentUser(ctx), compiler);
+
+        var all = await svc.GetAllAsync();
+
+        Assert.Contains(all, b => b.CodBanco == Cod1);
+        Assert.Contains(all, b => b.CodBanco == Cod2);
+    }
+
+    [Fact]
     public async Task Admin_ignora_enmascarado_y_filtros()
     {
         var db = NewDb();
