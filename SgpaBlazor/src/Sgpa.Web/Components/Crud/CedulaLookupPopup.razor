@@ -12,7 +12,9 @@
          CloseOnEscape="true" ShowFooter="false">
     <BodyContentTemplate>
         <div class="mb-2" @onkeydown="OnSearchKeyDown">
-            <DxTextBox @ref="_searchBox" Text="@_termino" TextChanged="OnTextChanged"
+            @* ValidationEnabled=false: el popup puede abrirse dentro del EditForm del SgpaDetailForm; sin esto, el
+               DxTextBox hereda el EditContext y exige TextExpression (no lo tiene, usa Text/TextChanged) y rompe. *@
+            <DxTextBox @ref="_searchBox" Text="@_termino" TextChanged="OnTextChanged" ValidationEnabled="false"
                        NullText="Cédula, nombre o apellido…" BindValueMode="BindValueMode.OnInput" />
         </div>
         <div class="small text-muted mb-1">Hacé clic en una fila (o en “Elegir”) para seleccionar el afiliado.</div>
