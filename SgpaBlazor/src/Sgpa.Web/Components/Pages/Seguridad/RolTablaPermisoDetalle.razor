@@ -97,42 +97,61 @@
         {
             <p class="text-muted small mb-2">
                 Podés usar el placeholder <code>@("{CurrentUserLogin}")</code> para el usuario actual
-                (ej. <code>@("[Usr] = '{CurrentUserLogin}'")</code>).
+                (ej. <code>@("[Usr] = '{CurrentUserLogin}'")</code>). En modo <strong>Texto</strong> también
+                podés comparar un campo contra otro de la misma tabla (ej. <code>@("[FechaBaja] >= [FechaAlta]")</code>).
             </p>
-            <DxFilterBuilder @bind-FilterCriteria="_crit">
-                <Fields>
-                    @foreach (var col in _meta.ListColumns)
-                    {
-                        <DxFilterBuilderField FieldName="@col.Name" Caption="@col.Caption" Type="col.UnderlyingType" />
-                    }
-                    @foreach (var rel in EntityRelations.For(_meta.EntityType))
-                    {
-                        @if (rel.IsCollection)
+
+            @* Toggle Visual / Texto (el DxFilterBuilder de Blazor no trae ViewMode; el modo texto lo aportamos acá). *@
+            <div class="btn-group btn-group-sm mb-2" role="group">
+                <DxButton Text="Visual" RenderStyle="@(_modoTexto ? ButtonRenderStyle.Secondary : ButtonRenderStyle.Primary)"
+                          IconCssClass="fa-solid fa-sitemap" Click="IrAVisual" />
+                <DxButton Text="Texto" RenderStyle="@(_modoTexto ? ButtonRenderStyle.Primary : ButtonRenderStyle.Secondary)"
+                          IconCssClass="fa-solid fa-code" Click="IrATexto" />
+            </div>
+
+            @if (_modoTexto)
+            {
+                <textarea class="form-control font-monospace" rows="3" @bind="_critText" @bind:event="oninput"
+                          placeholder="@("[Usr] = '{CurrentUserLogin}'")"></textarea>
+                <div class="text-muted small mt-1">Sintaxis CriteriaOperator de DevExpress. Los nombres de campo van entre corchetes: <code>[Campo]</code>.</div>
+            }
+            else
+            {
+                <DxFilterBuilder @bind-FilterCriteria="_crit">
+                    <Fields>
+                        @foreach (var col in _meta.ListColumns)
                         {
-                            <DxFilterBuilderField FieldName="@rel.FieldPrefix" Caption="@($"☰ {rel.Label}")" IsCollection="true">
-                                <Fields>
-                                    @foreach (var col in rel.Child.ListColumns)
-                                    {
-                                        <DxFilterBuilderField FieldName="@col.Name" Caption="@col.Caption" Type="col.UnderlyingType" />
-                                    }
-                                </Fields>
-                            </DxFilterBuilderField>
+                            <DxFilterBuilderField FieldName="@col.Name" Caption="@col.Caption" Type="col.UnderlyingType" />
                         }
-                        else
+                        @foreach (var rel in EntityRelations.For(_meta.EntityType))
                         {
-                            <DxFilterBuilderField FieldName="@rel.FieldPrefix" Caption="@($"↗ {rel.Label}")" AllowSelection="false">
-                                <Fields>
-                                    @foreach (var col in rel.Child.ListColumns)
-                                    {
-                                        <DxFilterBuilderField FieldName="@($"{rel.FieldPrefix}.{col.Name}")" Caption="@col.Caption"
-                                                              CaptionFullPath="@($"{rel.Label}.{col.Caption}")" Type="col.UnderlyingType" />
-                                    }
-                                </Fields>
-                            </DxFilterBuilderField>
+                            @if (rel.IsCollection)
+                            {
+                                <DxFilterBuilderField FieldName="@rel.FieldPrefix" Caption="@($"☰ {rel.Label}")" IsCollection="true">
+                                    <Fields>
+                                        @foreach (var col in rel.Child.ListColumns)
+                                        {
+                                            <DxFilterBuilderField FieldName="@col.Name" Caption="@col.Caption" Type="col.UnderlyingType" />
+                                        }
+                                    </Fields>
+                                </DxFilterBuilderField>
+                            }
+                            else
+                            {
+                                <DxFilterBuilderField FieldName="@rel.FieldPrefix" Caption="@($"↗ {rel.Label}")" AllowSelection="false">
+                                    <Fields>
+                                        @foreach (var col in rel.Child.ListColumns)
+                                        {
+                                            <DxFilterBuilderField FieldName="@($"{rel.FieldPrefix}.{col.Name}")" Caption="@col.Caption"
+                                                                  CaptionFullPath="@($"{rel.Label}.{col.Caption}")" Type="col.UnderlyingType" />
+                                        }
+                                    </Fields>
+                                </DxFilterBuilderField>
+                            }
                         }
-                    }
-                </Fields>
-            </DxFilterBuilder>
+                    </Fields>
+                </DxFilterBuilder>
+            }
 
             <div class="d-flex align-items-center gap-3 mt-3">
                 <span class="text-muted small">Aplica a:</span>
@@ -164,6 +183,8 @@
     private bool _editorVisible;
     private int _editId;
     private CriteriaOperator? _crit;
+    private bool _modoTexto;
+    private string _critText = string.Empty;
     private bool _edLeer = true, _edModificar, _edBorrar;
     private string? _edError;
 
@@ -213,6 +234,8 @@
         _edError = null;
         _editId = r?.Id ?? 0;
         _crit = string.IsNullOrWhiteSpace(r?.Criteria) ? null : CriteriaOperator.Parse(r!.Criteria);
+        _critText = r?.Criteria ?? string.Empty;
+        _modoTexto = false;
         var acc = r?.Acciones ?? PermissionAction.Read;
         _edLeer = (acc & PermissionAction.Read) != 0;
         _edModificar = (acc & PermissionAction.Write) != 0;
@@ -220,10 +243,40 @@
         _editorVisible = true;
     }
 
+    // Cambia a modo Visual: parsea el texto actual al árbol del builder (si es inválido, avisa y no cambia).
+    private void IrAVisual()
+    {
+        if (_modoTexto)
+        {
+            try { _crit = string.IsNullOrWhiteSpace(_critText) ? null : CriteriaOperator.Parse(_critText); }
+            catch { _edError = "El texto del criterio no es válido; corregilo antes de pasar a Visual."; return; }
+        }
+        _edError = null;
+        _modoTexto = false;
+    }
+
+    // Cambia a modo Texto: vuelca el árbol del builder a su representación textual editable.
+    private void IrATexto()
+    {
+        _critText = _crit?.ToString() ?? _critText;
+        _edError = null;
+        _modoTexto = true;
+    }
+
     private async Task GuardarAsync()
     {
         _edError = null;
-        var criteria = _crit?.ToString();
+
+        // En modo texto, el string crudo es la fuente de verdad: se valida parseándolo.
+        string? criteria;
+        if (_modoTexto)
+        {
+            if (string.IsNullOrWhiteSpace(_critText)) { _edError = "Definí un criterio."; return; }
+            try { criteria = CriteriaOperator.Parse(_critText)?.ToString(); }
+            catch { _edError = "El criterio no es válido (sintaxis CriteriaOperator)."; return; }
+        }
+        else criteria = _crit?.ToString();
+
         if (string.IsNullOrWhiteSpace(criteria)) { _edError = "Definí un criterio."; return; }
 
         var acciones = PermissionAction.None;
