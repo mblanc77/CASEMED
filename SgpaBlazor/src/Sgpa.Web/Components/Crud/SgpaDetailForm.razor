@@ -3,6 +3,7 @@
 @using Sgpa.Data.Configuracion
 @inject ISgpaLookupService Lookups
 @inject IColumnaConfigService ColCfg
+@inject Sgpa.Web.State.UnsavedChangesService Unsaved
 @implements IDisposable
 @*
     DetailView genérico (estilo XAF): arma un formulario con un editor por columna.
@@ -110,10 +111,21 @@
     {
         if (!ReferenceEquals(EditContext, _subscribed))
         {
-            if (_subscribed is not null) _subscribed.OnValidationStateChanged -= OnValidationStateChanged;
+            if (_subscribed is not null)
+            {
+                _subscribed.OnValidationStateChanged -= OnValidationStateChanged;
+                _subscribed.OnFieldChanged -= OnEditFieldChanged;
+            }
             _subscribed = EditContext;
             _ciStore = EditContext is null ? null : new ValidationMessageStore(EditContext);
-            if (_subscribed is not null) _subscribed.OnValidationStateChanged += OnValidationStateChanged;
+            if (_subscribed is not null)
+            {
+                _subscribed.OnValidationStateChanged += OnValidationStateChanged;
+                _subscribed.OnFieldChanged += OnEditFieldChanged;
+            }
+            // Re-sincroniza el guard de "cambios sin guardar" con el nuevo contexto (un alta/edición recién abierta
+            // no está modificada todavía).
+            Unsaved.Set(this, _subscribed?.IsModified() == true);
         }
         // Al cambiar de registro, resolver las descripciones FK de los valores actuales (para el hint inicial).
         if (!ReferenceEquals(Model, _resolvedModel))
@@ -125,6 +137,11 @@
     }
 
     private void OnValidationStateChanged(object? sender, ValidationStateChangedEventArgs e) => StateHasChanged();
+
+    // Reporta al guard global si la edición tiene cambios sin guardar (avisa al navegar/recargar). Se limpia al
+    // cerrar el form (Dispose), sea por guardar o cancelar.
+    private void OnEditFieldChanged(object? sender, FieldChangedEventArgs e)
+        => Unsaved.Set(this, EditContext?.IsModified() == true);
 
     // Un editor confirmó su valor (al salir del foco). Dispara la validación por campo del SgpaMetadataValidator
     // (reglas sync) y, si es una FK, re-resuelve su descripción (y, para CI, valida la existencia).
@@ -197,7 +214,12 @@
 
     public void Dispose()
     {
-        if (_subscribed is not null) _subscribed.OnValidationStateChanged -= OnValidationStateChanged;
+        if (_subscribed is not null)
+        {
+            _subscribed.OnValidationStateChanged -= OnValidationStateChanged;
+            _subscribed.OnFieldChanged -= OnEditFieldChanged;
+        }
+        Unsaved.Clear(this);
     }
 
     private bool IsReadOnly(ColumnMetadata col)

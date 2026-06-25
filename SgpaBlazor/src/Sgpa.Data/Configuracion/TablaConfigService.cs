@@ -77,25 +77,33 @@ public sealed class TablaConfigService : ITablaConfigService
     public IReadOnlyDictionary<string, TablaConfig> All
         => _cache ?? (IReadOnlyDictionary<string, TablaConfig>)new Dictionary<string, TablaConfig>(StringComparer.OrdinalIgnoreCase);
 
+    private const string MergeSql = """
+        MERGE dbo.TablaConfig AS t
+        USING (SELECT @tabla AS Tabla) AS s ON t.Tabla = s.Tabla
+        WHEN MATCHED THEN UPDATE SET EdicionInline = @inline, ConfirmarBorrado = @conf, Auditar = @aud, Alias = @alias, DisponibleReportes = @disp
+        WHEN NOT MATCHED THEN INSERT (Tabla, EdicionInline, ConfirmarBorrado, Auditar, Alias, DisponibleReportes)
+            VALUES (@tabla, @inline, @conf, @aud, @alias, @disp);
+        """;
+
+    private static void BindMergeParams(Microsoft.Data.SqlClient.SqlCommand cmd, string tabla, TablaConfig config)
+    {
+        cmd.Parameters.Clear();
+        cmd.Parameters.AddWithValue("@tabla", tabla);
+        cmd.Parameters.AddWithValue("@inline", config.EdicionInline);
+        cmd.Parameters.AddWithValue("@conf", config.ConfirmarBorrado);
+        cmd.Parameters.AddWithValue("@aud", config.Auditar);
+        cmd.Parameters.AddWithValue("@alias", (object?)config.Alias ?? DBNull.Value);
+        cmd.Parameters.AddWithValue("@disp", (object?)config.DisponibleReportes ?? DBNull.Value);
+    }
+
     public async Task SetAsync(string tabla, TablaConfig config, CancellationToken ct = default)
     {
         try
         {
             await using var cn = await _factory.CreateOpenAsync(ct).ConfigureAwait(false);
             var cmd = cn.CreateCommand();
-            cmd.CommandText = """
-                MERGE dbo.TablaConfig AS t
-                USING (SELECT @tabla AS Tabla) AS s ON t.Tabla = s.Tabla
-                WHEN MATCHED THEN UPDATE SET EdicionInline = @inline, ConfirmarBorrado = @conf, Auditar = @aud, Alias = @alias, DisponibleReportes = @disp
-                WHEN NOT MATCHED THEN INSERT (Tabla, EdicionInline, ConfirmarBorrado, Auditar, Alias, DisponibleReportes)
-                    VALUES (@tabla, @inline, @conf, @aud, @alias, @disp);
-                """;
-            cmd.Parameters.AddWithValue("@tabla", tabla);
-            cmd.Parameters.AddWithValue("@inline", config.EdicionInline);
-            cmd.Parameters.AddWithValue("@conf", config.ConfirmarBorrado);
-            cmd.Parameters.AddWithValue("@aud", config.Auditar);
-            cmd.Parameters.AddWithValue("@alias", (object?)config.Alias ?? DBNull.Value);
-            cmd.Parameters.AddWithValue("@disp", (object?)config.DisponibleReportes ?? DBNull.Value);
+            cmd.CommandText = MergeSql;
+            BindMergeParams(cmd, tabla, config);
             await cmd.ExecuteNonQueryAsync(ct).ConfigureAwait(false);
         }
         catch (Exception ex)
@@ -105,6 +113,37 @@ public sealed class TablaConfigService : ITablaConfigService
 
         await _lock.WaitAsync(ct).ConfigureAwait(false);
         try { (_cache ??= new(StringComparer.OrdinalIgnoreCase))[tabla] = config; }
+        finally { _lock.Release(); }
+    }
+
+    public async Task SetManyAsync(IReadOnlyCollection<KeyValuePair<string, TablaConfig>> items, CancellationToken ct = default)
+    {
+        if (items.Count == 0) return;
+        try
+        {
+            await using var cn = await _factory.CreateOpenAsync(ct).ConfigureAwait(false);
+            using var tx = cn.BeginTransaction();
+            var cmd = cn.CreateCommand();
+            cmd.Transaction = tx;
+            cmd.CommandText = MergeSql;
+            foreach (var (tabla, config) in items)
+            {
+                BindMergeParams(cmd, tabla, config);
+                await cmd.ExecuteNonQueryAsync(ct).ConfigureAwait(false);
+            }
+            await tx.CommitAsync(ct).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "No se pudo guardar el lote de configuración de tablas ({Cantidad}).", items.Count);
+        }
+
+        await _lock.WaitAsync(ct).ConfigureAwait(false);
+        try
+        {
+            var cache = _cache ??= new(StringComparer.OrdinalIgnoreCase);
+            foreach (var (tabla, config) in items) cache[tabla] = config;
+        }
         finally { _lock.Release(); }
     }
 

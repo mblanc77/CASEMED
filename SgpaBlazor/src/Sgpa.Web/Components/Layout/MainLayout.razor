@@ -37,6 +37,10 @@
     </main>
 </div>
 
+@* Guard global de "cambios sin guardar": isla interactiva que comparte el circuito (y el UnsavedChangesService
+   scoped) con las páginas, para advertir antes de navegar/recargar con cambios en memoria. *@
+<UnsavedChangesGuard @rendermode="InteractiveServer" />
+
 @* El provider vive como isla interactiva: comparte el circuito (y por ende el IToastNotificationService
    con scope) de las páginas CRUD interactivas, de modo que sus ShowToast lleguen acá. *@
 <DxToastProvider @rendermode="InteractiveServer"

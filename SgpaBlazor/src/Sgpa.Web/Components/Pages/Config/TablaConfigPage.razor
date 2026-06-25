@@ -2,9 +2,12 @@
 @rendermode InteractiveServer
 @using Sgpa.Domain.Metadata
 @using Sgpa.Data.Configuracion
+@implements IDisposable
 @inject ITablaConfigService Config
 @inject WebCurrentUser CurrentUser
 @inject NavigationManager Nav
+@inject IToastNotificationService Toasts
+@inject Sgpa.Web.State.UnsavedChangesService Unsaved
 
 <PageTitle>Configuración de tablas</PageTitle>
 
@@ -21,6 +24,18 @@
 }
 else
 {
+    @* Toolbar: edición en memoria (las celdas marcan "pendiente"); se persiste todo junto al Guardar. *@
+    <div class="d-flex align-items-center gap-2 mb-2">
+        <DxButton Text="@(_dirty.Count > 0 ? $"Guardar ({_dirty.Count})" : "Guardar")" IconCssClass="fa-solid fa-floppy-disk"
+                  RenderStyle="ButtonRenderStyle.Primary" Enabled="@(_dirty.Count > 0 && !_saving)" Click="GuardarAsync" />
+        <DxButton Text="Descartar" IconCssClass="fa-solid fa-rotate-left" RenderStyle="ButtonRenderStyle.Secondary"
+                  Enabled="@(_dirty.Count > 0 && !_saving)" Click="Descartar" />
+        @if (_dirty.Count > 0)
+        {
+            <span class="text-muted small"><i class="fa-solid fa-pen me-1"></i>@_dirty.Count cambio(s) sin guardar</span>
+        }
+    </div>
+
     <DxGrid Data="_items" PageSize="25" ShowFilterRow="true" ShowSearchBox="true">
         <Columns>
             <DxGridDataColumn FieldName="Tabla" Caption="Tabla" Width="190px" />
@@ -28,7 +43,7 @@ else
                 <CellDisplayTemplate Context="c">
                     @{ var vm = (Vm)c.DataItem; }
                     <DxTextBox Text="@vm.Alias" NullText="@vm.Tabla" SizeMode="SizeMode.Small"
-                               TextChanged="@((string v) => { vm.Alias = v; return SaveAsync(vm); })" />
+                               TextChanged="@((string v) => { vm.Alias = v; MarkDirty(vm); })" />
                 </CellDisplayTemplate>
             </DxGridDataColumn>
             <DxGridDataColumn Caption="Edición inline" Width="150px" TextAlignment="GridTextAlignment.Center">
@@ -37,7 +52,7 @@ else
                 </HeaderCaptionTemplate>
                 <CellDisplayTemplate Context="c">
                     @{ var vm = (Vm)c.DataItem; }
-                    <DxCheckBox Checked="vm.Inline" CheckedChanged="@((bool v) => { vm.Inline = v; return SaveAsync(vm); })" />
+                    <DxCheckBox Checked="vm.Inline" CheckedChanged="@((bool v) => { vm.Inline = v; MarkDirty(vm); })" />
                 </CellDisplayTemplate>
             </DxGridDataColumn>
             <DxGridDataColumn Caption="Confirmar borrado" Width="170px" TextAlignment="GridTextAlignment.Center">
@@ -46,7 +61,7 @@ else
                 </HeaderCaptionTemplate>
                 <CellDisplayTemplate Context="c">
                     @{ var vm = (Vm)c.DataItem; }
-                    <DxCheckBox Checked="vm.Confirmar" CheckedChanged="@((bool v) => { vm.Confirmar = v; return SaveAsync(vm); })" />
+                    <DxCheckBox Checked="vm.Confirmar" CheckedChanged="@((bool v) => { vm.Confirmar = v; MarkDirty(vm); })" />
                 </CellDisplayTemplate>
             </DxGridDataColumn>
             <DxGridDataColumn Caption="Auditar" Width="120px" TextAlignment="GridTextAlignment.Center">
@@ -55,7 +70,7 @@ else
                 </HeaderCaptionTemplate>
                 <CellDisplayTemplate Context="c">
                     @{ var vm = (Vm)c.DataItem; }
-                    <DxCheckBox Checked="vm.Auditar" CheckedChanged="@((bool v) => { vm.Auditar = v; return SaveAsync(vm); })" />
+                    <DxCheckBox Checked="vm.Auditar" CheckedChanged="@((bool v) => { vm.Auditar = v; MarkDirty(vm); })" />
                 </CellDisplayTemplate>
             </DxGridDataColumn>
             <DxGridDataColumn Caption="Disponible p/ reportes" Width="170px" TextAlignment="GridTextAlignment.Center">
@@ -64,7 +79,7 @@ else
                 </HeaderCaptionTemplate>
                 <CellDisplayTemplate Context="c">
                     @{ var vm = (Vm)c.DataItem; }
-                    <DxCheckBox Checked="vm.Disponible" CheckedChanged="@((bool v) => { vm.Disponible = v; return SaveAsync(vm); })" />
+                    <DxCheckBox Checked="vm.Disponible" CheckedChanged="@((bool v) => { vm.Disponible = v; MarkDirty(vm); })" />
                 </CellDisplayTemplate>
             </DxGridDataColumn>
             @* Acción por fila: abre la configuración por columna de esta tabla (evita un ítem de menú suelto). *@
@@ -100,9 +115,59 @@ else
             .ToList();
     }
 
-    private Task SaveAsync(Vm vm)
-        => Config.SetAsync(vm.Tabla, new TablaConfig(vm.Inline, vm.Confirmar, vm.Auditar,
-            string.IsNullOrWhiteSpace(vm.Alias) ? null : vm.Alias.Trim(), vm.Disponible));
+    private readonly HashSet<Vm> _dirty = new();
+    private bool _saving;
+
+    private static TablaConfig ToConfig(Vm vm)
+        => new(vm.Inline, vm.Confirmar, vm.Auditar,
+               string.IsNullOrWhiteSpace(vm.Alias) ? null : vm.Alias.Trim(), vm.Disponible);
+
+    // Edición en memoria: marca la fila como pendiente; se persiste todo junto al Guardar.
+    private void MarkDirty(Vm vm)
+    {
+        _dirty.Add(vm);
+        SyncDirty();
+    }
+
+    // Refleja el estado de cambios pendientes en el guard global (UnsavedChangesGuard) y re-renderiza.
+    private void SyncDirty()
+    {
+        Unsaved.Set(this, _dirty.Count > 0);
+        StateHasChanged();
+    }
+
+    public void Dispose() => Unsaved.Clear(this);
+
+    private async Task GuardarAsync()
+    {
+        if (_dirty.Count == 0 || _saving) return;
+        _saving = true;
+        try
+        {
+            var pendientes = _dirty.Select(vm => new KeyValuePair<string, TablaConfig>(vm.Tabla, ToConfig(vm))).ToList();
+            await Config.SetManyAsync(pendientes);
+            _dirty.Clear();
+            SyncDirty();
+            Toasts.Exito($"Configuración guardada ({pendientes.Count} tabla(s)).");
+        }
+        finally { _saving = false; }
+    }
+
+    // Descarta los cambios pendientes volviendo cada fila a su valor guardado (desde la cache del servicio).
+    private void Descartar()
+    {
+        foreach (var vm in _dirty)
+        {
+            var c = Config.Get(vm.Tabla);
+            vm.Alias = c.Alias;
+            vm.Inline = c.EdicionInline;
+            vm.Confirmar = c.ConfirmarBorrado;
+            vm.Auditar = c.Auditar;
+            vm.Disponible = Config.DisponibleReportes(vm.Tabla);
+        }
+        _dirty.Clear();
+        SyncDirty();
+    }
 
     // Cabezal con checkbox "marcar/desmarcar todas" para una columna booleana. stopPropagation evita que el clic
     // en el checkbox dispare el ordenamiento de la columna.
@@ -110,7 +175,7 @@ else
         @<div class="d-flex align-items-center justify-content-center gap-1">
             <span @onclick:stopPropagation="true">
                 <DxCheckBox Checked="@HeaderState(getter)" AllowIndeterminateStateByClick="false"
-                            CheckedChanged="@((bool? v) => SetAllAsync(getter, setter, v == true))"
+                            CheckedChanged="@((bool? v) => SetAll(getter, setter, v == true))"
                             Tooltip="Marcar/desmarcar en todas las tablas" />
             </span>
             <span>@caption</span>
@@ -123,14 +188,15 @@ else
            : _items.Any(getter) ? (bool?)null
            : false;
 
-    // Aplica el valor a TODAS las tablas y persiste sólo las filas que cambian.
-    private async Task SetAllAsync(Func<Vm, bool> getter, Action<Vm, bool> setter, bool value)
+    // Aplica el valor a TODAS las tablas en memoria, marcando como pendientes sólo las filas que cambian.
+    private void SetAll(Func<Vm, bool> getter, Action<Vm, bool> setter, bool value)
     {
-        var cambiadas = _items.Where(vm => getter(vm) != value).ToList();
-        if (cambiadas.Count == 0) return;
-        foreach (var vm in cambiadas) setter(vm, value);
-        StateHasChanged();
-        foreach (var vm in cambiadas) await SaveAsync(vm);
+        foreach (var vm in _items.Where(vm => getter(vm) != value))
+        {
+            setter(vm, value);
+            _dirty.Add(vm);
+        }
+        SyncDirty();
     }
 
     public sealed class Vm

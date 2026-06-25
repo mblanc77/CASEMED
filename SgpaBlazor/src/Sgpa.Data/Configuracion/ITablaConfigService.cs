@@ -35,4 +35,7 @@ public interface ITablaConfigService
 
     /// <summary>Guarda (upsert) la config de una tabla y refresca la cache.</summary>
     Task SetAsync(string tabla, TablaConfig config, CancellationToken ct = default);
+
+    /// <summary>Guarda (upsert) varias tablas en una sola conexión/transacción y refresca la cache.</summary>
+    Task SetManyAsync(IReadOnlyCollection<KeyValuePair<string, TablaConfig>> items, CancellationToken ct = default);
 }

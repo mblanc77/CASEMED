@@ -127,6 +127,9 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<WebCurrentUser>();
 builder.Services.AddScoped<ICurrentUser>(sp => sp.GetRequiredService<WebCurrentUser>());
 
+// Estado global (por circuito) de "cambios sin guardar" para el guard de navegación (UnsavedChangesGuard).
+builder.Services.AddScoped<Sgpa.Web.State.UnsavedChangesService>();
+
 // Compilador real de criterios de seguridad por registro (DevExpress → FilterNode). Sustituye al no-op de AddSgpaData.
 builder.Services.AddScoped<Sgpa.Data.Security.ISecurityCriteriaCompiler, Sgpa.Web.Security.SgpaSecurityCriteriaCompiler>();
 
