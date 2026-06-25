@@ -212,6 +212,29 @@ body { font-family: var(--bs-body-font-family); font-weight: 500; }
 .btn-brand { background-color: #009242; border-color: #009242; color: #fff; }
 .btn-brand:hover, .btn-brand:focus { background-color: #007a37; border-color: #007a37; color: #fff; }
 
+/* El recolor del tema (blazing-berry → azul de marca #1C3680) pisó el reposo/hover/focus del botón primario
+   DevExpress, pero dejó los estados ACTIVE y DISABLED en el morado/lavanda berry original (#432874 / #C5B3E6).
+   Los alineamos al azul de marca para que el primario no muestre púrpura al presionarlo ni cuando está
+   deshabilitado (ej. "Procesar carga" arranca deshabilitado hasta que se sube el archivo). Se pisa directo el
+   background/borde (con !important) además de las variables, para ganarle a la regla genérica .dxbl-btn:disabled. */
+.dxbl-btn-primary {
+    --dxbl-btn-active-bg: #122142;
+    --dxbl-btn-active-border-color: #122142;
+    --dxbl-btn-disabled-bg: #aaafcc;
+    --dxbl-btn-disabled-border-color: #aaafcc;
+}
+.dxbl-btn-primary.dxbl-disabled,
+.dxbl-btn-primary:disabled {
+    background: #aaafcc !important;
+    background-color: #aaafcc !important;
+    border-color: #aaafcc !important;
+}
+.dxbl-btn-primary.dxbl-active,
+.dxbl-btn-primary:active {
+    background-color: #122142 !important;
+    border-color: #122142 !important;
+}
+
 /* Alertas de éxito y badges/links de acento alineados al verde de marca. */
 .alert-success {
     --bs-alert-color: #0b5d2c; --bs-alert-bg: #e3f4ea;
