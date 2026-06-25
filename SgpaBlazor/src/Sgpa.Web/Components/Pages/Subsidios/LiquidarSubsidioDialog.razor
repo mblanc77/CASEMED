@@ -49,7 +49,7 @@
                 <DxFormLayoutItem ColSpanMd="12" BeginRow="true">
                     <DxButton Text="@(_ejecutando ? "Procesando…" : "Ejecutar liquidación")"
                               IconCssClass="fa-solid fa-gears" RenderStyle="ButtonRenderStyle.Primary"
-                              Enabled="!_ejecutando" Click="@(() => _confirmVisible = true)" />
+                              Enabled="!_ejecutando" Click="@(() => { _confirmTextoLiq = string.Empty; _confirmVisible = true; })" />
                 </DxFormLayoutItem>
             </DxFormLayout>
 
@@ -157,9 +157,11 @@
             @(_ci.HasValue ? $" para la cédula {_ci}" : " para todos los afiliados").
             Esto <strong>borra y recalcula</strong> los subsidios del período. ¿Continuar?
         </p>
+        <p class="mb-1">Para confirmar, escribí <strong>LIQUIDAR</strong> (en mayúsculas):</p>
+        <DxTextBox @bind-Text="_confirmTextoLiq" BindValueMode="BindValueMode.OnInput" NullText="LIQUIDAR" CssClass="mb-3" />
         <div class="d-flex justify-content-end gap-2">
             <DxButton Text="Cancelar" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => _confirmVisible = false)" />
-            <DxButton Text="Sí, liquidar" RenderStyle="ButtonRenderStyle.Danger" Click="EjecutarAsync" />
+            <DxButton Text="Sí, liquidar" RenderStyle="ButtonRenderStyle.Danger" Click="EjecutarAsync" Enabled="@PuedeLiquidar" />
         </div>
     </BodyContentTemplate>
 </DxPopup>
@@ -168,8 +170,9 @@
 @code {
     [Parameter] public bool Visible { get; set; }
     [Parameter] public EventCallback<bool> VisibleChanged { get; set; }
-    /// <summary>Se dispara tras una liquidación exitosa (para que el ABM recargue la lista).</summary>
-    [Parameter] public EventCallback OnLiquidado { get; set; }
+    /// <summary>Se dispara tras una liquidación exitosa con el período (año, mes) liquidado, para que el ABM
+    /// recargue la lista de períodos y seleccione el mes recién liquidado.</summary>
+    [Parameter] public EventCallback<(int Anio, int Mes)> OnLiquidado { get; set; }
 
     // El DxPopup interno notifica apertura/cierre por acá → se propaga al padre (VisibleChanged). Sin esto, al
     // cerrar el popup sólo se actualizaba el parámetro local y el padre seguía con Visible=true: al re-renderizar
@@ -189,6 +192,8 @@
     private DateTime _fechaPago = DateTime.Today;
 
     private bool _ejecutando, _confirmVisible;
+    private string _confirmTextoLiq = string.Empty;   // confirmación por texto: hay que tipear "LIQUIDAR" para habilitar
+    private bool PuedeLiquidar => string.Equals(_confirmTextoLiq, "LIQUIDAR", StringComparison.Ordinal);
     private string? _error, _importMsg;
     private LiquidacionResultado? _resultado;
     private LiquidacionProgreso _progreso;   // avance mientras liquida (para el wait dialog)
@@ -257,7 +262,7 @@
             var prog = new Progress<LiquidacionProgreso>(p => InvokeAsync(() => { _progreso = p; StateHasChanged(); }));
             _resultado = await Liquidador.LiquidarAsync(_anio, _mes, _liquidar, _ci, _genNroRecibo, prog);
             await CargarCabezalesAsync();
-            if (OnLiquidado.HasDelegate) await OnLiquidado.InvokeAsync();
+            if (OnLiquidado.HasDelegate) await OnLiquidado.InvokeAsync((_anio, _mes));
         }
         catch (Exception ex) { _error = ex.Message; }
         finally { _ejecutando = false; }

@@ -49,7 +49,7 @@ public class SubsidioLiquidacionTests
         await using var tx = (SqlTransaction)await cn.BeginTransactionAsync();
         var db = new ScopedDbExecutor(cn, tx);
         var repo = new SubsidioRepository(db);
-        var svc = new SubsidioLiquidacionService(db, new FakeCurrentUser());
+        var svc = new SubsidioLiquidacionService(db, new FakeCurrentUser(), new NoImponibleSync());
 
         var ci = (await repo.SeleccionarAfiliadosAsync(new SubsidioPeriodo(2022, 1), true)).First();
 
@@ -97,7 +97,7 @@ public class SubsidioLiquidacionTests
         await cn.OpenAsync();
         await using var tx = (SqlTransaction)await cn.BeginTransactionAsync();
         var db = new ScopedDbExecutor(cn, tx);
-        var svc = new SubsidioLiquidacionService(db, new FakeCurrentUser());
+        var svc = new SubsidioLiquidacionService(db, new FakeCurrentUser(), new NoImponibleSync());
 
         // Resultado almacenado (= VB6/Access) para una muestra del período. Sólo cédulas con UN cabezal en
         // el período (las de múltiples subsidios darían artefactos al comparar fila a fila).
@@ -149,7 +149,7 @@ public class SubsidioLiquidacionTests
         await cn.OpenAsync();
         await using var tx = (SqlTransaction)await cn.BeginTransactionAsync();
         var db = new ScopedDbExecutor(cn, tx);
-        var svc = new SubsidioLiquidacionService(db, new FakeCurrentUser());
+        var svc = new SubsidioLiquidacionService(db, new FakeCurrentUser(), new NoImponibleSync());
 
         var cis = await db.QueryAsync<long>(
             @"SELECT TOP 25 CI FROM dbo.SubsidioCabezal WHERE Anio=@anio AND Mes=@mes AND Liquidar=1

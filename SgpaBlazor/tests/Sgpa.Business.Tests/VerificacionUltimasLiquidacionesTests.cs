@@ -75,7 +75,7 @@ public class VerificacionUltimasLiquidacionesTests
                 var db = new ScopedDbExecutor(cn, tx);
 
                 var prod = await db.QuerySingleOrDefaultAsync<Cab>(sel, new { ci, anio, mes });
-                var svc = new SubsidioLiquidacionService(db, new FakeCurrentUser());
+                var svc = new SubsidioLiquidacionService(db, new FakeCurrentUser(), new NoImponibleSync());
                 await svc.LiquidarAsync(anio, mes, liquidar: true, ci: ci);
                 var mine = await db.QuerySingleOrDefaultAsync<Cab>(sel, new { ci, anio, mes });
                 await tx.RollbackAsync();

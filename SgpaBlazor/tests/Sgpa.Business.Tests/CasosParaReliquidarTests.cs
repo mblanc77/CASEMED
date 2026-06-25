@@ -57,7 +57,7 @@ public class CasosParaReliquidarTests
                 await using var tx = (SqlTransaction)await cn.BeginTransactionAsync();
                 var db = new ScopedDbExecutor(cn, tx);
                 var prod = await db.QuerySingleOrDefaultAsync<Cab>(sel, new { ci, anio, mes });
-                await new SubsidioLiquidacionService(db, new FakeCurrentUser()).LiquidarAsync(anio, mes, true, ci);
+                await new SubsidioLiquidacionService(db, new FakeCurrentUser(), new NoImponibleSync()).LiquidarAsync(anio, mes, true, ci);
                 var mine = await db.QuerySingleOrDefaultAsync<Cab>(sel, new { ci, anio, mes });
                 await tx.RollbackAsync();
                 if (prod is null || mine is null) continue;

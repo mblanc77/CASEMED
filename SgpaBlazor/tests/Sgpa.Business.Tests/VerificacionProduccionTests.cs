@@ -54,7 +54,7 @@ public class VerificacionProduccionTests
             var spVj = await SumarValorJornalSpAsync(db, ci);
 
             var prod = await db.QuerySingleOrDefaultAsync<Cab>(sel, new { ci });
-            var svc = new SubsidioLiquidacionService(db, new FakeCurrentUser());
+            var svc = new SubsidioLiquidacionService(db, new FakeCurrentUser(), new NoImponibleSync());
             var res = await svc.LiquidarAsync(2022, 1, liquidar: true, ci: ci);
             var mine = await db.QuerySingleOrDefaultAsync<Cab>(sel, new { ci });
 

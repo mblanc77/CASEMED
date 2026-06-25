@@ -64,4 +64,14 @@ public interface ISgpaCrudService<TEntity> where TEntity : class
 
     /// <summary>Elimina por entidad (toma todas las columnas clave). Soporta clave compuesta.</summary>
     Task DeleteAsync(TEntity entity, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Borrado masivo en UNA transacción (un solo commit en vez de uno por fila): para grillas que eliminan
+    /// muchas filas a la vez. Es atómico (o se borran todas o ninguna). Default: itera <see cref="DeleteAsync"/>.
+    /// </summary>
+    async Task DeleteManyAsync(IReadOnlyList<TEntity> entities, CancellationToken cancellationToken = default)
+    {
+        foreach (var e in entities)
+            await DeleteAsync(e, cancellationToken).ConfigureAwait(false);
+    }
 }

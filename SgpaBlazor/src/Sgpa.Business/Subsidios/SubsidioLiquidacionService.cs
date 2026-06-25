@@ -23,14 +23,16 @@ public sealed class SubsidioLiquidacionService : ISubsidioLiquidacionService
 
     private readonly IDbExecutor _db;
     private readonly ICurrentUser _user;
+    private readonly IImponibleSubsidioSync _imponibleSync;
 
     // Resuelto desde xUsrParam al inicio de cada LiquidarAsync (config del proceso).
     private int _codCasemed = DefaultCodCasemed;
 
-    public SubsidioLiquidacionService(IDbExecutor db, ICurrentUser user)
+    public SubsidioLiquidacionService(IDbExecutor db, ICurrentUser user, IImponibleSubsidioSync imponibleSync)
     {
         _db = db;
         _user = user;
+        _imponibleSync = imponibleSync;
     }
 
     public async Task<LiquidacionResultado> LiquidarAsync(int anio, int mes, bool liquidar, long? ci = null,
@@ -92,6 +94,13 @@ public sealed class SubsidioLiquidacionService : ISubsidioLiquidacionService
         // arrancando en MAX(NroRecibo)+1 (equivale a llamar GetProxNroRecibo por cada cabezal del VB6).
         if (genNroRecibo)
             await repo.GenerarNrosReciboAsync(periodo, liquidar, ci, cancellationToken).ConfigureAwait(false);
+
+        // Imponible emp900: el subsidio liquidado se registra como imponible del afiliado para que el jornal
+        // de liquidaciones futuras lo promedie. Sólo para corridas reales (Liquidar=1; las simuladas no
+        // alimentan el imponible). Va dentro de la transacción → atómico con la liquidación. Recalcula el
+        // período completo (o el CI filtrado), incluyendo el borrado de afiliados que ya no liquidan.
+        if (liquidar)
+            await _imponibleSync.SincronizarPeriodoAsync(uow, anio, mes, ci, usr, cancellationToken).ConfigureAwait(false);
 
         await uow.CommitAsync(cancellationToken).ConfigureAwait(false);
         return new LiquidacionResultado(procesados, generados, avisos);

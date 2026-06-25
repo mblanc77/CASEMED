@@ -24,6 +24,12 @@ public static class BusinessServiceCollectionExtensions
         services.AddScoped<IIrpfCalculator, IrpfCalculator>();
         services.AddScoped<ISubsidioRepository, SubsidioRepository>();
         services.AddScoped<ISubsidioLiquidacionService, SubsidioLiquidacionService>();
+
+        // Orquestación CUD: el subsidio (liquidación masiva o edición manual del ABM) mantiene el imponible
+        // emp900 que alimenta el jornal de liquidaciones futuras.
+        services.AddScoped<IImponibleSubsidioSync, ImponibleSubsidioSync>();
+        services.AddScoped<Sgpa.Data.Crud.IEntityChangeHandler<Sgpa.Domain.Entities.SubsidioCabezal>,
+            SubsidioCabezalImponibleHandler>();
         services.AddScoped<NbcExporter>();
         services.AddScoped<BrouExporter>();
         services.AddScoped<SubsidioExtraExporter>();

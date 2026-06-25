@@ -1,6 +1,8 @@
 @page "/subsidios"
 @page "/subsidios/{IdSubsidio:int}"
-@rendermode InteractiveServer
+@* Sin prerender: la pantalla restaura el período del usuario en OnInitializedAsync (consulta async). Con
+   prerender, ese estado no sobrevive al circuito y se ve el parpadeo "mes → elegí un período → mes". *@
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 @using Sgpa.Domain.Entities
 @using Sgpa.Web.Components.Crud
 @using Sgpa.Data
@@ -18,6 +20,16 @@
     (combo de la barra, sólo períodos con datos, del más reciente al más viejo). Recién ahí se consultan los
     subsidios de ese período (FiltroBase = Mes AND Año, vía SgpaMasterDetailView.RequiereFiltro/FiltroBase).
 *@
+@if (_cargando)
+{
+    <h3 class="mb-2">Subsidios</h3>
+    <div class="d-flex align-items-center gap-2 text-muted p-2">
+        <span class="spinner-border spinner-border-sm text-primary" role="status"></span>
+        <span>Cargando subsidios…</span>
+    </div>
+}
+else
+{
 <SgpaMasterDetailView TMaster="SubsidioCabezal" BaseRoute="/subsidios"
                       TitlePlural="Subsidios" TitleSingular="el subsidio" NewLabel="Nuevo subsidio"
                       AllowNew="false" RequiereFiltro="true" FiltroBase="_filtroBase"
@@ -71,8 +83,9 @@
         </DxTabPage>
     </ChildTabs>
 </SgpaMasterDetailView>
+}
 
-<LiquidarSubsidioDialog @bind-Visible="_liquidarVisible" />
+<LiquidarSubsidioDialog @bind-Visible="_liquidarVisible" OnLiquidado="OnLiquidadoAsync" />
 
 @code {
     [Parameter] public int IdSubsidio { get; set; }
@@ -83,6 +96,7 @@
     private IReadOnlyList<Periodo> _periodos = Array.Empty<Periodo>();
     private Periodo? _periodo;
     private FilterNode? _filtroBase;
+    private bool _cargando = true;   // gate del spinner: no muestra la grilla (ni el flash "elegí un período") hasta restaurar el período
 
     // Un período de subsidio (mes/año con datos). Display = "Junio 2026".
     public sealed class Periodo
@@ -103,26 +117,36 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await CurrentUser.EnsureLoadedAsync();
-        _periodos = await Db.QueryAsync<Periodo>(
-            "SELECT DISTINCT Anio, Mes FROM dbo.SubsidioCabezal ORDER BY Anio DESC, Mes DESC");
-
-        // Recordar el último período elegido por el usuario (si todavía existe en los datos).
-        var json = await Prefs.GetAsync(CurrentUser.UserName, PrefKey);
-        if (json is not null)
+        try
         {
-            try
+            await CurrentUser.EnsureLoadedAsync();
+            _periodos = await ConsultarPeriodosAsync();
+
+            // Recordar el último período elegido por el usuario (si todavía existe en los datos).
+            var json = await Prefs.GetAsync(CurrentUser.UserName, PrefKey);
+            if (json is not null)
             {
-                var sel = JsonSerializer.Deserialize<Periodo>(json);
-                if (sel is not null)
+                try
                 {
-                    var match = _periodos.FirstOrDefault(p => p.Anio == sel.Anio && p.Mes == sel.Mes);
-                    if (match is not null) SetPeriodo(match);
+                    var sel = JsonSerializer.Deserialize<Periodo>(json);
+                    if (sel is not null)
+                    {
+                        var match = _periodos.FirstOrDefault(p => p.Anio == sel.Anio && p.Mes == sel.Mes);
+                        if (match is not null) SetPeriodo(match);
+                    }
                 }
+                catch { /* pref corrupta: se ignora */ }
             }
-            catch { /* pref corrupta: se ignora */ }
+        }
+        finally
+        {
+            // Recién acá se muestra la grilla: con el período ya restaurado (sin el parpadeo del prerender).
+            _cargando = false;
         }
     }
+
+    private Task<IReadOnlyList<Periodo>> ConsultarPeriodosAsync()
+        => Db.QueryAsync<Periodo>("SELECT DISTINCT Anio, Mes FROM dbo.SubsidioCabezal ORDER BY Anio DESC, Mes DESC");
 
     private async Task OnPeriodoChanged(Periodo? p)
     {
@@ -130,6 +154,20 @@
         // El cambio de _filtroBase se propaga a SgpaMasterDetailView (param FiltroBase) → recarga la lista.
         if (p is null) await Prefs.ResetAsync(CurrentUser.UserName, PrefKey);
         else await Prefs.SaveAsync(CurrentUser.UserName, PrefKey, JsonSerializer.Serialize(p));
+    }
+
+    // Tras liquidar: recarga la lista de períodos (aparece el mes recién liquidado) y lo selecciona +
+    // recuerda como preferencia, así al cerrar el diálogo la grilla ya muestra ese mes.
+    private async Task OnLiquidadoAsync((int Anio, int Mes) periodo)
+    {
+        _periodos = await ConsultarPeriodosAsync();
+        var match = _periodos.FirstOrDefault(p => p.Anio == periodo.Anio && p.Mes == periodo.Mes);
+        if (match is not null)
+        {
+            SetPeriodo(match);
+            await Prefs.SaveAsync(CurrentUser.UserName, PrefKey, JsonSerializer.Serialize(match));
+        }
+        StateHasChanged();
     }
 
     private void SetPeriodo(Periodo? p)

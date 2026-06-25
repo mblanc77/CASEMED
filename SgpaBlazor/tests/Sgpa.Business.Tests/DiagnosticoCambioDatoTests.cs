@@ -77,7 +77,7 @@ public class DiagnosticoCambioDatoTests
                     await cn.OpenAsync();
                     await using var tx = (SqlTransaction)await cn.BeginTransactionAsync();
                     var db = new ScopedDbExecutor(cn, tx);
-                    await new SubsidioLiquidacionService(db, new FakeCurrentUser()).LiquidarAsync(anio, mes, true, ci);
+                    await new SubsidioLiquidacionService(db, new FakeCurrentUser(), new NoImponibleSync()).LiquidarAsync(anio, mes, true, ci);
                     mine = await db.QuerySingleOrDefaultAsync<Cab>(sel, new { ci, anio, mes });
                     await tx.RollbackAsync();
                 }

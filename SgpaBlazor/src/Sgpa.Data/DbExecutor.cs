@@ -30,7 +30,7 @@ public sealed class DbExecutor : IDbExecutor
 
     public async Task<int> ExecuteAsync(string sql, object? param = null,
         CommandType commandType = CommandType.Text, CancellationToken cancellationToken = default)
-    {
+    {   
         await using var cn = await _factory.CreateOpenAsync(cancellationToken).ConfigureAwait(false);
         var cmd = new CommandDefinition(sql, param, commandType: commandType, cancellationToken: cancellationToken);
         return await cn.ExecuteAsync(cmd).ConfigureAwait(false);
