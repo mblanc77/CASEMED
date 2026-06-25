@@ -50,9 +50,12 @@ public static class EntityRelations
                 var usados = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
                 // N-1 (referencias): columnas del owner cuya FK resuelve a otra entidad de clave simple.
+                // OJO: NO se descartan las columnas clave: una FK puede formar parte de la clave compuesta del
+                // owner (ej. Trabaja.CodEmpresa→Empresa, Trabaja.CI→Afiliado). LookupTargetFor ya excluye sólo la
+                // identidad propia (la clave SIMPLE del owner), así que se apoya en él para filtrar.
                 foreach (var col in owner.Columns)
                 {
-                    if (col.IsAudit || col.IsKey) continue;
+                    if (col.IsAudit) continue;
                     var target = EntityCatalog.LookupTargetFor(col, owner);
                     if (target is null || target.Keys.Count != 1 || target.EntityType == owner.EntityType) continue;
                     if (!ReportableTables.IsDefault(target)) continue;   // descarta tablas basura (tmp/import/linked/…)
@@ -71,7 +74,10 @@ public static class EntityRelations
                         if (!ReportableTables.IsDefault(child)) continue;   // descarta tablas basura como hijas
                         foreach (var col in child.Columns)
                         {
-                            if (col.IsAudit || col.IsKey) continue;
+                            // No se descarta la columna clave: en las tablas de detalle la FK al owner es parte de
+                            // la clave compuesta (ej. Trabaja.CI, Imponible.CI). Antes el `col.IsKey` la saltaba y
+                            // por eso Afiliado no veía sus colecciones Empleos/Imponibles.
+                            if (col.IsAudit) continue;
                             var target = EntityCatalog.LookupTargetFor(col, child);
                             if (target is null || target.EntityType != owner.EntityType) continue;
                             if (!usados.Add(child.Table)) break;   // ya hay un nodo con ese nombre → saltar esta hija
@@ -82,6 +88,28 @@ public static class EntityRelations
                             break;   // una relación por tabla hija (primera FK que apunta al owner)
                         }
                     }
+                }
+
+                // Anticolisión de nombres para los nodos de COLECCIÓN. El DxFilterBuilder resuelve los campos por
+                // FieldName de forma PLANA: si el FieldName de una colección coincide con el de alguna columna escalar
+                // del árbol (propia del owner o subcampo de OTRA colección), el componente la trata como campo normal
+                // y NO ofrece las funciones agregadas (Exists/Count/…). Caso real: la colección "Trabaja" (Empleos)
+                // chocaba con la columna booleana Certificacion.Trabaja, que se renderiza como subcampo de
+                // "Certificaciones". Se renombra el FieldName del nodo a un identificador único; ByPrefix sigue
+                // resolviendo por FieldPrefix, y el Caption (etiqueta visible) no depende de él.
+                var scalarNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                foreach (var c in owner.ListColumns) scalarNames.Add(c.Name);
+                foreach (var r in list)
+                    if (r.IsCollection)
+                        foreach (var c in r.Child.ListColumns) scalarNames.Add(c.Name);
+                var taken = new HashSet<string>(list.Select(r => r.FieldPrefix), StringComparer.OrdinalIgnoreCase);
+                for (var i = 0; i < list.Count; i++)
+                {
+                    var r = list[i];
+                    if (!r.IsCollection || !scalarNames.Contains(r.FieldPrefix)) continue;
+                    var unique = r.FieldPrefix;
+                    do { unique += "_"; } while (scalarNames.Contains(unique) || !taken.Add(unique));
+                    list[i] = r with { FieldPrefix = unique };
                 }
             }
 

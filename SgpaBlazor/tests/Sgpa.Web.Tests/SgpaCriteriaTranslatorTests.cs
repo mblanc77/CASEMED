@@ -59,4 +59,14 @@ public class SgpaCriteriaTranslatorTests
         Assert.Equal("CI", f.Column);
         Assert.Equal(3, f.Values.Count);
     }
+
+    [Fact]
+    public void Campo_contra_campo_se_traduce_a_compare_columns()
+    {
+        var node = SgpaCriteriaTranslator.Translate(CriteriaOperator.Parse("[Apellido1] = [Apellido2]"));
+        var c = Assert.IsType<FilterCompareColumns>(node);
+        Assert.Equal("Apellido1", c.Column);
+        Assert.Equal(FilterOp.Equal, c.Op);
+        Assert.Equal("Apellido2", c.OtherColumn);
+    }
 }

@@ -64,7 +64,9 @@
                 {
                     @if (rel.IsCollection)
                     {
-                        <DxFilterBuilderField FieldName="@rel.FieldPrefix" Caption="@RelLabel(rel)" IsCollection="true">
+                        @* DxFilterBuilderField no tiene propiedad de ícono → el "ícono" se antepone al Caption como
+                           glifo (mismo recurso que la "ƒ" de los campos calculados). ☰ marca colección 1-N (Exists/agregados). *@
+                        <DxFilterBuilderField FieldName="@rel.FieldPrefix" Caption="@($"☰ {RelLabel(rel)}")" IsCollection="true">
                             <Fields>
                                 @foreach (var col in rel.Child.ListColumns)
                                 {
@@ -76,8 +78,9 @@
                     else
                     {
                         @* Nodo de referencia N-1: sólo agrupa; NO es columna real → no seleccionable en sí.
-                           Se elige una columna hija (ej. Mutualista · Descripción), que filtra vía EXISTS. *@
-                        <DxFilterBuilderField FieldName="@rel.FieldPrefix" Caption="@RelLabel(rel)" AllowSelection="false">
+                           Se elige una columna hija (ej. Mutualista · Descripción), que filtra vía EXISTS.
+                           ↗ marca referencia N-1 (navegación a la tabla destino), para distinguirla de las colecciones ☰. *@
+                        <DxFilterBuilderField FieldName="@rel.FieldPrefix" Caption="@($"↗ {RelLabel(rel)}")" AllowSelection="false">
                             <Fields>
                                 @foreach (var col in rel.Child.ListColumns)
                                 {
