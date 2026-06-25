@@ -71,4 +71,49 @@ public class CaptionsAndValidationTests
         // No debe haber errores de Apellido1/Nombre1 (los demás campos requeridos son de valor, ya presentes).
         Assert.DoesNotContain(errors, e => e.Column.Name is "Apellido1" or "Nombre1");
     }
+
+    // --- Catálogos: la descripción/nombre se exige aunque el esquema legado la deje NULL ---
+
+    [Fact]
+    public void Tabla_catalogo_exige_la_descripcion()
+    {
+        var meta = EntityMetadata.For<Banco>();
+        Assert.Equal("Descripcion", meta.NameColumn?.Name);   // se detecta la columna nombre/descripción
+
+        var errors = MetadataValidation.Validate(meta, new Banco { CodBanco = 1 }, isNew: true);
+
+        Assert.Contains(errors, e => e.Column.Name == "Descripcion");
+    }
+
+    [Fact]
+    public void Tabla_catalogo_valida_con_descripcion_cargada()
+    {
+        var meta = EntityMetadata.For<Banco>();
+        var errors = MetadataValidation.Validate(meta, new Banco { CodBanco = 1, Descripcion = "BROU" }, isNew: true);
+        Assert.DoesNotContain(errors, e => e.Column.Name == "Descripcion");
+    }
+
+    // --- Clave natural compuesta: el valor por defecto (0 / 0001-01-01) = "sin elegir" en el alta ---
+
+    [Fact]
+    public void Clave_natural_compuesta_en_default_se_reporta_vacia()
+    {
+        var meta = EntityMetadata.For<Prestacion>();
+        var errors = MetadataValidation.Validate(meta, new Prestacion(), isNew: true); // CI=0, Fecha=default, Tipo=0
+
+        Assert.Contains(errors, e => e.Column.Name == "CI");
+        Assert.Contains(errors, e => e.Column.Name == "Fecha");
+        Assert.Contains(errors, e => e.Column.Name == "CodPrestacionTipo");
+    }
+
+    [Fact]
+    public void Clave_natural_compuesta_cargada_no_da_error()
+    {
+        var meta = EntityMetadata.For<Prestacion>();
+        var model = new Prestacion { CI = 13010559, Fecha = new System.DateTime(2026, 6, 1), CodPrestacionTipo = 3 };
+
+        var errors = MetadataValidation.Validate(meta, model, isNew: true);
+
+        Assert.DoesNotContain(errors, e => e.Column.Name is "CI" or "Fecha" or "CodPrestacionTipo");
+    }
 }

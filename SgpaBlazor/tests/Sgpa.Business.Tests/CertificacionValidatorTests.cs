@@ -15,12 +15,20 @@ public class CertificacionValidatorTests
 
     [Fact]
     public void No_efectiva_no_exige_fechas()
-        => Assert.True(_v.Validate(new Certificacion { Efectiva = false }).IsValid);
+        => Assert.True(_v.Validate(new Certificacion { Efectiva = false, CI = 13010559 }).IsValid);
+
+    [Fact]
+    public void Sin_cedula_da_error_aunque_no_sea_efectiva()
+    {
+        var r = _v.Validate(new Certificacion { Efectiva = false });
+        Assert.False(r.IsValid);
+        Assert.Contains(r.Errors, e => e.PropertyName == nameof(Certificacion.CI));
+    }
 
     [Fact]
     public void Efectiva_sin_fechas_da_error_en_cada_fecha()
     {
-        var r = _v.Validate(new Certificacion { Efectiva = true });
+        var r = _v.Validate(new Certificacion { Efectiva = true, CI = 13010559 });
         Assert.False(r.IsValid);
         Assert.Contains(r.Errors, e => e.PropertyName == nameof(Certificacion.FechaCertificacion));
         Assert.Contains(r.Errors, e => e.PropertyName == nameof(Certificacion.FechaIni));
@@ -45,6 +53,7 @@ public class CertificacionValidatorTests
         => Assert.True(_v.Validate(new Certificacion
         {
             Efectiva = true,
+            CI = 13010559,
             FechaCertificacion = new DateTime(2026, 6, 1),
             FechaIni = new DateTime(2026, 6, 1),
             FechaFin = new DateTime(2026, 6, 10),

@@ -53,4 +53,5 @@ internal sealed class NoTablaConfig : ITablaConfigService
     public bool DisponibleReportes(string tabla) => true;
     public IReadOnlyDictionary<string, TablaConfig> All { get; } = new Dictionary<string, TablaConfig>();
     public Task SetAsync(string tabla, TablaConfig config, CancellationToken ct = default) => Task.CompletedTask;
+    public Task SetManyAsync(IReadOnlyCollection<KeyValuePair<string, TablaConfig>> items, CancellationToken ct = default) => Task.CompletedTask;
 }

@@ -13,6 +13,7 @@ public static class MetadataValidation
     public static IReadOnlyList<ValidationError> Validate(EntityMetadata meta, object model, bool isNew = false)
     {
         var errors = new List<ValidationError>();
+        var nameCol = meta.NameColumn;
         foreach (var col in meta.DetailColumns)
         {
             // No se valida lo que el usuario no puede editar (read-only, o claves no editables fuera del alta).
@@ -22,7 +23,16 @@ public static class MetadataValidation
 
             var value = col.GetValue(model);
 
-            if (col.Required && IsEmpty(value))
+            // La columna nombre/descripción de las tablas catálogo se exige aunque el esquema legado la deje NULL
+            // (paridad con el VB6, donde no tenía sentido un código sin descripción).
+            var required = col.Required || ReferenceEquals(col, nameCol);
+
+            // Una clave NATURAL compuesta (ej. Prestacion = CI+Fecha+Tipo) la elige siempre el usuario: un valor por
+            // defecto (0 / 0001-01-01) significa "sin elegir". No se aplica a claves simples, que suelen ser códigos
+            // autoasignados donde 0 puede ser legítimo durante el alta.
+            var defaultIsEmpty = col.IsKey && meta.HasCompositeKey;
+
+            if (required && IsEmpty(value, defaultIsEmpty))
             {
                 errors.Add(new ValidationError(col, $"«{col.Caption}» es obligatorio."));
                 continue; // sin valor no tiene sentido seguir validando esta columna
@@ -35,6 +45,12 @@ public static class MetadataValidation
         return errors;
     }
 
-    private static bool IsEmpty(object? value) =>
-        value is null || (value is string s && string.IsNullOrWhiteSpace(s));
+    private static bool IsEmpty(object? value, bool defaultIsEmpty = false)
+    {
+        if (value is null) return true;
+        if (value is string s) return string.IsNullOrWhiteSpace(s);
+        // Para claves naturales: un value-type en su valor por defecto (0, default(DateTime), etc.) = "sin elegir".
+        return defaultIsEmpty && value.GetType().IsValueType
+            && value.Equals(Activator.CreateInstance(value.GetType()));
+    }
 }

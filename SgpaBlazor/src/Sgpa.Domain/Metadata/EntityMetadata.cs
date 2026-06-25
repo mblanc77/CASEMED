@@ -89,8 +89,33 @@ public sealed class EntityMetadata
 
     public IEnumerable<ColumnMetadata> AuditColumns => Columns.Where(c => c.IsAudit);
 
+    private ColumnMetadata? _nameColumn;
+    private bool _nameResolved;
     private ColumnMetadata? _displayColumn;
     private bool _displayResolved;
+
+    /// <summary>
+    /// Columna "nombre/descripción" propiamente dicha (Descrip*/Nombre/Detalle), SIN el fallback a la primera
+    /// string. Es el rótulo humano del registro en las tablas catálogo; sirve para exigirla al editar
+    /// (en el esquema legado migrado de Access casi todas son NULL, así que el NOT NULL no la cubre).
+    /// </summary>
+    public ColumnMetadata? NameColumn
+    {
+        get
+        {
+            if (_nameResolved) return _nameColumn;
+            _nameColumn = Columns.FirstOrDefault(c => !c.IsKey && !c.IsAudit && c.UnderlyingType == typeof(string)
+                && IsNameColumn(c.Name));
+            _nameResolved = true;
+            return _nameColumn;
+        }
+    }
+
+    /// <summary>¿El nombre de columna es el rótulo descriptivo convencional (Descrip*/Nombre/Detalle)?</summary>
+    public static bool IsNameColumn(string name) =>
+        name.StartsWith("Descrip", StringComparison.OrdinalIgnoreCase)
+        || name.Equals("Nombre", StringComparison.OrdinalIgnoreCase)
+        || name.Equals("Detalle", StringComparison.OrdinalIgnoreCase);
 
     /// <summary>
     /// Columna "descriptiva" de la entidad (para mostrar en lookups de FK): prefiere
@@ -101,11 +126,7 @@ public sealed class EntityMetadata
         get
         {
             if (_displayResolved) return _displayColumn;
-            _displayColumn =
-                Columns.FirstOrDefault(c => !c.IsKey && c.UnderlyingType == typeof(string)
-                    && (c.Name.StartsWith("Descrip", StringComparison.OrdinalIgnoreCase)
-                        || c.Name.Equals("Nombre", StringComparison.OrdinalIgnoreCase)
-                        || c.Name.Equals("Detalle", StringComparison.OrdinalIgnoreCase)))
+            _displayColumn = NameColumn
                 ?? Columns.FirstOrDefault(c => !c.IsKey && !c.IsAudit && c.UnderlyingType == typeof(string));
             _displayResolved = true;
             return _displayColumn;

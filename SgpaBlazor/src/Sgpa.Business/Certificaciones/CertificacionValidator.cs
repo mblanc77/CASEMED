@@ -15,6 +15,11 @@ public sealed class CertificacionValidator : AbstractValidator<Certificacion>
 {
     public CertificacionValidator(CertificacionService service)
     {
+        // Estructural: una certificación es siempre de un afiliado. En el VB6 la cédula se validaba contra
+        // Afiliado (txtCI_LostFocus) antes de grabar; acá, como mínimo, no se permite una certificación huérfana.
+        RuleFor(c => c.CI).NotNull().GreaterThan(0)
+            .WithMessage("La cédula del afiliado es obligatoria.");
+
         When(c => c.Efectiva, () =>
         {
             RuleFor(c => c.FechaCertificacion).NotNull()
