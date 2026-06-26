@@ -86,6 +86,8 @@ logs/
 *.swp
 ~$*
 *~
+# Volcados temporales de extracción de texto de PDFs (scratch, no son fuente)
+atyr_pdf_*.txt
 
 # ===================== Sistema operativo / editores =====================
 Thumbs.db
