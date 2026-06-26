@@ -9,6 +9,9 @@ public sealed record EmpresaTrabaja(int CodEmpresa, string? DescEmpresa);
 /// <summary>Un importe líquido cargado manualmente (SP_ImpLiquido).</summary>
 public sealed record ImpLiquidoView(int Anio, int Mes, double Importe);
 
+/// <summary>Resultado de la carga automática de líquidos: cédulas cargadas + las que no tienen empleo en la empresa.</summary>
+public sealed record CargaLiquidoResult(int CedulasCargadas, int Filas, IReadOnlyList<long> SinEmpleo);
+
 /// <summary>
 /// Carga manual del importe líquido por afiliado/empresa/período (port de frmIngImpLiquido, app VB6 "SP").
 /// El alta toma la fecha de ingreso y el id de empleo de SP_Trabaja (la clave de SP_ImpLiquido los incluye).
@@ -56,6 +59,50 @@ public sealed class ImpLiquidoService
               FROM dbo.SP_Trabaja t WHERE t.CI=@ci AND t.CodEmpresa=@cod",
             new { ci = (int)ci, cod = codEmpresa, mes, anio, imp = importe, usr = ClampUsr(_user.UserName), ts = DateTime.Now },
             cancellationToken: ct);
+
+    /// <summary>
+    /// Todas las empresas (para la carga automática de líquidos por empresa). Port del combo de frmCargaLiquido.
+    /// </summary>
+    public Task<IReadOnlyList<EmpresaTrabaja>> GetTodasEmpresasAsync(CancellationToken ct = default)
+        => _db.QueryAsync<EmpresaTrabaja>(
+            "SELECT CAST(CodEmpresa AS int) AS CodEmpresa, Nombre AS DescEmpresa FROM dbo.SP_Empresa ORDER BY Nombre",
+            cancellationToken: ct);
+
+    /// <summary>
+    /// Carga automática de líquidos desde archivo (port de frmCargaLiquido.CargarExcel). Para una empresa/mes/año:
+    /// borra el período completo de la empresa (modo Reemplazar, como 1015_Borrar_ImpLiquidoxEmpresaAnioMes) y, por
+    /// cada cédula del archivo, inserta una fila por empleo en esa empresa tomando FechaIngreso/IdTrabaja de
+    /// SP_Trabaja (1015). Las cédulas sin empleo en la empresa no generan filas y se reportan.
+    /// </summary>
+    public async Task<CargaLiquidoResult> CargarMasivoAsync(
+        int codEmpresa, int mes, int anio, IReadOnlyList<LiquidoFila> filas, CancellationToken ct = default)
+    {
+        await using var uow = await _db.BeginTransactionAsync(ct).ConfigureAwait(false);
+
+        await uow.ExecuteAsync(
+            "DELETE FROM dbo.SP_ImpLiquido WHERE CodEmpresa=@cod AND Mes=@mes AND Anio=@anio",
+            new { cod = codEmpresa, mes, anio }, cancellationToken: ct).ConfigureAwait(false);
+
+        var usr = ClampUsr(_user.UserName);
+        var ts = DateTime.Now;
+        var cedulas = 0;
+        var totalFilas = 0;
+        var sinEmpleo = new List<long>();
+        foreach (var f in filas)
+        {
+            var n = await uow.ExecuteAsync(
+                @"INSERT INTO dbo.SP_ImpLiquido (CI, CodEmpresa, Fechaingreso, IdTrabaja, Mes, Anio, AnioMes, Importe, Usr, Ts)
+                  SELECT t.CI, t.CodEmpresa, t.FechaIngreso, t.IdTrabaja, @mes, @anio, (@anio*100+@mes), @imp, @usr, @ts
+                  FROM dbo.SP_Trabaja t WHERE t.CI=@ci AND t.CodEmpresa=@cod",
+                new { ci = (int)f.CI, cod = codEmpresa, mes, anio, imp = f.Importe, usr, ts },
+                cancellationToken: ct).ConfigureAwait(false);
+            if (n > 0) { cedulas++; totalFilas += n; }
+            else sinEmpleo.Add(f.CI);
+        }
+
+        await uow.CommitAsync(ct).ConfigureAwait(false);
+        return new CargaLiquidoResult(cedulas, totalFilas, sinEmpleo);
+    }
 
     /// <summary>
     /// Baja del importe líquido del período (port de 1007_Borrar_ImpLiquido): elimina las filas del empleo
