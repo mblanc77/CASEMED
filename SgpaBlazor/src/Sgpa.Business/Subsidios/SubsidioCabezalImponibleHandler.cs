@@ -29,7 +29,7 @@ public sealed class SubsidioCabezalImponibleHandler : IEntityChangeHandler<Subsi
 
         // Si en una modificación cambió el (CI, Anio, Mes), el período viejo también debe recalcularse
         // (puede haber quedado sin cabezales → su fila emp900 se borra).
-        if (change.Kind == EntityChangeKind.Updated && change.Previous is { } prev
+        if (change is { Kind: EntityChangeKind.Updated, Previous: { } prev }
             && !MismoPeriodo(prev, change.Entity))
             await SincronizarAsync(change.Db, prev, usr, cancellationToken).ConfigureAwait(false);
     }
