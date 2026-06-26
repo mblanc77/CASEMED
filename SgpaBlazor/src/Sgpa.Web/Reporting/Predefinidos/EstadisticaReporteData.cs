@@ -255,7 +255,7 @@ public sealed class EstadisticaReporteData(IDbExecutor db) : IEstadisticaReporte
             case 14: // Afiliados ACTIVOS certificados por Especialidad — en VB6 era otro layout Crystal (GenRpt9_1),
                      // misma query/params que el 13 (807). En gráfico es idéntico → se colapsa acá.
                 r.AddRange(await db.QueryAsync<EstadisticaPunto>(
-                    @"SELECT Codigo, Descrip, Cantidad FROM [807_CertificadosEspecialidad](@fi,@ff) ORDER BY Cantidad DESC",
+                    @"SELECT Codigo, Descripcion AS Descrip, Cantidad FROM [807_CertificadosEspecialidad](@fi,@ff) ORDER BY Cantidad DESC",
                     new { fi = p.FechaIni, ff = p.FechaFin }, cancellationToken: ct));
                 break;
             case 15: // Actos certificatorios por Tipos de Afección (periodo)
@@ -362,6 +362,21 @@ public sealed class EstadisticaReporteData(IDbExecutor db) : IEstadisticaReporte
                 r.AddRange(await db.QueryAsync<EstadisticaPunto>(
                     @"SELECT Grupo AS Descrip, COUNT(*) AS Cantidad FROM [814_AfiliadoImponibleFranja](@mes,@smn,@emp)
                       WHERE Grupo IS NOT NULL GROUP BY Grupo ORDER BY MIN(Importe)", new { mes, smn, emp }, cancellationToken: ct));
+                break;
+            }
+            case 25: // Afiliados con imponible discriminados por Especialidad (mes, empresa) — port de GenRpt18 /
+                     // 815_Insert_AfiliadoEspecialidad: cada afiliado con imponible del mes se asigna a su(s)
+                     // especialidad(es) y se cuenta por especialidad (NULL → '(Sin Especialidad)').
+            {
+                var smn = await GetSmnAsync(ct);
+                r.AddRange(await db.QueryAsync<EstadisticaPunto>(
+                    @"SELECT g.Grupo AS Descrip, COUNT(*) AS Cantidad
+                      FROM (SELECT CASE WHEN ISNULL(e.Descrip,'') <> '' THEN e.Descrip ELSE '(Sin Especialidad)' END AS Grupo
+                            FROM [815_AfiliadoImponible](@mes,@smn,@emp) ai
+                              INNER JOIN dbo.Afiliado a ON ai.CI = a.CI
+                              LEFT JOIN dbo.AfiliadoEspecialidad ae ON a.CI = ae.CI
+                              LEFT JOIN dbo.Especialidad e ON ae.CodEspecialidad = e.CodEspecialidad) g
+                      GROUP BY g.Grupo ORDER BY COUNT(*) DESC", new { mes, smn, emp }, cancellationToken: ct));
                 break;
             }
 
