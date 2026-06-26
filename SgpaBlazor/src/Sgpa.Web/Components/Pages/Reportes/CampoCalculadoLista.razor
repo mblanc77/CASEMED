@@ -12,6 +12,8 @@
 @inject NavigationManager Nav
 
 <PageTitle>Campos calculados</PageTitle>
+@* Atajo: Alt+N = nuevo campo calculado. *@
+<SgpaShortcuts OnNew="@(() => Nav.NavigateTo("/campos-calculados/editor"))" />
 
 @if (_denied)
 {

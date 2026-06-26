@@ -14,6 +14,9 @@
 }
 else
 {
+    @* Atajos: Alt+N nuevo usuario · Ctrl+S guarda el diálogo abierto (datos o cambio de clave). *@
+    <SgpaShortcuts OnNew="OpenNuevo" CanNew="@(() => !_editVisible && !_claveVisible && !_borrarVisible)"
+                   OnSave="GuardarAtajoAsync" CanSave="@(() => _editVisible || _claveVisible)" />
     <div class="d-flex align-items-center gap-2 mb-2">
         <h3 class="mb-0"><i class="fa-solid fa-users me-2"></i>Usuarios</h3>
         <a href="/seguridad/roles" class="btn btn-sm btn-outline-secondary ms-2"><i class="fa-solid fa-user-shield me-1"></i>Roles y permisos</a>
@@ -169,6 +172,10 @@ else
         _edit = new UsuarioEdit { EsNuevo = true, Activo = true };
         _editVisible = true;
     }
+
+    // Ctrl+S (atajo): guarda el diálogo que esté abierto — datos del usuario o cambio de clave.
+    private Task GuardarAtajoAsync()
+        => _editVisible ? GuardarAsync() : _claveVisible ? CambiarClaveAsync() : Task.CompletedTask;
 
     private void OpenEditar(UsuarioAdmin u)
     {

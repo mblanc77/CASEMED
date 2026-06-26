@@ -13,6 +13,8 @@
 *@
 
 <PageTitle>Importe líquido</PageTitle>
+@* Atajo: Ctrl+S = grabar el importe (con un afiliado/empresa cargado). *@
+<SgpaShortcuts OnSave="GrabarAsync" CanSave="@(() => _empresa is not null && !_guardando)" />
 
 <h3 class="mb-3">Carga de importe líquido</h3>
 

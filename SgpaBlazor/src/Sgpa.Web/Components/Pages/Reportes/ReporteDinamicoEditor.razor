@@ -16,6 +16,8 @@
 @inject NavigationManager Nav
 
 <PageTitle>@(Id is null ? "Nuevo reporte" : "Editar reporte")</PageTitle>
+@* Atajo: Ctrl+S = guardar. *@
+<SgpaShortcuts OnSave="SaveAsync" />
 
 @if (_denied)
 {

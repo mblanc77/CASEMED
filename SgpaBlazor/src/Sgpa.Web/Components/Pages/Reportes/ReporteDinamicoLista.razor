@@ -10,6 +10,8 @@
 @inject NavigationManager Nav
 
 <PageTitle>Reportes dinámicos</PageTitle>
+@* Atajo: Alt+N = nuevo reporte dinámico. *@
+<SgpaShortcuts OnNew="@(() => Nav.NavigateTo("/reportes/din/editor"))" />
 
 @if (_denied)
 {

@@ -11,6 +11,8 @@
 @inject NavigationManager Nav
 
 <PageTitle>Reportes a medida</PageTitle>
+@* Atajo: Alt+N = nuevo reporte (wizard). *@
+<SgpaShortcuts OnNew="@(() => Nav.NavigateTo("/reportes/nuevo"))" />
 
 @if (_denied)
 {

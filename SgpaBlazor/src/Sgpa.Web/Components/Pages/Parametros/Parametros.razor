@@ -9,6 +9,8 @@
 @inject WebCurrentUser CurrentUser
 
 <PageTitle>Parámetros del sistema</PageTitle>
+@* Atajo: Ctrl+S = guardar. *@
+<SgpaShortcuts OnSave="SaveAsync" CanSave="@(() => !_saving)" />
 
 <h3>Parámetros del sistema</h3>
 

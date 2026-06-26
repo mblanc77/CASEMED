@@ -10,6 +10,8 @@
 @inject Sgpa.Web.State.UnsavedChangesService Unsaved
 
 <PageTitle>Configuración de tablas</PageTitle>
+@* Atajo: Ctrl+S = guardar (sólo si hay cambios pendientes). *@
+<SgpaShortcuts OnSave="GuardarAsync" CanSave="@(() => _dirty.Count > 0 && !_saving)" />
 
 <h3 class="mb-2">Configuración por tabla</h3>
 <p class="text-muted">

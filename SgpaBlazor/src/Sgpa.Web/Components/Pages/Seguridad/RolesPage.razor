@@ -15,6 +15,9 @@
 }
 else
 {
+    @* Atajos: Alt+N nuevo rol · Ctrl+S guarda el diálogo de edición abierto. *@
+    <SgpaShortcuts OnNew="OpenNuevo" CanNew="@(() => !_editVisible && !_borrarVisible)"
+                   OnSave="GuardarAsync" CanSave="@(() => _editVisible)" />
     <div class="d-flex align-items-center gap-2 mb-2">
         <h3 class="mb-0"><i class="fa-solid fa-user-shield me-2"></i>Roles y permisos</h3>
         <a href="/seguridad/usuarios" class="btn btn-sm btn-outline-secondary ms-2"><i class="fa-solid fa-users me-1"></i>Usuarios</a>

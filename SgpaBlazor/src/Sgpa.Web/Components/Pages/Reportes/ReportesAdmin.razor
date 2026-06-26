@@ -9,6 +9,8 @@
 @inject NavigationManager Nav
 
 <PageTitle>Reportes</PageTitle>
+@* Atajo: Alt+N = nuevo reporte (abre el diálogo de creación). *@
+<SgpaShortcuts OnNew="OpenNew" CanNew="@(() => !_showNew)" />
 
 <h3 class="mb-2">Reportes</h3>
 <p class="text-muted">
