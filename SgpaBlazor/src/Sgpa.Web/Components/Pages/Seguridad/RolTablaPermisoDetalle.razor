@@ -97,7 +97,8 @@
                         <CellDisplayTemplate Context="c">
                             @{ var r = (RolPermisoRegistro)c.DataItem; }
                             <DxButton IconCssClass="fa-solid fa-pen" RenderStyle="ButtonRenderStyle.Link" Tooltip="Editar" Click="@(() => AbrirEditor(r))" />
-                            <DxButton IconCssClass="fa-solid fa-trash" RenderStyle="ButtonRenderStyle.Link" Tooltip="Borrar" Click="@(() => BorrarAsync(r))" />
+                            <DxButton IconCssClass="fa-solid fa-trash" RenderStyle="ButtonRenderStyle.Link" Tooltip="Borrar"
+                                      Click="@(() => { _registroABorrar = r; _confirmBorrarVisible = true; })" />
                         </CellDisplayTemplate>
                     </DxGridDataColumn>
                 </Columns>
@@ -184,6 +185,23 @@
     </BodyContentTemplate>
 </DxPopup>
 
+@* ---- Confirmación de borrado de un criterio por registro ---- *@
+<DxPopup @bind-Visible="_confirmBorrarVisible" HeaderText="Borrar criterio" Width="560px" CloseOnEscape="true">
+    <BodyContentTemplate>
+        <p>¿Seguro que querés borrar este criterio por registro? Esta acción no se puede deshacer.</p>
+        @if (_registroABorrar is not null)
+        {
+            <p class="mb-1"><strong>Criterio:</strong> <code>@_registroABorrar.Criteria</code></p>
+            <p class="mb-3"><strong>Aplica a:</strong> @DescribirAcciones(_registroABorrar.Acciones)</p>
+        }
+        <div class="d-flex justify-content-end gap-2">
+            <DxButton Text="No" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => _confirmBorrarVisible = false)" Enabled="!_borrando" />
+            <DxButton Text="Sí, borrar" IconCssClass="fa-solid fa-trash" RenderStyle="ButtonRenderStyle.Danger"
+                      Click="BorrarConfirmadoAsync" Enabled="!_borrando" />
+        </div>
+    </BodyContentTemplate>
+</DxPopup>
+
 @code {
     [Parameter, EditorRequired] public int RolId { get; set; }
     [Parameter, EditorRequired] public string Tabla { get; set; } = default!;
@@ -202,6 +220,11 @@
 
     private bool _editorVisible;
     private int _editId;
+
+    // Confirmación de borrado de un criterio por registro.
+    private bool _confirmBorrarVisible;
+    private bool _borrando;
+    private RolPermisoRegistro? _registroABorrar;
     private CriteriaOperator? _crit;
     private bool _modoTexto;
     private string _critText = string.Empty;
@@ -356,10 +379,23 @@
         catch (SeguridadAdminException ex) { _edError = ex.Message; }
     }
 
-    private async Task BorrarAsync(RolPermisoRegistro r)
+    private async Task BorrarConfirmadoAsync()
     {
-        await Admin.DeletePermisoRegistroAsync(r.Id);
-        _registros = (await Admin.ListPermisosRegistroAsync(RolId, Tabla)).ToList();
+        if (_registroABorrar is null || _borrando) return;
+        _borrando = true;
+        try
+        {
+            await Admin.DeletePermisoRegistroAsync(_registroABorrar.Id);
+            _registros = (await Admin.ListPermisosRegistroAsync(RolId, Tabla)).ToList();
+            Toasts.Exito("Criterio borrado.");
+        }
+        catch (SeguridadAdminException ex) { Toasts.Error(ex.Message); }
+        finally
+        {
+            _borrando = false;
+            _confirmBorrarVisible = false;
+            _registroABorrar = null;
+        }
     }
 
     private static string DescribirAcciones(PermissionAction a)
