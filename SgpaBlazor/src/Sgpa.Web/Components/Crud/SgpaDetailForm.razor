@@ -55,6 +55,10 @@
     /// registro mientras se carga (ej. contadores del afiliado); se re-renderiza al confirmar cada campo.</summary>
     [Parameter] public RenderFragment<object>? HeaderInfo { get; set; }
 
+    /// <summary>Se invoca cuando un campo del formulario se confirma (commit/blur). El contenedor lo usa, por ej.,
+    /// para recalcular el cartel de avisos en vivo durante el alta (paridad VB6 con los <c>*_LostFocus</c>).</summary>
+    [Parameter] public EventCallback OnFieldChanged { get; set; }
+
     /// <summary>Columnas (por nombre físico) a no mostrar — ej. la FK fija en una grilla hija.</summary>
     [Parameter] public IReadOnlyCollection<string>? HiddenColumns { get; set; }
 
@@ -149,7 +153,12 @@
     // Reporta al guard global si la edición tiene cambios sin guardar (avisa al navegar/recargar). Se limpia al
     // cerrar el form (Dispose), sea por guardar o cancelar.
     private void OnEditFieldChanged(object? sender, FieldChangedEventArgs e)
-        => Unsaved.Set(this, EditContext?.IsModified() == true);
+    {
+        Unsaved.Set(this, EditContext?.IsModified() == true);
+        // Avisa al contenedor del cambio confirmado (ej. la vista master-detail recalcula el cartel de avisos en
+        // vivo, así aparece también al ALTA cuando se ingresa una cédula/datos que lo ameritan).
+        if (OnFieldChanged.HasDelegate) _ = OnFieldChanged.InvokeAsync();
+    }
 
     // Un editor confirmó su valor (al salir del foco). Dispara la validación por campo del SgpaMetadataValidator
     // (reglas sync) y, si es una FK, re-resuelve su descripción (y, para CI, valida la existencia).

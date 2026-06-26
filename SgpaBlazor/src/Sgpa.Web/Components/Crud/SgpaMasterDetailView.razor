@@ -310,6 +310,15 @@ else
             }
         </h3>
         <div class="d-flex gap-2 flex-shrink-0">
+            @* "Nuevo" dentro del detalle: dar de alta varios registros seguidos sin volver a la lista. Sólo si la
+               seguridad (permiso de creación) y la lógica de negocio (AllowNew) lo permiten — los ABM con altas
+               por proceso/flujo propio (AllowNew=false, ej. Préstamos/Subsidios) no lo muestran. Pasa por el aviso
+               global de cambios sin guardar si el registro activo se editó. *@
+            @if (_mode == Mode.Detail && _canCreate && AllowNew)
+            {
+                <DxButton Text="Nuevo" IconCssClass="fa-solid fa-plus" RenderStyle="ButtonRenderStyle.Primary"
+                          Tooltip="@NewLabel" Click="NuevoDesdeDetalleAsync" />
+            }
             @if (_mode == Mode.Detail && _master is not null && DetailActions is not null)
             {
                 @DetailActions(_master)
@@ -337,6 +346,18 @@ else
             <div class="d-flex justify-content-end gap-2">
                 <DxButton Text="No" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => _confirmDelete = false)" Enabled="@(!_saving)" />
                 <DxButton Text="Sí, eliminar" RenderStyle="ButtonRenderStyle.Danger" Click="DeleteMasterAsync" Enabled="@(!_saving && PuedeEliminar)" />
+            </div>
+        </BodyContentTemplate>
+    </DxPopup>
+
+    @* Confirmación de "Deshacer cambios": descarta los cambios sin guardar y recarga los datos guardados. *@
+    <DxPopup @bind-Visible="_confirmDeshacer" HeaderText="Deshacer cambios" Width="440px" CloseOnEscape="true">
+        <BodyContentTemplate Context="popup">
+            <p>¿Descartar los cambios sin guardar de <strong>@CapitalizeFirst(TitleSingular) @_keyDisplay</strong> y
+               volver a los datos guardados?</p>
+            <div class="d-flex justify-content-end gap-2">
+                <DxButton Text="No" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => _confirmDeshacer = false)" Enabled="@(!_saving)" />
+                <DxButton Text="Sí, deshacer" RenderStyle="ButtonRenderStyle.Primary" Click="DeshacerCambiosAsync" Enabled="@(!_saving)" />
             </div>
         </BodyContentTemplate>
     </DxPopup>
@@ -381,13 +402,22 @@ else
             <div class="card-body">
                 <EditForm EditContext="_editContext" OnValidSubmit="SaveMasterAsync">
                     <SgpaDetailForm Model="_master" Meta="_meta" IsNew="_mode == Mode.New" ColSpanMd="6"
-                                    FieldEditable="FieldEditableAdapter" HeaderInfo="@HeaderInfoAdapter" />
+                                    FieldEditable="FieldEditableAdapter" HeaderInfo="@HeaderInfoAdapter"
+                                    OnFieldChanged="OnDetailFieldChangedAsync" />
                     @if (_canWrite)
                     {
-                        <div class="mt-2">
+                        <div class="mt-2 d-flex gap-2">
                             <DxButton SubmitFormOnClick="true" IconCssClass="fa-solid fa-floppy-disk"
                                       Text="@(_saving ? "Guardando…" : "Guardar")"
                                       RenderStyle="ButtonRenderStyle.Primary" Enabled="!_saving" />
+                            @* "Deshacer cambios": revierte el registro a lo guardado (lo recarga de la base). Sólo en
+                               detalle y cuando hay cambios sin guardar (el EditContext está modificado). *@
+                            @if (_mode == Mode.Detail && _editContext?.IsModified() == true)
+                            {
+                                <DxButton IconCssClass="fa-solid fa-rotate-left" Text="Deshacer cambios"
+                                          RenderStyle="ButtonRenderStyle.Secondary" Enabled="!_saving"
+                                          Click="@(() => _confirmDeshacer = true)" />
+                            }
                         </div>
                     }
                 </EditForm>
@@ -558,7 +588,7 @@ else
     private bool _confirmBulkDelete;
     private object? _keyValue;
     private string? _keyDisplay;
-    private bool _denied, _notFound, _saving, _confirmDelete;
+    private bool _denied, _notFound, _saving, _confirmDelete, _confirmDeshacer;
     private bool _procesando;                      // overlay de espera (borrados/operaciones que pueden tardar)
     private string _procesandoTexto = "Procesando…";
     private bool _requiereTextoEliminar = true;   // ¿pide tipear ELIMINAR? (config por tabla)
@@ -614,6 +644,7 @@ else
     public void Dispose()
     {
         Nav.LocationChanged -= OnLocationChanged;
+        _warnCts?.Cancel();
         if (_shortcutRef is not null)
         {
             // Baja del registro de atajos (fire-and-forget: Dispose es síncrono; si el circuito ya cerró, se ignora).
@@ -644,6 +675,8 @@ else
             case "new":
                 if (_mode == Mode.List && _canCreate && AllowNew)
                     Nav.NavigateTo($"{_baseTrim}/nuevo");
+                else if (_mode == Mode.Detail && _canCreate && AllowNew)
+                    await NuevoDesdeDetalleAsync();   // mismo guard de cambios sin guardar que el botón "Nuevo"
                 break;
             case "save":
                 // Backstop de validación por metadata (requeridos/largo), igual que el gate del CRUD genérico;
@@ -897,6 +930,26 @@ else
         _warnings = avisos.Distinct().ToList();
     }
 
+    // Recálculo del cartel de avisos EN VIVO mientras se edita el formulario (alta o detalle): se dispara cuando
+    // un campo se confirma (blur). Así, al dar de alta un registro e ingresar una cédula que lo amerite, el cartel
+    // aparece sin tener que guardar primero (paridad VB6: los avisos de txtCI_LostFocus). Con debounce para no
+    // re-validar (puede consultar la base) en cada confirmación seguida.
+    private CancellationTokenSource? _warnCts;
+
+    private async Task OnDetailFieldChangedAsync()
+    {
+        _warnCts?.Cancel();
+        var cts = new CancellationTokenSource();
+        _warnCts = cts;
+        try
+        {
+            await Task.Delay(350, cts.Token);
+            await RecomputeWarningsAsync();
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (TaskCanceledException) { }
+    }
+
     private object? CoerceKey(string seg)
     {
         try { return Convert.ChangeType(seg, _meta.Key.UnderlyingType); }
@@ -912,6 +965,40 @@ else
         }
         var key = _meta.Key.GetValue(item);
         Nav.NavigateTo($"{_baseTrim}/{key}");
+    }
+
+    // "Nuevo" desde el detalle: abre el alta ({base}/nuevo) sin pasar por la lista, para cargar varios registros
+    // seguidos. Respeta el aviso global de cambios sin guardar: si el registro activo se editó y no se guardó,
+    // sgpaConfirmLeave pregunta antes de descartar (mismo confirm que "Volver"/navegación interna). Si cancela, no
+    // navega y el flag de "sin guardar" queda intacto.
+    private async Task NuevoDesdeDetalleAsync()
+    {
+        if (!_canCreate || !AllowNew) return;
+        if (await JS.InvokeAsync<bool>("sgpaConfirmLeave"))
+            Nav.NavigateTo($"{_baseTrim}/nuevo");
+    }
+
+    // "Deshacer cambios": descarta las modificaciones sin guardar del registro activo y vuelve a los datos
+    // guardados, recargándolo de la base por su clave. Recrea el EditContext (limpio) → SgpaDetailForm
+    // re-sincroniza y baja el guard de "cambios sin guardar"; recalcula el cartel de avisos sobre lo persistido.
+    private async Task DeshacerCambiosAsync()
+    {
+        _confirmDeshacer = false;
+        if (_mode != Mode.Detail || _keyValue is null) return;
+        _warnCts?.Cancel();   // descarta un recálculo de avisos en vuelo de la última edición
+        try
+        {
+            _master = await Service.GetByKeyAsync(new[] { _keyValue });
+            if (_master is null) { _notFound = true; return; }
+            _editContext = new EditContext(_master);
+            await RecomputeWarningsAsync();
+            Toasts.Aviso("Se descartaron los cambios sin guardar.");
+        }
+        catch (Exception ex)
+        {
+            Toasts.Error(SqlErrorMessages.Amigable(ex));
+            await ErrorLog.LogAsync($"{_meta.Table}.Reload", ex, CurrentUser.UserName);
+        }
     }
 
     // ---- Personalización de la lista: carga / auto-guardado / restablecer (paridad XAF) ----

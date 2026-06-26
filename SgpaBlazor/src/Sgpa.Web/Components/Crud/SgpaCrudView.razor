@@ -247,6 +247,16 @@ else
     <EditFormTemplate Context="ctx">
         <SgpaDetailForm Model="ctx.EditModel" Meta="Meta" IsNew="_editingIsNew" HiddenColumns="_hiddenColumns"
                         FieldEditable="FieldEditableAdapter" HeaderInfo="@HeaderInfoAdapter" />
+        @* "Deshacer cambios": descarta las ediciones y recarga el form (cancela y reabre la edición). En un
+           registro existente vuelve a los valores guardados (reabre el mismo ítem); en el alta vuelve al estado
+           inicial con los campos vacíos (reabre una fila nueva). EditModel/EditContext arrancan frescos. *@
+        @if (_editingIsNew || _editDataItem is not null)
+        {
+            <div class="mt-2">
+                <DxButton IconCssClass="fa-solid fa-rotate-left" Text="Deshacer cambios"
+                          RenderStyle="ButtonRenderStyle.Secondary" Click="RevertEditAsync" />
+            </div>
+        }
     </EditFormTemplate>
     @* Master-detail opcional: el detalle se renderiza sólo al expandir la fila (carga diferida). El botón de
        expandir aparece sólo si hay DetailTemplate (DetailRowDisplayMode arriba); si no, este template no se invoca. *@
@@ -549,6 +559,7 @@ else
     // Valores de los calculados resueltos por página (clave de fila → nombreCalc → valor), para mostrarlos en la grilla.
     private readonly Dictionary<string, IReadOnlyDictionary<string, object?>> _calcValues = new(StringComparer.OrdinalIgnoreCase);
     private bool _editingIsNew;
+    private object? _editDataItem;   // ítem original que se está editando (para "Deshacer cambios"); null en alta
     private string? _error;
     private bool _denied;
     private PermissionAction _perms;
@@ -874,6 +885,7 @@ else
     private void OnCustomizeEditModel(GridCustomizeEditModelEventArgs e)
     {
         _editingIsNew = e.IsNew;
+        _editDataItem = e.DataItem;   // ítem original de la fila (null en alta); lo usa "Deshacer cambios"
         // En una grilla hija, el alta hereda automáticamente la FK del padre (el usuario no la edita).
         if (e.IsNew && _filterCol is not null && FilterValue is not null)
             _filterCol.SetValue(e.EditModel, Coerce(FilterValue, _filterCol.UnderlyingType));
@@ -885,6 +897,21 @@ else
         }
         // Defaults de negocio para el alta (ej. fecha = hoy) provistos por el llamador.
         if (e.IsNew) OnNew?.Invoke((TEntity)e.EditModel);
+    }
+
+    // "Deshacer cambios" en el popup: descarta el EditModel (cancela la edición) y reabre el form fresco. En una
+    // edición existente reabre el mismo ítem (vuelve a los valores guardados); en el alta reabre una fila nueva
+    // (vuelve al estado inicial con los campos vacíos). Así EditModel/EditContext arrancan limpios, sin fugas del
+    // flag "sin guardar". Equivale al "Deshacer" del master-detail (recarga desde el origen).
+    private async Task RevertEditAsync()
+    {
+        if (_grid is null) return;
+        var wasNew = _editingIsNew;
+        await _grid.CancelEditAsync();
+        if (wasNew)
+            await NewRowAsync();                                  // alta: volver a empezar con los campos vacíos
+        else if (_editDataItem is not null)
+            await _grid.StartEditDataItemAsync(_editDataItem);   // edición: recargar los valores guardados
     }
 
     private static object? Coerce(object value, Type underlying)
