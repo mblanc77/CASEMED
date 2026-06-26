@@ -4,6 +4,7 @@ using Sgpa.Business.Afiliados;
 using Sgpa.Business.Certificaciones;
 using Sgpa.Business.Dashboard;
 using Sgpa.Business.Empresas;
+using Sgpa.Business.Imponibles;
 using Sgpa.Business.Mutualistas;
 using Sgpa.Business.Pagos;
 using Sgpa.Business.Prestaciones;
@@ -51,6 +52,10 @@ public static class BusinessServiceCollectionExtensions
         services.AddScoped<RecetaService>();
         services.AddScoped<EmpresaService>();
         services.AddScoped<MutualistaService>();
+
+        // Carga de Historia Laboral (BPS, formato ATYR V2): parser sin estado + servicio de carga (Atyr_* + Imponible).
+        services.AddSingleton<HistoriaLaboralParser>();
+        services.AddScoped<HistoriaLaboralImportService>();
         services.AddScoped<DashboardService>();
 
         // Validadores de negocio (FluentValidation): se descubren todos los AbstractValidator<T> de este

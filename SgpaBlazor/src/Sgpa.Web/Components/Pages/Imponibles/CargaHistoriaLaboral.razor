@@ -1,0 +1,222 @@
+@page "/imponibles/carga-hl"
+@rendermode InteractiveServer
+@using DevExpress.Blazor
+@using Sgpa.Business.Imponibles
+@using Sgpa.Data
+@using Sgpa.Data.Errors
+@using Sgpa.Domain.Security
+@using Sgpa.Web.Controllers
+@using Sgpa.Web.Security
+@using Microsoft.Extensions.Caching.Memory
+@inject HistoriaLaboralParser Parser
+@inject HistoriaLaboralImportService Importador
+@inject IDbExecutor Db
+@inject IMemoryCache Cache
+@inject WebCurrentUser CurrentUser
+@inject IErrorLog ErrorLog
+@inject IToastNotificationService Toasts
+
+<PageTitle>Carga de Historia Laboral (BPS)</PageTitle>
+
+@*
+    Carga de Historia Laboral (port de frmCarHL, acotado al formato ATYR V2). El operador elige la empresa y
+    sube uno o más archivos de la nómina (si viene spliteada por tipo de registro). Al analizar, el período
+    (mes/año) se toma del cabezal del archivo. Al cargar, el contenido se guarda en las tablas Atyr_* y se
+    derivan los imponibles (conceptos 1 y 2), sobrescribiendo la empresa/mes.
+*@
+
+<h3 class="mb-3">Carga de Historia Laboral (BPS)</h3>
+
+@if (_denied)
+{
+    <div class="alert alert-warning">No tenés permiso para cargar imponibles.</div>
+}
+else
+{
+    <div class="card mb-3" style="max-width: 820px;">
+        <div class="card-body">
+            <DxFormLayout>
+                <DxFormLayoutItem Caption="Empresa" ColSpanMd="12">
+                    <DxComboBox Data="_empresas" @bind-Value="_codEmpresa" TData="EmpresaItem" TValue="int?"
+                                ValueFieldName="CodEmpresa" TextFieldName="Nombre"
+                                FilteringMode="DataGridFilteringMode.Contains" NullText="Elegí la empresa…" />
+                </DxFormLayoutItem>
+                <DxFormLayoutItem Caption="Archivo(s) de nómina" ColSpanMd="12">
+                    <div id="hl-dropzone" class="sgpa-dropzone">
+                        <i class="fa-solid fa-cloud-arrow-up sgpa-dropzone__icon"></i>
+                        <span class="sgpa-dropzone__hint">Arrastrá el/los archivo(s) .bps/.txt acá o</span>
+                        <DxUpload Name="file" UploadUrl="@_uploadUrl"
+                                  ExternalDropZoneCssSelector="#hl-dropzone"
+                                  ExternalDropZoneDragOverCssClass="sgpa-dropzone--over"
+                                  AllowMultiFileUpload="true"
+                                  AllowedFileExtensions="@_extensiones"
+                                  MaxFileSize="33554432"
+                                  FileUploaded="OnFileUploaded" />
+                    </div>
+                    @if (_archivos.Count > 0)
+                    {
+                        <ul class="mt-2 mb-0 small text-muted">
+                            @foreach (var a in _archivos)
+                            {
+                                <li>@a.FileName — @a.Lineas.Count línea(s)</li>
+                            }
+                        </ul>
+                    }
+                </DxFormLayoutItem>
+            </DxFormLayout>
+
+            <div class="d-flex justify-content-between mt-3">
+                <DxButton Text="Limpiar" IconCssClass="fa-solid fa-eraser" RenderStyle="ButtonRenderStyle.Secondary"
+                          Click="Limpiar" Enabled="@(_archivos.Count > 0 && !_procesando)" />
+                <div class="d-flex gap-2">
+                    <DxButton Text="Analizar" IconCssClass="fa-solid fa-magnifying-glass-chart" RenderStyle="ButtonRenderStyle.Secondary"
+                              Click="Analizar" Enabled="@(_archivos.Count > 0 && !_procesando)" />
+                    <DxButton Text="Cargar" IconCssClass="fa-solid fa-file-import" RenderStyle="ButtonRenderStyle.Primary"
+                              Click="@(() => _confirmar = true)" Enabled="@(_parsed is not null && _codEmpresa is not null && !_procesando)" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (_parsed is not null)
+    {
+        <div class="card mb-3" style="max-width: 820px;">
+            <div class="card-body">
+                <h5 class="card-title">Análisis del archivo</h5>
+                <p class="mb-1">Período (del cabezal): <strong>@_parsed.Mes.ToString("00")/@_parsed.Anio</strong></p>
+                @if (_parsed.Empresas.Count > 0)
+                {
+                    <p class="mb-1">Empresa BPS: <strong>@_parsed.Empresas[0].NroEmpresa</strong> — @_parsed.Empresas[0].Denominacion</p>
+                }
+                <p class="mb-0">
+                    Personas: <strong>@_parsed.Personas.Count</strong> ·
+                    Actividad: <strong>@_parsed.Actividades.Count</strong> ·
+                    Remuneraciones: <strong>@_parsed.Remuneraciones.Count</strong>
+                </p>
+                <small class="text-muted">Al cargar se reemplazan los datos previos de esta empresa para @_parsed.Mes.ToString("00")/@_parsed.Anio.</small>
+            </div>
+        </div>
+    }
+
+    @if (_result is not null)
+    {
+        <div class="card" style="max-width: 820px;">
+            <div class="card-body">
+                <h5 class="card-title text-success">Carga realizada</h5>
+                <p class="mb-0">
+                    Período @_result.Mes.ToString("00")/@_result.Anio ·
+                    Personas: <strong>@_result.Personas</strong> ·
+                    Actividad: <strong>@_result.Actividades</strong> ·
+                    Remuneraciones: <strong>@_result.Remuneraciones</strong> ·
+                    Imponibles cargados: <strong>@_result.ImponiblesInsertados</strong>
+                </p>
+            </div>
+        </div>
+    }
+}
+
+@* Confirmación previa a sobrescribir. *@
+<DxPopup @bind-Visible="_confirmar" HeaderText="Confirmar carga" Width="480px" CloseOnEscape="true">
+    <BodyContentTemplate>
+        <p>
+            ¿Cargar la Historia Laboral para <strong>@(_empresas.FirstOrDefault(e => e.CodEmpresa == _codEmpresa)?.Nombre)</strong>,
+            período <strong>@(_parsed?.Mes.ToString("00"))/@_parsed?.Anio</strong>?
+        </p>
+        <p class="text-muted mb-0">Los imponibles y los datos Atyr_ previos de esa empresa/mes serán reemplazados.</p>
+        <div class="d-flex justify-content-end gap-2 mt-3">
+            <DxButton Text="Cancelar" RenderStyle="ButtonRenderStyle.Secondary" Click="@(() => _confirmar = false)" Enabled="@(!_procesando)" />
+            <DxButton Text="Sí, cargar" RenderStyle="ButtonRenderStyle.Primary" Click="CargarAsync" Enabled="@(!_procesando)" />
+        </div>
+    </BodyContentTemplate>
+</DxPopup>
+
+@code {
+    private sealed record EmpresaItem(int CodEmpresa, string? Nombre);
+
+    private IReadOnlyList<EmpresaItem> _empresas = Array.Empty<EmpresaItem>();
+    private int? _codEmpresa;
+
+    private readonly List<string> _extensiones = new() { ".bps", ".txt" };
+    private string _token = "";
+    private string _uploadUrl = "";
+
+    private List<AtyrArchivo> _archivos = new();
+    private ParsedAtyr? _parsed;
+    private HistoriaLaboralResult? _result;
+    private bool _procesando, _confirmar, _denied;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CurrentUser.EnsureLoadedAsync();
+        if (!CurrentUser.Can("Imponible", PermissionAction.Create))
+        {
+            _denied = true;
+            return;
+        }
+        _empresas = await Db.QueryAsync<EmpresaItem>("SELECT CodEmpresa, Nombre FROM dbo.Empresa ORDER BY Nombre");
+        NuevoToken();
+    }
+
+    private void NuevoToken()
+    {
+        _token = Guid.NewGuid().ToString("N");
+        _uploadUrl = $"/imponibles/carga-hl/upload?token={_token}";
+    }
+
+    // Cada archivo terminó de subir al controller; refrescamos la lista acumulada desde la caché.
+    private void OnFileUploaded(FileUploadEventArgs e)
+    {
+        if (Cache.TryGetValue(HistoriaLaboralController.CacheKey(_token), out List<AtyrArchivo>? files) && files is not null)
+            _archivos = new List<AtyrArchivo>(files);
+        _parsed = null;
+        _result = null;
+    }
+
+    private void Analizar()
+    {
+        _result = null;
+        try
+        {
+            _parsed = Parser.Parse(_archivos);
+        }
+        catch (InvalidOperationException ex)
+        {
+            _parsed = null;
+            Toasts.Error(ex.Message);
+        }
+    }
+
+    private void Limpiar()
+    {
+        Cache.Remove(HistoriaLaboralController.CacheKey(_token));
+        _archivos = new List<AtyrArchivo>();
+        _parsed = null;
+        _result = null;
+        NuevoToken();
+    }
+
+    private async Task CargarAsync()
+    {
+        if (_parsed is null || _codEmpresa is null) return;
+        _procesando = true;
+        try
+        {
+            _result = await Importador.CargarAsync(_codEmpresa.Value, _parsed, CurrentUser.UserName);
+            _confirmar = false;
+            Toasts.Exito($"Historia Laboral cargada: {_result.ImponiblesInsertados} imponible(s) para {_result.Mes:00}/{_result.Anio}.");
+            // El landing quedó persistido; limpio la selección para evitar recargas accidentales.
+            _archivos = new List<AtyrArchivo>();
+            _parsed = null;
+            NuevoToken();
+        }
+        catch (Exception ex)
+        {
+            Toasts.Error(SqlErrorMessages.Amigable(ex));
+            await ErrorLog.LogAsync("HistoriaLaboral.Cargar", ex, CurrentUser.UserName);
+        }
+        finally
+        {
+            _procesando = false;
+        }
+    }
+}
