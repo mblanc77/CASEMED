@@ -41,7 +41,8 @@
 
 @if (_mode == Mode.List)
 {
-    <h3 class="mb-2">@TitlePlural</h3>
+    @* Ícono (mismo que el menú) en grande a la izquierda del título de la lista, si la pantalla lo pasa. *@
+    <h3 class="mb-2">@if (!string.IsNullOrEmpty(Icon)) {<i class="fa-solid @Icon me-2 text-primary"></i>}@TitlePlural</h3>
 
     @if (_denied)
     {
@@ -288,6 +289,13 @@ else
 {
     <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
         <h3 class="mb-0 text-truncate" style="min-width:0">
+            @* Mismo ícono que la lista, también en el header del alta/detalle (si la pantalla lo pasa).
+               Para que se vea bien, el DetailHeader del llamador debe ser contenido inline (no un bloque
+               con layout propio); los botones a la derecha van por el slot DetailActions. *@
+            @if (!string.IsNullOrEmpty(Icon))
+            {
+                <i class="fa-solid @Icon me-2 text-primary"></i>
+            }
             @if (_mode == Mode.New)
             {
                 @NewLabel
@@ -418,6 +426,9 @@ else
     /// <summary>Ruta base de la página, ej. "/afiliados". El componente espera además {base}/nuevo y {base}/{clave}.</summary>
     [Parameter, EditorRequired] public string BaseRoute { get; set; } = default!;
     [Parameter, EditorRequired] public string TitlePlural { get; set; } = default!;
+    /// <summary>Ícono Font Awesome (sin <c>fa-solid</c>) mostrado a la izquierda del título de la lista
+    /// (mismo ícono que el ítem del menú). Si es null, no se muestra ícono.</summary>
+    [Parameter] public string? Icon { get; set; }
     /// <summary>Singular con artículo para mensajes, ej. "el afiliado" / "la empresa".</summary>
     [Parameter, EditorRequired] public string TitleSingular { get; set; } = default!;
     /// <summary>Etiqueta del botón/encabezado de alta (resuelve el género), ej. "Nuevo afiliado" / "Nueva empresa".</summary>

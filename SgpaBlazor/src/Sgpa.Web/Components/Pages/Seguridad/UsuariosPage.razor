@@ -18,7 +18,7 @@ else
     <SgpaShortcuts OnNew="OpenNuevo" CanNew="@(() => !_editVisible && !_claveVisible && !_borrarVisible)"
                    OnSave="GuardarAtajoAsync" CanSave="@(() => _editVisible || _claveVisible)" />
     <div class="d-flex align-items-center gap-2 mb-2">
-        <h3 class="mb-0"><i class="fa-solid fa-users me-2"></i>Usuarios</h3>
+        <h3 class="mb-0"><i class="fa-solid fa-users me-2 text-primary"></i>Usuarios</h3>
         <a href="/seguridad/roles" class="btn btn-sm btn-outline-secondary ms-2"><i class="fa-solid fa-user-shield me-1"></i>Roles y permisos</a>
         <DxButton Text="Nuevo usuario" IconCssClass="fa-solid fa-user-plus" RenderStyle="ButtonRenderStyle.Primary"
                   CssClass="ms-auto" Click="OpenNuevo" />

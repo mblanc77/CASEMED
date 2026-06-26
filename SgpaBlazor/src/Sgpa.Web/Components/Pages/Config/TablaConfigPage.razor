@@ -13,7 +13,7 @@
 @* Atajo: Ctrl+S = guardar (sólo si hay cambios pendientes). *@
 <SgpaShortcuts OnSave="GuardarAsync" CanSave="@(() => _dirty.Count > 0 && !_saving)" />
 
-<h3 class="mb-2">Configuración por tabla</h3>
+<h3 class="mb-2"><i class="fa-solid fa-table-list me-2 text-primary"></i>Configuración por tabla</h3>
 <p class="text-muted">
     Settings dinámicos por tabla: <strong>edición inline</strong> (catálogos editables en la grilla),
     <strong>confirmación de borrado</strong> (exige tipear ELIMINAR) y <strong>auditoría</strong> de cambios por campo.

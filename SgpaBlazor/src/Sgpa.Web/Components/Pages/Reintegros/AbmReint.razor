@@ -12,7 +12,7 @@
     Lógica de negocio portada de AbmReint.frm: validación del período (mes/año), aviso de elegibilidad
     (1,25 SMN, no bloqueante) y actualización de la cuota del mutualista al grabar (ActualizarCuota).
 *@
-<SgpaCrudView TEntity="ReintegroMutual" Title="Reintegros mutuales"
+<SgpaCrudView TEntity="ReintegroMutual" Title="Reintegros mutuales" Icon="fa-rotate-left"
               OnAfterSaveAsync="@(r => Reintegro.ActualizarCuotaMutualAsync(r))">
     @* Contador en vivo (port de CargarReintegrosRealizados): reintegros previos del afiliado al cargar la cédula. *@
     <EditFormHeader Context="r">

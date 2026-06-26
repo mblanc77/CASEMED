@@ -22,7 +22,7 @@
 *@
 @if (_cargando)
 {
-    <h3 class="mb-2">Subsidios</h3>
+    <h3 class="mb-2"><i class="fa-solid fa-hand-holding-dollar me-2 text-primary"></i>Subsidios</h3>
     <div class="d-flex align-items-center gap-2 text-muted p-2">
         <span class="spinner-border spinner-border-sm text-primary" role="status"></span>
         <span>Cargando subsidios…</span>
@@ -30,7 +30,7 @@
 }
 else
 {
-<SgpaMasterDetailView TMaster="SubsidioCabezal" BaseRoute="/subsidios"
+<SgpaMasterDetailView TMaster="SubsidioCabezal" BaseRoute="/subsidios" Icon="fa-hand-holding-dollar"
                       TitlePlural="Subsidios" TitleSingular="el subsidio" NewLabel="Nuevo subsidio"
                       AllowNew="false" RequiereFiltro="true" FiltroBase="_filtroBase"
                       ReportesEntidad="Subsidio">

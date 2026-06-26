@@ -13,7 +13,7 @@
     ABM de mutualistas (port de AbmMutua.frm): master sin tablas hijas. Lógica de negocio: auto-numeración
     del CodMutualista (001_Mutualista_Max). GenData del VB6 es generación de reporte (fuera de alcance).
 *@
-<SgpaMasterDetailView TMaster="Mutualista" BaseRoute="/mutualistas"
+<SgpaMasterDetailView TMaster="Mutualista" BaseRoute="/mutualistas" Icon="fa-hospital"
                       TitlePlural="Mutualistas" TitleSingular="la mutualista" NewLabel="Nueva mutualista"
                       OnNewAsync="@(async m => m.CodMutualista = await Mutualista.ProximoCodMutualistaAsync())">
     <ListColumns>

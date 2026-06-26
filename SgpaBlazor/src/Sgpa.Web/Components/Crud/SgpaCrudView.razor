@@ -39,7 +39,9 @@
 
 @if (!string.IsNullOrEmpty(Title))
 {
-    <h3 class="mb-2">@Title</h3>
+    @* Ícono (mismo que el menú) en grande a la izquierda del título: sólo en las pantallas de nivel
+       superior que lo pasan (Icon); las grillas anidadas en pestañas no lo setean → sin ícono. *@
+    <h3 class="mb-2">@if (!string.IsNullOrEmpty(Icon)) {<i class="fa-solid @Icon me-2 text-primary"></i>}@Title</h3>
 }
 
 @if (_denied)
@@ -375,6 +377,9 @@ else
 
 @code {
     [Parameter] public string Title { get; set; } = string.Empty;
+    /// <summary>Ícono Font Awesome (sin <c>fa-solid</c>) mostrado a la izquierda del título. Sólo lo
+    /// setean las pantallas de nivel superior; las grillas anidadas lo dejan vacío (no muestran ícono).</summary>
+    [Parameter] public string? Icon { get; set; }
     [Parameter] public int PageSize { get; set; } = 20;
 
     /// <summary>

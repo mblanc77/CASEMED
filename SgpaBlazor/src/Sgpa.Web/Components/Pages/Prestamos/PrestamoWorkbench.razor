@@ -32,7 +32,7 @@
 <SgpaShortcuts OnSave="OnGrabarAsync" CanSave="@(() => _cuadro is not null && !_grabando)" />
 
 <div class="d-flex align-items-center justify-content-between mb-2">
-    <h3 class="mb-0">@(_editMode ? $"Editar préstamo Nº {IDPrestamo:00000}" : "Nuevo préstamo")</h3>
+    <h3 class="mb-0"><i class="fa-solid fa-landmark me-2 text-primary"></i>@(_editMode ? $"Editar préstamo Nº {IDPrestamo:00000}" : "Nuevo préstamo")</h3>
     <DxButton Text="Volver" IconCssClass="fa-solid fa-arrow-left" RenderStyle="ButtonRenderStyle.Secondary"
               Click="@(async () => await JS.InvokeVoidAsync("sgpaGoBack", "/prestamos"))" />
 </div>

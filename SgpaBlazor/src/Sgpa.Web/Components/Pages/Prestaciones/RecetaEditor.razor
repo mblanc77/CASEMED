@@ -14,7 +14,7 @@
 <PageTitle>Receta</PageTitle>
 
 <div class="d-flex align-items-center justify-content-between mb-2">
-    <h3 class="mb-0">Receta — cédula @CI · @Fecha.ToString("dd/MM/yyyy")</h3>
+    <h3 class="mb-0"><i class="fa-solid fa-prescription me-2 text-primary"></i>Receta — cédula @CI · @Fecha.ToString("dd/MM/yyyy")</h3>
     <DxButton Text="Volver" IconCssClass="fa-solid fa-arrow-left" RenderStyle="ButtonRenderStyle.Secondary"
               Click="@(async () => await JS.InvokeVoidAsync("sgpaGoBack", "/prestaciones"))" />
 </div>

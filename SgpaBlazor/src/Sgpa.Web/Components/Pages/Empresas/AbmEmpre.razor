@@ -9,7 +9,7 @@
 
 <PageTitle>Empresas</PageTitle>
 
-<SgpaMasterDetailView TMaster="Empresa" BaseRoute="/empresas"
+<SgpaMasterDetailView TMaster="Empresa" BaseRoute="/empresas" Icon="fa-building"
                       TitlePlural="Empresas" TitleSingular="la empresa" NewLabel="Nueva empresa"
                       OnNewAsync="@(async e => e.CodEmpresa = await Empresa.ProximoCodEmpresaAsync())">
     <ListColumns>

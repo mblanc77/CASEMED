@@ -9,7 +9,7 @@
 
 <PageTitle>Préstamos</PageTitle>
 
-<SgpaMasterDetailView TMaster="SP_Prestamo" BaseRoute="/prestamos"
+<SgpaMasterDetailView TMaster="SP_Prestamo" BaseRoute="/prestamos" Icon="fa-landmark"
                       TitlePlural="Préstamos" TitleSingular="el préstamo" NewLabel="Nuevo préstamo"
                       AllowNew="false"
                       OpenUrl="@(p => $"/prestamos/calcular/{p.IDPrestamo}")">
@@ -26,13 +26,14 @@
         <DxGridDataColumn FieldName="CodPrestamoEstado" Caption="Estado" Width="110px" />
     </ListColumns>
     <DetailHeader Context="p">
-        <div class="d-flex align-items-center justify-content-between">
-            <span>Préstamo #@p.IDPrestamo — cédula @p.CI</span>
-            <DxButton Text="Editar cobro / emitir" IconCssClass="fa-solid fa-pen-to-square"
-                      RenderStyle="ButtonRenderStyle.Secondary"
-                      Click="@(() => Nav.NavigateTo($"/prestamos/calcular/{p.IDPrestamo}"))" />
-        </div>
+        Préstamo #@p.IDPrestamo — cédula @p.CI
     </DetailHeader>
+    @* Botón a la derecha del header del detalle (slot propio: deja el título como texto inline con su ícono). *@
+    <DetailActions Context="p">
+        <DxButton Text="Editar cobro / emitir" IconCssClass="fa-solid fa-pen-to-square"
+                  RenderStyle="ButtonRenderStyle.Secondary"
+                  Click="@(() => Nav.NavigateTo($"/prestamos/calcular/{p.IDPrestamo}"))" />
+    </DetailActions>
     <ChildTabs Context="p">
         <DxTabPage Text="Facturas / Cobro" TabIconCssClass="fa-solid fa-file-invoice-dollar">
             <FacturasCobro IDPrestamo="p.IDPrestamo" />

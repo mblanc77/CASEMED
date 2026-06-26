@@ -39,6 +39,11 @@ else if (_crudType is not null)
         // Fijar el tipo antes de cualquier await: si se renderiza durante el await, _crudType ya es válido.
         _crudType = typeof(SgpaCrudView<>).MakeGenericType(_meta.EntityType);
         await TablaConfig.EnsureLoadedAsync();
-        _params = new Dictionary<string, object> { ["Title"] = TablaConfig.DisplayName(_meta.Table) };
+        _params = new Dictionary<string, object>
+        {
+            ["Title"] = TablaConfig.DisplayName(_meta.Table),
+            // Mismo ícono que el ítem del menú (catálogos = fa-tag; algunas tablas con ícono propio).
+            ["Icon"] = Sgpa.Web.Components.Layout.NavIcons.For(Entity),
+        };
     }
 }

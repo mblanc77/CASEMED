@@ -7,7 +7,7 @@
 
 <PageTitle>Adelantos prejubilatorios</PageTitle>
 
-<SgpaMasterDetailView TMaster="AdPreJub" BaseRoute="/adprejub"
+<SgpaMasterDetailView TMaster="AdPreJub" BaseRoute="/adprejub" Icon="fa-hourglass-half"
                       TitlePlural="Adelantos prejubilatorios" TitleSingular="el adelanto" NewLabel="Nuevo adelanto"
                       @* Paridad VB6 (AbmAfili: Enabled = rs.EOF): presentación e importe sólo editables al crear. *@
                       FieldEditable="@((a, col, isNew) => isNew || (col != "FechaPresentacion" && col != "ImporteMensual"))">
