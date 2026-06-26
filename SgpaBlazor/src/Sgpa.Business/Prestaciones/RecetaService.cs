@@ -42,6 +42,19 @@ public sealed class RecetaService
             new { ci, fecha, tipo = codPrestacionTipo }, cancellationToken: ct);
 
     /// <summary>
+    /// Receta(s) de la prestación ANTERIOR del afiliado para ese tipo (la más reciente con fecha menor a la dada).
+    /// Port de <c>CargarUltimaReceta</c> (230_Receta_Ultima), adaptado al editor —que abre una prestación ya
+    /// existente— para mostrar la receta previa como referencia (no la de la propia prestación que se edita).
+    /// </summary>
+    public Task<IReadOnlyList<Receta>> GetAnteriorAsync(long ci, DateTime fecha, int codPrestacionTipo, CancellationToken ct = default)
+        => _db.QueryAsync<Receta>(
+            @"SELECT CI, Fecha, CodPrestacionTipo, CodRecetaDistancia, Esf_I, Esf_D, Cil_I, Cil_D
+              FROM dbo.Receta
+              WHERE CI=@ci AND CodPrestacionTipo=@tipo AND Fecha = (
+                  SELECT MAX(Fecha) FROM dbo.Receta WHERE CI=@ci AND CodPrestacionTipo=@tipo AND Fecha < @fecha)",
+            new { ci, fecha, tipo = codPrestacionTipo }, cancellationToken: ct);
+
+    /// <summary>
     /// Graba la receta de la prestación (port de GrabarDatosReceta): borra las recetas previas y reinserta
     /// la de cerca y/o la de lejos según las que se pasen (null = no se incluye). Atómico.
     /// </summary>

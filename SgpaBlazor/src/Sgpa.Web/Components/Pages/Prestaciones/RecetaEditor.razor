@@ -26,6 +26,7 @@
                 <DxCheckBox @bind-Checked="_tieneCerca">Receta de cerca</DxCheckBox>
             </div>
             <div class="card-body @(_tieneCerca ? "" : "opacity-50")">
+                @Anterior(_antCerca)
                 @RecetaCampos(_cerca, _tieneCerca)
             </div>
         </div>
@@ -36,6 +37,7 @@
                 <DxCheckBox @bind-Checked="_tieneLejos">Receta de lejos</DxCheckBox>
             </div>
             <div class="card-body @(_tieneLejos ? "" : "opacity-50")">
+                @Anterior(_antLejos)
                 @RecetaCampos(_lejos, _tieneLejos)
             </div>
         </div>
@@ -56,6 +58,7 @@
 
     private Receta _cerca = new();
     private Receta _lejos = new();
+    private Receta? _antCerca, _antLejos;   // receta anterior (referencia, solo lectura) — port de CargarUltimaReceta
     private bool _tieneCerca, _tieneLejos, _busy;
     private string? _msg, _error;
     private bool _loaded;
@@ -69,7 +72,19 @@
         var l = recetas.FirstOrDefault(r => r.CodRecetaDistancia == RecetaService.Lejos);
         if (c is not null) { _cerca = c; _tieneCerca = true; }
         if (l is not null) { _lejos = l; _tieneLejos = true; }
+
+        // Receta anterior del afiliado para este tipo (referencia para el óptico).
+        var anteriores = await Recetas.GetAnteriorAsync(CI, Fecha, Tipo);
+        _antCerca = anteriores.FirstOrDefault(r => r.CodRecetaDistancia == RecetaService.Cerca);
+        _antLejos = anteriores.FirstOrDefault(r => r.CodRecetaDistancia == RecetaService.Lejos);
     }
+
+    // Línea de referencia con la receta anterior (no editable). Si no hay anterior, no muestra nada.
+    private RenderFragment Anterior(Receta? r) => r is null ? @<text></text> : @<div class="alert alert-light py-1 px-2 mb-2 small">
+        <i class="fa-solid fa-clock-rotate-left me-1"></i><strong>Anterior (@r.Fecha.ToString("dd/MM/yyyy")):</strong>
+        OI esf @(r.Esf_I?.ToString("0.00") ?? "—") / cil @(r.Cil_I?.ToString("0.00") ?? "—") ·
+        OD esf @(r.Esf_D?.ToString("0.00") ?? "—") / cil @(r.Cil_D?.ToString("0.00") ?? "—")
+    </div>;
 
     private RenderFragment RecetaCampos(Receta r, bool enabled) =>@<DxFormLayout>
         <DxFormLayoutItem Caption="Esférico ojo izq." ColSpanMd="6">
