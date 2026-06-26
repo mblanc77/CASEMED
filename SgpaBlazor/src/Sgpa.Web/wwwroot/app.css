@@ -29,14 +29,13 @@ a, .btn-link {
 }
 
 /* Informes estadísticos: el panel de ejecución (derecha) acompaña el scroll vertical mientras se navega el
-   árbol de informes (largo). Sólo en ≥lg (donde las dos columnas van lado a lado). El top deja libre el
-   .top-row sticky (3.5rem); align-self:flex-start evita que la columna se estire a la altura del row (si no,
-   no queda margen para "pegarse"). */
+   árbol de informes (largo). El sticky va en un WRAPPER interno (no en la columna flex, que al hacerla sticky
+   colapsaba la altura de la tarjeta y sólo se veía el título). La columna queda estirada a la altura del árbol
+   y el wrapper se pega dentro. Sólo en ≥lg (dos columnas); el top deja libre el .top-row sticky (3.5rem). */
 @media (min-width: 992px) {
-    .sgpa-est-panel {
+    .sgpa-est-sticky {
         position: sticky;
         top: 4rem;
-        align-self: flex-start;
     }
 }
 
