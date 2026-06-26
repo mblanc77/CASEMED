@@ -88,16 +88,16 @@
                     @if (_canCreate && AllowNew)
                     {
                         <DxButton Text="Nuevo" IconCssClass="fa-solid fa-plus" RenderStyle="ButtonRenderStyle.Primary"
-                                  Click="@(() => Nav.NavigateTo($"{_baseTrim}/nuevo"))" />
+                                  Click="@(() => Nav.NavigateTo($"{_baseTrim}/nuevo"))" Tooltip="Nuevo (Alt+N)" />
                     }
                     <span class="sgpa-search">
-                        <DxTextBox @bind-Text="_search" @bind-Text:after="LimpiarSelTodo" NullText="Buscar…"
+                        <DxTextBox @ref="_searchBox" @bind-Text="_search" @bind-Text:after="LimpiarSelTodo" NullText="Buscar… (Ctrl+B)"
                                    ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto" />
                     </span>
                     @* Grupo de herramientas de la vista: refrescar, seleccionar, columnas, totales, restablecer. *@
                     <div class="btn-group sgpa-toolbar-group" role="group">
                         <DxButton IconCssClass="fa-solid fa-arrows-rotate" RenderStyle="ButtonRenderStyle.Secondary"
-                                  Click="RefreshListAsync" Tooltip="Refrescar" />
+                                  Click="RefreshListAsync" Tooltip="Refrescar (Alt+R)" />
                         <DxButton IconCssClass="fa-solid fa-table-columns"
                                   RenderStyle="ButtonRenderStyle.Secondary" Click="ShowColumnChooser" Tooltip="Columnas" />
                         <DxButton IconCssClass="fa-solid fa-calculator"
@@ -498,8 +498,13 @@ else
 
     // Lista server-side: el grid resuelve paginado/orden/filtros/búsqueda/export contra esta fuente.
     private DxGrid? _grid;
+    private DxTextBox? _searchBox;   // para enfocar la búsqueda con Ctrl+B
     private SgpaGridDataSource<TMaster>? _dataSource;
     private string _search = string.Empty;
+
+    // Atajos de teclado (mismo sistema global que SgpaCrudView): se mapean según el modo (lista/detalle).
+    private DotNetObjectReference<SgpaMasterDetailView<TMaster>>? _shortcutRef;
+    private bool _shortcutsRegistered;
 
     // Campos calculados de la tabla (server-side, reutilizables). Si la tabla no tiene, queda vacío y todo es no-op.
     private IReadOnlyList<CalculatedField> _calc = System.Array.Empty<CalculatedField>();
@@ -577,7 +582,75 @@ else
         return vals.TryGetValue(nombre, out var v) ? v?.ToString() ?? string.Empty : string.Empty;
     }
 
-    public void Dispose() => Nav.LocationChanged -= OnLocationChanged;
+    public void Dispose()
+    {
+        Nav.LocationChanged -= OnLocationChanged;
+        if (_shortcutRef is not null)
+        {
+            // Baja del registro de atajos (fire-and-forget: Dispose es síncrono; si el circuito ya cerró, se ignora).
+            try { _ = JS.InvokeVoidAsync("sgpaUnregisterShortcuts", _shortcutRef); } catch { }
+            _shortcutRef.Dispose();
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // Esta vista es siempre de nivel superior (una página ABM): registra los atajos una vez, post-render.
+        if (firstRender && !_shortcutsRegistered)
+        {
+            _shortcutsRegistered = true;
+            _shortcutRef = DotNetObjectReference.Create(this);
+            await JS.InvokeVoidAsync("sgpaRegisterShortcuts", _shortcutRef);
+        }
+    }
+
+    // Atajo despachado desde el listener global (App.razor). Se mapea según el modo y respeta permisos/estado:
+    //  Lista  → Alt+N alta · Supr borrado masivo · F2 abrir seleccionado · Alt+R refrescar · Ctrl+B buscar.
+    //  Detalle/Alta → Ctrl+S guardar · (Detalle) Supr eliminar.
+    [JSInvokable]
+    public async Task HandleShortcutAsync(string action)
+    {
+        switch (action)
+        {
+            case "new":
+                if (_mode == Mode.List && _canCreate && AllowNew)
+                    Nav.NavigateTo($"{_baseTrim}/nuevo");
+                break;
+            case "save":
+                // Backstop de validación por metadata (requeridos/largo), igual que el gate del CRUD genérico;
+                // luego SaveMasterAsync corre las validaciones de negocio/FluentValidation y persiste.
+                if ((_mode == Mode.Detail || _mode == Mode.New) && _canWrite && !_saving && _master is not null)
+                {
+                    var errs = MetadataValidation.Validate(_meta, _master, _mode == Mode.New);
+                    if (errs.Count > 0) { Toasts.Error(string.Join(" ", errs.Select(x => x.Message))); break; }
+                    await SaveMasterAsync();
+                }
+                break;
+            case "delete":
+                if (_mode == Mode.Detail && _canDelete && _master is not null)
+                {
+                    _confirmText = string.Empty;
+                    _confirmDelete = true;
+                }
+                else if (_mode == Mode.List && _canDelete && SelCount > 0)
+                {
+                    _confirmText = string.Empty;
+                    _confirmBulkDelete = true;
+                }
+                break;
+            case "edit":
+                if (_mode == Mode.List && _selectedItems.Count == 1)
+                    OpenDetail(_selectedItems[0]);
+                break;
+            case "refresh":
+                if (_mode == Mode.List) RefreshListAsync();
+                break;
+            case "search":
+                if (_mode == Mode.List && _searchBox is not null) await _searchBox.FocusAsync();
+                break;
+        }
+        StateHasChanged();
+    }
 
     private async void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
     {

@@ -1,0 +1,77 @@
+@inject IJSRuntime JS
+@implements IAsyncDisposable
+@*
+    Atajos de teclado reutilizables para páginas hechas a mano (CRUD particulares, workbenches).
+    Se engancha al mismo sistema global que SgpaCrudView (listener en App.razor): se registra al
+    renderizar y recibe el atajo si es la vista activa (tope de la pila). La página declara qué hace
+    cada atajo con los callbacks; los predicados Can* permiten respetar permisos/estado (si devuelven
+    false, el atajo se ignora). Si un callback no se provee, ese atajo no hace nada en la página.
+
+    Esquema (igual que el CRUD genérico, sin choques con el navegador):
+      Alt+N = OnNew · Ctrl+S = OnSave · Supr = OnDelete · F2 = OnEdit · Alt+R = OnRefresh · Ctrl+B = OnSearch
+
+    Uso típico:
+      <SgpaShortcuts OnNew="Nuevo" CanNew="@(() => CanCreate)"
+                     OnSave="GuardarAsync" CanSave="@(() => _editando)" OnRefresh="RecargarAsync" />
+*@
+
+@code {
+    [Parameter] public EventCallback OnNew { get; set; }
+    [Parameter] public EventCallback OnSave { get; set; }
+    [Parameter] public EventCallback OnDelete { get; set; }
+    [Parameter] public EventCallback OnEdit { get; set; }
+    [Parameter] public EventCallback OnRefresh { get; set; }
+    [Parameter] public EventCallback OnSearch { get; set; }
+
+    /// <summary>Gates opcionales por acción (permisos/estado). Si devuelven false, el atajo se ignora.</summary>
+    [Parameter] public Func<bool>? CanNew { get; set; }
+    [Parameter] public Func<bool>? CanSave { get; set; }
+    [Parameter] public Func<bool>? CanDelete { get; set; }
+    [Parameter] public Func<bool>? CanEdit { get; set; }
+
+    private DotNetObjectReference<SgpaShortcuts>? _ref;
+    private bool _registered;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !_registered)
+        {
+            _registered = true;
+            _ref = DotNetObjectReference.Create(this);
+            await JS.InvokeVoidAsync("sgpaRegisterShortcuts", _ref);
+        }
+    }
+
+    // Un callback se ejecuta sólo si está provisto y su gate (si hay) lo permite.
+    private async Task Run(EventCallback cb, Func<bool>? gate)
+    {
+        if (!cb.HasDelegate) return;
+        if (gate is not null && !gate()) return;
+        await cb.InvokeAsync();
+    }
+
+    [JSInvokable]
+    public async Task HandleShortcutAsync(string action)
+    {
+        switch (action)
+        {
+            case "new": await Run(OnNew, CanNew); break;
+            case "save": await Run(OnSave, CanSave); break;
+            case "delete": await Run(OnDelete, CanDelete); break;
+            case "edit": await Run(OnEdit, CanEdit); break;
+            case "refresh": await Run(OnRefresh, null); break;
+            case "search": await Run(OnSearch, null); break;
+        }
+        StateHasChanged();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_ref is not null)
+        {
+            try { await JS.InvokeVoidAsync("sgpaUnregisterShortcuts", _ref); }
+            catch { /* circuito cerrado */ }
+            _ref.Dispose();
+        }
+    }
+}
