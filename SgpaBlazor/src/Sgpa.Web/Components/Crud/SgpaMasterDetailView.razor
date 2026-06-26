@@ -75,6 +75,7 @@
                 GroupFooterDisplayMode="GridGroupFooterDisplayMode.Always"
                 ContextMenus="GridContextMenus.All"
                 CustomizeContextMenu="OnCustomizeContextMenu"
+                CustomizeElement="OnCustomizeElement"
                 LayoutAutoLoading="OnLayoutAutoLoadingAsync"
                 LayoutAutoSaving="OnLayoutAutoSaving"
                 ColumnResizeMode="GridColumnResizeMode.NextColumn">
@@ -492,6 +493,12 @@ else
     private Mode _mode;
 
     private static readonly EntityMetadata _meta = EntityMetadata.For<TMaster>();
+
+    // Columna FechaBaja (si la entidad la tiene): las filas con baja cargada se muestran atenuadas en la lista,
+    // con el mismo criterio visual que los empleos y los combos. Detección por metadata → aplica a cualquier
+    // master con FechaBaja (ej. Empresa), sin configuración por pantalla.
+    private static readonly ColumnMetadata? _bajaCol =
+        _meta.Columns.FirstOrDefault(c => c.Name.Equals("FechaBaja", StringComparison.OrdinalIgnoreCase));
 
     // Opciones del selector de tamaño de página (el item "Todo" lo agrega PageSizeSelectorAllRowsItemVisible).
     private static readonly int[] _pageSizes = { 10, 20, 50, 100, 200, 500, 1000, 5000 };
@@ -1029,6 +1036,15 @@ else
     {
         try { _grid?.Reload(); }
         catch (ObjectDisposedException) { _gridKey = new object(); }
+    }
+
+    // Atenúa (rojo + tachado) las filas de un master dado de baja (FechaBaja cargada), mismo criterio que los
+    // empleos en Afiliados y los combos de empresa. No-op si la entidad no tiene columna FechaBaja.
+    private void OnCustomizeElement(GridCustomizeElementEventArgs e)
+    {
+        if (_bajaCol is null || e.ElementType != GridElementType.DataRow) return;
+        if (e.Grid.GetDataItem(e.VisibleIndex) is TMaster row && _bajaCol.GetValue(row) is not null)
+            e.CssClass = "sgpa-fila-baja";
     }
 
     // Menú contextual del DxGrid (right-click). Sobre el pie (total) o el pie de grupo de una columna,

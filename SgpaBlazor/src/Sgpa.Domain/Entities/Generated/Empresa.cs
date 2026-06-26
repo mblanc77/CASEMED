@@ -55,4 +55,10 @@ public partial class Empresa
     [SgpaAudit(Kind = SgpaAuditKind.Timestamp)]
     public DateTime? Ts { get; set; }
 
+    [SgpaColumn(Order = 17)]
+    public DateTime? FechaBaja { get; set; }
+
+    [SgpaColumn(Order = 18)]
+    public float? AporteUsuario { get; set; }
+
 }

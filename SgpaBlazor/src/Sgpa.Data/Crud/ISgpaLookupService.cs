@@ -7,6 +7,13 @@ public sealed class LookupItem
 {
     public object? Value { get; set; }
     public string Text { get; set; } = string.Empty;
+
+    /// <summary>
+    /// El registro de referencia está dado de baja (tiene <c>FechaBaja</c> cargada). Se deriva en la consulta del
+    /// lookup para las entidades que tienen esa columna (ej. Empresa). El combo lo usa para mostrarlo atenuado y
+    /// al final de la lista, sin sacarlo (así los datos históricos siguen resolviendo su descripción).
+    /// </summary>
+    public bool Baja { get; set; }
 }
 
 /// <summary>

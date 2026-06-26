@@ -343,6 +343,10 @@ body { font-family: var(--bs-body-font-family); font-weight: 500; }
 /* Fila de grilla atenuada (ej. empleos dados de baja en AbmAfili): SgpaCrudView.RowCssClass la aplica al <tr>. */
 .sgpa-fila-baja, .sgpa-fila-baja td { color: #d40000; text-decoration: line-through; opacity: .75;}
 
+/* Ítem de combo de un registro de referencia dado de baja (ej. empresa inactiva): mismo criterio visual que la
+   fila de baja. Lo aplica el ItemTemplate de SgpaPropertyEditor cuando LookupItem.Baja es true. */
+.sgpa-combo-baja { color: #d40000; text-decoration: line-through; opacity: .75; }
+
 /* Fichas (DxTabs) en varias filas cuando no entran en el ancho: DxTabs no trae modo multi-fila nativo
    (sólo scroll). Con ScrollMode=NoScroll + flex-wrap, la barra de fichas envuelve en varias líneas. */
 .sgpa-tabs-wrap .dxbl-tabs-container { flex-wrap: wrap; }

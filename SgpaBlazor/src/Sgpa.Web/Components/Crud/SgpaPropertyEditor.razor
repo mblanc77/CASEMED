@@ -24,7 +24,13 @@
                 Value="@Column.GetValue(Model)" ValueChanged="@((object v) => Set(v))"
                 ValueFieldName="@nameof(LookupItem.Value)" TextFieldName="@nameof(LookupItem.Text)"
                 ReadOnly="ReadOnly" FilteringMode="DataGridFilteringMode.Contains" ValidationEnabled="false"
-                ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto" NullText=" " />
+                ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto" NullText=" ">
+        @* Los registros de referencia dados de baja (ej. empresas inactivas) van al final y se muestran
+           atenuados/tachados, con el mismo criterio visual que los empleos con fecha de baja. *@
+        <ItemTemplate Context="item">
+            <span class="@(item.Baja ? "sgpa-combo-baja" : null)">@item.Text</span>
+        </ItemTemplate>
+    </DxComboBox>
 }
 else if (t == typeof(bool))
 {

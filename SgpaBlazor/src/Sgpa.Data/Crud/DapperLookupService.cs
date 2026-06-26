@@ -59,9 +59,18 @@ public sealed class DapperLookupService : ISgpaLookupService
         // Se castea la descripción a nvarchar (puede ser text/ntext) y se ordena por la expresión casteada:
         // ORDER BY sobre text/ntext crudo lanza "cannot be compared or sorted".
         var text = DisplayExpr(meta, display);
-        var sql = $"SELECT [{key.Name}] AS [Value], {text} AS [Text] " +
+
+        // Baja lógica: si la entidad tiene una columna FechaBaja, los registros con baja se marcan (Baja=1) para
+        // mostrarlos atenuados y se ordenan AL FINAL (los activos primero, ambos grupos alfabéticos). Sin columna
+        // FechaBaja, Baja es siempre 0 y el orden es el de siempre.
+        var bajaCol = meta.Columns.FirstOrDefault(c => c.Name.Equals("FechaBaja", StringComparison.OrdinalIgnoreCase));
+        var bajaExpr = bajaCol is null ? null : $"CASE WHEN [{bajaCol.Name}] IS NULL THEN 0 ELSE 1 END";
+        var bajaSelect = bajaExpr is null ? "CAST(0 AS bit)" : $"CAST({bajaExpr} AS bit)";
+        var orderBy = bajaExpr is null ? text : $"{bajaExpr}, {text}";
+
+        var sql = $"SELECT [{key.Name}] AS [Value], {text} AS [Text], {bajaSelect} AS [Baja] " +
                   $"FROM {meta.QualifiedTable} WHERE [{key.Name}] IS NOT NULL " +
-                  $"ORDER BY {text}";
+                  $"ORDER BY {orderBy}";
         return await _db.QueryAsync<LookupItem>(sql, cancellationToken: cancellationToken).ConfigureAwait(false);
     }
 
