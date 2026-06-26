@@ -28,6 +28,18 @@ a, .btn-link {
     padding-top: 1.1rem;
 }
 
+/* Informes estadísticos: el panel de ejecución (derecha) acompaña el scroll vertical mientras se navega el
+   árbol de informes (largo). Sólo en ≥lg (donde las dos columnas van lado a lado). El top deja libre el
+   .top-row sticky (3.5rem); align-self:flex-start evita que la columna se estire a la altura del row (si no,
+   no queda margen para "pegarse"). */
+@media (min-width: 992px) {
+    .sgpa-est-panel {
+        position: sticky;
+        top: 4rem;
+        align-self: flex-start;
+    }
+}
+
 h1:focus {
     outline: none;
 }

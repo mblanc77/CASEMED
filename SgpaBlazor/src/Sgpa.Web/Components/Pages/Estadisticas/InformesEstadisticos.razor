@@ -41,7 +41,9 @@
         </DxTreeView>
     </div>
 
-    <div class="col-lg-6">
+    @* Panel de ejecución "pegajoso": acompaña el scroll vertical mientras se baja por el árbol (col-lg-6 ⇒
+       sólo en pantallas anchas, donde van lado a lado). align-self:flex-start es lo que le da margen para pegarse. *@
+    <div class="col-lg-6 sgpa-est-panel">
         @if (_sel is null)
         {
             <div class="alert alert-light border text-muted">Seleccioná un informe de la lista.</div>
