@@ -252,11 +252,14 @@ public sealed class EstadisticaReporteData(IDbExecutor db) : IEstadisticaReporte
                     new { fi = p.FechaIni, ff = p.FechaFin }, cancellationToken: ct));
                 break;
             case 13: // Afiliados certificados por Especialidad (periodo)
+            case 14: // Afiliados ACTIVOS certificados por Especialidad — en VB6 era otro layout Crystal (GenRpt9_1),
+                     // misma query/params que el 13 (807). En gráfico es idéntico → se colapsa acá.
                 r.AddRange(await db.QueryAsync<EstadisticaPunto>(
                     @"SELECT Codigo, Descrip, Cantidad FROM [807_CertificadosEspecialidad](@fi,@ff) ORDER BY Cantidad DESC",
                     new { fi = p.FechaIni, ff = p.FechaFin }, cancellationToken: ct));
                 break;
             case 15: // Actos certificatorios por Tipos de Afección (periodo)
+            case 16: // Variante de layout Crystal (GenRpt10_1), misma query/params que el 15 (808) → se colapsa.
                 r.AddRange(await db.QueryAsync<EstadisticaPunto>(
                     @"SELECT Codigo, Descripcion AS Descrip, Cantidad FROM [808_CertificadosAfecciones](@fi,@ff,@cod) ORDER BY Cantidad DESC",
                     new { fi = p.FechaIni, ff = p.FechaFin, cod = p.CodPatologia }, cancellationToken: ct));
@@ -267,11 +270,13 @@ public sealed class EstadisticaReporteData(IDbExecutor db) : IEstadisticaReporte
                     new { fi = p.FechaIni, ff = p.FechaFin, cod = p.CodPatologia }, cancellationToken: ct));
                 break;
             case 26: // Actos certificatorios por Grupos de Afección
+            case 27: // Variante de layout Crystal (mismo GenRpt19 que el 26) → datos idénticos, se colapsa.
                 r.AddRange(await db.QueryAsync<EstadisticaPunto>(
                     @"SELECT Codigo, Descripcion AS Descrip, Cantidad FROM [816_Certificados_GrupoAfeccion](@fi,@ff,@cod) ORDER BY Cantidad DESC",
                     new { fi = p.FechaIni, ff = p.FechaFin, cod = p.CodPatologia }, cancellationToken: ct));
                 break;
             case 28: // Actos certificatorios por Patologías
+            case 29: // Variante de layout Crystal (mismo GenRpt20 que el 28) → datos idénticos, se colapsa.
                 r.AddRange(await db.QueryAsync<EstadisticaPunto>(
                     @"SELECT Codigo, Descripcion AS Descrip, Cantidad FROM [817_Certificados_Patologia](@fi,@ff) ORDER BY Cantidad DESC",
                     new { fi = p.FechaIni, ff = p.FechaFin }, cancellationToken: ct));
