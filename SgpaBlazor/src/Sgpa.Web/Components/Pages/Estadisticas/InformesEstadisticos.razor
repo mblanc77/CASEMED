@@ -21,6 +21,10 @@
 
 <div class="row g-3">
     <div class="col-lg-6">
+        @* El árbol de informes (largo) scrollea por dentro en pantallas anchas: así el panel de la derecha
+           queda siempre visible sin tener que scrollear toda la página (alternativa robusta al sticky, que
+           no toca el panel/tarjeta). *@
+        <div class="sgpa-est-tree-scroll">
         <DxTreeView AllowSelectNodes="true" SizeMode="SizeMode.Small" CssClass="sgpa-est-tree"
                     NodeExpandCollapseAction="TreeViewNodeExpandCollapseAction.NodeClick"
                     SelectionChanged="OnNodeSelected">
@@ -39,6 +43,7 @@
                 }
             </Nodes>
         </DxTreeView>
+        </div>
     </div>
 
     <div class="col-lg-6">

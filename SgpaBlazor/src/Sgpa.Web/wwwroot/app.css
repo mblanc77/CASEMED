@@ -28,6 +28,17 @@ a, .btn-link {
     padding-top: 1.1rem;
 }
 
+/* Informes estadísticos: el árbol de informes (largo) scrollea por dentro en pantallas anchas (≥lg), con un
+   alto acotado al alto visible. Así el panel de ejecución (derecha) queda SIEMPRE a la vista sin scrollear la
+   página, evitando el sticky (que colapsaba/flotaba inconsistente sobre la tarjeta DevExpress). El valor del
+   alto deja libre el .top-row sticky (3.5rem) + el encabezado de la página; es lo único a ajustar si hiciera falta. */
+@media (min-width: 992px) {
+    .sgpa-est-tree-scroll {
+        max-height: calc(100vh - 11rem);
+        overflow-y: auto;
+    }
+}
+
 
 h1:focus {
     outline: none;
