@@ -41,11 +41,7 @@
         </DxTreeView>
     </div>
 
-    @* Panel de ejecución "pegajoso": acompaña el scroll vertical mientras se baja por el árbol. La columna
-       queda normal (estirada a la altura del árbol) y el sticky va en un WRAPPER interno; así no se colapsa
-       la altura de la tarjeta (hacerla sticky a la columna flex sí lo hacía). Sólo en ≥lg (dos columnas). *@
     <div class="col-lg-6">
-        <div class="sgpa-est-sticky">
         @if (_sel is null)
         {
             <div class="alert alert-light border text-muted">Seleccioná un informe de la lista.</div>
@@ -148,7 +144,6 @@
                 </div>
             </div>
         }
-        </div>
     </div>
 </div>
 
