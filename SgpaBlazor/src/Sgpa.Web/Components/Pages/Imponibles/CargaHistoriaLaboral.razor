@@ -6,11 +6,11 @@
 @using Sgpa.Data.Errors
 @using Sgpa.Domain.Security
 @using Sgpa.Web.Controllers
+@using Sgpa.Web.Components.Shared
 @using Sgpa.Web.Security
 @using Microsoft.Extensions.Caching.Memory
 @inject HistoriaLaboralParser Parser
 @inject HistoriaLaboralImportService Importador
-@inject IDbExecutor Db
 @inject IMemoryCache Cache
 @inject WebCurrentUser CurrentUser
 @inject IErrorLog ErrorLog
@@ -37,9 +37,7 @@ else
         <div class="card-body">
             <DxFormLayout>
                 <DxFormLayoutItem Caption="Empresa" ColSpanMd="12">
-                    <DxComboBox Data="_empresas" @bind-Value="_codEmpresa" TData="EmpresaItem" TValue="int?"
-                                ValueFieldName="CodEmpresa" TextFieldName="Nombre"
-                                FilteringMode="DataGridFilteringMode.Contains" NullText="Elegí la empresa…" />
+                    <EmpresaComboBox @ref="_empresaCombo" @bind-Value="_codEmpresa" />
                 </DxFormLayoutItem>
                 <DxFormLayoutItem Caption="Archivo(s) de nómina" ColSpanMd="12">
                     <div id="hl-dropzone" class="sgpa-dropzone">
@@ -119,7 +117,7 @@ else
 <DxPopup @bind-Visible="_confirmar" HeaderText="Confirmar carga" Width="480px" CloseOnEscape="true">
     <BodyContentTemplate>
         <p>
-            ¿Cargar la Historia Laboral para <strong>@(_empresas.FirstOrDefault(e => e.CodEmpresa == _codEmpresa)?.Nombre)</strong>,
+            ¿Cargar la Historia Laboral para <strong>@(_empresaCombo?.NombreSeleccionado)</strong>,
             período <strong>@(_parsed?.Mes.ToString("00"))/@_parsed?.Anio</strong>?
         </p>
         <p class="text-muted mb-0">Los imponibles y los datos Atyr_ previos de esa empresa/mes serán reemplazados.</p>
@@ -131,9 +129,7 @@ else
 </DxPopup>
 
 @code {
-    private sealed record EmpresaItem(int CodEmpresa, string? Nombre);
-
-    private IReadOnlyList<EmpresaItem> _empresas = Array.Empty<EmpresaItem>();
+    private EmpresaComboBox? _empresaCombo;   // @ref para leer el nombre de la empresa elegida (confirmación)
     private int? _codEmpresa;
 
     private readonly List<string> _extensiones = new() { ".bps", ".txt" };
@@ -153,7 +149,6 @@ else
             _denied = true;
             return;
         }
-        _empresas = await Db.QueryAsync<EmpresaItem>("SELECT CodEmpresa, Nombre FROM dbo.Empresa ORDER BY Nombre");
         NuevoToken();
     }
 

@@ -1,0 +1,45 @@
+@inject Sgpa.Data.IDbExecutor Db
+@*
+    Combo reutilizable para elegir una empresa de dbo.Empresa. Incorpora el tratamiento de baja: las empresas
+    con FechaBaja cargada se muestran AL FINAL de la lista y atenuadas (.sgpa-combo-baja), con el mismo criterio
+    visual que el lookup genérico (SgpaPropertyEditor). Centraliza la query para que ningún combo de empresa a
+    medida vuelva a divergir.
+    Uso:  <EmpresaComboBox @bind-Value="_codEmpresa" />
+          @_empresaCombo?.NombreSeleccionado   (vía @ref, para confirmaciones/encabezados)
+*@
+<DxComboBox Data="_empresas" TData="EmpresaOpcion" TValue="int?"
+            Value="Value" ValueChanged="OnValueChanged"
+            ValueFieldName="@nameof(EmpresaOpcion.CodEmpresa)" TextFieldName="@nameof(EmpresaOpcion.Nombre)"
+            FilteringMode="DataGridFilteringMode.Contains" NullText="@NullText" Enabled="Enabled"
+            ReadOnly="ReadOnly" ClearButtonDisplayMode="DataEditorClearButtonDisplayMode.Auto">
+    <ItemTemplate Context="item">
+        <span class="@(item.Baja ? "sgpa-combo-baja" : null)">@item.Nombre</span>
+    </ItemTemplate>
+</DxComboBox>
+
+@code {
+    [Parameter] public int? Value { get; set; }
+    [Parameter] public EventCallback<int?> ValueChanged { get; set; }
+    [Parameter] public string NullText { get; set; } = "Elegí la empresa…";
+    [Parameter] public bool Enabled { get; set; } = true;
+    [Parameter] public bool ReadOnly { get; set; }
+
+    private IReadOnlyList<EmpresaOpcion> _empresas = Array.Empty<EmpresaOpcion>();
+
+    /// <summary>Nombre de la empresa actualmente seleccionada (para mostrarla en confirmaciones/encabezados).</summary>
+    public string? NombreSeleccionado => _empresas.FirstOrDefault(e => e.CodEmpresa == Value)?.Nombre;
+
+    protected override async Task OnInitializedAsync()
+        => _empresas = await Db.QueryAsync<EmpresaOpcion>(
+            @"SELECT CodEmpresa, Nombre, CAST(CASE WHEN FechaBaja IS NULL THEN 0 ELSE 1 END AS bit) AS Baja
+              FROM dbo.Empresa
+              ORDER BY CASE WHEN FechaBaja IS NULL THEN 0 ELSE 1 END, Nombre");
+
+    private Task OnValueChanged(int? v)
+    {
+        Value = v;
+        return ValueChanged.InvokeAsync(v);
+    }
+
+    public sealed record EmpresaOpcion(int CodEmpresa, string? Nombre, bool Baja);
+}
