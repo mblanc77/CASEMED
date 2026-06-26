@@ -5,6 +5,7 @@
 @using Sgpa.Web.Components.Crud
 @inject ISeguridadAdminService Admin
 @inject IToastNotificationService Toasts
+@implements IDisposable
 
 @*
     DetailView de los permisos de un rol sobre UNA tabla (estilo XAF): los checkboxes de acción + dos ListViews
@@ -17,12 +18,27 @@
     }
     else
     {
+        @* Las acciones y los campos se editan en memoria y se confirman con "Guardar cambios" (Ctrl+S). Los
+           criterios por registro siguen siendo su propio CRUD (alta/edición en popup, borrado directo). *@
+        <SgpaShortcuts OnSave="GuardarCambiosAsync" CanSave="@(() => Dirty && !_saving)" />
+        @if (Dirty)
+        {
+            <div class="alert alert-warning d-flex align-items-center gap-2 py-2 mb-3">
+                <i class="fa-solid fa-pen"></i>
+                <span>Cambios sin guardar en los permisos de <strong>@Tabla</strong>.</span>
+                <DxButton Text="Guardar cambios" IconCssClass="fa-solid fa-floppy-disk" RenderStyle="ButtonRenderStyle.Primary"
+                          SizeMode="SizeMode.Small" Enabled="!_saving" Click="GuardarCambiosAsync" CssClass="ms-auto" />
+                <DxButton Text="Descartar" IconCssClass="fa-solid fa-rotate-left" RenderStyle="ButtonRenderStyle.Secondary"
+                          SizeMode="SizeMode.Small" Enabled="!_saving" Click="Descartar" />
+            </div>
+        }
+
         <div class="d-flex align-items-center gap-3 mb-3 flex-wrap">
             <span class="fw-semibold"><i class="fa-solid fa-key me-1 text-muted"></i>Acciones:</span>
-            <DxCheckBox Checked="Has(PermissionAction.Read)" CheckedChanged="@((bool v) => ToggleAccionAsync(PermissionAction.Read, v))">Leer</DxCheckBox>
-            <DxCheckBox Checked="Has(PermissionAction.Create)" CheckedChanged="@((bool v) => ToggleAccionAsync(PermissionAction.Create, v))">Crear</DxCheckBox>
-            <DxCheckBox Checked="Has(PermissionAction.Write)" CheckedChanged="@((bool v) => ToggleAccionAsync(PermissionAction.Write, v))">Modificar</DxCheckBox>
-            <DxCheckBox Checked="Has(PermissionAction.Delete)" CheckedChanged="@((bool v) => ToggleAccionAsync(PermissionAction.Delete, v))">Borrar</DxCheckBox>
+            <DxCheckBox Checked="Has(PermissionAction.Read)" CheckedChanged="@((bool v) => ToggleAccion(PermissionAction.Read, v))">Leer</DxCheckBox>
+            <DxCheckBox Checked="Has(PermissionAction.Create)" CheckedChanged="@((bool v) => ToggleAccion(PermissionAction.Create, v))">Crear</DxCheckBox>
+            <DxCheckBox Checked="Has(PermissionAction.Write)" CheckedChanged="@((bool v) => ToggleAccion(PermissionAction.Write, v))">Modificar</DxCheckBox>
+            <DxCheckBox Checked="Has(PermissionAction.Delete)" CheckedChanged="@((bool v) => ToggleAccion(PermissionAction.Delete, v))">Borrar</DxCheckBox>
         </div>
 
         @* ---- ListView anidada: Campos (restricciones por columna) ---- *@
@@ -42,13 +58,13 @@
                 <DxGridDataColumn Caption="Leer" Width="90px" TextAlignment="GridTextAlignment.Center">
                     <CellDisplayTemplate Context="c">
                         @{ var vm = (CampoVm)c.DataItem; }
-                        <DxCheckBox Checked="vm.Leer" CheckedChanged="@((bool v) => ToggleCampoAsync(vm, leer: v, modificar: vm.Modificar))" />
+                        <DxCheckBox Checked="vm.Leer" CheckedChanged="@((bool v) => ToggleCampo(vm, leer: v, modificar: vm.Modificar))" />
                     </CellDisplayTemplate>
                 </DxGridDataColumn>
                 <DxGridDataColumn Caption="Modificar" Width="100px" TextAlignment="GridTextAlignment.Center">
                     <CellDisplayTemplate Context="c">
                         @{ var vm = (CampoVm)c.DataItem; }
-                        <DxCheckBox Checked="vm.Modificar" CheckedChanged="@((bool v) => ToggleCampoAsync(vm, leer: vm.Leer, modificar: v))" />
+                        <DxCheckBox Checked="vm.Modificar" CheckedChanged="@((bool v) => ToggleCampo(vm, leer: vm.Leer, modificar: v))" />
                     </CellDisplayTemplate>
                 </DxGridDataColumn>
             </Columns>
@@ -180,6 +196,10 @@
     private List<CampoVm> _campos = new();
     private List<RolPermisoRegistro> _registros = new();
 
+    // Baseline (estado guardado) para detectar/descartar cambios pendientes de acciones y campos.
+    private PermissionAction _accionesBase;
+    private bool _saving;
+
     private bool _editorVisible;
     private int _editId;
     private CriteriaOperator? _crit;
@@ -208,24 +228,65 @@
             .ToList();
 
         _registros = (await Admin.ListPermisosRegistroAsync(RolId, Tabla)).ToList();
+
+        // Captura del estado guardado (baseline) para detectar/descartar cambios pendientes.
+        _accionesBase = Vm.Acciones;
+        foreach (var c in _campos) { c.LeerBase = c.Leer; c.ModificarBase = c.Modificar; }
     }
 
-    // ---- Acciones de tabla ----
+    // ¿Hay cambios sin guardar? (acciones de tabla o restricciones por campo respecto del baseline)
+    private bool Dirty => Vm.Acciones != _accionesBase
+        || _campos.Any(c => c.Leer != c.LeerBase || c.Modificar != c.ModificarBase);
+
+    // ---- Acciones de tabla (edición en memoria; se persiste en "Guardar cambios") ----
     private bool Has(PermissionAction a) => (Vm.Acciones & a) == a;
 
-    private async Task ToggleAccionAsync(PermissionAction a, bool on)
-    {
-        Vm.Acciones = on ? Vm.Acciones | a : Vm.Acciones & ~a;
-        await Admin.SetPermisoAsync(RolId, Tabla, Vm.Acciones);
-        await OnAccionesChanged.InvokeAsync();
-    }
+    private void ToggleAccion(PermissionAction a, bool on)
+        => Vm.Acciones = on ? Vm.Acciones | a : Vm.Acciones & ~a;
 
-    // ---- Campos ----
-    private async Task ToggleCampoAsync(CampoVm vm, bool leer, bool modificar)
+    // ---- Campos (edición en memoria) ----
+    private void ToggleCampo(CampoVm vm, bool leer, bool modificar)
     {
         vm.Leer = leer;
         vm.Modificar = modificar;
-        await Admin.SetPermisoColumnaAsync(RolId, Tabla, vm.Columna, leer, modificar);
+    }
+
+    // Persiste acciones de tabla + restricciones de campo cambiadas (sólo lo que difiere del baseline).
+    private async Task GuardarCambiosAsync()
+    {
+        if (!Dirty || _saving) return;
+        _saving = true;
+        try
+        {
+            if (Vm.Acciones != _accionesBase)
+            {
+                await Admin.SetPermisoAsync(RolId, Tabla, Vm.Acciones);
+                _accionesBase = Vm.Acciones;
+                await OnAccionesChanged.InvokeAsync();
+            }
+            foreach (var c in _campos.Where(c => c.Leer != c.LeerBase || c.Modificar != c.ModificarBase))
+            {
+                await Admin.SetPermisoColumnaAsync(RolId, Tabla, c.Columna, c.Leer, c.Modificar);
+                c.LeerBase = c.Leer;
+                c.ModificarBase = c.Modificar;
+            }
+            Toasts.Exito("Permisos guardados.");
+        }
+        finally { _saving = false; }
+    }
+
+    // Descarta los cambios pendientes volviendo acciones y campos al baseline.
+    private void Descartar()
+    {
+        Vm.Acciones = _accionesBase;
+        foreach (var c in _campos) { c.Leer = c.LeerBase; c.Modificar = c.ModificarBase; }
+    }
+
+    // Al colapsar el detalle sin guardar, revierte el Vm.Acciones (referencia compartida con la grilla maestra)
+    // a su valor persistido, para no dejar el resumen de la fila mostrando un cambio que no se guardó.
+    public void Dispose()
+    {
+        if (Vm.Acciones != _accionesBase) Vm.Acciones = _accionesBase;
     }
 
     // ---- Registros ----
@@ -316,5 +377,8 @@
         public string Caption { get; set; } = "";
         public bool Leer { get; set; } = true;
         public bool Modificar { get; set; } = true;
+        // Estado guardado (baseline) para detectar/descartar cambios.
+        public bool LeerBase { get; set; } = true;
+        public bool ModificarBase { get; set; } = true;
     }
 }

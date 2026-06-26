@@ -9,6 +9,8 @@
 @inject WebCurrentUser CurrentUser
 @inject IToastNotificationService Toasts
 @inject NavigationManager Nav
+@inject Sgpa.Web.State.UnsavedChangesService Unsaved
+@implements IDisposable
 
 <PageTitle>Seguridad · Permisos del rol</PageTitle>
 
@@ -38,10 +40,23 @@ else
             las restricciones por <strong>campo</strong> y los filtros por <strong>registro</strong>.
         </p>
 
-        <div class="mb-3 d-flex gap-2">
-            <DxButton Text="Sólo lectura a todas" RenderStyle="ButtonRenderStyle.Secondary" SizeMode="SizeMode.Small" Click="@(() => SetTodasAsync(PermissionAction.Read))" />
-            <DxButton Text="Acceso total a todas" RenderStyle="ButtonRenderStyle.Secondary" SizeMode="SizeMode.Small" Click="@(() => SetTodasAsync(PermissionAction.All))" />
-            <DxButton Text="Quitar todo" RenderStyle="ButtonRenderStyle.Secondary" SizeMode="SizeMode.Small" Click="@(() => SetTodasAsync(PermissionAction.None))" />
+        @* Las acciones masivas editan en memoria; se confirman con Guardar (Ctrl+S). Las restricciones por campo
+           y las acciones por tabla del detalle se guardan desde el propio detalle. *@
+        <SgpaShortcuts OnSave="GuardarAsync" CanSave="@(() => _dirty.Count > 0 && !_saving)" />
+        <div class="mb-3 d-flex flex-wrap align-items-center gap-2">
+            <DxButton Text="@(_dirty.Count > 0 ? $"Guardar ({_dirty.Count})" : "Guardar")" IconCssClass="fa-solid fa-floppy-disk"
+                      RenderStyle="ButtonRenderStyle.Primary" SizeMode="SizeMode.Small"
+                      Enabled="@(_dirty.Count > 0 && !_saving)" Click="GuardarAsync" />
+            <DxButton Text="Descartar" IconCssClass="fa-solid fa-rotate-left" RenderStyle="ButtonRenderStyle.Secondary"
+                      SizeMode="SizeMode.Small" Enabled="@(_dirty.Count > 0 && !_saving)" Click="Descartar" />
+            <span class="vr"></span>
+            <DxButton Text="Sólo lectura a todas" RenderStyle="ButtonRenderStyle.Secondary" SizeMode="SizeMode.Small" Click="@(() => SetTodas(PermissionAction.Read))" />
+            <DxButton Text="Acceso total a todas" RenderStyle="ButtonRenderStyle.Secondary" SizeMode="SizeMode.Small" Click="@(() => SetTodas(PermissionAction.All))" />
+            <DxButton Text="Quitar todo" RenderStyle="ButtonRenderStyle.Secondary" SizeMode="SizeMode.Small" Click="@(() => SetTodas(PermissionAction.None))" />
+            @if (_dirty.Count > 0)
+            {
+                <span class="text-muted small"><i class="fa-solid fa-pen me-1"></i>@_dirty.Count tabla(s) sin guardar</span>
+            }
         </div>
 
         <DxGrid Data="_items" PageSize="30" ShowSearchBox="true" CssClass="sgpa-grid"
@@ -65,7 +80,7 @@ else
             </Columns>
             <DetailRowTemplate Context="c">
                 @{ var vm = (PermisoTablaVm)c.DataItem; }
-                <RolTablaPermisoDetalle RolId="RolId" Tabla="@vm.Tabla" Vm="vm" OnAccionesChanged="StateHasChanged" />
+                <RolTablaPermisoDetalle RolId="RolId" Tabla="@vm.Tabla" Vm="vm" OnAccionesChanged="@(() => OnDetalleGuardado(vm))" />
             </DetailRowTemplate>
         </DxGrid>
     }
@@ -103,17 +118,69 @@ else
             })
             .OrderBy(v => v.Display, StringComparer.OrdinalIgnoreCase)
             .ToList();
+
+        // Baseline del estado guardado (acciones por tabla) para detectar/descartar los cambios masivos pendientes.
+        _accionesBase = _items.ToDictionary(v => v.Tabla, v => v.Acciones, StringComparer.OrdinalIgnoreCase);
     }
 
-    private async Task SetTodasAsync(PermissionAction acciones)
+    // ---- Unit-of-work de las acciones masivas (las acciones por tabla / campos del detalle se guardan ahí) ----
+    private readonly HashSet<PermisoTablaVm> _dirty = new();
+    private Dictionary<string, PermissionAction> _accionesBase = new(StringComparer.OrdinalIgnoreCase);
+    private bool _saving;
+
+    // Aplica una acción a TODAS las tablas en memoria, marcando como pendientes sólo las que cambian.
+    private void SetTodas(PermissionAction acciones)
     {
-        foreach (var vm in _items)
+        foreach (var vm in _items.Where(vm => vm.Acciones != acciones))
         {
             vm.Acciones = acciones;
-            await Admin.SetPermisoAsync(RolId, vm.Tabla, acciones);
+            _dirty.Add(vm);
         }
-        Toasts.Exito(acciones == PermissionAction.None ? "Permisos quitados." : "Permisos aplicados a todas las tablas.");
+        SyncDirty();
     }
+
+    private async Task GuardarAsync()
+    {
+        if (_dirty.Count == 0 || _saving) return;
+        _saving = true;
+        try
+        {
+            var pend = _dirty.ToList();
+            foreach (var vm in pend)
+            {
+                await Admin.SetPermisoAsync(RolId, vm.Tabla, vm.Acciones);
+                _accionesBase[vm.Tabla] = vm.Acciones;
+            }
+            _dirty.Clear();
+            SyncDirty();
+            Toasts.Exito($"Permisos guardados ({pend.Count} tabla(s)).");
+        }
+        finally { _saving = false; }
+    }
+
+    private void Descartar()
+    {
+        foreach (var vm in _dirty)
+            if (_accionesBase.TryGetValue(vm.Tabla, out var a)) vm.Acciones = a;
+        _dirty.Clear();
+        SyncDirty();
+    }
+
+    // El detalle de una tabla guardó sus acciones por su cuenta: sincronizamos el baseline y la sacamos de pendientes.
+    private void OnDetalleGuardado(PermisoTablaVm vm)
+    {
+        _accionesBase[vm.Tabla] = vm.Acciones;
+        _dirty.Remove(vm);
+        SyncDirty();
+    }
+
+    private void SyncDirty()
+    {
+        Unsaved.Set(this, _dirty.Count > 0);
+        StateHasChanged();
+    }
+
+    public void Dispose() => Unsaved.Clear(this);
 
     // Pastilla compacta de una acción: resaltada si está concedida, atenuada si no.
     private RenderFragment Badge(string letra, string titulo, bool on) =>

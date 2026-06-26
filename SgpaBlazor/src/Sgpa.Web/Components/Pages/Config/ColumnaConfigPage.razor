@@ -2,10 +2,16 @@
 @rendermode InteractiveServer
 @using Sgpa.Domain.Metadata
 @using Sgpa.Data.Configuracion
+@using Sgpa.Web.Components.Crud
+@implements IDisposable
 @inject IColumnaConfigService ColCfg
 @inject WebCurrentUser CurrentUser
+@inject IToastNotificationService Toasts
+@inject Sgpa.Web.State.UnsavedChangesService Unsaved
 
 <PageTitle>Configuración de columnas</PageTitle>
+@* Atajo: Ctrl+S = guardar (sólo si hay cambios pendientes). *@
+<SgpaShortcuts OnSave="GuardarAsync" CanSave="@(() => _dirty.Count > 0 && !_saving)" />
 
 <h3 class="mb-2">Configuración por columna</h3>
 <p class="text-muted">
@@ -13,7 +19,7 @@
     <strong>formato</strong>, <strong>orden</strong>, <strong>ancho</strong>, <strong>alineación</strong>,
     <strong>visibilidad</strong> en grilla/formulario y <strong>sólo lectura</strong>. Cada campo en blanco usa el
     valor por defecto del código (el placeholder lo muestra); los tildes en gris (indeterminado) también significan
-    «usar el default».
+    «usar el default». Los cambios se editan en memoria y se confirman con <strong>Guardar</strong> (Ctrl+S).
 </p>
 
 @if (!CurrentUser.IsAdmin)
@@ -22,7 +28,7 @@
 }
 else
 {
-    <div class="d-flex align-items-center gap-2 mb-3" style="max-width:520px">
+    <div class="d-flex align-items-center gap-2 mb-3" style="max-width:760px">
         <span class="text-muted">Tabla:</span>
         <DxComboBox Data="_tablas" @bind-Value="_tablaSel" FilteringMode="DataGridFilteringMode.Contains"
                     NullText="Elegí una tabla…" CssClass="flex-grow-1" />
@@ -30,6 +36,18 @@ else
 
     @if (_tablaSel is not null)
     {
+        @* Toolbar de guardado: la edición es en memoria; se persiste todo junto al Guardar. *@
+        <div class="d-flex align-items-center gap-2 mb-2">
+            <DxButton Text="@(_dirty.Count > 0 ? $"Guardar ({_dirty.Count})" : "Guardar")" IconCssClass="fa-solid fa-floppy-disk"
+                      RenderStyle="ButtonRenderStyle.Primary" Enabled="@(_dirty.Count > 0 && !_saving)" Click="GuardarAsync" />
+            <DxButton Text="Descartar" IconCssClass="fa-solid fa-rotate-left" RenderStyle="ButtonRenderStyle.Secondary"
+                      Enabled="@(_dirty.Count > 0 && !_saving)" Click="Descartar" />
+            @if (_dirty.Count > 0)
+            {
+                <span class="text-muted small"><i class="fa-solid fa-pen me-1"></i>@_dirty.Count cambio(s) sin guardar</span>
+            }
+        </div>
+
         <DxGrid Data="_items" PageSize="50" ShowFilterRow="true" ShowSearchBox="true">
             <Columns>
                 <DxGridDataColumn FieldName="Columna" Caption="Columna" Width="170px" />
@@ -38,56 +56,56 @@ else
                     <CellDisplayTemplate Context="c">
                         @{ var vm = (Vm)c.DataItem; }
                         <DxTextBox Text="@vm.Caption" NullText="@vm.DefCaption" SizeMode="SizeMode.Small"
-                                   TextChanged="@((string v) => { vm.Caption = v; return SaveAsync(vm); })" />
+                                   TextChanged="@((string v) => { vm.Caption = v; MarkDirty(vm); })" />
                     </CellDisplayTemplate>
                 </DxGridDataColumn>
                 <DxGridDataColumn Caption="Formato" Width="150px">
                     <CellDisplayTemplate Context="c">
                         @{ var vm = (Vm)c.DataItem; }
                         <DxTextBox Text="@vm.DisplayFormat" NullText="@(vm.DefFormat ?? "(sin formato)")" SizeMode="SizeMode.Small"
-                                   TextChanged="@((string v) => { vm.DisplayFormat = v; return SaveAsync(vm); })" />
+                                   TextChanged="@((string v) => { vm.DisplayFormat = v; MarkDirty(vm); })" />
                     </CellDisplayTemplate>
                 </DxGridDataColumn>
                 <DxGridDataColumn Caption="Orden" Width="110px">
                     <CellDisplayTemplate Context="c">
                         @{ var vm = (Vm)c.DataItem; }
                         <DxSpinEdit Value="vm.Orden" NullText="@vm.DefOrden.ToString()" SizeMode="SizeMode.Small"
-                                    ShowSpinButtons="false" ValueChanged="@((int? v) => { vm.Orden = v; return SaveAsync(vm); })" />
+                                    ShowSpinButtons="false" ValueChanged="@((int? v) => { vm.Orden = v; MarkDirty(vm); })" />
                     </CellDisplayTemplate>
                 </DxGridDataColumn>
                 <DxGridDataColumn Caption="Ancho" Width="110px">
                     <CellDisplayTemplate Context="c">
                         @{ var vm = (Vm)c.DataItem; }
                         <DxTextBox Text="@vm.Ancho" NullText="auto" SizeMode="SizeMode.Small"
-                                   TextChanged="@((string v) => { vm.Ancho = v; return SaveAsync(vm); })" />
+                                   TextChanged="@((string v) => { vm.Ancho = v; MarkDirty(vm); })" />
                     </CellDisplayTemplate>
                 </DxGridDataColumn>
                 <DxGridDataColumn Caption="Alineación" Width="130px">
                     <CellDisplayTemplate Context="c">
                         @{ var vm = (Vm)c.DataItem; }
                         <DxComboBox Data="_alineaciones" Value="@(vm.Alineacion ?? "(auto)")" SizeMode="SizeMode.Small"
-                                    ValueChanged="@((string v) => { vm.Alineacion = v == "(auto)" ? null : v; return SaveAsync(vm); })" />
+                                    ValueChanged="@((string v) => { vm.Alineacion = v == "(auto)" ? null : v; MarkDirty(vm); })" />
                     </CellDisplayTemplate>
                 </DxGridDataColumn>
                 <DxGridDataColumn Caption="Visible grilla" Width="120px" TextAlignment="GridTextAlignment.Center">
                     <CellDisplayTemplate Context="c">
                         @{ var vm = (Vm)c.DataItem; }
                         <DxCheckBox Checked="vm.VisibleLista" AllowIndeterminateStateByClick="true"
-                                    CheckedChanged="@((bool? v) => { vm.VisibleLista = v; return SaveAsync(vm); })" />
+                                    CheckedChanged="@((bool? v) => { vm.VisibleLista = v; MarkDirty(vm); })" />
                     </CellDisplayTemplate>
                 </DxGridDataColumn>
                 <DxGridDataColumn Caption="Visible form" Width="120px" TextAlignment="GridTextAlignment.Center">
                     <CellDisplayTemplate Context="c">
                         @{ var vm = (Vm)c.DataItem; }
                         <DxCheckBox Checked="vm.VisibleDetalle" AllowIndeterminateStateByClick="true"
-                                    CheckedChanged="@((bool? v) => { vm.VisibleDetalle = v; return SaveAsync(vm); })" />
+                                    CheckedChanged="@((bool? v) => { vm.VisibleDetalle = v; MarkDirty(vm); })" />
                     </CellDisplayTemplate>
                 </DxGridDataColumn>
                 <DxGridDataColumn Caption="Sólo lectura" Width="120px" TextAlignment="GridTextAlignment.Center">
                     <CellDisplayTemplate Context="c">
                         @{ var vm = (Vm)c.DataItem; }
                         <DxCheckBox Checked="vm.SoloLectura" AllowIndeterminateStateByClick="true"
-                                    CheckedChanged="@((bool? v) => { vm.SoloLectura = v; return SaveAsync(vm); })" />
+                                    CheckedChanged="@((bool? v) => { vm.SoloLectura = v; MarkDirty(vm); })" />
                     </CellDisplayTemplate>
                 </DxGridDataColumn>
                 <DxGridDataColumn Caption="" Width="60px" TextAlignment="GridTextAlignment.Center">
@@ -96,7 +114,7 @@ else
                         @if (!vm.SinOverride)
                         {
                             <DxButton IconCssClass="fa-solid fa-rotate-left" RenderStyle="ButtonRenderStyle.Link"
-                                      Tooltip="Restablecer (volver a los defaults)" Click="@(() => ResetAsync(vm))" />
+                                      Tooltip="Restablecer (volver a los defaults)" Click="@(() => Reset(vm))" />
                         }
                     </CellDisplayTemplate>
                 </DxGridDataColumn>
@@ -116,10 +134,24 @@ else
     private string? _tablaSel
     {
         get => _tablaSelValue;
-        set { _tablaSelValue = value; BuildRows(); }
+        set
+        {
+            if (string.Equals(value, _tablaSelValue, StringComparison.Ordinal)) return;
+            // No perder cambios pendientes al cambiar de tabla: exige guardar/descartar primero (revierte el combo).
+            if (_dirty.Count > 0)
+            {
+                Toasts.Aviso("Guardá o descartá los cambios antes de cambiar de tabla.");
+                StateHasChanged();
+                return;
+            }
+            _tablaSelValue = value;
+            BuildRows();
+        }
     }
 
     private List<Vm> _items = new();
+    private readonly HashSet<Vm> _dirty = new();
+    private bool _saving;
 
     protected override async Task OnInitializedAsync()
     {
@@ -143,6 +175,8 @@ else
     private void BuildRows()
     {
         _items = new();
+        _dirty.Clear();
+        SyncDirty();
         if (_tablaSelValue is null) return;
         var meta = EntityCatalog.TryGet(_tablaSelValue);
         if (meta is null) return;
@@ -168,23 +202,75 @@ else
         }
     }
 
-    private Task SaveAsync(Vm vm)
-        => ColCfg.SetAsync(new ColumnaConfig(
-            _tablaSelValue!, vm.Columna,
-            Caption: Limpiar(vm.Caption),
-            DisplayFormat: Limpiar(vm.DisplayFormat),
-            Orden: vm.Orden,
-            Ancho: Limpiar(vm.Ancho),
-            Alineacion: Limpiar(vm.Alineacion),
-            VisibleLista: vm.VisibleLista,
-            VisibleDetalle: vm.VisibleDetalle,
-            SoloLectura: vm.SoloLectura));
+    // Edición en memoria: marca la columna como pendiente; se persiste todo junto al Guardar.
+    private void MarkDirty(Vm vm)
+    {
+        _dirty.Add(vm);
+        SyncDirty();
+    }
 
-    private async Task ResetAsync(Vm vm)
+    // Refleja el estado de cambios pendientes en el guard global (UnsavedChangesGuard) y re-renderiza.
+    private void SyncDirty()
+    {
+        Unsaved.Set(this, _dirty.Count > 0);
+        StateHasChanged();
+    }
+
+    public void Dispose() => Unsaved.Clear(this);
+
+    private async Task GuardarAsync()
+    {
+        if (_dirty.Count == 0 || _saving || _tablaSelValue is null) return;
+        _saving = true;
+        try
+        {
+            var pend = _dirty.ToList();
+            foreach (var vm in pend)
+            {
+                // Sin ningún override → borrar la fila (volver a defaults); si tiene alguno → upsert.
+                if (vm.SinOverride)
+                    await ColCfg.DeleteAsync(_tablaSelValue, vm.Columna);
+                else
+                    await ColCfg.SetAsync(new ColumnaConfig(
+                        _tablaSelValue, vm.Columna,
+                        Caption: Limpiar(vm.Caption),
+                        DisplayFormat: Limpiar(vm.DisplayFormat),
+                        Orden: vm.Orden,
+                        Ancho: Limpiar(vm.Ancho),
+                        Alineacion: Limpiar(vm.Alineacion),
+                        VisibleLista: vm.VisibleLista,
+                        VisibleDetalle: vm.VisibleDetalle,
+                        SoloLectura: vm.SoloLectura));
+            }
+            _dirty.Clear();
+            SyncDirty();
+            Toasts.Exito($"Configuración guardada ({pend.Count} columna(s)).");
+        }
+        finally { _saving = false; }
+    }
+
+    // Descarta los cambios pendientes volviendo cada columna a su valor guardado (desde la cache del servicio).
+    private void Descartar()
+    {
+        foreach (var vm in _dirty) RevertVm(vm);
+        _dirty.Clear();
+        SyncDirty();
+    }
+
+    private void RevertVm(Vm vm)
+    {
+        var ov = _tablaSelValue is null ? null : ColCfg.Get(_tablaSelValue, vm.Columna);
+        vm.Caption = ov?.Caption; vm.DisplayFormat = ov?.DisplayFormat; vm.Orden = ov?.Orden;
+        vm.Ancho = ov?.Ancho; vm.Alineacion = ov?.Alineacion;
+        vm.VisibleLista = ov?.VisibleLista; vm.VisibleDetalle = ov?.VisibleDetalle; vm.SoloLectura = ov?.SoloLectura;
+    }
+
+    // "Restablecer" una fila: limpia todos los overrides en memoria y la marca pendiente (al Guardar se borra la fila).
+    private void Reset(Vm vm)
     {
         vm.Caption = null; vm.DisplayFormat = null; vm.Orden = null; vm.Ancho = null; vm.Alineacion = null;
         vm.VisibleLista = null; vm.VisibleDetalle = null; vm.SoloLectura = null;
-        await ColCfg.DeleteAsync(_tablaSelValue!, vm.Columna);
+        MarkDirty(vm);
     }
 
     private static string? Limpiar(string? s) => string.IsNullOrWhiteSpace(s) ? null : s.Trim();
