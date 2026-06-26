@@ -244,7 +244,7 @@ else
     </GroupSummary>
     <EditFormTemplate Context="ctx">
         <SgpaDetailForm Model="ctx.EditModel" Meta="Meta" IsNew="_editingIsNew" HiddenColumns="_hiddenColumns"
-                        FieldEditable="FieldEditableAdapter" />
+                        FieldEditable="FieldEditableAdapter" HeaderInfo="@HeaderInfoAdapter" />
     </EditFormTemplate>
     @* Master-detail opcional: el detalle se renderiza sólo al expandir la fila (carga diferida). El botón de
        expandir aparece sólo si hay DetailTemplate (DetailRowDisplayMode arriba); si no, este template no se invoca. *@
@@ -418,6 +418,13 @@ else
 
     /// <summary>Acciones extra por fila (recibe la entidad), ej. abrir un sub-formulario relacionado.</summary>
     [Parameter] public RenderFragment<TEntity>? RowActions { get; set; }
+
+    /// <summary>Encabezado opcional del formulario de edición (recibe la entidad): info contextual mientras se
+    /// carga (ej. contadores del afiliado). Reacciona a los campos confirmados (cédula, tipo).</summary>
+    [Parameter] public RenderFragment<TEntity>? EditFormHeader { get; set; }
+
+    private RenderFragment<object>? HeaderInfoAdapter
+        => EditFormHeader is null ? null : (m => EditFormHeader((TEntity)m));
 
     /// <summary>
     /// Orden EXPLÍCITO de columnas de la grilla, por nombre (izq→der). Actúa como whitelist: sólo se muestran

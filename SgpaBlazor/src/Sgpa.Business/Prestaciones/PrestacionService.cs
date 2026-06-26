@@ -49,6 +49,15 @@ public sealed class PrestacionService
         return avisos;
     }
 
+    /// <summary>
+    /// Cantidad de prestaciones de ese tipo que ya tiene el afiliado, para mostrar al operador mientras carga
+    /// (port de <c>PrestacionCantidad</c> / 102_Prestacion_Cantidad).
+    /// </summary>
+    public Task<int> GetCantidadPorTipoAsync(long ci, int codPrestacionTipo, CancellationToken ct = default)
+        => _db.ExecuteScalarAsync<int>(
+            "SELECT COUNT(*) FROM dbo.Prestacion WHERE CI=@ci AND CodPrestacionTipo=@tipo",
+            new { ci, tipo = codPrestacionTipo }, cancellationToken: ct);
+
     /// <summary>Diferencia en meses calendario (port de DateDiff("m", desde, hasta)).</summary>
     public static int MesesEntre(DateTime desde, DateTime hasta)
         => (hasta.Year - desde.Year) * 12 + (hasta.Month - desde.Month);

@@ -16,6 +16,10 @@
     la receta óptica (cerca/lejos) para los tipos de prestación que la llevan.
 *@
 <SgpaCrudView TEntity="Prestacion" Title="Prestaciones">
+    @* Contador en vivo (port de cboPrestacionTipo_LostFocus): cantidad de prestaciones de ese tipo del afiliado. *@
+    <EditFormHeader Context="p">
+        <AfiliadoContadores CI="p.CI" CodPrestacionTipo="p.CodPrestacionTipo" Prestaciones="true" />
+    </EditFormHeader>
     <RowActions Context="p">
         @if (_tiposConReceta.Contains(p.CodPrestacionTipo))
         {

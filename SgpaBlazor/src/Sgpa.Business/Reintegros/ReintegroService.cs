@@ -3,6 +3,9 @@ using Sgpa.Domain.Entities;
 
 namespace Sgpa.Business.Reintegros;
 
+/// <summary>Resumen de reintegros previos de un afiliado: cantidad + último período/importe (103_ReintegrosAfiliado).</summary>
+public sealed record ReintegroResumen(int Cantidad, int? Anio, int? Mes, double? Importe);
+
 /// <summary>
 /// Reglas de negocio de los reintegros mutuales (port de AbmReint.frm): validación del período,
 /// aviso de elegibilidad (1,25 SMN) y actualización de la cuota del mutualista al grabar.
@@ -57,6 +60,23 @@ public sealed class ReintegroService
         return _db.ExecuteAsync(
             "UPDATE dbo.Mutualista SET Cuota=@importe WHERE CodMutualista=@cod",
             new { importe = r.Importe ?? 0f, cod = r.CodMutualista.Value }, cancellationToken: ct);
+    }
+
+    /// <summary>
+    /// Resumen de reintegros previos del afiliado (cantidad + último), para mostrar al operador mientras carga
+    /// (port de <c>CargarReintegrosRealizados</c> / 103_ReintegrosAfiliado).
+    /// </summary>
+    public async Task<ReintegroResumen> GetResumenAsync(long ci, CancellationToken ct = default)
+    {
+        var cantidad = await _db.ExecuteScalarAsync<int>(
+            "SELECT COUNT(*) FROM dbo.ReintegroMutual WHERE CI=@ci", new { ci }, cancellationToken: ct).ConfigureAwait(false);
+        if (cantidad == 0) return new ReintegroResumen(0, null, null, null);
+
+        var ult = await _db.QuerySingleOrDefaultAsync<ReintegroResumen>(
+            @"SELECT TOP 1 @cant AS Cantidad, Anio, Mes, CAST(ISNULL(Importe,0) AS float) AS Importe
+              FROM dbo.ReintegroMutual WHERE CI=@ci ORDER BY Anio DESC, Mes DESC",
+            new { ci, cant = cantidad }, cancellationToken: ct).ConfigureAwait(false);
+        return ult ?? new ReintegroResumen(cantidad, null, null, null);
     }
 
     private async Task<double> GetSmnAsync(CancellationToken ct)

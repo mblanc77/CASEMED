@@ -373,7 +373,7 @@ else
             <div class="card-body">
                 <EditForm EditContext="_editContext" OnValidSubmit="SaveMasterAsync">
                     <SgpaDetailForm Model="_master" Meta="_meta" IsNew="_mode == Mode.New" ColSpanMd="6"
-                                    FieldEditable="FieldEditableAdapter" />
+                                    FieldEditable="FieldEditableAdapter" HeaderInfo="@HeaderInfoAdapter" />
                     @if (_canWrite)
                     {
                         <div class="mt-2">
@@ -430,6 +430,13 @@ else
     [Parameter] public RenderFragment? ListColumns { get; set; }
     /// <summary>Encabezado del detalle (recibe el master cargado).</summary>
     [Parameter] public RenderFragment<TMaster>? DetailHeader { get; set; }
+
+    /// <summary>Encabezado opcional del formulario de datos (recibe el master): info contextual mientras se carga
+    /// (ej. contadores del afiliado). Reacciona a los campos confirmados (cédula).</summary>
+    [Parameter] public RenderFragment<TMaster>? EditFormHeader { get; set; }
+
+    private RenderFragment<object>? HeaderInfoAdapter
+        => EditFormHeader is null ? null : (m => EditFormHeader((TMaster)m));
 
     // Botones extra en la barra de acciones del detalle (se renderizan a la izquierda de Eliminar/Volver).
     [Parameter] public RenderFragment<TMaster>? DetailActions { get; set; }

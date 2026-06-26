@@ -1,0 +1,70 @@
+@using Sgpa.Business.Certificaciones
+@using Sgpa.Business.Prestaciones
+@using Sgpa.Business.Reintegros
+@inject CertificacionService Certi
+@inject PrestacionService Prest
+@inject ReintegroService Reint
+
+@*
+    Panel informativo que se muestra al operador mientras carga (certificación / prestación / reintegro),
+    arriba del formulario de edición del CRUD genérico. Replica los contadores que el VB6 mostraba al salir del
+    campo cédula (lblDiasCertificados, PrestacionCantidad, CargarReintegrosRealizados). Reacciona a la cédula
+    (y al tipo de prestación) recién ingresada: el SgpaDetailForm re-renderiza al confirmar el campo.
+*@
+
+@if (_visible)
+{
+    <div class="alert alert-info py-2 px-3 mb-3 small d-flex align-items-center">
+        <i class="fa-solid fa-circle-info me-2"></i>
+        <span>@_texto</span>
+    </div>
+}
+
+@code {
+    [Parameter] public long? CI { get; set; }
+    [Parameter] public int? CodPrestacionTipo { get; set; }
+
+    /// <summary>Qué contador mostrar (uno por ABM).</summary>
+    [Parameter] public bool Certificaciones { get; set; }
+    [Parameter] public bool Prestaciones { get; set; }
+    [Parameter] public bool Reintegros { get; set; }
+
+    private bool _visible;
+    private string _texto = string.Empty;
+    private (long? CI, int? Tipo) _ultimo = (null, null);
+
+    protected override async Task OnParametersSetAsync()
+    {
+        // Sólo recalcular cuando cambia la cédula (o el tipo, para prestaciones); evita refetch en cada render.
+        var clave = (CI, CodPrestacionTipo);
+        if (clave == _ultimo) return;
+        _ultimo = clave;
+        _visible = false;
+
+        if (CI is not > 0) return;
+
+        if (Certificaciones)
+        {
+            var r = await Certi.GetResumenCertificadosAsync(CI.Value);
+            _texto = $"Afiliado: {r.Dias} día(s) certificado(s) en {r.Cantidad} certificación(es).";
+            _visible = true;
+        }
+        else if (Prestaciones)
+        {
+            if (CodPrestacionTipo is not > 0) return;
+            var n = await Prest.GetCantidadPorTipoAsync(CI.Value, CodPrestacionTipo.Value);
+            _texto = $"Afiliado: {n} prestación(es) de este tipo registrada(s).";
+            _visible = true;
+        }
+        else if (Reintegros)
+        {
+            var r = await Reint.GetResumenAsync(CI.Value);
+            _texto = r.Cantidad == 0
+                ? "Afiliado: sin reintegros previos."
+                : r.Anio is not null
+                    ? $"Afiliado: {r.Cantidad} reintegro(s) previo(s) — último {r.Mes:00}/{r.Anio} por $ {r.Importe:N2}."
+                    : $"Afiliado: {r.Cantidad} reintegro(s) previo(s).";
+            _visible = true;
+        }
+    }
+}

@@ -6,6 +6,9 @@ namespace Sgpa.Business.Certificaciones;
 /// <summary>Certificación efectiva que se superpone con el período ingresado (310_CertificacionAnterior).</summary>
 public sealed record CertificacionSuperpuesta(int NroLlamado, int? NroRecibo, DateTime FechaIni, DateTime FechaFin);
 
+/// <summary>Resumen acumulado de certificaciones efectivas de un afiliado (102_DiasCertificados).</summary>
+public sealed record CertificadoResumen(int Dias, int Cantidad);
+
 /// <summary>
 /// Reglas de negocio de certificaciones (port parcial de AbmCerti.frm). Por ahora cubre la validación
 /// de superposición de períodos al dar de alta/modificar una certificación efectiva (port del bloque de
@@ -83,6 +86,16 @@ public sealed class CertificacionService
         => await _db.ExecuteScalarAsync<int?>(
             "SELECT Dias FROM dbo.acc_sgpa_102_DiasCertificados_q(@ci, @nroLlamado)",
             new { ci = (int)ci, nroLlamado }, cancellationToken: ct).ConfigureAwait(false) ?? 0;
+
+    /// <summary>
+    /// Resumen acumulado de certificaciones efectivas del afiliado (días + cantidad), para mostrar al operador
+    /// mientras carga (port del display de <c>txtCI_LostFocus</c>: lblDiasCertificados / lblCantidadCertificados).
+    /// Usa 102_DiasCertificados con NroLlamado=0 (todas).
+    /// </summary>
+    public async Task<CertificadoResumen> GetResumenCertificadosAsync(long ci, CancellationToken ct = default)
+        => await _db.QuerySingleOrDefaultAsync<CertificadoResumen>(
+            "SELECT ISNULL(Dias,0) AS Dias, ISNULL(Cantidad,0) AS Cantidad FROM dbo.acc_sgpa_102_DiasCertificados_q(@ci, 0)",
+            new { ci = (int)ci }, cancellationToken: ct).ConfigureAwait(false) ?? new CertificadoResumen(0, 0);
 
     /// <summary>Fin de prórroga más lejano del afiliado (403_UltProxCI: MAX(Fecha+Dias) de CertificacionProrroga); null si no tiene.</summary>
     public Task<DateTime?> GetFinProrrogaAsync(long ci, CancellationToken ct = default)

@@ -15,6 +15,10 @@
 
 <SgpaMetadataValidator Meta="Meta" IsNew="IsNew" />
 
+@* Encabezado opcional sobre el formulario (ej. contadores del afiliado al cargar): se re-renderiza al
+   confirmar un campo (NotifyFieldCommitted), así reacciona a la cédula recién ingresada. *@
+@HeaderInfo?.Invoke(Model)
+
 @* Dos columnas en lg+ (≥992px) y una sola en angosto. El responsive ahora funciona porque el área de
    contenido (main) puede encoger (min-width:0 en MainLayout); antes desbordaba horizontalmente. *@
 <DxFormLayout>
@@ -46,6 +50,10 @@
     [Parameter, EditorRequired] public EntityMetadata Meta { get; set; } = default!;
     [Parameter] public bool IsNew { get; set; }
     [Parameter] public int ColSpanMd { get; set; } = 12;
+
+    /// <summary>Encabezado opcional sobre el formulario (recibe el modelo). Útil para mostrar info contextual del
+    /// registro mientras se carga (ej. contadores del afiliado); se re-renderiza al confirmar cada campo.</summary>
+    [Parameter] public RenderFragment<object>? HeaderInfo { get; set; }
 
     /// <summary>Columnas (por nombre físico) a no mostrar — ej. la FK fija en una grilla hija.</summary>
     [Parameter] public IReadOnlyCollection<string>? HiddenColumns { get; set; }

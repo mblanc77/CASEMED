@@ -33,6 +33,10 @@
     <DetailHeader Context="c">
         Certificación Nº @c.NroLlamado — cédula @c.CI
     </DetailHeader>
+    @* Contador en vivo (port de txtCI_LostFocus): días/cantidad certificados del afiliado al cargar. *@
+    <EditFormHeader Context="c">
+        <AfiliadoContadores CI="c.CI" Certificaciones="true" />
+    </EditFormHeader>
     <ChildTabs Context="c">
         <DxTabPage Text="Prórrogas" TabIconCssClass="fa-solid fa-calendar-plus">
             <div class="p-2">
