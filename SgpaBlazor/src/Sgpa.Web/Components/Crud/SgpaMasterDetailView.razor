@@ -370,7 +370,7 @@ else
         <div class="card mb-3">
             <div class="card-header">Datos principales</div>
             <div class="card-body">
-                <EditForm Model="_master" OnValidSubmit="SaveMasterAsync">
+                <EditForm EditContext="_editContext" OnValidSubmit="SaveMasterAsync">
                     <SgpaDetailForm Model="_master" Meta="_meta" IsNew="_mode == Mode.New" ColSpanMd="6"
                                     FieldEditable="FieldEditableAdapter" />
                     @if (_canWrite)
@@ -523,6 +523,10 @@ else
     private CancellationTokenSource? _saveCts;
 
     private TMaster? _master;
+    // EditContext propio del form del master (en vez de dejar que EditForm lo derive de Model). Lo recreamos al
+    // cargar/cambiar de registro y tras un guardado exitoso, así SgpaDetailForm re-sincroniza el guard de
+    // "cambios sin guardar" a un contexto limpio (sin esto, tras guardar quedaba IsModified=true y avisaba al salir).
+    private EditContext? _editContext;
     private IReadOnlyList<object> _selectedItems = Array.Empty<object>();   // filas seleccionadas (multi)
     private IReadOnlyList<ReporteInfo> _reportes = Array.Empty<ReporteInfo>();   // reportes asociados a esta tabla
     private bool _multiSelect;
@@ -777,6 +781,7 @@ else
         _softConfirmadas = false;
         _notFound = false;
         _master = null;
+        _editContext = null;
         _keyValue = null;
         _keyDisplay = null;
         _dataSource = null;
@@ -839,6 +844,8 @@ else
                     if (_master is not null) await RecomputeWarningsAsync();
                     break;
             }
+            // EditContext fresco para el registro recién cargado (modo alta o detalle).
+            _editContext = _master is null ? null : new EditContext(_master);
         }
         catch (Exception ex)
         {
@@ -1139,6 +1146,9 @@ else
             }
             await Service.UpdateAsync(_master);
             Toasts.Exito("Cambios guardados.");
+            // Contexto limpio tras guardar: SgpaDetailForm detecta la nueva referencia y baja el guard de
+            // "cambios sin guardar" (si no, al salir de la página avisaría pese a estar todo guardado).
+            _editContext = new EditContext(_master);
             await RecomputeWarningsAsync();
         }
         catch (Exception ex)

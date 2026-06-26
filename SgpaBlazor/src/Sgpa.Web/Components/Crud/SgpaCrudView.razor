@@ -11,6 +11,7 @@
 @using Sgpa.Data.Preferencias
 @using Sgpa.Web.Reporting
 @using Sgpa.Web.Components.Reportes
+@using Sgpa.Web.Components.Auditoria
 @using System.Globalization
 @inject IServiceProvider Services
 @inject IReporteCatalogo Reportes
@@ -166,9 +167,9 @@ else
         {
             <DxGridSelectionColumn Width="40px" VisibleIndex="0" />
         }
-        @if (CanWrite || CanDelete || RowActions is not null)
+        @if (CanWrite || CanDelete || _auditada || RowActions is not null)
         {
-            <DxGridCommandColumn Width="@(RowActions is null ? "84px" : "140px")" NewButtonVisible="false" EditButtonVisible="false" DeleteButtonVisible="false">
+            <DxGridCommandColumn Width="@CommandColWidth" NewButtonVisible="false" EditButtonVisible="false" DeleteButtonVisible="false">
                 <CellDisplayTemplate Context="ctx">
                     <div class="d-flex gap-1">
                         @if (RowActions is not null)
@@ -184,6 +185,13 @@ else
                         {
                             <DxButton IconCssClass="fa-solid fa-trash" RenderStyle="ButtonRenderStyle.Link" Tooltip="Eliminar"
                                       Click="@(() => { _itemToDelete = (TEntity)ctx.DataItem; _confirmText = string.Empty; _confirmDelete = true; })" />
+                        }
+                        @* Historial de cambios del registro (auditoría): sólo si la tabla audita. Abre un popup con
+                           AuditHistorial; no requiere entrar al detalle ni permiso de escritura. *@
+                        @if (_auditada)
+                        {
+                            <DxButton IconCssClass="fa-solid fa-clock-rotate-left" RenderStyle="ButtonRenderStyle.Link" Tooltip="Historial de cambios"
+                                      Click="@(() => VerHistorial((TEntity)ctx.DataItem))" />
                         }
                     </div>
                 </CellDisplayTemplate>
@@ -258,6 +266,18 @@ else
         <div class="d-flex justify-content-end mt-3">
             <DxButton Text="Cerrar" IconCssClass="fa-solid fa-xmark" RenderStyle="ButtonRenderStyle.Secondary"
                       Click="@(() => _viewVisible = false)" />
+        </div>
+    </BodyContentTemplate>
+</DxPopup>
+
+@* Historial de cambios (auditoría) del registro elegido en la fila. Reusa AuditHistorial (mismo componente
+   que la pestaña "Historial" del master-detail); la clave se serializa igual que AuditService (claves unidas con "|"). *@
+<DxPopup @bind-Visible="_historialVisible" HeaderText="@_historialTitulo" Width="780px" CloseOnEscape="true">
+    <BodyContentTemplate>
+        <AuditHistorial Tabla="@Meta.Table" Clave="@_historialClave" />
+        <div class="d-flex justify-content-end mt-3">
+            <DxButton Text="Cerrar" IconCssClass="fa-solid fa-xmark" RenderStyle="ButtonRenderStyle.Secondary"
+                      Click="@(() => _historialVisible = false)" />
         </div>
     </BodyContentTemplate>
 </DxPopup>
@@ -422,6 +442,29 @@ else
 
     private bool _inlineEdit;   // catálogo editable inline (de TablaConfig)
 
+    // Auditoría: la tabla audita cambios → botón "Historial" por fila + popup con AuditHistorial.
+    private bool _auditada;
+    private bool _historialVisible;
+    private string? _historialClave;
+    private string _historialTitulo = "Historial de cambios";
+
+    // Ancho de la columna de comandos: ~36px por botón (RowActions + Editar + Eliminar + Historial).
+    private string CommandColWidth
+    {
+        get
+        {
+            var n = (RowActions is not null ? 1 : 0) + (CanWrite ? 1 : 0) + (CanDelete ? 1 : 0) + (_auditada ? 1 : 0);
+            return $"{Math.Max(n, 1) * 36 + 16}px";
+        }
+    }
+
+    private void VerHistorial(TEntity entity)
+    {
+        _historialClave = string.Join("|", Meta.Keys.Select(k => Convert.ToString(k.GetValue(entity), CultureInfo.InvariantCulture)));
+        _historialTitulo = $"Historial de cambios — {(string.IsNullOrWhiteSpace(Title) ? Meta.Table : Title)} {_historialClave}";
+        _historialVisible = true;
+    }
+
     private GridEditMode EffectiveEditMode =>
         EditMode ?? (_inlineEdit ? GridEditMode.EditRow : GridEditMode.PopupEditForm);
 
@@ -552,6 +595,7 @@ else
         var cfg = TablaConfig.Get(Meta.Table);
         _requiereTextoEliminar = cfg.ConfirmarBorrado;
         _inlineEdit = cfg.EdicionInline;
+        _auditada = cfg.Auditar;   // muestra el botón "Historial" por fila
         if ((_perms & PermissionAction.Read) == 0)
         {
             _denied = true;
